@@ -6,14 +6,7 @@ import android.os.IBinder
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerBackgroundServiceComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.BackgroundServiceModule
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceAnswer
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessage
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.request_params.TestRequestParams
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.BackgroundServicePresenterImpl
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -24,9 +17,6 @@ class BackgroundService : Service(), BackgroundServiceCallbacks {
 
     @Inject
     lateinit var mPresenter: BackgroundServicePresenterImpl
-
-    @Inject
-    lateinit var mEventBus: EventBus
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -49,27 +39,16 @@ class BackgroundService : Service(), BackgroundServiceCallbacks {
         super.onCreate()
 
         resolveDaggerDependency()
-        mEventBus.register(this)
+        mPresenter.onInitPresenter()
 
         Timber.e("BackgroundService created")
     }
 
     override fun onDestroy() {
-        mEventBus.unregister(this)
         Timber.e("BackgroundService destroyed")
+        mPresenter.onTeardownPresenter()
 
         super.onDestroy()
-    }
-
-    override fun sendClientAnswer(answer: ServiceAnswer) {
-        mEventBus.postSticky(answer)
-    }
-
-    @Subscribe(threadMode = ThreadMode.ASYNC, sticky = true)
-    fun onClientMessage(message: ServiceMessage) {
-        when (message.id) {
-            Constant.EVENT_MESSAGE_TEST -> mPresenter.testRequest(message.data as TestRequestParams)
-        }
     }
 
     override fun onUnknownError(error: Throwable) {

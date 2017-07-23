@@ -37,11 +37,11 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
     }
 
     override fun onViewReady() {
-        mPresenter.onStart()
+        mPresenter.onInitPresenter()
     }
 
     override fun onViewStop() {
-        mPresenter.onStop()
+        mPresenter.onTeardownPresenter()
     }
 
     @OnClick(R.id.start_request_btn)

@@ -11,12 +11,10 @@ import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerLoadingActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.LoadingActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceAnswer
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.request_params.TestRequestParams
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.LoadingActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.LoadingActivityView
-import timber.log.Timber
 import javax.inject.Inject
 
 class LoadingActivity : BaseActivity(), LoadingActivityView {
@@ -39,21 +37,16 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
     }
 
     override fun onViewReady() {
-
+        mPresenter.onStart()
     }
 
     override fun onViewStop() {
+        mPresenter.onStop()
     }
 
     @OnClick(R.id.start_request_btn)
     fun onRequestBtnClick() {
-        sendServiceMessage(ServiceMessage(Constant.EVENT_MESSAGE_TEST, TestRequestParams("test", "1234567890")))
-    }
-
-    override fun onServiceAnswer(answer: ServiceAnswer) {
-        when (answer.id) {
-            Constant.EVENT_MESSAGE_TEST -> Timber.e("answer is ${answer.data as String}")
-        }
+        mPresenter.sendServiceMessage(ServiceMessage(Constant.EVENT_MESSAGE_TEST, TestRequestParams("test", "1234567890")))
     }
 
     override fun resolveDaggerDependency() {

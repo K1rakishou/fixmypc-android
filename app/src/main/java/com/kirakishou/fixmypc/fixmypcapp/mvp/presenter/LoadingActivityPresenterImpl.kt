@@ -1,8 +1,8 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter
 
-import com.kirakishou.fixmypc.fixmypcapp.base.BasePresenter
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceAnswer
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.LoadingActivityView
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -13,13 +13,25 @@ import javax.inject.Inject
 /**
  * Created by kirakishou on 7/20/2017.
  */
-class LoadingActivityPresenterImpl
-    @Inject constructor(val mEventBus: EventBus): BasePresenter<LoadingActivityView>(), LoadingActivityPresenter {
+open class LoadingActivityPresenterImpl
+    @Inject constructor(protected val mEventBus: EventBus): LoadingActivityPresenter<LoadingActivityView>() {
+
+    override fun onStart() {
+        mEventBus.register(this)
+    }
+
+    override fun onStop() {
+        mEventBus.unregister(this)
+    }
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    fun onEventAnswer(message: ServiceAnswer) {
-        when (message.id) {
-            Constant.EVENT_MESSAGE_TEST -> Timber.e("answer is ${message.data as String}")
+    override fun onEventAnswer(answer: ServiceAnswer) {
+        when (answer.id) {
+            Constant.EVENT_MESSAGE_TEST -> Timber.e("answer is ${answer.data as String}")
         }
+    }
+
+    override fun sendServiceMessage(message: ServiceMessage) {
+        mEventBus.postSticky(message)
     }
 }

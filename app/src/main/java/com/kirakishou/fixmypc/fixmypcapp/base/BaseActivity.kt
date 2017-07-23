@@ -8,14 +8,8 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import butterknife.ButterKnife
 import com.kirakishou.fixmypc.fixmypcapp.extension.myAddListener
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceAnswer
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessage
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
-import javax.inject.Inject
 
 
 /**
@@ -23,8 +17,8 @@ import javax.inject.Inject
  */
 abstract class BaseActivity : AppCompatActivity() {
 
-    @Inject
-    lateinit var mEventBus: EventBus
+    /*@Inject
+    lateinit var mEventBus: EventBus*/
 
     private val mCompositeDisposable = CompositeDisposable()
 
@@ -68,7 +62,7 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        mEventBus.register(this)
+        //mEventBus.register(this)
         animateActivityStart()
     }
 
@@ -76,7 +70,7 @@ abstract class BaseActivity : AppCompatActivity() {
         super.onStop()
 
         mCompositeDisposable.dispose()
-        mEventBus.unregister(this)
+        //mEventBus.unregister(this)
         animateActivityStop()
     }
 
@@ -110,14 +104,14 @@ abstract class BaseActivity : AppCompatActivity() {
         Toast.makeText(this, message, duration).show()
     }
 
-    protected fun sendServiceMessage(message: ServiceMessage) {
+    /*protected fun sendServiceMessage(message: ServiceMessage) {
         mEventBus.postSticky(message)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onServiceAnswer0(answer: ServiceAnswer) {
         onServiceAnswer(answer)
-    }
+    }*/
 
     protected abstract fun getContentView(): Int
 
@@ -129,7 +123,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     protected abstract fun onViewStop()
 
-    protected abstract fun onServiceAnswer(answer: ServiceAnswer)
+    //protected abstract fun onServiceAnswer(answer: ServiceAnswer)
 
     protected abstract fun resolveDaggerDependency()
 }

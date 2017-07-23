@@ -1,6 +1,6 @@
 package com.kirakishou.fixmypc.fixmypcapp.api
 
-import android.support.annotation.MainThread
+import com.kirakishou.fixmypc.fixmypcapp.api.retrofit.ApiService
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceAnswer
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.request_params.TestRequestParams
@@ -13,11 +13,10 @@ import javax.inject.Inject
 /**
  * Created by kirakishou on 7/22/2017.
  */
-class RequestFactory
-    @Inject constructor(val mApiService: ApiService) {
+class FixmypcApiImpl
+    @Inject constructor(val mApiService: ApiService) : FixmypcApi {
 
-    @MainThread
-    fun LoginRequest(serviceCallbacks: BackgroundServicePresenter, testRequestParams: TestRequestParams): Disposable {
+    override fun LoginRequest(serviceCallbacks: BackgroundServicePresenter, testRequestParams: TestRequestParams): Disposable {
         return Single.just("test shit")
                 .delay(5, TimeUnit.SECONDS)
                 .map { value ->

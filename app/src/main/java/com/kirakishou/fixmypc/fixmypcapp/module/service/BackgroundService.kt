@@ -24,7 +24,7 @@ class BackgroundService : Service(), BackgroundServiceCallbacks {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        return START_NOT_STICKY
+        return START_STICKY
     }
 
     fun resolveDaggerDependency() {
@@ -39,14 +39,14 @@ class BackgroundService : Service(), BackgroundServiceCallbacks {
         super.onCreate()
 
         resolveDaggerDependency()
-        mPresenter.onInitPresenter()
+        mPresenter.initPresenter()
 
         Timber.e("BackgroundService created")
     }
 
     override fun onDestroy() {
         Timber.e("BackgroundService destroyed")
-        mPresenter.onTeardownPresenter()
+        mPresenter.destroyPresenter()
 
         super.onDestroy()
     }

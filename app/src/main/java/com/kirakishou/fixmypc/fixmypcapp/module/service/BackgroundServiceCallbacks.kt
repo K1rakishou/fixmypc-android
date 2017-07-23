@@ -7,5 +7,4 @@ import com.kirakishou.fixmypc.fixmypcapp.base.BaseCallbacks
  */
 interface BackgroundServiceCallbacks : BaseCallbacks {
     fun onUnknownError(error: Throwable)
-    //fun sendClientAnswer(answer: ServiceAnswer)
 }

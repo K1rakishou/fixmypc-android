@@ -1,6 +1,6 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter
 
-import com.kirakishou.fixmypc.fixmypcapp.api.RequestFactory
+import com.kirakishou.fixmypc.fixmypcapp.api.FixmypcApi
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseServicePresenter
 import com.kirakishou.fixmypc.fixmypcapp.module.service.BackgroundServiceCallbacks
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
@@ -16,14 +16,14 @@ import javax.inject.Inject
  * Created by kirakishou on 7/22/2017.
  */
 class BackgroundServicePresenterImpl
-    @Inject constructor(val mRequestFactory: RequestFactory,
+    @Inject constructor(val mFixmypcApi: FixmypcApi,
                         val mEventBus: EventBus) : BaseServicePresenter<BackgroundServiceCallbacks>(), BackgroundServicePresenter {
 
-    override fun onInitPresenter() {
+    override fun initPresenter() {
         mEventBus.register(this)
     }
 
-    override fun onTeardownPresenter() {
+    override fun destroyPresenter() {
         mEventBus.unregister(this)
     }
 
@@ -47,6 +47,6 @@ class BackgroundServicePresenterImpl
     }
 
     override fun testRequest(testRequestParams: TestRequestParams) {
-        mRequestFactory.LoginRequest(this, testRequestParams)
+        mFixmypcApi.LoginRequest(this, testRequestParams)
     }
 }

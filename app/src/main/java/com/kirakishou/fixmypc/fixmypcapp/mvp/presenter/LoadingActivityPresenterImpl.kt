@@ -16,11 +16,11 @@ import javax.inject.Inject
 open class LoadingActivityPresenterImpl
     @Inject constructor(protected val mEventBus: EventBus): LoadingActivityPresenter<LoadingActivityView>() {
 
-    override fun onInitPresenter() {
+    override fun initPresenter() {
         mEventBus.register(this)
     }
 
-    override fun onTeardownPresenter() {
+    override fun destroyPresenter() {
         mEventBus.unregister(this)
     }
 

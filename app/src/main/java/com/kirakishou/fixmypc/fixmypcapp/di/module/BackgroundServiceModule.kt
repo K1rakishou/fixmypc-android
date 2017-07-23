@@ -1,7 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.di.module
 
-import com.kirakishou.fixmypc.fixmypcapp.api.ApiService
-import com.kirakishou.fixmypc.fixmypcapp.api.RequestFactory
+import com.kirakishou.fixmypc.fixmypcapp.api.retrofit.ApiService
+import com.kirakishou.fixmypc.fixmypcapp.api.FixmypcApiImpl
 import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerService
 import com.kirakishou.fixmypc.fixmypcapp.module.service.BackgroundServiceCallbacks
 import dagger.Module
@@ -29,7 +29,7 @@ class BackgroundServiceModule(val mCallbacks: BackgroundServiceCallbacks) {
 
     @PerService
     @Provides
-    fun provideRequestFactory(apiService: ApiService): RequestFactory {
-        return RequestFactory(apiService)
+    fun provideRequestFactory(apiService: ApiService): FixmypcApiImpl {
+        return FixmypcApiImpl(apiService)
     }
 }

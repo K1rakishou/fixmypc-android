@@ -15,13 +15,16 @@ import io.reactivex.disposables.Disposable
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-
+import javax.inject.Inject
 
 
 /**
  * Created by kirakishou on 7/20/2017.
  */
 abstract class BaseActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var mEventBus: EventBus
 
     private val mCompositeDisposable = CompositeDisposable()
 
@@ -65,7 +68,7 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        EventBus.getDefault().register(this)
+        mEventBus.register(this)
         animateActivityStart()
     }
 
@@ -73,7 +76,7 @@ abstract class BaseActivity : AppCompatActivity() {
         super.onStop()
 
         mCompositeDisposable.dispose()
-        EventBus.getDefault().unregister(this)
+        mEventBus.unregister(this)
         animateActivityStop()
     }
 
@@ -108,12 +111,12 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     protected fun sendServiceMessage(message: ServiceMessage) {
-        EventBus.getDefault().postSticky(message)
+        mEventBus.postSticky(message)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventAnswer(message: ServiceAnswer) {
-        onServiceAnswer(message)
+    fun onServiceAnswer0(answer: ServiceAnswer) {
+        onServiceAnswer(answer)
     }
 
     protected abstract fun getContentView(): Int
@@ -126,7 +129,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     protected abstract fun onViewStop()
 
-    protected abstract fun onServiceAnswer(message: ServiceAnswer)
+    protected abstract fun onServiceAnswer(answer: ServiceAnswer)
 
     protected abstract fun resolveDaggerDependency()
 }

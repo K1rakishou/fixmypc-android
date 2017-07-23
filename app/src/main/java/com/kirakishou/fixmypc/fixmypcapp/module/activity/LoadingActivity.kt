@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import butterknife.OnClick
+import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerLoadingActivityComponent
@@ -13,7 +14,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceAnswer
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.request_params.TestRequestParams
-import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.LoadingActivityPresenter
+import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.LoadingActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.LoadingActivityView
 import timber.log.Timber
 import javax.inject.Inject
@@ -21,7 +22,7 @@ import javax.inject.Inject
 class LoadingActivity : BaseActivity(), LoadingActivityView {
 
     @Inject
-    lateinit var mPresenter: LoadingActivityPresenter
+    lateinit var mPresenter: LoadingActivityPresenterImpl
 
     override fun getContentView(): Int = R.layout.activity_loading
 
@@ -49,14 +50,15 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
         sendServiceMessage(ServiceMessage(Constant.EVENT_MESSAGE_TEST, TestRequestParams("test", "1234567890")))
     }
 
-    override fun onServiceAnswer(message: ServiceAnswer) {
-        when (message.id) {
-            Constant.EVENT_MESSAGE_TEST -> Timber.e("answer is ${message.data as String}")
+    override fun onServiceAnswer(answer: ServiceAnswer) {
+        when (answer.id) {
+            Constant.EVENT_MESSAGE_TEST -> Timber.e("answer is ${answer.data as String}")
         }
     }
 
     override fun resolveDaggerDependency() {
         DaggerLoadingActivityComponent.builder()
+                .applicationComponent(FixmypcApplication.applicationComponent)
                 .loadingActivityModule(LoadingActivityModule(this))
                 .build()
                 .inject(this)

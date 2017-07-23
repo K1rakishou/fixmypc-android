@@ -1,18 +1,11 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter
 
-import com.kirakishou.fixmypc.fixmypcapp.api.RequestFactory
-import com.kirakishou.fixmypc.fixmypcapp.base.BasePresenter
-import com.kirakishou.fixmypc.fixmypcapp.module.service.BackgroundServiceCallbacks
+import com.kirakishou.fixmypc.fixmypcapp.base.BaseCallbacks
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.request_params.TestRequestParams
-import javax.inject.Inject
 
 /**
  * Created by kirakishou on 7/22/2017.
  */
-class BackgroundServicePresenter
-    @Inject constructor(val requestFactory: RequestFactory) : BasePresenter<BackgroundServiceCallbacks>() {
-
-    fun testRequest(testRequestParams: TestRequestParams) {
-        requestFactory.LoginRequest(callbacks, testRequestParams)
-    }
+interface BackgroundServicePresenter : BaseCallbacks {
+    fun testRequest(testRequestParams: TestRequestParams)
 }

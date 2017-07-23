@@ -17,6 +17,12 @@ class BackgroundServiceModule(val mCallbacks: BackgroundServiceCallbacks) {
 
     @PerService
     @Provides
+    fun provideCallbacks(): BackgroundServiceCallbacks {
+        return mCallbacks
+    }
+
+    @PerService
+    @Provides
     fun provideApiService(retrofit: Retrofit): ApiService {
         return retrofit.create(ApiService::class.java)
     }
@@ -25,11 +31,5 @@ class BackgroundServiceModule(val mCallbacks: BackgroundServiceCallbacks) {
     @Provides
     fun provideRequestFactory(apiService: ApiService): RequestFactory {
         return RequestFactory(apiService)
-    }
-
-    @PerService
-    @Provides
-    fun provideCallbacks(): BackgroundServiceCallbacks {
-        return mCallbacks
     }
 }

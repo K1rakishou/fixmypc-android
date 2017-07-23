@@ -10,7 +10,7 @@ import dagger.Component
  */
 
 @PerActivity
-@Component(modules = arrayOf(LoadingActivityModule::class))
+@Component(modules = arrayOf(LoadingActivityModule::class), dependencies = arrayOf(ApplicationComponent::class))
 interface LoadingActivityComponent {
     fun inject(activity: LoadingActivity)
 }

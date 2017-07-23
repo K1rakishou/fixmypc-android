@@ -10,7 +10,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceAnswer
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.request_params.TestRequestParams
-import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.BackgroundServicePresenter
+import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.BackgroundServicePresenterImpl
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -23,7 +23,10 @@ import javax.inject.Inject
 class BackgroundService : Service(), BackgroundServiceCallbacks {
 
     @Inject
-    lateinit var mPresenter: BackgroundServicePresenter
+    lateinit var mPresenter: BackgroundServicePresenterImpl
+
+    @Inject
+    lateinit var mEventBus: EventBus
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -31,7 +34,7 @@ class BackgroundService : Service(), BackgroundServiceCallbacks {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     fun resolveDaggerDependency() {
@@ -46,20 +49,20 @@ class BackgroundService : Service(), BackgroundServiceCallbacks {
         super.onCreate()
 
         resolveDaggerDependency()
-        EventBus.getDefault().register(this)
+        mEventBus.register(this)
 
         Timber.e("BackgroundService created")
     }
 
     override fun onDestroy() {
-        EventBus.getDefault().unregister(this)
+        mEventBus.unregister(this)
         Timber.e("BackgroundService destroyed")
 
         super.onDestroy()
     }
 
     override fun sendClientAnswer(answer: ServiceAnswer) {
-        EventBus.getDefault().postSticky(answer)
+        mEventBus.postSticky(answer)
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC, sticky = true)

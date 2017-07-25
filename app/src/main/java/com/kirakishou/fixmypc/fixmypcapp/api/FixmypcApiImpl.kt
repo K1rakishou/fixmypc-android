@@ -1,13 +1,13 @@
 package com.kirakishou.fixmypc.fixmypcapp.api
 
 import com.kirakishou.fixmypc.fixmypcapp.api.retrofit.ApiService
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceAnswer
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.request_params.TestRequestParams
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType.SERVICE_MESSAGE_LOGIN
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.request.LoginRequest
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.BackgroundServicePresenter
-import io.reactivex.Single
-import io.reactivex.disposables.Disposable
-import java.util.concurrent.TimeUnit
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 /**
@@ -16,16 +16,19 @@ import javax.inject.Inject
 class FixmypcApiImpl
     @Inject constructor(val mApiService: ApiService) : FixmypcApi {
 
-    override fun LoginRequest(serviceCallbacks: BackgroundServicePresenter, testRequestParams: TestRequestParams): Disposable {
-        return Single.just("test shit")
-                .delay(5, TimeUnit.SECONDS)
-                .map { value ->
-                    return@map "$value, ${testRequestParams.login}, ${testRequestParams.password}"
-                }
-                .subscribe({ value ->
-                    serviceCallbacks.returnAnswer(ServiceAnswer(ServiceMessageType.SERVICE_MESSAGE_LOGIN, value))
+    private val mCompositeDisposable = CompositeDisposable()
+
+    override fun cleanup() {
+        mCompositeDisposable.clear()
+    }
+
+    override fun LoginRequest(callbacks: BackgroundServicePresenter, loginRequest: LoginRequest) {
+        mCompositeDisposable.add(mApiService.doLogin(loginRequest)
+                .subscribeOn(Schedulers.io())
+                .subscribe({ answer ->
+                    callbacks.returnAnswer(ServiceAnswer(SERVICE_MESSAGE_LOGIN, Fickle.of(answer)))
                 }, { error ->
-                    serviceCallbacks.onUnknownError(error)
-                })
+                    callbacks.onUnknownError(error)
+                }))
     }
 }

@@ -7,6 +7,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerService
 import com.kirakishou.fixmypc.fixmypcapp.module.service.BackgroundServiceCallbacks
 import dagger.Module
 import dagger.Provides
+import io.reactivex.Scheduler
 import retrofit2.Retrofit
 
 /**

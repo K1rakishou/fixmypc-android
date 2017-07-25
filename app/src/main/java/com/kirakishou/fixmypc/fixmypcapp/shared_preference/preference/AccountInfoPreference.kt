@@ -10,8 +10,8 @@ import com.kirakishou.fixmypc.fixmypcapp.shared_preference.BasePreference
  * Created by kirakishou on 7/25/2017.
  */
 class AccountInfoPreference(private val mSharedPreferences: SharedPreferences,
-                            var mLogin: Fickle<String>,
-                            var mPassword: Fickle<String>) : BasePreference {
+                            var login: Fickle<String>,
+                            var password: Fickle<String>) : BasePreference {
 
     constructor(mSharedPreferences: SharedPreferences) : this(mSharedPreferences, Fickle.empty(), Fickle.empty())
 
@@ -21,14 +21,14 @@ class AccountInfoPreference(private val mSharedPreferences: SharedPreferences,
 
     override fun save() {
         mSharedPreferences.edit {
-            it.putString(mLoginSharedPrefKey, mLogin.get())
-            it.putString(mPasswordSharedPrefKey, mPassword.get())
+            it.putString(mLoginSharedPrefKey, login.get())
+            it.putString(mPasswordSharedPrefKey, password.get())
         }
     }
 
     override fun load() {
-        this.mLogin = Fickle.of(mSharedPreferences.getString(mLoginSharedPrefKey, null))
-        this.mPassword = Fickle.of(mSharedPreferences.getString(mPasswordSharedPrefKey, null))
+        login = Fickle.of(mSharedPreferences.getString(mLoginSharedPrefKey, null))
+        password = Fickle.of(mSharedPreferences.getString(mPasswordSharedPrefKey, null))
     }
 
     override fun clear() {
@@ -36,5 +36,9 @@ class AccountInfoPreference(private val mSharedPreferences: SharedPreferences,
             it.remove(mLoginSharedPrefKey)
             it.remove(mPasswordSharedPrefKey)
         }
+    }
+
+    fun exists(): Boolean {
+        return login.isPresent() && password.isPresent()
     }
 }

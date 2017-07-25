@@ -6,8 +6,7 @@ import com.kirakishou.fixmypc.fixmypcapp.module.service.BackgroundServiceCallbac
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceAnswer
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.request_params.TestRequestParams
-import io.reactivex.disposables.CompositeDisposable
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.request.LoginRequest
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -21,14 +20,11 @@ class BackgroundServicePresenterImpl
     @Inject constructor(protected val mFixmypcApi: FixmypcApi,
                         protected val mEventBus: EventBus) : BaseServicePresenter<BackgroundServiceCallbacks>(), BackgroundServicePresenter {
 
-    private val mCompositeDisposable = CompositeDisposable()
-
     override fun initPresenter() {
         mEventBus.register(this)
     }
 
     override fun destroyPresenter() {
-        mCompositeDisposable.dispose()
         mEventBus.unregister(this)
     }
 
@@ -47,12 +43,12 @@ class BackgroundServicePresenterImpl
     @Subscribe(threadMode = ThreadMode.ASYNC, sticky = true)
     override fun onClientMessage(message: ServiceMessage) {
         when (message.type) {
-            ServiceMessageType.SERVICE_MESSAGE_LOGIN -> testRequest(message.data as TestRequestParams)
+            ServiceMessageType.SERVICE_MESSAGE_LOGIN -> testRequest(message.data as LoginRequest)
             else -> Timber.e("Unsupported messageType: ${message.type}")
         }
     }
 
-    override fun testRequest(testRequestParams: TestRequestParams) {
-        mCompositeDisposable.add(mFixmypcApi.LoginRequest(this, testRequestParams))
+    override fun testRequest(loginRequest: LoginRequest) {
+        mFixmypcApi.LoginRequest(this, loginRequest)
     }
 }

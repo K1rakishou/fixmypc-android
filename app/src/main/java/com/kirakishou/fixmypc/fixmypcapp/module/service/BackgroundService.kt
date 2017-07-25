@@ -3,6 +3,7 @@ package com.kirakishou.fixmypc.fixmypcapp.module.service
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import android.support.v4.content.WakefulBroadcastReceiver
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerBackgroundServiceComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.BackgroundServiceModule
@@ -24,6 +25,7 @@ class BackgroundService : Service(), BackgroundServiceCallbacks {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
+        WakefulBroadcastReceiver.completeWakefulIntent(intent)
         return START_STICKY
     }
 
@@ -45,8 +47,8 @@ class BackgroundService : Service(), BackgroundServiceCallbacks {
     }
 
     override fun onDestroy() {
-        Timber.e("BackgroundService destroyed")
         mPresenter.destroyPresenter()
+        Timber.e("BackgroundService destroyed")
 
         super.onDestroy()
     }

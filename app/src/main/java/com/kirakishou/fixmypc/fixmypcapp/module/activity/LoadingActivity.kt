@@ -4,18 +4,17 @@ import android.animation.AnimatorSet
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import butterknife.OnClick
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerLoadingActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.LoadingActivityModule
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessage
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.request_params.TestRequestParams
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.LoadingActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.LoadingActivityView
 import com.kirakishou.fixmypc.fixmypcapp.shared_preference.AppSharedPreferences
+import com.kirakishou.fixmypc.fixmypcapp.shared_preference.AppSharedPreferences.SharedPreferenceType.AccountInfo
+import com.kirakishou.fixmypc.fixmypcapp.shared_preference.preference.AccountInfoPreference
 import javax.inject.Inject
 
 class LoadingActivity : BaseActivity(), LoadingActivityView {
@@ -42,15 +41,27 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
 
     override fun onViewReady() {
         mPresenter.initPresenter()
+
+        val accountInfoPrefs = mAppSharedPreferences.get<AccountInfoPreference>(AccountInfo)
+
+        accountInfoPrefs.login = Fickle.of("test@gmail.com")
+        accountInfoPrefs.password = Fickle.of("1234567890")
+
+        //accountInfoPrefs.load()
+
+        if (accountInfoPrefs.exists()) {
+            mPresenter.startLoggingIn(accountInfoPrefs)
+        } else {
+            runChooseCategoryActivity()
+        }
+    }
+
+    private fun runChooseCategoryActivity() {
+
     }
 
     override fun onViewStop() {
         mPresenter.destroyPresenter()
-    }
-
-    @OnClick(R.id.start_request_btn)
-    fun onRequestBtnClick() {
-        mPresenter.sendServiceMessage(ServiceMessage(ServiceMessageType.SERVICE_MESSAGE_LOGIN, TestRequestParams("test", "1234567890")))
     }
 
     override fun resolveDaggerDependency() {

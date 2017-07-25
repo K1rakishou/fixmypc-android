@@ -14,7 +14,7 @@ class BootBroadcastReceiver : WakefulBroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         Timber.e("RECEIVE_BOOT_COMPLETED received")
 
-        /*val startServiceIntent = Intent(context, BackgroundService::class.java)
-        WakefulBroadcastReceiver.startWakefulService(context, startServiceIntent)*/
+        val startServiceIntent = Intent(context, BackgroundService::class.java)
+        WakefulBroadcastReceiver.startWakefulService(context, startServiceIntent)
     }
 }

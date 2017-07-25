@@ -10,7 +10,7 @@ import dagger.Provides
 import okhttp3.OkHttpClient
 import org.greenrobot.eventbus.EventBus
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
@@ -53,13 +53,13 @@ class ApplicationModule(private val mContext: Context,
 
     @Singleton
     @Provides
-    fun provideRxJavaCallAdapterFactory(): RxJavaCallAdapterFactory {
-        return RxJavaCallAdapterFactory.create()
+    fun provideRxJavaCallAdapterFactory(): RxJava2CallAdapterFactory {
+        return RxJava2CallAdapterFactory.create()
     }
 
     @Singleton
     @Provides
-    fun provideRetrofit(client: OkHttpClient, converterFactory: GsonConverterFactory, adapterFactory: RxJavaCallAdapterFactory): Retrofit {
+    fun provideRetrofit(client: OkHttpClient, converterFactory: GsonConverterFactory, adapterFactory: RxJava2CallAdapterFactory): Retrofit {
         return Retrofit.Builder()
                 .baseUrl(mBaseUrl)
                 .addConverterFactory(converterFactory)

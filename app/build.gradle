@@ -64,15 +64,18 @@ dependencies {
     compile 'com.jakewharton.rxbinding2:rxbinding-kotlin:2.0.0'
     compile 'com.google.code.gson:gson:2.8.1'
     compile 'com.jakewharton:butterknife:8.6.0'
-    compile 'com.github.satyan:sugar:1.5'
     compile 'com.jakewharton.timber:timber:4.5.1'
     compile 'org.greenrobot:eventbus:3.0.0'
+
+    kapt 'com.pushtorefresh.storio:sqlite-annotations-processor:1.13.0'
+    compile 'com.pushtorefresh.storio:sqlite:1.13.0'
 
     kapt 'com.jakewharton:butterknife-compiler:8.6.0'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
     compile 'com.google.dagger:dagger:2.11'
     kapt 'com.google.dagger:dagger-compiler:2.11'
+
     provided 'org.glassfish:javax.annotation:10.0-b28'
     implementation 'com.android.support:support-v4:25.4.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'

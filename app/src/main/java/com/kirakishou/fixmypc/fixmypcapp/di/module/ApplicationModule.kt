@@ -1,7 +1,10 @@
 package com.kirakishou.fixmypc.fixmypcapp.di.module
 
 import android.content.Context
+import android.content.SharedPreferences
 import com.google.gson.GsonBuilder
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.shared_preference.AppSharedPreferences
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -19,6 +22,18 @@ import javax.inject.Singleton
 @Module
 class ApplicationModule(private val mContext: Context,
                         private val mBaseUrl: String) {
+
+    @Singleton
+    @Provides
+    fun provideContext(): Context {
+        return mContext
+    }
+
+    @Singleton
+    @Provides
+    fun provideSharedPreferences(): SharedPreferences {
+        return mContext.getSharedPreferences(Constant.SHARED_PREFS_PREFIX, Context.MODE_PRIVATE)
+    }
 
     @Singleton
     @Provides
@@ -57,6 +72,12 @@ class ApplicationModule(private val mContext: Context,
     @Provides
     fun provideEventBus(): EventBus {
         return EventBus.builder().build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideAppSharedPreferences(sharedPreferences: SharedPreferences): AppSharedPreferences {
+        return AppSharedPreferences(sharedPreferences)
     }
 }
 

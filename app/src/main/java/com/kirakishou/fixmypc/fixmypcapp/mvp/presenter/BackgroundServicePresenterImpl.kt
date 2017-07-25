@@ -18,8 +18,8 @@ import javax.inject.Inject
  * Created by kirakishou on 7/22/2017.
  */
 class BackgroundServicePresenterImpl
-    @Inject constructor(val mFixmypcApi: FixmypcApi,
-                        val mEventBus: EventBus) : BaseServicePresenter<BackgroundServiceCallbacks>(), BackgroundServicePresenter {
+    @Inject constructor(protected val mFixmypcApi: FixmypcApi,
+                        protected val mEventBus: EventBus) : BaseServicePresenter<BackgroundServiceCallbacks>(), BackgroundServicePresenter {
 
     private val mCompositeDisposable = CompositeDisposable()
 

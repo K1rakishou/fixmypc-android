@@ -15,12 +15,16 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.request_params.TestRequestParams
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.LoadingActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.LoadingActivityView
+import com.kirakishou.fixmypc.fixmypcapp.shared_preference.AppSharedPreferences
 import javax.inject.Inject
 
 class LoadingActivity : BaseActivity(), LoadingActivityView {
 
     @Inject
     lateinit var mPresenter: LoadingActivityPresenterImpl
+
+    @Inject
+    lateinit var mAppSharedPreferences: AppSharedPreferences
 
     override fun getContentView(): Int = R.layout.activity_loading
 

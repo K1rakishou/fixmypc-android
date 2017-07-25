@@ -10,8 +10,8 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerLoadingActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.LoadingActivityModule
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessage
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.request_params.TestRequestParams
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.LoadingActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.LoadingActivityView
@@ -46,7 +46,7 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
 
     @OnClick(R.id.start_request_btn)
     fun onRequestBtnClick() {
-        mPresenter.sendServiceMessage(ServiceMessage(Constant.EVENT_MESSAGE_TEST, TestRequestParams("test", "1234567890")))
+        mPresenter.sendServiceMessage(ServiceMessage(ServiceMessageType.SERVICE_MESSAGE_LOGIN, TestRequestParams("test", "1234567890")))
     }
 
     override fun resolveDaggerDependency() {

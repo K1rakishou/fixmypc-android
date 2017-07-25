@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import butterknife.ButterKnife
 import com.kirakishou.fixmypc.fixmypcapp.extension.myAddListener
+import com.kirakishou.fixmypc.fixmypcapp.module.service.BackgroundService
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
@@ -16,9 +17,6 @@ import io.reactivex.disposables.Disposable
  * Created by kirakishou on 7/20/2017.
  */
 abstract class BaseActivity : AppCompatActivity() {
-
-    /*@Inject
-    lateinit var mEventBus: EventBus*/
 
     private val mCompositeDisposable = CompositeDisposable()
 
@@ -47,6 +45,8 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        startService(Intent(this, BackgroundService::class.java))
+
         setContentView(getContentView())
         ButterKnife.bind(this)
         //Fabric.with(this, Crashlytics())
@@ -62,7 +62,6 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        //mEventBus.register(this)
         animateActivityStart()
     }
 
@@ -70,7 +69,6 @@ abstract class BaseActivity : AppCompatActivity() {
         super.onStop()
 
         mCompositeDisposable.dispose()
-        //mEventBus.unregister(this)
         animateActivityStop()
     }
 
@@ -104,15 +102,6 @@ abstract class BaseActivity : AppCompatActivity() {
         Toast.makeText(this, message, duration).show()
     }
 
-    /*protected fun sendServiceMessage(message: ServiceMessage) {
-        mEventBus.postSticky(message)
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onServiceAnswer0(answer: ServiceAnswer) {
-        onServiceAnswer(answer)
-    }*/
-
     protected abstract fun getContentView(): Int
 
     protected abstract fun loadStartAnimations(): AnimatorSet
@@ -122,8 +111,6 @@ abstract class BaseActivity : AppCompatActivity() {
     protected abstract fun onViewReady()
 
     protected abstract fun onViewStop()
-
-    //protected abstract fun onServiceAnswer(answer: ServiceAnswer)
 
     protected abstract fun resolveDaggerDependency()
 }

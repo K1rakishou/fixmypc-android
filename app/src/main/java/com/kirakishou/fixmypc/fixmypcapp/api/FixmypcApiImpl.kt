@@ -1,8 +1,8 @@
 package com.kirakishou.fixmypc.fixmypcapp.api
 
 import com.kirakishou.fixmypc.fixmypcapp.api.retrofit.ApiService
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceAnswer
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.request_params.TestRequestParams
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.BackgroundServicePresenter
 import io.reactivex.Single
@@ -23,7 +23,7 @@ class FixmypcApiImpl
                     return@map "$value, ${testRequestParams.login}, ${testRequestParams.password}"
                 }
                 .subscribe({ value ->
-                    serviceCallbacks.returnAnswer(ServiceAnswer(Constant.EVENT_MESSAGE_TEST, value))
+                    serviceCallbacks.returnAnswer(ServiceAnswer(ServiceMessageType.SERVICE_MESSAGE_LOGIN, value))
                 }, { error ->
                     serviceCallbacks.onUnknownError(error)
                 })

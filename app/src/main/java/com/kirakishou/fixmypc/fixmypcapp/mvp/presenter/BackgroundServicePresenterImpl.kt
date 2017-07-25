@@ -3,13 +3,15 @@ package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter
 import com.kirakishou.fixmypc.fixmypcapp.api.FixmypcApi
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseServicePresenter
 import com.kirakishou.fixmypc.fixmypcapp.module.service.BackgroundServiceCallbacks
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceAnswer
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessage
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.request_params.TestRequestParams
+import io.reactivex.disposables.CompositeDisposable
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -19,11 +21,14 @@ class BackgroundServicePresenterImpl
     @Inject constructor(val mFixmypcApi: FixmypcApi,
                         val mEventBus: EventBus) : BaseServicePresenter<BackgroundServiceCallbacks>(), BackgroundServicePresenter {
 
+    private val mCompositeDisposable = CompositeDisposable()
+
     override fun initPresenter() {
         mEventBus.register(this)
     }
 
     override fun destroyPresenter() {
+        mCompositeDisposable.dispose()
         mEventBus.unregister(this)
     }
 
@@ -41,12 +46,13 @@ class BackgroundServicePresenterImpl
 
     @Subscribe(threadMode = ThreadMode.ASYNC, sticky = true)
     override fun onClientMessage(message: ServiceMessage) {
-        when (message.id) {
-            Constant.EVENT_MESSAGE_TEST -> testRequest(message.data as TestRequestParams)
+        when (message.type) {
+            ServiceMessageType.SERVICE_MESSAGE_LOGIN -> testRequest(message.data as TestRequestParams)
+            else -> Timber.e("Unsupported messageType: ${message.type}")
         }
     }
 
     override fun testRequest(testRequestParams: TestRequestParams) {
-        mFixmypcApi.LoginRequest(this, testRequestParams)
+        mCompositeDisposable.add(mFixmypcApi.LoginRequest(this, testRequestParams))
     }
 }

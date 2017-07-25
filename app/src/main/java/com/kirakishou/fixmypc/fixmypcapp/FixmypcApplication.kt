@@ -1,11 +1,9 @@
 package com.kirakishou.fixmypc.fixmypcapp
 
 import android.app.Application
-import android.content.Intent
 import com.kirakishou.fixmypc.fixmypcapp.di.component.ApplicationComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerApplicationComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ApplicationModule
-import com.kirakishou.fixmypc.fixmypcapp.module.service.BackgroundService
 import timber.log.Timber
 import timber.log.Timber.DebugTree
 
@@ -22,7 +20,6 @@ class FixmypcApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        startService(Intent(this, BackgroundService::class.java))
 
         applicationComponent = DaggerApplicationComponent.builder()
                 .applicationModule(ApplicationModule(this, mBaseUrl))

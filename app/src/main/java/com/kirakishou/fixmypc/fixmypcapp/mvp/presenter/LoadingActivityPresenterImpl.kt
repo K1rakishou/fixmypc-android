@@ -1,10 +1,10 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter
 
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceAnswer
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessage
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.request.LoginRequest
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.response.LoginResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceAnswer
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceMessage
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceMessageType
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.LoginRequest
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.LoginResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.LoadingActivityView
 import com.kirakishou.fixmypc.fixmypcapp.shared_preference.preference.AccountInfoPreference
 import org.greenrobot.eventbus.EventBus

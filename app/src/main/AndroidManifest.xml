@@ -32,6 +32,12 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".module.broadcast_receiver.WiFiConnectivityChangeReceiver" android:enabled="true">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

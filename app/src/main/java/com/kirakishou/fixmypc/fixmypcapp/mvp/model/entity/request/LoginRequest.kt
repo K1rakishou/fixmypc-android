@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.mvp.model.request
+package com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request
 
 import com.google.gson.annotations.SerializedName
 

@@ -9,7 +9,7 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerLoadingActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.LoadingActivityModule
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.LoadingActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.LoadingActivityView
 import com.kirakishou.fixmypc.fixmypcapp.shared_preference.AppSharedPreferences

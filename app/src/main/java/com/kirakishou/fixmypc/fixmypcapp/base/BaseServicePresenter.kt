@@ -1,7 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.base
 
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceAnswer
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessage
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceAnswer
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceMessage
 
 /**
  * Created by kirakishou on 7/23/2017.

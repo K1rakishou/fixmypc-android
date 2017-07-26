@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.mvp.model.response
+package com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response
 
 /**
  * Created by kirakishou on 7/25/2017.

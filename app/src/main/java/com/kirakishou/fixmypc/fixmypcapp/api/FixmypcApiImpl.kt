@@ -1,10 +1,10 @@
 package com.kirakishou.fixmypc.fixmypcapp.api
 
 import com.kirakishou.fixmypc.fixmypcapp.api.retrofit.ApiService
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceAnswer
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType.SERVICE_MESSAGE_LOGIN
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.request.LoginRequest
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.Fickle
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceAnswer
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceMessageType.SERVICE_MESSAGE_LOGIN
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.LoginRequest
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.BackgroundServicePresenter
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers

@@ -1,6 +1,6 @@
 package com.kirakishou.fixmypc.fixmypcapp.api
 
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.request.LoginRequest
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.LoginRequest
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.BackgroundServicePresenter
 
 /**

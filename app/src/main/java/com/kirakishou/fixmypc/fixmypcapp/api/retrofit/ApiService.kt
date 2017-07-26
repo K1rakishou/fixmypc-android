@@ -1,7 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.api.retrofit
 
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.request.LoginRequest
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.response.LoginResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.LoginRequest
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.LoginResponse
 import io.reactivex.Single
 import retrofit2.http.Body
 import retrofit2.http.POST

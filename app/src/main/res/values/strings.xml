@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">FixmypcApp</string>
+    <string name="ok">OK</string>
+    <string name="unknown_server_error_has_occurred">Произошла неизвестная ошибка</string>
+
+    <string name="unknown_server_error">Неизвестная ошибка на сервере</string>
+    <string name="wrong_login_or_password">Неверный логин или пароль</string>
+    <string name="login_already_registered">Данный логин уже занят</string>
+    <string name="login_is_incorrect">Непревильно введён логин. Возможно пропущен символ \'@\' или \'.\'</string>
+    <string name="password_is_incorrect">Непревильно введён пароль. Длина пароль должна составлять от %1$d до %2$d символов</string>
+    <string name="account_type_is_incorrect">Выбран несуществующий тип аккаунта</string>
 </resources>

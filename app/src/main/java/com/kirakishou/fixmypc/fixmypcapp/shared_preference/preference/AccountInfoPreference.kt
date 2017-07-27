@@ -3,7 +3,7 @@ package com.kirakishou.fixmypc.fixmypcapp.shared_preference.preference
 import android.content.SharedPreferences
 import com.kirakishou.fixmypc.fixmypcapp.extension.edit
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.Fickle
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.shared_preference.BasePreference
 
 /**

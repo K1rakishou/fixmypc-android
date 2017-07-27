@@ -3,11 +3,13 @@ package com.kirakishou.fixmypc.fixmypcapp.di.module
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.GsonBuilder
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.shared_preference.AppSharedPreferences
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import org.greenrobot.eventbus.EventBus
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -38,16 +40,29 @@ class ApplicationModule(private val mContext: Context,
     @Singleton
     @Provides
     fun provideGsonConverterFactory(): GsonConverterFactory {
-        val gson = GsonBuilder().serializeNulls().create()
+        val gson = GsonBuilder()
+                .create()
+
         return GsonConverterFactory.create(gson)
     }
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideLoggingInterceptor(): HttpLoggingInterceptor {
+        val loggingInterceptor = HttpLoggingInterceptor()
+        loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+
+        return loggingInterceptor
+    }
+
+    @Singleton
+    @Provides
+    fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient {
         return OkHttpClient.Builder()
                 .connectTimeout(15000, TimeUnit.SECONDS) //TODO: Don't forget to change this on release build
+                .writeTimeout(15000, TimeUnit.SECONDS)  //TODO: Don't forget to change this on release build
                 .readTimeout(15000, TimeUnit.SECONDS)    //TODO: Don't forget to change this on release build
+                .addInterceptor(loggingInterceptor)
                 .build()
     }
 
@@ -78,6 +93,12 @@ class ApplicationModule(private val mContext: Context,
     @Provides
     fun provideAppSharedPreferences(sharedPreferences: SharedPreferences): AppSharedPreferences {
         return AppSharedPreferences(sharedPreferences)
+    }
+
+    @Singleton
+    @Provides
+    fun provideAppSettings(): AppSettings {
+        return AppSettings()
     }
 }
 

@@ -1,7 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.store
 
 import com.google.common.cache.Cache
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.Fickle
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
 
 /**
  * Created by kirakishou on 7/26/2017.

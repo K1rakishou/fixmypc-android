@@ -23,21 +23,24 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".module.service.BackgroundService"
-            android:exported="false"/>
+        <service
+            android:name=".module.service.BackgroundService"
+            android:exported="false" />
 
         <receiver android:name=".module.broadcast_receiver.BootBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
-        <receiver android:name=".module.broadcast_receiver.WiFiConnectivityChangeReceiver" android:enabled="true">
+        <receiver
+            android:name=".module.broadcast_receiver.WiFiConnectivityChangeReceiver"
+            android:enabled="true">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
 
+        <activity android:name=".module.activity.ChooseCategoryActivity"></activity>
     </application>
 
 </manifest>

@@ -7,6 +7,8 @@ import android.support.annotation.CallSuper
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import butterknife.ButterKnife
+import com.afollestad.materialdialogs.MaterialDialog
+import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.extension.myAddListener
 import com.kirakishou.fixmypc.fixmypcapp.module.service.BackgroundService
 import io.reactivex.disposables.CompositeDisposable
@@ -100,6 +102,15 @@ abstract class BaseActivity : AppCompatActivity() {
 
     protected fun showToast(message: String, duration: Int) {
         Toast.makeText(this, message, duration).show()
+    }
+
+    protected fun showErrorMessageDialog(message: String) {
+        MaterialDialog.Builder(this)
+                .title(R.string.unknown_server_error_has_occurred)
+                .content(message)
+                .positiveText(R.string.ok)
+                .onPositive { _, _ -> finish() }
+                .show()
     }
 
     protected abstract fun getContentView(): Int

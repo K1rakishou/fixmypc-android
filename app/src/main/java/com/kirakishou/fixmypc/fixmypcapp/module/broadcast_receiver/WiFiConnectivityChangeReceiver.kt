@@ -3,6 +3,7 @@ package com.kirakishou.fixmypc.fixmypcapp.module.broadcast_receiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.net.wifi.WifiManager
 import com.kirakishou.fixmypc.fixmypcapp.manager.wifi.WiFiConnectivityManager
 import com.kirakishou.fixmypc.fixmypcapp.util.NetUtils
 import timber.log.Timber
@@ -13,10 +14,14 @@ import timber.log.Timber
 class WiFiConnectivityChangeReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
+        if (context == null || intent == null) {
+            Timber.i("WiFiReceiver.onReceive context == null || intent == null")
+            return
+        }
 
+        if (intent.action != WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION &&
+                intent.action != WifiManager.NETWORK_STATE_CHANGED_ACTION) {
 
-        if (context == null) {
-            Timber.i("WiFiReceiver.onReceive context == null")
             return
         }
 

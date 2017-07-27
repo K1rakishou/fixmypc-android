@@ -1,6 +1,5 @@
 package com.kirakishou.fixmypc.fixmypcapp.base
 
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceAnswer
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceMessage
 
 /**
@@ -8,5 +7,5 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceMessage
  */
 abstract class BaseServicePresenter<V : BaseCallbacks> : BasePresenter<V>() {
     abstract fun onClientMessage(message: ServiceMessage)
-    abstract fun sendClientAnswer(answer: ServiceAnswer)
+    //abstract fun sendClientAnswer(answer: ServiceAnswer)
 }

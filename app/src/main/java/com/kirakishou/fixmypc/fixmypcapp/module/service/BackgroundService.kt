@@ -53,9 +53,9 @@ class BackgroundService : Service(), BackgroundServiceCallbacks {
         super.onDestroy()
     }
 
-    override fun onUnknownError(error: Throwable) {
+    /*override fun onUnknownError(error: Throwable) {
         Timber.e(error)
-    }
+    }*/
 }
 
 

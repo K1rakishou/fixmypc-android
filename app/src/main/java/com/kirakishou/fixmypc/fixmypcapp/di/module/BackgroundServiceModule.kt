@@ -1,13 +1,12 @@
 package com.kirakishou.fixmypc.fixmypcapp.di.module
 
-import com.kirakishou.fixmypc.fixmypcapp.api.FixmypcApi
-import com.kirakishou.fixmypc.fixmypcapp.api.FixmypcApiImpl
-import com.kirakishou.fixmypc.fixmypcapp.api.retrofit.ApiService
+import com.kirakishou.fixmypc.fixmypcapp.api.ApiService
 import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerService
 import com.kirakishou.fixmypc.fixmypcapp.module.service.BackgroundServiceCallbacks
+import com.kirakishou.fixmypc.fixmypcapp.store.api.FixmypcApiStore
+import com.kirakishou.fixmypc.fixmypcapp.store.api.FixmypcApiStoreImpl
 import dagger.Module
 import dagger.Provides
-import io.reactivex.Scheduler
 import retrofit2.Retrofit
 
 /**
@@ -31,7 +30,7 @@ class BackgroundServiceModule(val mCallbacks: BackgroundServiceCallbacks) {
 
     @PerService
     @Provides
-    fun provideRequestFactory(apiService: ApiService): FixmypcApi {
-        return FixmypcApiImpl(apiService)
+    fun provideRequestFactory(apiService: ApiService, retrofit: Retrofit): FixmypcApiStore {
+        return FixmypcApiStoreImpl(apiService, retrofit)
     }
 }

@@ -1,9 +1,9 @@
-package com.kirakishou.fixmypc.fixmypcapp.data.repository
+package com.kirakishou.fixmypc.fixmypcapp.store.repository
 
 import com.google.common.cache.CacheBuilder
 import com.kirakishou.fixmypc.fixmypcapp.manager.wifi.WiFiConnectivityManager
 import com.kirakishou.fixmypc.fixmypcapp.manager.wifi.WiFiConnectivityObserver
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.Fickle
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.store.CacheStore
 import java.util.concurrent.TimeUnit
 

@@ -1,8 +1,10 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter
 
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.StatusCode
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServerResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceAnswer
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceMessage
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceMessageType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.LoginRequest
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.LoginResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.LoadingActivityView
@@ -17,7 +19,7 @@ import javax.inject.Inject
  * Created by kirakishou on 7/20/2017.
  */
 open class LoadingActivityPresenterImpl
-    @Inject constructor(protected val mEventBus: EventBus): LoadingActivityPresenter<LoadingActivityView>() {
+@Inject constructor(protected val mEventBus: EventBus) : LoadingActivityPresenter<LoadingActivityView>() {
 
     override fun initPresenter() {
         mEventBus.register(this)
@@ -46,7 +48,31 @@ open class LoadingActivityPresenterImpl
     }
 
     private fun onLoginEventResponse(answer: ServiceAnswer) {
-        val loginResponse = answer.data.get() as LoginResponse
-        Timber.e("sessionId = ${loginResponse.sessionId}")
+        val eitherLoginResp = answer.data as ServerResponse<LoginResponse>
+
+        when (eitherLoginResp) {
+            is ServerResponse.Success -> {
+                callbacks.onLoggedIn(eitherLoginResp.value)
+            }
+
+            is ServerResponse.HttpError -> {
+                val statusCode = eitherLoginResp.statusCode
+
+                when (statusCode) {
+                    StatusCode.STATUS_WRONG_LOGIN_OR_PASSWORD,
+                    StatusCode.STATUS_UNKNOWN_SERVER_ERROR -> {
+                        callbacks.onServerError(statusCode)
+                    }
+
+                    else -> {
+                        Timber.e("Not supported statusCode: $statusCode")
+                    }
+                }
+            }
+
+            is ServerResponse.UnknownError -> {
+                callbacks.onUnknownError(eitherLoginResp.error)
+            }
+        }
     }
 }

@@ -7,5 +7,5 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceAnswer
  */
 interface BaseServiceCallbacks : BaseCallbacks {
     fun returnAnswer(answer: ServiceAnswer)
-    fun onUnknownError(error: Throwable)
+    //fun onUnknownError(error: Throwable)
 }

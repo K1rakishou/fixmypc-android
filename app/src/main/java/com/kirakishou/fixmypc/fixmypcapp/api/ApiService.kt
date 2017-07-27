@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.api.retrofit
+package com.kirakishou.fixmypc.fixmypcapp.api
 
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.LoginRequest
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.LoginResponse

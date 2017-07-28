@@ -3,7 +3,6 @@ package com.kirakishou.fixmypc.fixmypcapp.store.api
 import com.kirakishou.fixmypc.fixmypcapp.api.ApiService
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.StatusCode
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServerResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceAnswer
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.LoginRequest
@@ -41,7 +40,7 @@ class FixmypcApiStoreImpl
                     if (error is HttpException) {
                         val response = errorBodyConverter.convert<LoginResponse>(error.response().errorBody()!!.string(), LoginResponse::class.java)
                         callbacks.ifPresent {
-                            it.returnAnswer(ServiceAnswer(type, ServerResponse.HttpError(StatusCode.from(response.status))))
+                            it.returnAnswer(ServiceAnswer(type, ServerResponse.HttpError(response.status)))
                         }
                     } else {
                         callbacks.ifPresent {

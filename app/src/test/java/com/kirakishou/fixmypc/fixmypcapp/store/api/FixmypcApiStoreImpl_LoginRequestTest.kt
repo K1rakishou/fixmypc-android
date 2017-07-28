@@ -65,7 +65,7 @@ class FixmypcApiStoreImpl_LoginRequestTest {
     fun loginRequest_testWithBadLoginRequest_expectServerResponseHttpErrorWith_StatusWrongLoginOrPassword() {
         val BAD_LOGIN_REQUEST = LoginRequest("test2@gmail.com", "1234567890")
         val BAD_SESSION_ID = ""
-        val BAD_RESPONSE = LoginResponse(BAD_SESSION_ID, AccountType.Client.value, StatusCode.STATUS_WRONG_LOGIN_OR_PASSWORD.ordinal)
+        val BAD_RESPONSE = LoginResponse(BAD_SESSION_ID, AccountType.Client.value, StatusCode.STATUS_WRONG_LOGIN_OR_PASSWORD)
         val TYPE = ServiceMessageType.SERVICE_MESSAGE_LOGIN
         val BAD_LOGIN_RESPONSE_JSON = """{ "session_id": "", "account_type": 2, "status_code": 2 }"""
 
@@ -83,7 +83,7 @@ class FixmypcApiStoreImpl_LoginRequestTest {
         val GOOD_LOGIN_REQUEST = LoginRequest("test@gmail.com", "1234567890")
         val GOOD_SESSION_ID = "1234567890abcdef"
         val TYPE = ServiceMessageType.SERVICE_MESSAGE_LOGIN
-        val GOOD_RESPONSE = LoginResponse(GOOD_SESSION_ID, AccountType.Client.value, StatusCode.STATUS_OK.ordinal)
+        val GOOD_RESPONSE = LoginResponse(GOOD_SESSION_ID, AccountType.Client.value, StatusCode.STATUS_OK)
 
         Mockito.`when`(mApiService.doLogin(GOOD_LOGIN_REQUEST)).thenReturn(Single.just(GOOD_RESPONSE))
 

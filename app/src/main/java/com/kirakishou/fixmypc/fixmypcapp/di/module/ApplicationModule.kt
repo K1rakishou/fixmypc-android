@@ -9,10 +9,10 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.StatusCode
 import com.kirakishou.fixmypc.fixmypcapp.shared_preference.AppSharedPreferences
+import com.kirakishou.fixmypc.fixmypcapp.util.adapter_factory.AccountTypeTypeAdapter
+import com.kirakishou.fixmypc.fixmypcapp.util.adapter_factory.StatusCodeTypeAdapter
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverterImpl
-import com.kirakishou.fixmypc.fixmypcapp.util.type_adapter.serializer.AccountTypeSerializer
-import com.kirakishou.fixmypc.fixmypcapp.util.type_adapter.serializer.StatusCodeSerializer
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -40,16 +40,16 @@ class ApplicationModule(private val mContext: Context,
 
     @Singleton
     @Provides
-    fun provideSharedPreferences(): SharedPreferences {
-        return mContext.getSharedPreferences(Constant.SHARED_PREFS_PREFIX, Context.MODE_PRIVATE)
+    fun provideSharedPreferences(context: Context): SharedPreferences {
+        return context.getSharedPreferences(Constant.SHARED_PREFS_PREFIX, Context.MODE_PRIVATE)
     }
 
     @Singleton
     @Provides
     fun provideGson(): Gson {
         return GsonBuilder()
-                .registerTypeAdapter(AccountType::class.java, AccountTypeSerializer())
-                .registerTypeAdapter(StatusCode::class.java, StatusCodeSerializer())
+                .registerTypeAdapter(AccountType::class.java, AccountTypeTypeAdapter<AccountType>())
+                .registerTypeAdapter(StatusCode::class.java, StatusCodeTypeAdapter<StatusCode>())
                 .create()
     }
 

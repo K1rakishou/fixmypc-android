@@ -2,6 +2,7 @@ package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter
 
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseServicePresenter
 import com.kirakishou.fixmypc.fixmypcapp.module.service.BackgroundServiceCallbacks
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceAnswer
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceMessage
@@ -21,25 +22,18 @@ class BackgroundServicePresenterImpl
                         protected val mEventBus: EventBus) : BaseServicePresenter<BackgroundServiceCallbacks>(), BackgroundServicePresenter {
 
     override fun initPresenter() {
+        mFixmypcApiStore.callbacks = Fickle.of(this)
         mEventBus.register(this)
     }
 
     override fun destroyPresenter() {
+        mFixmypcApiStore.callbacks = Fickle.empty()
         mEventBus.unregister(this)
     }
 
-    /*override fun sendClientAnswer(answer: ServiceAnswer) {
-        mEventBus.postSticky(answer)
-    }*/
-
     override fun returnAnswer(answer: ServiceAnswer) {
-        //sendClientAnswer(answer)
         mEventBus.postSticky(answer)
     }
-
-    /*override fun onUnknownError(error: Throwable) {
-        callbacks.onUnknownError(error)
-    }*/
 
     @Subscribe(threadMode = ThreadMode.ASYNC, sticky = true)
     override fun onClientMessage(message: ServiceMessage) {
@@ -50,6 +44,6 @@ class BackgroundServicePresenterImpl
     }
 
     override fun testRequest(loginRequest: LoginRequest) {
-        mFixmypcApiStore.LoginRequest(this, loginRequest, ServiceMessageType.SERVICE_MESSAGE_LOGIN)
+        mFixmypcApiStore.loginRequest(loginRequest, ServiceMessageType.SERVICE_MESSAGE_LOGIN)
     }
 }

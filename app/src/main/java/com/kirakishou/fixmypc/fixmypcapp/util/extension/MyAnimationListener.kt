@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.extension
+package com.kirakishou.fixmypc.fixmypcapp.util.extension
 
 import android.animation.Animator
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle

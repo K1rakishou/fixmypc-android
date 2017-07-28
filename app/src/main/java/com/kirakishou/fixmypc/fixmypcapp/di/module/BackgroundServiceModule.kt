@@ -5,6 +5,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerService
 import com.kirakishou.fixmypc.fixmypcapp.module.service.BackgroundServiceCallbacks
 import com.kirakishou.fixmypc.fixmypcapp.store.api.FixmypcApiStore
 import com.kirakishou.fixmypc.fixmypcapp.store.api.FixmypcApiStoreImpl
+import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
@@ -19,6 +20,8 @@ class BackgroundServiceModule(val mCallbacks: BackgroundServiceCallbacks) {
     @PerService
     @Provides
     fun provideApiService(retrofit: Retrofit): ApiService {
+        retrofit.converterFactories()
+
         return retrofit.create(ApiService::class.java)
     }
 
@@ -30,7 +33,7 @@ class BackgroundServiceModule(val mCallbacks: BackgroundServiceCallbacks) {
 
     @PerService
     @Provides
-    fun provideRequestFactory(apiService: ApiService, retrofit: Retrofit): FixmypcApiStore {
-        return FixmypcApiStoreImpl(apiService, retrofit)
+    fun provideRequestFactory(apiService: ApiService, errorBodyConverter: ErrorBodyConverter): FixmypcApiStore {
+        return FixmypcApiStoreImpl(apiService, errorBodyConverter)
     }
 }

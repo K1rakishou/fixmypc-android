@@ -9,7 +9,6 @@ enum class AccountType(val value: Int) {
     Specialist(2);
 
     companion object {
-
         fun from(value: Int): AccountType {
             for (type in AccountType.values()) {
                 if (type.value == value) {

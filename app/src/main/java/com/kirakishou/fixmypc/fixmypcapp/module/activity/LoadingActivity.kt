@@ -52,7 +52,7 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
 
         val accountInfoPrefs = mAppSharedPreferences.get<AccountInfoPreference>(AccountInfo)
 
-        accountInfoPrefs.login = Fickle.of("test@gmail.com")
+        accountInfoPrefs.login = Fickle.of("test2@gmail.com")
         accountInfoPrefs.password = Fickle.of("1234567890")
 
         //FIXME:
@@ -122,7 +122,7 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
     }
 
     override fun onUnknownError(error: Throwable) {
-        showErrorMessageDialog(error.localizedMessage)
+        showErrorMessageDialog(error.message!!)
     }
 }
 

@@ -9,7 +9,7 @@ import android.widget.Toast
 import butterknife.ButterKnife
 import com.afollestad.materialdialogs.MaterialDialog
 import com.kirakishou.fixmypc.fixmypcapp.R
-import com.kirakishou.fixmypc.fixmypcapp.extension.myAddListener
+import com.kirakishou.fixmypc.fixmypcapp.util.extension.myAddListener
 import com.kirakishou.fixmypc.fixmypcapp.module.service.BackgroundService
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable

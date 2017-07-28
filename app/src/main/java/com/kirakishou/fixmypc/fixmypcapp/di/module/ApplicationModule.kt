@@ -2,10 +2,17 @@ package com.kirakishou.fixmypc.fixmypcapp.di.module
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.StatusCode
 import com.kirakishou.fixmypc.fixmypcapp.shared_preference.AppSharedPreferences
+import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
+import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverterImpl
+import com.kirakishou.fixmypc.fixmypcapp.util.type_adapter.serializer.AccountTypeSerializer
+import com.kirakishou.fixmypc.fixmypcapp.util.type_adapter.serializer.StatusCodeSerializer
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -39,10 +46,22 @@ class ApplicationModule(private val mContext: Context,
 
     @Singleton
     @Provides
-    fun provideGsonConverterFactory(): GsonConverterFactory {
-        val gson = GsonBuilder()
+    fun provideGson(): Gson {
+        return GsonBuilder()
+                .registerTypeAdapter(AccountType::class.java, AccountTypeSerializer())
+                .registerTypeAdapter(StatusCode::class.java, StatusCodeSerializer())
                 .create()
+    }
 
+    @Singleton
+    @Provides
+    fun provideErrorBodyConverter(gson: Gson): ErrorBodyConverter {
+        return ErrorBodyConverterImpl(gson)
+    }
+
+    @Singleton
+    @Provides
+    fun provideGsonConverterFactory(gson: Gson): GsonConverterFactory {
         return GsonConverterFactory.create(gson)
     }
 

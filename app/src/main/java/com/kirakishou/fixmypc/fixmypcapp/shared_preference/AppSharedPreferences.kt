@@ -8,15 +8,17 @@ import javax.inject.Inject
  * Created by kirakishou on 7/25/2017.
  */
 class AppSharedPreferences
-    @Inject constructor(val mSharedPreferences: SharedPreferences) {
+    @Inject constructor(protected val mSharedPreferences: SharedPreferences) {
 
-    enum class SharedPreferenceType {
-        AccountInfo
+    inline fun <reified T : BasePreference> prepare(): T {
+        return prepareNext(T::class.java)
     }
 
-    fun <T : BasePreference> get(type: SharedPreferenceType): T {
-        when (type) {
-            SharedPreferenceType.AccountInfo -> return AccountInfoPreference(mSharedPreferences) as T
+    @PublishedApi
+    internal fun <T : BasePreference> prepareNext(clazz: Class<*>): T {
+        when (clazz) {
+            AccountInfoPreference::class.java -> return AccountInfoPreference(mSharedPreferences) as T
+            else -> throw IllegalArgumentException("Unknown type T")
         }
     }
 }

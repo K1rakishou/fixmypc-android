@@ -4,6 +4,7 @@ import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 
 /**
  * Created by kirakishou on 7/27/2017.
@@ -19,6 +20,6 @@ class AccountTypeTypeAdapter<T> : TypeAdapter<T>() {
     override fun write(output: JsonWriter?, value: T) {
         val accountTypeValue = value as AccountType
 
-        output!!.jsonValue("account_type")!!.value(accountTypeValue.value)
+        output!!.jsonValue(Constant.SerializedNames.ACCOUNT_TYPE_SERIALIZED_NAME)!!.value(accountTypeValue.value)
     }
 }

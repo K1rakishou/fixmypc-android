@@ -3,7 +3,8 @@ package com.kirakishou.fixmypc.fixmypcapp.util.adapter_factory
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.StatusCode
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServerErrorCode
 
 /**
  * Created by kirakishou on 7/27/2017.
@@ -11,13 +12,13 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.StatusCode
 class StatusCodeTypeAdapter<T> : TypeAdapter<T>() {
 
     override fun read(input: JsonReader?): T {
-        val statusCodeValue = input!!.nextInt()
-        return StatusCode.from(statusCodeValue) as T
+        val secValue = input!!.nextInt()
+        return ServerErrorCode.from(secValue) as T
     }
 
     override fun write(output: JsonWriter?, value: T) {
-        val statusCodeValue = value as StatusCode
+        val secValue = value as ServerErrorCode
 
-        output!!.jsonValue("status_code")!!.value(statusCodeValue.value)
+        output!!.jsonValue(Constant.SerializedNames.SERVER_ERROR_CODE_SERIALIZED_NAME)!!.value(secValue.value)
     }
 }

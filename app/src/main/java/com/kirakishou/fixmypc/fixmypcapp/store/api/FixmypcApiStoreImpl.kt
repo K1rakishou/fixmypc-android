@@ -40,7 +40,7 @@ class FixmypcApiStoreImpl
                     if (error is HttpException) {
                         val response = errorBodyConverter.convert<LoginResponse>(error.response().errorBody()!!.string(), LoginResponse::class.java)
                         callbacks.ifPresent {
-                            it.returnAnswer(ServiceAnswer(type, ServerResponse.HttpError(response.status)))
+                            it.returnAnswer(ServiceAnswer(type, ServerResponse.ServerError(response.serverError)))
                         }
                     } else {
                         callbacks.ifPresent {

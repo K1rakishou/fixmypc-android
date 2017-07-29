@@ -12,14 +12,13 @@ import com.kirakishou.fixmypc.fixmypcapp.di.module.LoadingActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.StatusCode
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServerErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ErrorMessage
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.LoginResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.LoadingActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.LoadingActivityView
 import com.kirakishou.fixmypc.fixmypcapp.shared_preference.AppSharedPreferences
-import com.kirakishou.fixmypc.fixmypcapp.shared_preference.AppSharedPreferences.SharedPreferenceType.AccountInfo
 import com.kirakishou.fixmypc.fixmypcapp.shared_preference.preference.AccountInfoPreference
+import timber.log.Timber
 import javax.inject.Inject
 
 class LoadingActivity : BaseActivity(), LoadingActivityView {
@@ -32,6 +31,8 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
 
     @Inject
     lateinit var mAppSettings: AppSettings
+
+    lateinit var accountInfoPrefs: AccountInfoPreference
 
     override fun getContentView(): Int = R.layout.activity_loading
 
@@ -50,52 +51,59 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
     override fun onViewReady() {
         mPresenter.initPresenter()
 
-        val accountInfoPrefs = mAppSharedPreferences.get<AccountInfoPreference>(AccountInfo)
+        accountInfoPrefs = mAppSharedPreferences.prepare<AccountInfoPreference>()
 
+        //FIXME: accountInfoPrefs should be loaded from preferences via accountInfoPrefs.load()
+        //don't forger to delete the following:
         accountInfoPrefs.login = Fickle.of("test2@gmail.com")
         accountInfoPrefs.password = Fickle.of("1234567890")
 
-        //FIXME:
-        //accountInfoPrefs.load()
-
         if (accountInfoPrefs.exists()) {
-            mPresenter.startLoggingIn(accountInfoPrefs)
+            mPresenter.startLoggingIn(accountInfoPrefs.login.get(), accountInfoPrefs.password.get())
         } else {
             accountInfoPrefs.clear()
-            runChooseCategoryActivity()
+            runGuestMainActivity()
         }
-    }
-
-    override fun onLoggedIn(loginResponse: LoginResponse) {
-        mAppSettings.sessionId = Fickle.of(loginResponse.sessionId)
-        mAppSettings.accountType = Fickle.of(AccountType.from(loginResponse.accountType))
-
-        when (mAppSettings.accountType.get()) {
-            AccountType.Client -> {
-                runChooseCategoryActivity()
-            }
-
-            AccountType.Specialist -> {
-                runSpecialistMainActivity()
-            }
-
-            AccountType.Guest -> {
-                //should not happen
-                throw IllegalStateException("Server returned accountType.Guest")
-            }
-        }
-    }
-
-    private fun runChooseCategoryActivity() {
-
-    }
-
-    private fun runSpecialistMainActivity() {
-
     }
 
     override fun onViewStop() {
         mPresenter.destroyPresenter()
+    }
+
+    override fun runGuestMainActivity() {
+
+    }
+
+    override fun runClientMainActivity(sessionId: String, accountType: AccountType) {
+        saveSettings(sessionId, accountType)
+    }
+
+    override fun runSpecialistMainActivity(sessionId: String, accountType: AccountType) {
+        saveSettings(sessionId, accountType)
+    }
+
+    override fun onCouldNotConnectToServer(error: Throwable) {
+        Timber.e(error)
+
+        //TODO: show reconnection button
+    }
+
+    private fun saveSettings(sessionId: String, accountType: AccountType) {
+        mAppSettings.sessionId = Fickle.of(sessionId)
+        mAppSettings.accountType = Fickle.of(accountType)
+    }
+
+    override fun onServerError(serverErrorCode: ServerErrorCode) {
+        val message = ErrorMessage.getErrorMessage(this, serverErrorCode)
+        showToast(message, Toast.LENGTH_LONG)
+    }
+
+    override fun onUnknownError(error: Throwable) {
+        showErrorMessageDialog(error.message!!)
+    }
+
+    override fun onShowToast(message: String) {
+        showToast(message, Toast.LENGTH_SHORT)
     }
 
     override fun resolveDaggerDependency() {
@@ -104,25 +112,6 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
                 .loadingActivityModule(LoadingActivityModule(this))
                 .build()
                 .inject(this)
-    }
-
-    override fun onShowToast(message: String) {
-        showToast(message, Toast.LENGTH_SHORT)
-    }
-
-    override fun onServerError(statusCode: StatusCode) {
-        when (statusCode) {
-            StatusCode.STATUS_WRONG_LOGIN_OR_PASSWORD -> runChooseCategoryActivity()
-
-            else -> {
-                val message = ErrorMessage.getErrorMessage(this, statusCode)
-                showToast(message, Toast.LENGTH_LONG)
-            }
-        }
-    }
-
-    override fun onUnknownError(error: Throwable) {
-        showErrorMessageDialog(error.message!!)
     }
 }
 

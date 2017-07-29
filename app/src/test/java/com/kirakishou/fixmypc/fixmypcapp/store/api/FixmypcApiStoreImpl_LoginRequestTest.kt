@@ -1,10 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.store.api
 
 import com.kirakishou.fixmypc.fixmypcapp.api.ApiService
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.StatusCode
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.*
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServerResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceAnswer
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.LoginRequest
@@ -26,6 +23,7 @@ import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
 import retrofit2.HttpException
 import retrofit2.Response
+import java.io.IOException
 
 
 /**
@@ -62,34 +60,50 @@ class FixmypcApiStoreImpl_LoginRequestTest {
     }
 
     @Test
-    fun loginRequest_testWithBadLoginRequest_expectServerResponseHttpErrorWith_StatusWrongLoginOrPassword() {
-        val BAD_LOGIN_REQUEST = LoginRequest("test2@gmail.com", "1234567890")
-        val BAD_SESSION_ID = ""
-        val BAD_RESPONSE = LoginResponse(BAD_SESSION_ID, AccountType.Client.value, StatusCode.STATUS_WRONG_LOGIN_OR_PASSWORD)
-        val TYPE = ServiceMessageType.SERVICE_MESSAGE_LOGIN
-        val BAD_LOGIN_RESPONSE_JSON = """{ "session_id": "", "account_type": 2, "status_code": 2 }"""
+    fun shouldCallReturnAnswerWithServerResponseHttpError() {
+        val badLoginRequest = LoginRequest("test2@gmail.com", "1234567890")
+        val badSessionId = ""
+        val badResponse = LoginResponse(badSessionId, AccountType.Client, ServerErrorCode.SEC_WRONG_LOGIN_OR_PASSWORD)
+        val type = ServiceMessageType.SERVICE_MESSAGE_LOGIN
+        val badLoginResponseJson = """{ "session_id": "", "account_type": 2, "status_code": 2 }"""
 
-        Mockito.`when`(errorBodyConverter.convert<LoginResponse>(BAD_LOGIN_RESPONSE_JSON, LoginResponse::class.java)).thenReturn(BAD_RESPONSE)
-        Mockito.`when`(mApiService.doLogin(BAD_LOGIN_REQUEST)).thenReturn(Single.error(HttpException(
-                Response.error<LoginResponse>(422, ResponseBody.create(MediaType.parse("application/json"), BAD_LOGIN_RESPONSE_JSON)))))
+        Mockito.`when`(errorBodyConverter.convert<LoginResponse>(badLoginResponseJson, LoginResponse::class.java)).thenReturn(badResponse)
+        Mockito.`when`(mApiService.doLogin(badLoginRequest)).thenReturn(Single.error(HttpException(
+                Response.error<LoginResponse>(HttpStatus.UNPROCESSABLE_ENTITY.status, ResponseBody.create(MediaType.parse("application/json"), badLoginResponseJson)))))
 
-        mApiStore.loginRequest(BAD_LOGIN_REQUEST, TYPE)
+        mApiStore.loginRequest(badLoginRequest, type)
 
-        Mockito.verify(callbacks).returnAnswer(ServiceAnswer(TYPE, ServerResponse.HttpError(StatusCode.STATUS_WRONG_LOGIN_OR_PASSWORD)))
+        Mockito.verify(callbacks, Mockito.only())
+                .returnAnswer(ServiceAnswer(type, ServerResponse.ServerError(ServerErrorCode.SEC_WRONG_LOGIN_OR_PASSWORD)))
     }
 
     @Test
-    fun loginRequest_testWithGoodLoginRequest_expectServerResponseSuccess() {
-        val GOOD_LOGIN_REQUEST = LoginRequest("test@gmail.com", "1234567890")
-        val GOOD_SESSION_ID = "1234567890abcdef"
-        val TYPE = ServiceMessageType.SERVICE_MESSAGE_LOGIN
-        val GOOD_RESPONSE = LoginResponse(GOOD_SESSION_ID, AccountType.Client.value, StatusCode.STATUS_OK)
+    fun shouldCallReturnAnswerWithServerResponseSuccess() {
+        val goodLoginRequest = LoginRequest("test@gmail.com", "1234567890")
+        val goodSessionId = "1234567890abcdef"
+        val type = ServiceMessageType.SERVICE_MESSAGE_LOGIN
+        val goodResponse = LoginResponse(goodSessionId, AccountType.Client, ServerErrorCode.SEC_OK)
 
-        Mockito.`when`(mApiService.doLogin(GOOD_LOGIN_REQUEST)).thenReturn(Single.just(GOOD_RESPONSE))
+        Mockito.`when`(mApiService.doLogin(goodLoginRequest)).thenReturn(Single.just(goodResponse))
 
-        mApiStore.loginRequest(GOOD_LOGIN_REQUEST, TYPE)
+        mApiStore.loginRequest(goodLoginRequest, type)
 
-        Mockito.verify(callbacks).returnAnswer(ServiceAnswer(TYPE, ServerResponse.Success(GOOD_RESPONSE)))
+        Mockito.verify(callbacks, Mockito.only())
+                .returnAnswer(ServiceAnswer(type, ServerResponse.Success(goodResponse)))
+    }
+
+    @Test
+    fun shouldCallReturnAnswerWithServerResponseUnknownError() {
+        val triggerExceptionLoginRequest = LoginRequest("trigger_exception@gmail.com", "1234567890")
+        val type = ServiceMessageType.SERVICE_MESSAGE_LOGIN
+        val exception = IOException("Something went wrong")
+
+        Mockito.`when`(mApiService.doLogin(triggerExceptionLoginRequest)).thenReturn(Single.error<LoginResponse>(exception))
+
+        mApiStore.loginRequest(triggerExceptionLoginRequest, type)
+
+        Mockito.verify(callbacks, Mockito.only())
+                .returnAnswer(ServiceAnswer(type, ServerResponse.UnknownError(exception)))
     }
 }
 

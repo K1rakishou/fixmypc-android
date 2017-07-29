@@ -1,18 +1,20 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter
 
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServerErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.StatusCode
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServerResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceAnswer
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.LoginRequest
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.LoginResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.LoadingActivityView
-import com.kirakishou.fixmypc.fixmypcapp.shared_preference.preference.AccountInfoPreference
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import timber.log.Timber
+import java.net.UnknownHostException
+import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 
 /**
@@ -33,45 +35,66 @@ open class LoadingActivityPresenterImpl
         mEventBus.postSticky(message)
     }
 
-    override fun startLoggingIn(accountInfoPrefs: AccountInfoPreference) {
-        val login = accountInfoPrefs.login.get()
-        val password = accountInfoPrefs.password.get()
-
-        sendServiceMessage(ServiceMessage(ServiceMessageType.SERVICE_MESSAGE_LOGIN, LoginRequest(login, password)))
+    override fun startLoggingIn(login: String, password: String) {
+        sendServiceMessage(ServiceMessage(ServiceMessageType.SERVICE_MESSAGE_LOGIN,
+                LoginRequest(login, password)))
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     override fun onEventAnswer(answer: ServiceAnswer) {
         when (answer.type) {
             ServiceMessageType.SERVICE_MESSAGE_LOGIN -> onLoginEventResponse(answer)
+            else -> Timber.e("Unsupported answerType: ${answer.type}")
         }
     }
 
-    private fun onLoginEventResponse(answer: ServiceAnswer) {
-        val eitherLoginResp = answer.data as ServerResponse<LoginResponse>
+    fun onLoginEventResponse(answer: ServiceAnswer) {
+        val loginResponse = answer.data as ServerResponse<LoginResponse>
 
-        when (eitherLoginResp) {
+        when (loginResponse) {
             is ServerResponse.Success -> {
-                callbacks.onLoggedIn(eitherLoginResp.value)
+                val sessionId = loginResponse.value.sessionId
+                val accountType = loginResponse.value.accountType
+                val serverErrorCode = loginResponse.value.serverError
+
+                if (serverErrorCode != ServerErrorCode.SEC_OK) {
+                    throw IllegalStateException("ServerResponse is Success but serverErrorCode is not SEC_OK: $serverErrorCode")
+                }
+
+                when (accountType) {
+                    AccountType.Client -> {
+                        callbacks.runClientMainActivity(sessionId, accountType)
+                    }
+
+                    AccountType.Specialist -> {
+                        callbacks.runSpecialistMainActivity(sessionId, accountType)
+                    }
+
+                    //should never happen
+                    AccountType.Guest -> throw IllegalStateException("Server returned accountType.Guest")
+                }
             }
 
-            is ServerResponse.HttpError -> {
-                val statusCode = eitherLoginResp.statusCode
+            is ServerResponse.ServerError -> {
+                val errCode = loginResponse.serverErrorCode
 
-                when (statusCode) {
-                    StatusCode.STATUS_WRONG_LOGIN_OR_PASSWORD,
-                    StatusCode.STATUS_UNKNOWN_SERVER_ERROR -> {
-                        callbacks.onServerError(statusCode)
+                when (errCode) {
+                    ServerErrorCode.SEC_WRONG_LOGIN_OR_PASSWORD,
+                    ServerErrorCode.SEC_UNKNOWN_SERVER_ERROR -> {
+                        callbacks.runGuestMainActivity()
                     }
 
-                    else -> {
-                        Timber.e("Not supported statusCode: $statusCode")
-                    }
+                    else -> callbacks.onServerError(errCode)
                 }
             }
 
             is ServerResponse.UnknownError -> {
-                callbacks.onUnknownError(eitherLoginResp.error)
+                if (loginResponse.error is TimeoutException || loginResponse.error is UnknownHostException) {
+                    callbacks.onCouldNotConnectToServer(loginResponse.error)
+                    return
+                }
+
+                callbacks.onUnknownError(loginResponse.error)
             }
         }
     }

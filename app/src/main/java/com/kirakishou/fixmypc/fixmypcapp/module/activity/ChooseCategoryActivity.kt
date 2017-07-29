@@ -7,7 +7,7 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerChooseCategoryActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ChooseCategoryActivityModule
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.StatusCode
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServerErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.ChooseCategoryActivityView
 
 class ChooseCategoryActivity : BaseActivity(), ChooseCategoryActivityView {
@@ -42,8 +42,7 @@ class ChooseCategoryActivity : BaseActivity(), ChooseCategoryActivityView {
         showToast(message, Toast.LENGTH_SHORT)
     }
 
-    override fun onServerError(statusCode: StatusCode) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onServerError(serverErrorCode: ServerErrorCode) {
     }
 
     override fun onUnknownError(error: Throwable) {

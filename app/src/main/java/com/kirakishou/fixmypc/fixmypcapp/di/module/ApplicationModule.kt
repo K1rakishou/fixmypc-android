@@ -7,7 +7,7 @@ import com.google.gson.GsonBuilder
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.StatusCode
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServerErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.shared_preference.AppSharedPreferences
 import com.kirakishou.fixmypc.fixmypcapp.util.adapter_factory.AccountTypeTypeAdapter
 import com.kirakishou.fixmypc.fixmypcapp.util.adapter_factory.StatusCodeTypeAdapter
@@ -49,7 +49,7 @@ class ApplicationModule(private val mContext: Context,
     fun provideGson(): Gson {
         return GsonBuilder()
                 .registerTypeAdapter(AccountType::class.java, AccountTypeTypeAdapter<AccountType>())
-                .registerTypeAdapter(StatusCode::class.java, StatusCodeTypeAdapter<StatusCode>())
+                .registerTypeAdapter(ServerErrorCode::class.java, StatusCodeTypeAdapter<ServerErrorCode>())
                 .create()
     }
 

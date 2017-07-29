@@ -9,11 +9,10 @@ import com.kirakishou.fixmypc.fixmypcapp.shared_preference.BasePreference
 /**
  * Created by kirakishou on 7/25/2017.
  */
-class AccountInfoPreference(private val mSharedPreferences: SharedPreferences,
-                            var login: Fickle<String>,
-                            var password: Fickle<String>) : BasePreference {
+class AccountInfoPreference(private val mSharedPreferences: SharedPreferences) : BasePreference {
 
-    constructor(mSharedPreferences: SharedPreferences) : this(mSharedPreferences, Fickle.empty(), Fickle.empty())
+    var login: Fickle<String> = Fickle.empty()
+    var password: Fickle<String> = Fickle.empty()
 
     private val mThisPrefPrefix = "AccountInfoPreference"
     private val mLoginSharedPrefKey = "${Constant.SHARED_PREFS_PREFIX}_${mThisPrefPrefix}_login"

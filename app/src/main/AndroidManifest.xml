@@ -15,13 +15,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/FixmypcTheme">
-        <activity android:name=".module.activity.LoadingActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
 
         <service
             android:name=".module.service.BackgroundService"
@@ -40,7 +33,17 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".module.activity.ChooseCategoryActivity"></activity>
+        <activity android:name=".module.activity.LoadingActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".module.activity.ClientMainActivity"
+            android:windowSoftInputMode="adjustResize"/>
     </application>
 
 </manifest>

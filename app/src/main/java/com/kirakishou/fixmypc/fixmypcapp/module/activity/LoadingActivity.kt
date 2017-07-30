@@ -1,8 +1,6 @@
 package com.kirakishou.fixmypc.fixmypcapp.module.activity
 
 import android.animation.AnimatorSet
-import android.content.Intent
-import android.os.Bundle
 import android.widget.Toast
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
@@ -35,18 +33,8 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
     lateinit var accountInfoPrefs: AccountInfoPreference
 
     override fun getContentView(): Int = R.layout.activity_loading
-
-    override fun loadStartAnimations(): AnimatorSet {
-        return AnimatorSet()
-    }
-
-    override fun loadExitAnimations(): AnimatorSet {
-        return AnimatorSet()
-    }
-
-    override fun onPrepareView(savedInstanceState: Bundle?, intent: Intent) {
-        super.onPrepareView(savedInstanceState, intent)
-    }
+    override fun loadStartAnimations() = AnimatorSet()
+    override fun loadExitAnimations() = AnimatorSet()
 
     override fun onViewReady() {
         mPresenter.initPresenter()
@@ -55,7 +43,7 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
 
         //FIXME: accountInfoPrefs should be loaded from preferences via accountInfoPrefs.load()
         //don't forger to delete the following:
-        accountInfoPrefs.login = Fickle.of("test2@gmail.com")
+        accountInfoPrefs.login = Fickle.of("test@gmail.com")
         accountInfoPrefs.password = Fickle.of("1234567890")
 
         if (accountInfoPrefs.exists()) {
@@ -76,6 +64,7 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
 
     override fun runClientMainActivity(sessionId: String, accountType: AccountType) {
         saveSettings(sessionId, accountType)
+        runActivity(ClientMainActivity::class.java, true)
     }
 
     override fun runSpecialistMainActivity(sessionId: String, accountType: AccountType) {

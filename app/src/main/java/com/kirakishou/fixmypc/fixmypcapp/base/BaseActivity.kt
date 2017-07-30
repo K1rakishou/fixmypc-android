@@ -7,10 +7,12 @@ import android.support.annotation.CallSuper
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import butterknife.ButterKnife
+import butterknife.Unbinder
 import com.afollestad.materialdialogs.MaterialDialog
 import com.kirakishou.fixmypc.fixmypcapp.R
-import com.kirakishou.fixmypc.fixmypcapp.util.extension.myAddListener
 import com.kirakishou.fixmypc.fixmypcapp.module.service.BackgroundService
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
+import com.kirakishou.fixmypc.fixmypcapp.util.extension.myAddListener
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
@@ -21,6 +23,7 @@ import io.reactivex.disposables.Disposable
 abstract class BaseActivity : AppCompatActivity() {
 
     private val mCompositeDisposable = CompositeDisposable()
+    private var mUnbinder: Fickle<Unbinder> = Fickle.empty()
 
     protected fun addDisposable(disposable: Disposable) {
         mCompositeDisposable.add(disposable)
@@ -50,7 +53,7 @@ abstract class BaseActivity : AppCompatActivity() {
         startService(Intent(this, BackgroundService::class.java))
 
         setContentView(getContentView())
-        ButterKnife.bind(this)
+        mUnbinder = Fickle.of(ButterKnife.bind(this))
         //Fabric.with(this, Crashlytics())
 
         onPrepareView(savedInstanceState, intent)
@@ -70,12 +73,16 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
 
-        mCompositeDisposable.dispose()
+        mCompositeDisposable.clear()
         animateActivityStop()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+
+        mUnbinder.ifPresent {
+            it.unbind()
+        }
     }
 
     private fun animateActivityStop() {
@@ -113,15 +120,19 @@ abstract class BaseActivity : AppCompatActivity() {
                 .show()
     }
 
+    protected fun runActivity(clazz: Class<*>, finishCurrentActivity: Boolean = false) {
+        val intent = Intent(this, clazz)
+        startActivity(intent)
+
+        if (finishCurrentActivity) {
+            finish()
+        }
+    }
+
     protected abstract fun getContentView(): Int
-
     protected abstract fun loadStartAnimations(): AnimatorSet
-
     protected abstract fun loadExitAnimations(): AnimatorSet
-
     protected abstract fun onViewReady()
-
     protected abstract fun onViewStop()
-
     protected abstract fun resolveDaggerDependency()
 }

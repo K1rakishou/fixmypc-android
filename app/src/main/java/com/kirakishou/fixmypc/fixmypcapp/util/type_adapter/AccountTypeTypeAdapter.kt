@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.util.adapter_factory
+package com.kirakishou.fixmypc.fixmypcapp.util.type_adapter
 
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader

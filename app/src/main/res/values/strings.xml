@@ -9,4 +9,15 @@
     <string name="login_is_incorrect">Непревильно введён логин. Возможно пропущен символ \'@\' или \'.\'</string>
     <string name="password_is_incorrect">Непревильно введён пароль. Длина пароль должна составлять от %1$d до %2$d символов</string>
     <string name="account_type_is_incorrect">Выбран несуществующий тип аккаунта</string>
+    <string name="choose_malfunction_category_textview_title">Выберите категорию поломки</string>
+    <string name="computer_category_button_title">Компьютер</string>
+    <string name="notebook_category_button_title">Ноутбук</string>
+    <string name="phone_category_button_title">Телефон</string>
+    <string name="done_button_title">Готово</string>
+    <string name="malfunction_short_description_edittext_hint">Краткое описание поломки</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="send_application_button_title">Отправить заявку</string>
+
 </resources>

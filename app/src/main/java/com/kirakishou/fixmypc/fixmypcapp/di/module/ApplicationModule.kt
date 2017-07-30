@@ -9,10 +9,10 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServerErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.shared_preference.AppSharedPreferences
-import com.kirakishou.fixmypc.fixmypcapp.util.adapter_factory.AccountTypeTypeAdapter
-import com.kirakishou.fixmypc.fixmypcapp.util.adapter_factory.StatusCodeTypeAdapter
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverterImpl
+import com.kirakishou.fixmypc.fixmypcapp.util.type_adapter.AccountTypeTypeAdapter
+import com.kirakishou.fixmypc.fixmypcapp.util.type_adapter.StatusCodeTypeAdapter
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient

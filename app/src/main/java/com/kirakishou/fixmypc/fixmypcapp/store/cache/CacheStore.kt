@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.store
+package com.kirakishou.fixmypc.fixmypcapp.store.cache
 
 import com.google.common.cache.Cache
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle

@@ -39,28 +39,24 @@ abstract class BaseFragment : Fragment() {
         return root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        mUnbinder.ifPresent {
-            it.unbind()
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         runCallbackAfterAnimation(loadStartAnimations()) {
             onFragmentReady()
         }
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroyView() {
+        super.onDestroyView()
         mCompositeDisposable.clear()
 
         runCallbackAfterAnimation(loadExitAnimations()) {
             onFragmentStop()
+        }
+
+        mUnbinder.ifPresent {
+            it.unbind()
         }
     }
 
@@ -79,6 +75,4 @@ abstract class BaseFragment : Fragment() {
     protected abstract fun loadExitAnimations(): AnimatorSet
     protected abstract fun onFragmentReady()
     protected abstract fun onFragmentStop()
-
-    //abstract fun resolveDaggerDependency()
 }

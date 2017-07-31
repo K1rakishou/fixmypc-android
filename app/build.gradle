@@ -6,6 +6,10 @@ kapt {
     generateStubs = true
 }
 
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
 android {
     compileSdkVersion 26
     buildToolsVersion "25.0.3"
@@ -53,10 +57,15 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.google.code.findbugs'
     })
+
+    implementation 'com.android.support:support-v4:26.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-android:2.8.47'
+
+    provided 'org.glassfish:javax.annotation:10.0-b28'
 
     compile 'com.android.support:multidex:1.0.2'
     compile 'com.android.support:appcompat-v7:26.0.0'
@@ -72,10 +81,12 @@ dependencies {
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
     compile 'com.jakewharton.rxbinding2:rxbinding-kotlin:2.0.0'
     compile 'com.google.code.gson:gson:2.8.1'
-    compile 'com.jakewharton:butterknife:8.6.0'
     compile 'com.jakewharton.timber:timber:4.5.1'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.google.guava:guava:22.0'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    compile 'com.karumi:dexter:4.1.0'
+    compile 'com.github.jkwiecien:EasyImage:2.0.2'
 
     compile('com.afollestad.material-dialogs:core:0.9.4.5') {
         exclude group: 'com.android.support'
@@ -85,12 +96,11 @@ dependencies {
     compile 'com.pushtorefresh.storio:sqlite:1.13.0'
 
     kapt 'com.jakewharton:butterknife-compiler:8.6.0'
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    compile 'com.jakewharton:butterknife:8.6.0'
 
-    compile 'com.google.dagger:dagger:2.11'
     kapt 'com.google.dagger:dagger-compiler:2.11'
+    compile 'com.google.dagger:dagger:2.11'
 
-    provided 'org.glassfish:javax.annotation:10.0-b28'
-    implementation 'com.android.support:support-v4:26.0.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    kapt 'com.github.bumptech.glide:compiler:4.0.0-RC1'
+    compile 'com.github.bumptech.glide:glide:4.0.0-RC1'
 }

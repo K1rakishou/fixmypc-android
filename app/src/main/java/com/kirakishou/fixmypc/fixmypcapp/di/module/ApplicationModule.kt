@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.kirakishou.fixmypc.fixmypcapp.manager.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
@@ -118,6 +119,12 @@ class ApplicationModule(private val mContext: Context,
     @Provides
     fun provideAppSettings(): AppSettings {
         return AppSettings()
+    }
+
+    @Singleton
+    @Provides
+    fun providePermissionManager(): PermissionManager {
+        return PermissionManager()
     }
 }
 

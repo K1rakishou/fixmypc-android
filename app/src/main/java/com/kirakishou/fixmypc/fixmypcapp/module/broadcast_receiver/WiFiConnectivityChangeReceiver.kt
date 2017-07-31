@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.net.wifi.WifiManager
-import com.kirakishou.fixmypc.fixmypcapp.store.wifi.WiFiConnectivityStore
+import com.kirakishou.fixmypc.fixmypcapp.manager.wifi.WiFiConnectivityManager
 import com.kirakishou.fixmypc.fixmypcapp.util.NetUtils
 import timber.log.Timber
 
@@ -28,6 +28,6 @@ class WiFiConnectivityChangeReceiver : BroadcastReceiver() {
         val wifiConnected = NetUtils.isWifiConnected(context)
         Timber.i("WiFiConnectivity changed: WiFiConnected == " + wifiConnected.toString())
 
-        WiFiConnectivityStore.onWiFiChanged(wifiConnected)
+        WiFiConnectivityManager.onWiFiChanged(wifiConnected)
     }
 }

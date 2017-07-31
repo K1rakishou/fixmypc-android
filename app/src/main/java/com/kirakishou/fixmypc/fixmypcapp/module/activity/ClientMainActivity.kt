@@ -10,16 +10,25 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerChooseCategoryActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ChooseCategoryActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.manager.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionCategoryFragment
 import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionDescriptionFragment
 import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionPhotosFragment
+import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionPhotosFragmentCallbacks
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServerErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.ClientMainActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.ChooseCategoryActivityView
-
+import javax.inject.Inject
 
 
 class ClientMainActivity : BaseActivity(), ChooseCategoryActivityView {
+
+    @Inject
+    lateinit var mPresenter: ClientMainActivityPresenterImpl
+
+    @Inject
+    lateinit var mPermissionManager: PermissionManager
 
     private var isOpened: Boolean = false
 
@@ -42,6 +51,10 @@ class ClientMainActivity : BaseActivity(), ChooseCategoryActivityView {
         replaceFragment(fragment, fragmentTag)
     }
 
+    fun popFragment() {
+        supportFragmentManager.popBackStack()
+    }
+
     private fun instantiateFragment(fragmentTag: String): Fragment {
         when (fragmentTag) {
             Constant.FragmentTags.MALFUNCTION_CATEGORY_FRAGMENT_TAG -> return MalfunctionCategoryFragment.newInstance()
@@ -59,20 +72,36 @@ class ClientMainActivity : BaseActivity(), ChooseCategoryActivityView {
                 .commit()
     }
 
-    fun popFragment() {
-        supportFragmentManager.popBackStack()
+    fun requestPermission(permission: String, requestCode: Int) {
+        mPermissionManager.askForPermission(this, permission, requestCode) { granted ->
+            if (granted) {
+                val currentFragmentTag = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 1).name
+                val currentFragment = supportFragmentManager.findFragmentByTag(currentFragmentTag)
+
+                if (currentFragment is MalfunctionPhotosFragmentCallbacks) {
+                    currentFragment.onPermissionGranted()
+                }
+
+            } else {
+                showErrorMessageDialog("Не удалось получить разрешение на открытие галлереи фото")
+            }
+        }
     }
 
-    fun sendApplication() {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        mPermissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
 
+    fun sendApplicationToServer() {
+        mPresenter.sendApplicationToServer()
     }
 
     override fun onViewReady() {
-
+        mPresenter.initPresenter()
     }
 
     override fun onViewStop() {
-
+        mPresenter.destroyPresenter()
     }
 
     override fun resolveDaggerDependency() {

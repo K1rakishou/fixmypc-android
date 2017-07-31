@@ -24,11 +24,15 @@ open class LoadingActivityPresenterImpl
 @Inject constructor(protected val mEventBus: EventBus) : LoadingActivityPresenter<LoadingActivityView>() {
 
     override fun initPresenter() {
+        Timber.d("LoadingActivityPresenterImpl.initPresenter()")
+
         mEventBus.register(this)
     }
 
     override fun destroyPresenter() {
         mEventBus.unregister(this)
+
+        Timber.d("LoadingActivityPresenterImpl.destroyPresenter()")
     }
 
     override fun sendServiceMessage(message: ServiceMessage) {

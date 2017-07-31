@@ -1,11 +1,11 @@
-package com.kirakishou.fixmypc.fixmypcapp.store.wifi
+package com.kirakishou.fixmypc.fixmypcapp.manager.wifi
 
 import timber.log.Timber
 
 /**
  * Created by kirakishou on 7/26/2017.
  */
-object WiFiConnectivityStore {
+object WiFiConnectivityManager {
 
     val listeners: MutableSet<WiFiConnectivityObserver> = HashSet()
     var dispatchUpdates = true

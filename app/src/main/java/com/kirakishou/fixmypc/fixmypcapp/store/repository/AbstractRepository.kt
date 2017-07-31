@@ -3,8 +3,8 @@ package com.kirakishou.fixmypc.fixmypcapp.store.repository
 import com.google.common.cache.CacheBuilder
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.store.cache.CacheStore
-import com.kirakishou.fixmypc.fixmypcapp.store.wifi.WiFiConnectivityObserver
-import com.kirakishou.fixmypc.fixmypcapp.store.wifi.WiFiConnectivityStore
+import com.kirakishou.fixmypc.fixmypcapp.manager.wifi.WiFiConnectivityObserver
+import com.kirakishou.fixmypc.fixmypcapp.manager.wifi.WiFiConnectivityManager
 import java.util.concurrent.TimeUnit
 
 /**
@@ -27,11 +27,11 @@ abstract class AbstractRepository<T> : WiFiConnectivityObserver {
     }
 
     fun init() {
-        WiFiConnectivityStore.registerWifiListener(this)
+        WiFiConnectivityManager.registerWifiListener(this)
     }
 
     fun destroy() {
-        WiFiConnectivityStore.removeWifiListener(this)
+        WiFiConnectivityManager.removeWifiListener(this)
     }
 
     override fun onWiFiConnectivityChanged(isConnected: Boolean) {

@@ -11,14 +11,14 @@ class AppSharedPreferences
     @Inject constructor(protected val mSharedPreferences: SharedPreferences) {
 
     inline fun <reified T : BasePreference> prepare(): T {
-        return prepareNext(T::class.java)
+        return accessPrepare(T::class.java)
     }
 
     @PublishedApi
-    internal fun <T : BasePreference> prepareNext(clazz: Class<*>): T {
+    internal fun <T : BasePreference> accessPrepare(clazz: Class<*>): T {
         when (clazz) {
             AccountInfoPreference::class.java -> return AccountInfoPreference(mSharedPreferences) as T
-            else -> throw IllegalArgumentException("Unknown type T")
+            else -> throw IllegalArgumentException("Unknown type T: ${clazz.simpleName}")
         }
     }
 }

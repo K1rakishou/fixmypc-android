@@ -6,7 +6,7 @@ import timber.log.Timber
 /**
  * Created by kirakishou on 7/26/2017.
  */
-object Util {
+object Utils {
     fun checkIsOnMainThread(): Boolean {
         return Looper.myLooper() == Looper.getMainLooper()
     }

@@ -22,6 +22,8 @@ class BackgroundServicePresenterImpl
                         protected val mEventBus: EventBus) : BaseServicePresenter<BackgroundServiceCallbacks>(), BackgroundServicePresenter {
 
     override fun initPresenter() {
+        Timber.d("BackgroundServicePresenterImpl.initPresenter()")
+
         mFixmypcApiStore.callbacks = Fickle.of(this)
         mEventBus.register(this)
     }
@@ -29,6 +31,8 @@ class BackgroundServicePresenterImpl
     override fun destroyPresenter() {
         mFixmypcApiStore.callbacks = Fickle.empty()
         mEventBus.unregister(this)
+
+        Timber.d("BackgroundServicePresenterImpl.destroyPresenter()")
     }
 
     override fun returnAnswer(answer: ServiceAnswer) {

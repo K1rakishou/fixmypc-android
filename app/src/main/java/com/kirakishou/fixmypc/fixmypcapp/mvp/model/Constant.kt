@@ -22,4 +22,11 @@ object Constant {
         val MALFUNCTION_PHOTOS_FRAGMENT_TAG = "${BASE_FRAGMENT_TAG}_MALFUNCTION_PHOTOS"
     }
 
+    object Views {
+        val PHOTO_ADAPTER_VIEW_WITH: Int = 128
+    }
+
+    object PermissionCodes {
+        val PERMISSION_CODE_WRITE_EXTERNAL_STORAGE = 0x1
+    }
 }

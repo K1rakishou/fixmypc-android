@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.store.wifi
+package com.kirakishou.fixmypc.fixmypcapp.manager.wifi
 
 /**
  * Created by kirakishou on 7/26/2017.

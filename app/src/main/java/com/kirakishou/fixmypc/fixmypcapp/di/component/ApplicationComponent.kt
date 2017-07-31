@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ApplicationModule
+import com.kirakishou.fixmypc.fixmypcapp.manager.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.shared_preference.AppSharedPreferences
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
@@ -27,4 +28,5 @@ interface ApplicationComponent {
     fun exposeEventBus(): EventBus
     fun exposeAppSharedPreferences(): AppSharedPreferences
     fun exposeAppSettings(): AppSettings
+    fun exposePermissionManager(): PermissionManager
 }

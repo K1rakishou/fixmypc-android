@@ -111,12 +111,16 @@ abstract class BaseActivity : AppCompatActivity() {
         Toast.makeText(this, message, duration).show()
     }
 
-    protected fun showErrorMessageDialog(message: String) {
+    protected fun showErrorMessageDialog(message: String, finishActivity: Boolean = false) {
         MaterialDialog.Builder(this)
                 .title(R.string.unknown_server_error_has_occurred)
                 .content(message)
                 .positiveText(R.string.ok)
-                .onPositive { _, _ -> finish() }
+                .onPositive { _, _ ->
+                    if (finishActivity) {
+                        finish()
+                    }
+                }
                 .show()
     }
 

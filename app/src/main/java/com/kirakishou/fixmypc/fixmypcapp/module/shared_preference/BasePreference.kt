@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.shared_preference
+package com.kirakishou.fixmypc.fixmypcapp.module.shared_preference
 
 /**
  * Created by kirakishou on 7/25/2017.

@@ -11,11 +11,11 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServerErrorCode
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ErrorMessage
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.LoadingActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.LoadingActivityView
-import com.kirakishou.fixmypc.fixmypcapp.shared_preference.AppSharedPreferences
-import com.kirakishou.fixmypc.fixmypcapp.shared_preference.preference.AccountInfoPreference
+import com.kirakishou.fixmypc.fixmypcapp.module.shared_preference.AppSharedPreferences
+import com.kirakishou.fixmypc.fixmypcapp.module.shared_preference.preference.AccountInfoPreference
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -35,10 +35,10 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
     override fun getContentView(): Int = R.layout.activity_loading
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
+    override fun onInitPresenter() = mPresenter.initPresenter()
+    override fun onDestroyPresenter() = mPresenter.destroyPresenter()
 
     override fun onViewReady() {
-        mPresenter.initPresenter()
-
         accountInfoPrefs = mAppSharedPreferences.prepare<AccountInfoPreference>()
 
         //FIXME: accountInfoPrefs should be loaded from preferences via accountInfoPrefs.load()
@@ -55,7 +55,7 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
     }
 
     override fun onViewStop() {
-        mPresenter.destroyPresenter()
+
     }
 
     override fun runGuestMainActivity() {

@@ -21,13 +21,13 @@
             android:name=".module.service.BackgroundService"
             android:exported="false" />
 
-        <receiver android:name=".module.broadcast_receiver.BootBroadcastReceiver">
+        <receiver android:name=".module.receiver.BootBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".module.broadcast_receiver.WiFiConnectivityChangeReceiver"
+            android:name=".module.receiver.WiFiConnectivityChangeReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />

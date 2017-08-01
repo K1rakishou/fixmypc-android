@@ -45,8 +45,6 @@ class MalfunctionPhotosFragment : BaseFragment(),
     override fun loadExitAnimations() = AnimatorSet()
 
     override fun onFragmentReady() {
-        Timber.e("onFragmentReady")
-
         initBindings()
         initRecyclerView()
     }
@@ -58,17 +56,19 @@ class MalfunctionPhotosFragment : BaseFragment(),
         mPhotoAdapter.add(AdapterItem(AdapterItemType.Photo.VIEW_ADD_BUTTON))
 
         val layoutManager = GridLayoutManager(activity,
-                AndroidUtils.calculateNoOfColumns(activity, Constant.Views.PHOTO_ADAPTER_VIEW_WITH))
+                AndroidUtils.calculateColumnsCount(activity, Constant.Views.PHOTO_ADAPTER_VIEW_WITH))
 
         mPhotoRecyclerView.layoutManager = layoutManager
         mPhotoRecyclerView.setHasFixedSize(true)
         mPhotoRecyclerView.adapter = mPhotoAdapter
+        mPhotoRecyclerView.isNestedScrollingEnabled = false
     }
 
     private fun initBindings() {
         addDisposable(RxView.clicks(mButtonSendApplication)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
+                    setMalfunctionPhotos(mPhotoAdapter.getPhotos())
                     sendApplicationToServer()
                 }, { error ->
                     Timber.e(error)
@@ -77,22 +77,33 @@ class MalfunctionPhotosFragment : BaseFragment(),
 
     private fun sendApplicationToServer() {
         val activityHolder = activity as ClientMainActivity
-        activityHolder.sendApplicationToServer()
+        activityHolder.sendRequestToServer()
+    }
+
+    private fun setMalfunctionPhotos(photos: ArrayList<String>) {
+        val activityHolder = activity as ClientMainActivity
+        activityHolder.setMalfunctionPhotos(photos)
     }
 
     override fun onPhotoAddClick(position: Int) {
-        Timber.e("onPhotoAddClick")
-
         val activityHolder = activity as ClientMainActivity
         activityHolder.requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Constant.PermissionCodes.PERMISSION_CODE_WRITE_EXTERNAL_STORAGE)
     }
 
     override fun onPhotoRemoveClick(position: Int) {
-        Timber.e("onPhotoRemoveClick")
+        mPhotoAdapter.remove(position)
+
+        if (mPhotoAdapter.getPhotosCount() <= 0) {
+            mButtonSendApplication.isEnabled = false
+        }
     }
 
     override fun onPermissionGranted() {
+        if (!isAdded) {
+            return
+        }
+
         EasyImage.openGallery(this, 0)
     }
 
@@ -108,6 +119,10 @@ class MalfunctionPhotosFragment : BaseFragment(),
                 override fun onImagesPicked(imageFiles: List<File>, source: EasyImage.ImageSource, type: Int) {
                     for (file in imageFiles) {
                         mPhotoAdapter.add(AdapterItem(MalfunctionPhoto(file.absolutePath), AdapterItemType.Photo.VIEW_PHOTO))
+                    }
+
+                    if (mPhotoAdapter.getPhotosCount() > 0) {
+                        mButtonSendApplication.isEnabled = true
                     }
                 }
 

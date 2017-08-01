@@ -1,10 +1,10 @@
-package com.kirakishou.fixmypc.fixmypcapp.shared_preference.preference
+package com.kirakishou.fixmypc.fixmypcapp.module.shared_preference.preference
 
 import android.content.SharedPreferences
 import com.kirakishou.fixmypc.fixmypcapp.util.extension.edit
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
-import com.kirakishou.fixmypc.fixmypcapp.shared_preference.BasePreference
+import com.kirakishou.fixmypc.fixmypcapp.module.shared_preference.BasePreference
 
 /**
  * Created by kirakishou on 7/25/2017.

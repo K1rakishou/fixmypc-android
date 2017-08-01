@@ -8,6 +8,7 @@ import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerBackgroundServiceComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.BackgroundServiceModule
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.BackgroundServicePresenterImpl
+import com.kirakishou.fixmypc.fixmypcapp.util.AndroidUtils
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -25,7 +26,11 @@ class BackgroundService : Service(), BackgroundServiceCallbacks {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        WakefulBroadcastReceiver.completeWakefulIntent(intent)
+
+        if (!AndroidUtils.isLollipopOrHigher()) {
+            WakefulBroadcastReceiver.completeWakefulIntent(intent)
+        }
+
         return START_STICKY
     }
 
@@ -43,19 +48,15 @@ class BackgroundService : Service(), BackgroundServiceCallbacks {
         resolveDaggerDependency()
         mPresenter.initPresenter()
 
-        Timber.e("BackgroundService created")
+        Timber.d("BackgroundService created")
     }
 
     override fun onDestroy() {
         mPresenter.destroyPresenter()
-        Timber.e("BackgroundService destroyed")
+        Timber.d("BackgroundService destroyed")
 
         super.onDestroy()
     }
-
-    /*override fun onUnknownError(error: Throwable) {
-        Timber.e(error)
-    }*/
 }
 
 

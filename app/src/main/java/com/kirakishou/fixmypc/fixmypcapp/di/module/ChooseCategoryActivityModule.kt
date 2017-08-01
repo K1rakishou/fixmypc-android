@@ -1,7 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.di.module
 
 import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerActivity
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.ChooseCategoryActivityView
+import com.kirakishou.fixmypc.fixmypcapp.mvp.view.ClientMainActivityView
 import dagger.Module
 import dagger.Provides
 
@@ -10,11 +10,11 @@ import dagger.Provides
  */
 
 @Module
-class ChooseCategoryActivityModule(val mView: ChooseCategoryActivityView) {
+class ChooseCategoryActivityModule(val mView: ClientMainActivityView) {
 
     @PerActivity
     @Provides
-    fun provideView(): ChooseCategoryActivityView {
+    fun provideView(): ClientMainActivityView {
         return mView
     }
 }

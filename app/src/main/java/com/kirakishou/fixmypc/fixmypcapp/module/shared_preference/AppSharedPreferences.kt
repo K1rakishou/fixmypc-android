@@ -1,7 +1,7 @@
-package com.kirakishou.fixmypc.fixmypcapp.shared_preference
+package com.kirakishou.fixmypc.fixmypcapp.module.shared_preference
 
 import android.content.SharedPreferences
-import com.kirakishou.fixmypc.fixmypcapp.shared_preference.preference.AccountInfoPreference
+import com.kirakishou.fixmypc.fixmypcapp.module.shared_preference.preference.AccountInfoPreference
 import javax.inject.Inject
 
 /**

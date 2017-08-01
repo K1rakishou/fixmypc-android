@@ -16,13 +16,16 @@ import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionDescriptionF
 import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionPhotosFragment
 import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionPhotosFragmentCallbacks
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServerErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.MalfunctionCategory
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionRequestInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.ClientMainActivityPresenterImpl
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.ChooseCategoryActivityView
+import com.kirakishou.fixmypc.fixmypcapp.mvp.view.ClientMainActivityView
 import javax.inject.Inject
 
 
-class ClientMainActivity : BaseActivity(), ChooseCategoryActivityView {
+class ClientMainActivity : BaseActivity(), ClientMainActivityView {
 
     @Inject
     lateinit var mPresenter: ClientMainActivityPresenterImpl
@@ -30,11 +33,13 @@ class ClientMainActivity : BaseActivity(), ChooseCategoryActivityView {
     @Inject
     lateinit var mPermissionManager: PermissionManager
 
-    private var isOpened: Boolean = false
+    private val malfunctionRequestInfo = MalfunctionRequestInfo()
 
     override fun getContentView() = R.layout.activity_client_main
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
+    override fun onInitPresenter() = mPresenter.initPresenter()
+    override fun onDestroyPresenter() = mPresenter.destroyPresenter()
 
     override fun onPrepareView(savedInstanceState: Bundle?, intent: Intent) {
         super.onPrepareView(savedInstanceState, intent)
@@ -88,20 +93,32 @@ class ClientMainActivity : BaseActivity(), ChooseCategoryActivityView {
         }
     }
 
+    fun setMalfunctionCategory(malfunctionCategory: MalfunctionCategory) {
+        this.malfunctionRequestInfo.malfunctionCategory = Fickle.of(malfunctionCategory)
+    }
+
+    fun setMalfunctionDescription(malfunctionDescription: String) {
+        this.malfunctionRequestInfo.malfunctionDescription = Fickle.of(malfunctionDescription)
+    }
+
+    fun setMalfunctionPhotos(malfunctionPhotos: ArrayList<String>) {
+        this.malfunctionRequestInfo.malfunctionPhotos = Fickle.of(malfunctionPhotos)
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         mPermissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    fun sendApplicationToServer() {
-        mPresenter.sendApplicationToServer()
+    fun sendRequestToServer() {
+        mPresenter.sendMalfunctionRequestToServer(malfunctionRequestInfo)
     }
 
     override fun onViewReady() {
-        mPresenter.initPresenter()
+
     }
 
     override fun onViewStop() {
-        mPresenter.destroyPresenter()
+
     }
 
     override fun resolveDaggerDependency() {

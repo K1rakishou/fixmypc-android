@@ -6,6 +6,8 @@ package com.kirakishou.fixmypc.fixmypcapp.mvp.model
 object Constant {
     private val APPLICATION_ID = "com.kirakishou.fixmypc.fixmypcapp"
     val SHARED_PREFS_PREFIX = "${APPLICATION_ID}_SHARED_PREF"
+    val MALFUNCTION_PHOTO_ADAPTER_MAX_PHOTOS = 3
+    val RECYCLERVIEW_MAX_COLUMNS_COUNT = 10
 
     object SerializedNames {
         const val LOGIN_SERIALIZED_NAME = "login"
@@ -13,6 +15,8 @@ object Constant {
         const val ACCOUNT_TYPE_SERIALIZED_NAME = "account_type"
         const val SESSION_ID_SERIALIZED_NAME = "session_id"
         const val SERVER_ERROR_CODE_SERIALIZED_NAME = "server_error_code"
+        const val MALFUNCTION_CATEGORY = "m_category"
+        const val MALFUNCTION_DESCRIPTION = "m_description"
     }
 
     object FragmentTags {

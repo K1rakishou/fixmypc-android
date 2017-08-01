@@ -1,8 +1,7 @@
-package com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity
+package com.kirakishou.fixmypc.fixmypcapp.mvp.model
 
 import android.content.Context
 import com.kirakishou.fixmypc.fixmypcapp.R
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServerErrorCode
 
 /**
  * Created by kirakishou on 7/27/2017.

@@ -10,6 +10,7 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.module.activity.ClientMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.MalfunctionCategory
 import io.reactivex.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 
@@ -36,6 +37,7 @@ class MalfunctionCategoryFragment : BaseFragment() {
         addDisposable(RxView.clicks(mComputerCategoryButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
+                    setMalfunctionCategory(MalfunctionCategory.Computer)
                     loadNextFragment(Constant.FragmentTags.MALFUNCTION_DESCRIPTION_FRAGMENT_TAG)
                 }, { error ->
                     Timber.e(error)
@@ -44,6 +46,7 @@ class MalfunctionCategoryFragment : BaseFragment() {
         addDisposable(RxView.clicks(mNotebookCategoryButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
+                    setMalfunctionCategory(MalfunctionCategory.Notebook)
                     loadNextFragment(Constant.FragmentTags.MALFUNCTION_DESCRIPTION_FRAGMENT_TAG)
                 }, { error ->
                     Timber.e(error)
@@ -52,15 +55,21 @@ class MalfunctionCategoryFragment : BaseFragment() {
         addDisposable(RxView.clicks(mPhoneCategoryButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
+                    setMalfunctionCategory(MalfunctionCategory.Phone)
                     loadNextFragment(Constant.FragmentTags.MALFUNCTION_DESCRIPTION_FRAGMENT_TAG)
                 }, { error ->
                     Timber.e(error)
                 }))
     }
 
-    fun loadNextFragment(fragmentTag: String) {
+    private fun loadNextFragment(fragmentTag: String) {
         val activityHolder = activity as ClientMainActivity
         activityHolder.pushFragment(fragmentTag)
+    }
+
+    private fun setMalfunctionCategory(category: MalfunctionCategory) {
+        val activityHolder = activity as ClientMainActivity
+        activityHolder.setMalfunctionCategory(category)
     }
 
     override fun onFragmentStop() {

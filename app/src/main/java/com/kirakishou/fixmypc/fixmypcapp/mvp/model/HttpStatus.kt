@@ -6,9 +6,10 @@ package com.kirakishou.fixmypc.fixmypcapp.mvp.model
 enum class HttpStatus(val status: Int) {
     OK(200),
     CREATED(201),
-    CONFLICT(409),
 
+    CONFLICT(409),
     UNPROCESSABLE_ENTITY(422),
+
     INTERNAL_SERVER_ERROR(500);
 
 

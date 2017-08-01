@@ -15,7 +15,10 @@ import com.bumptech.glide.request.RequestOptions
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AdapterItem
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AdapterItemType
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionPhoto
+import timber.log.Timber
+import java.io.File
 
 /**
  * Created by kirakishou on 7/31/2017.
@@ -38,16 +41,58 @@ class MalfunctionPhotosAdapter(context: Context, callback: PhotoClickCallback) :
             item.setType(AdapterItemType.Photo.VIEW_ADD_BUTTON)
         }
 
-        mMalfunctionPhotos.add(0, item)
-        notifyItemInserted(0)
+        if (item.getType() == AdapterItemType.Photo.VIEW_ADD_BUTTON.ordinal) {
+            mMalfunctionPhotos.add(item)
+            notifyItemInserted(mMalfunctionPhotos.size - 1)
+        } else {
+            mMalfunctionPhotos.add(mMalfunctionPhotos.size - 1, item)
+            notifyItemInserted(mMalfunctionPhotos.size - 2)
+        }
+
+        val photosCount = mMalfunctionPhotos.size
+
+        //if photosCount > maxPhotos + 1 (button)
+        if (photosCount > (Constant.MALFUNCTION_PHOTO_ADAPTER_MAX_PHOTOS + 1)) {
+            //if last element of list is button
+            if (mMalfunctionPhotos.last().getType() == AdapterItemType.Photo.VIEW_ADD_BUTTON.ordinal) {
+                //remove it
+                mMalfunctionPhotos.removeAt(photosCount - 1)
+                notifyItemRemoved(mMalfunctionPhotos.size - 1)
+            }
+        }
     }
 
-    fun remove(item: AdapterItem<MalfunctionPhoto>) {
-        val position = mMalfunctionPhotos.indexOf(item)
-        if (position > -1) {
-            mMalfunctionPhotos.removeAt(position)
-            notifyItemRemoved(position)
+    fun remove(position: Int) {
+        if (position < 0 || position > mMalfunctionPhotos.size) {
+            return
         }
+
+        mMalfunctionPhotos.removeAt(position)
+        //notifyItemRemoved(position)
+
+        //FIXME: for some reason recyclerview doesn't change it's size on element removing when using notifyItemRemoved. It works with notifyDataSetChanged but without animations
+        notifyDataSetChanged()
+
+        //if we don't have a button yet
+        if (mMalfunctionPhotos.last().getType() != AdapterItemType.Photo.VIEW_ADD_BUTTON.ordinal) {
+            //if photosCount <= maxPhotos
+            if (mMalfunctionPhotos.size <= (Constant.MALFUNCTION_PHOTO_ADAPTER_MAX_PHOTOS)) {
+                //add button again
+                mMalfunctionPhotos.add(AdapterItem(AdapterItemType.Photo.VIEW_ADD_BUTTON))
+                notifyItemInserted(mMalfunctionPhotos.size - 1)
+            }
+        }
+    }
+
+    fun getPhotosCount(): Int {
+        return mMalfunctionPhotos
+                .filter { it.getType() == AdapterItemType.Photo.VIEW_PHOTO.ordinal }
+                .count()
+    }
+
+    fun getPhotos(): ArrayList<String> {
+        return ArrayList(mMalfunctionPhotos.filter { it.getType() == AdapterItemType.Photo.VIEW_PHOTO.ordinal }
+                .map { it.value.get().path })
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -66,7 +111,10 @@ class MalfunctionPhotosAdapter(context: Context, callback: PhotoClickCallback) :
                 return PhotoViewHolder(view)
             }
 
-            else -> throw IllegalArgumentException("Unsupported viewType: $viewType")
+            else -> {
+                Timber.e("Unsupported viewType: $viewType")
+                throw IllegalArgumentException("Unsupported viewType: $viewType")
+            }
         }
     }
 
@@ -85,7 +133,7 @@ class MalfunctionPhotosAdapter(context: Context, callback: PhotoClickCallback) :
                     val photoPath = malfunctionPhoto.get()
 
                     Glide.with(mContext)
-                            .load(photoPath.path)
+                            .load(File(photoPath.path))
                             .apply(RequestOptions()
                                     .fitCenter()
                                     .centerCrop())
@@ -96,11 +144,15 @@ class MalfunctionPhotosAdapter(context: Context, callback: PhotoClickCallback) :
                     }
 
                 } else {
+                    Timber.e("malfunctionPhoto does not exist!")
                     throw IllegalArgumentException("malfunctionPhoto does not exist!")
                 }
             }
 
-            else -> throw IllegalArgumentException("Unsupported holder: ${holder.javaClass.simpleName}")
+            else -> {
+                Timber.e("Unsupported holder: ${holder.javaClass.simpleName}")
+                throw IllegalArgumentException("Unsupported holder: ${holder.javaClass.simpleName}")
+            }
         }
     }
 

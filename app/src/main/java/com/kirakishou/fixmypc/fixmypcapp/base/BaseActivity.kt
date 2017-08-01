@@ -12,6 +12,7 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.module.service.BackgroundService
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
+import com.kirakishou.fixmypc.fixmypcapp.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.util.extension.myAddListener
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -62,6 +63,7 @@ abstract class BaseActivity : AppCompatActivity() {
     @CallSuper
     protected open fun onPrepareView(savedInstanceState: Bundle?, intent: Intent) {
         resolveDaggerDependency()
+        onInitPresenter()
     }
 
     override fun onStart() {
@@ -73,12 +75,15 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
 
+        AndroidUtils.hideSoftKeyboard(this)
         mCompositeDisposable.clear()
         animateActivityStop()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+
+        onDestroyPresenter()
 
         mUnbinder.ifPresent {
             it.unbind()
@@ -136,6 +141,8 @@ abstract class BaseActivity : AppCompatActivity() {
     protected abstract fun getContentView(): Int
     protected abstract fun loadStartAnimations(): AnimatorSet
     protected abstract fun loadExitAnimations(): AnimatorSet
+    protected abstract fun onInitPresenter()
+    protected abstract fun onDestroyPresenter()
     protected abstract fun onViewReady()
     protected abstract fun onViewStop()
     protected abstract fun resolveDaggerDependency()

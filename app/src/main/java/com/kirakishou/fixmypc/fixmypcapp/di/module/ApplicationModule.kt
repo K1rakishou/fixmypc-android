@@ -9,7 +9,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServerErrorCode
-import com.kirakishou.fixmypc.fixmypcapp.shared_preference.AppSharedPreferences
+import com.kirakishou.fixmypc.fixmypcapp.module.shared_preference.AppSharedPreferences
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverterImpl
 import com.kirakishou.fixmypc.fixmypcapp.util.type_adapter.AccountTypeTypeAdapter

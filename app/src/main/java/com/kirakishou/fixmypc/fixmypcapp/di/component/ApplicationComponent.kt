@@ -6,7 +6,7 @@ import com.google.gson.Gson
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ApplicationModule
 import com.kirakishou.fixmypc.fixmypcapp.manager.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
-import com.kirakishou.fixmypc.fixmypcapp.shared_preference.AppSharedPreferences
+import com.kirakishou.fixmypc.fixmypcapp.module.shared_preference.AppSharedPreferences
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
 import dagger.Component
 import org.greenrobot.eventbus.EventBus

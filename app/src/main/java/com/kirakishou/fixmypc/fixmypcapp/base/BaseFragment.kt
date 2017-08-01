@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import butterknife.ButterKnife
 import butterknife.Unbinder
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
+import com.kirakishou.fixmypc.fixmypcapp.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.util.extension.myAddListener
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -49,6 +50,8 @@ abstract class BaseFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+
+        AndroidUtils.hideSoftKeyboard(activity)
         mCompositeDisposable.clear()
 
         runCallbackAfterAnimation(loadExitAnimations()) {

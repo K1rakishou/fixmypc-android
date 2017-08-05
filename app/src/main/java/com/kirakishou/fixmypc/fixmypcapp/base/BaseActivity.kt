@@ -15,7 +15,6 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.util.extension.myAddListener
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 
 
 /**
@@ -23,12 +22,8 @@ import io.reactivex.disposables.Disposable
  */
 abstract class BaseActivity : AppCompatActivity() {
 
-    private val mCompositeDisposable = CompositeDisposable()
+    val mCompositeDisposable = CompositeDisposable()
     private var mUnbinder: Fickle<Unbinder> = Fickle.empty()
-
-    protected fun addDisposable(disposable: Disposable) {
-        mCompositeDisposable.add(disposable)
-    }
 
     private fun overridePendingTransitionEnter() {
         overridePendingTransition(0, 0)
@@ -118,7 +113,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     protected fun showErrorMessageDialog(message: String, finishActivity: Boolean = false) {
         MaterialDialog.Builder(this)
-                .title(R.string.unknown_server_error_has_occurred)
+                .title(R.string.rec_unknown_server_error_has_occurred)
                 .content(message)
                 .positiveText(R.string.ok)
                 .onPositive { _, _ ->

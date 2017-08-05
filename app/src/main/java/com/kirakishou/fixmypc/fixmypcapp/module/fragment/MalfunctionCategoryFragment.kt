@@ -12,6 +12,7 @@ import com.kirakishou.fixmypc.fixmypcapp.module.activity.ClientMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.MalfunctionCategory
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
 
 class MalfunctionCategoryFragment : BaseFragment() {
@@ -34,32 +35,32 @@ class MalfunctionCategoryFragment : BaseFragment() {
     }
 
     private fun initBindings() {
-        addDisposable(RxView.clicks(mComputerCategoryButton)
+        mCompositeDisposable += RxView.clicks(mComputerCategoryButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
                     setMalfunctionCategory(MalfunctionCategory.Computer)
                     loadNextFragment(Constant.FragmentTags.MALFUNCTION_DESCRIPTION_FRAGMENT_TAG)
                 }, { error ->
                     Timber.e(error)
-                }))
+                })
 
-        addDisposable(RxView.clicks(mNotebookCategoryButton)
+        mCompositeDisposable += RxView.clicks(mNotebookCategoryButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
                     setMalfunctionCategory(MalfunctionCategory.Notebook)
                     loadNextFragment(Constant.FragmentTags.MALFUNCTION_DESCRIPTION_FRAGMENT_TAG)
                 }, { error ->
                     Timber.e(error)
-                }))
+                })
 
-        addDisposable(RxView.clicks(mPhoneCategoryButton)
+        mCompositeDisposable += RxView.clicks(mPhoneCategoryButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
                     setMalfunctionCategory(MalfunctionCategory.Phone)
                     loadNextFragment(Constant.FragmentTags.MALFUNCTION_DESCRIPTION_FRAGMENT_TAG)
                 }, { error ->
                     Timber.e(error)
-                }))
+                })
     }
 
     private fun loadNextFragment(fragmentTag: String) {

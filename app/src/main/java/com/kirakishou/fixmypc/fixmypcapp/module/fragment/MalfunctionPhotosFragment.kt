@@ -22,6 +22,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionPhoto
 import com.kirakishou.fixmypc.fixmypcapp.util.AndroidUtils
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.plusAssign
 import pl.aprilapps.easyphotopicker.DefaultCallback
 import pl.aprilapps.easyphotopicker.EasyImage
 import timber.log.Timber
@@ -65,14 +66,14 @@ class MalfunctionPhotosFragment : BaseFragment(),
     }
 
     private fun initBindings() {
-        addDisposable(RxView.clicks(mButtonSendApplication)
+        mCompositeDisposable += RxView.clicks(mButtonSendApplication)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
                     setMalfunctionPhotos(mPhotoAdapter.getPhotos())
                     sendApplicationToServer()
                 }, { error ->
                     Timber.e(error)
-                }))
+                })
     }
 
     private fun sendApplicationToServer() {

@@ -1,7 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter
 
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServerErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServerResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceAnswer
@@ -59,9 +59,9 @@ open class LoadingActivityPresenterImpl
             is ServerResponse.Success -> {
                 val sessionId = loginResponse.value.sessionId
                 val accountType = loginResponse.value.accountType
-                val serverErrorCode = loginResponse.value.serverError
+                val serverErrorCode = loginResponse.value.error
 
-                if (serverErrorCode != ServerErrorCode.SEC_OK) {
+                if (serverErrorCode != ErrorCode.SEC_OK) {
                     throw IllegalStateException("ServerResponse is Success but serverErrorCode is not SEC_OK: $serverErrorCode")
                 }
 
@@ -80,11 +80,11 @@ open class LoadingActivityPresenterImpl
             }
 
             is ServerResponse.ServerError -> {
-                val errCode = loginResponse.serverErrorCode
+                val errCode = loginResponse.errorCode
 
                 when (errCode) {
-                    ServerErrorCode.SEC_WRONG_LOGIN_OR_PASSWORD,
-                    ServerErrorCode.SEC_UNKNOWN_SERVER_ERROR -> {
+                    ErrorCode.SEC_WRONG_LOGIN_OR_PASSWORD,
+                    ErrorCode.SEC_UNKNOWN_SERVER_ERROR -> {
                         callbacks.runGuestMainActivity()
                     }
 

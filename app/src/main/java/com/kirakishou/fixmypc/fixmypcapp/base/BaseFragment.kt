@@ -20,11 +20,7 @@ import io.reactivex.disposables.Disposable
 abstract class BaseFragment : Fragment() {
 
     private var mUnbinder: Fickle<Unbinder> = Fickle.empty()
-    private val mCompositeDisposable = CompositeDisposable()
-
-    protected fun addDisposable(disposable: Disposable) {
-        mCompositeDisposable.add(disposable)
-    }
+    val mCompositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -4,6 +4,7 @@ import com.kirakishou.fixmypc.fixmypcapp.base.BaseServicePresenter
 import com.kirakishou.fixmypc.fixmypcapp.module.service.BackgroundServiceCallbacks
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionApplicationInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceAnswer
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.LoginRequest
@@ -42,12 +43,14 @@ class BackgroundServicePresenterImpl
     @Subscribe(threadMode = ThreadMode.ASYNC, sticky = true)
     override fun onClientMessage(message: ServiceMessage) {
         when (message.type) {
-            ServiceMessageType.SERVICE_MESSAGE_LOGIN -> testRequest(message.data as LoginRequest)
+            ServiceMessageType.SERVICE_MESSAGE_LOGIN -> {
+                mFixmypcApiStore.loginRequest(message.data as LoginRequest, message.type)
+            }
+
+            ServiceMessageType.SERVICE_MESSAGE_SEND_MALFUNCTION_APPLICATION -> {
+                mFixmypcApiStore.sendMalfunctionRequest(message.data as MalfunctionApplicationInfo, message.type)
+            }
             else -> Timber.e("Unsupported messageType: ${message.type}")
         }
-    }
-
-    override fun testRequest(loginRequest: LoginRequest) {
-        mFixmypcApiStore.loginRequest(loginRequest, ServiceMessageType.SERVICE_MESSAGE_LOGIN)
     }
 }

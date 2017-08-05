@@ -10,7 +10,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.module.LoadingActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServerErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.LoadingActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.LoadingActivityView
@@ -82,8 +82,8 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
         mAppSettings.accountType = Fickle.of(accountType)
     }
 
-    override fun onServerError(serverErrorCode: ServerErrorCode) {
-        val message = ErrorMessage.getErrorMessage(this, serverErrorCode)
+    override fun onServerError(errorCode: ErrorCode) {
+        val message = ErrorMessage.getRemoteErrorMessage(this, errorCode)
         showToast(message, Toast.LENGTH_LONG)
     }
 

@@ -1,7 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter
 
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServerErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServerResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceAnswer
@@ -45,7 +45,7 @@ class LoadingActivityPresenterImpl_onLoginEventResponseTest {
         val accountType = AccountType.Client
 
         mPresenter.onLoginEventResponse(ServiceAnswer(ServiceMessageType.SERVICE_MESSAGE_LOGIN,
-                ServerResponse.Success(LoginResponse(sessionId, accountType, ServerErrorCode.SEC_OK))))
+                ServerResponse.Success(LoginResponse(sessionId, accountType, ErrorCode.SEC_OK))))
 
         Mockito.verify(mViewCallbacks, Mockito.only()).runClientMainActivity(sessionId, accountType)
     }
@@ -56,7 +56,7 @@ class LoadingActivityPresenterImpl_onLoginEventResponseTest {
         val accountType = AccountType.Specialist
 
         mPresenter.onLoginEventResponse(ServiceAnswer(ServiceMessageType.SERVICE_MESSAGE_LOGIN,
-                ServerResponse.Success(LoginResponse(sessionId, accountType, ServerErrorCode.SEC_OK))))
+                ServerResponse.Success(LoginResponse(sessionId, accountType, ErrorCode.SEC_OK))))
 
         Mockito.verify(mViewCallbacks, Mockito.only()).runSpecialistMainActivity(sessionId, accountType)
     }
@@ -67,13 +67,13 @@ class LoadingActivityPresenterImpl_onLoginEventResponseTest {
         val accountType = AccountType.Guest
 
         mPresenter.onLoginEventResponse(ServiceAnswer(ServiceMessageType.SERVICE_MESSAGE_LOGIN,
-                ServerResponse.Success(LoginResponse(sessionId, accountType, ServerErrorCode.SEC_OK))))
+                ServerResponse.Success(LoginResponse(sessionId, accountType, ErrorCode.SEC_OK))))
     }
 
     @Test
     fun shouldCallRunGuestMainActivityWhenErrorCodeIsWrongLoginOrPassword() {
         mPresenter.onLoginEventResponse(ServiceAnswer(ServiceMessageType.SERVICE_MESSAGE_LOGIN,
-                ServerResponse.ServerError(ServerErrorCode.SEC_WRONG_LOGIN_OR_PASSWORD)))
+                ServerResponse.ServerError(ErrorCode.SEC_WRONG_LOGIN_OR_PASSWORD)))
 
         Mockito.verify(mViewCallbacks, Mockito.only()).runGuestMainActivity()
     }
@@ -81,7 +81,7 @@ class LoadingActivityPresenterImpl_onLoginEventResponseTest {
     @Test
     fun shouldCallRunGuestMainActivityWhenErrorCodeIsUnknownServerError() {
         mPresenter.onLoginEventResponse(ServiceAnswer(ServiceMessageType.SERVICE_MESSAGE_LOGIN,
-                ServerResponse.ServerError(ServerErrorCode.SEC_UNKNOWN_SERVER_ERROR)))
+                ServerResponse.ServerError(ErrorCode.SEC_UNKNOWN_SERVER_ERROR)))
 
         Mockito.verify(mViewCallbacks, Mockito.only()).runGuestMainActivity()
     }

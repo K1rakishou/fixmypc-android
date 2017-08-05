@@ -63,7 +63,7 @@ class FixmypcApiStoreImpl_LoginRequestTest {
     fun shouldCallReturnAnswerWithServerResponseHttpError() {
         val badLoginRequest = LoginRequest("test2@gmail.com", "1234567890")
         val badSessionId = ""
-        val badResponse = LoginResponse(badSessionId, AccountType.Client, ServerErrorCode.SEC_WRONG_LOGIN_OR_PASSWORD)
+        val badResponse = LoginResponse(badSessionId, AccountType.Client, ErrorCode.SEC_WRONG_LOGIN_OR_PASSWORD)
         val type = ServiceMessageType.SERVICE_MESSAGE_LOGIN
         val badLoginResponseJson = """{ "session_id": "", "account_type": 2, "status_code": 2 }"""
 
@@ -74,7 +74,7 @@ class FixmypcApiStoreImpl_LoginRequestTest {
         mApiStore.loginRequest(badLoginRequest, type)
 
         Mockito.verify(callbacks, Mockito.only())
-                .returnAnswer(ServiceAnswer(type, ServerResponse.ServerError(ServerErrorCode.SEC_WRONG_LOGIN_OR_PASSWORD)))
+                .returnAnswer(ServiceAnswer(type, ServerResponse.ServerError(ErrorCode.SEC_WRONG_LOGIN_OR_PASSWORD)))
     }
 
     @Test
@@ -82,7 +82,7 @@ class FixmypcApiStoreImpl_LoginRequestTest {
         val goodLoginRequest = LoginRequest("test@gmail.com", "1234567890")
         val goodSessionId = "1234567890abcdef"
         val type = ServiceMessageType.SERVICE_MESSAGE_LOGIN
-        val goodResponse = LoginResponse(goodSessionId, AccountType.Client, ServerErrorCode.SEC_OK)
+        val goodResponse = LoginResponse(goodSessionId, AccountType.Client, ErrorCode.SEC_OK)
 
         Mockito.`when`(mApiService.doLogin(goodLoginRequest)).thenReturn(Single.just(goodResponse))
 

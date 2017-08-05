@@ -1,14 +1,21 @@
 <resources>
     <string name="app_name">FixmypcApp</string>
     <string name="ok">OK</string>
-    <string name="unknown_server_error_has_occurred">Произошла неизвестная ошибка</string>
 
-    <string name="unknown_server_error">Неизвестная ошибка на сервере</string>
-    <string name="wrong_login_or_password">Неверный логин или пароль</string>
-    <string name="login_already_registered">Данный логин уже занят</string>
-    <string name="login_is_incorrect">Непревильно введён логин. Возможно пропущен символ \'@\' или \'.\'</string>
-    <string name="password_is_incorrect">Непревильно введён пароль. Длина пароль должна составлять от %1$d до %2$d символов</string>
-    <string name="account_type_is_incorrect">Выбран несуществующий тип аккаунта</string>
+    <!-- Remote Error Code Messages -->
+    <string name="rec_unknown_server_error_has_occurred">Произошла неизвестная ошибка</string>
+    <string name="rec_unknown_server_error">Неизвестная ошибка на сервере</string>
+    <string name="rec_wrong_login_or_password">Неверный логин или пароль</string>
+    <string name="rec_login_already_registered">Данный логин уже занят</string>
+    <string name="rec_login_is_incorrect">Непревильно введён логин. Возможно пропущен символ \'@\' или \'.\'</string>
+    <string name="rec_password_is_incorrect">Непревильно введён пароль. Длина пароль должна составлять от %1$d до %2$d символов</string>
+    <string name="rec_account_type_is_incorrect">Выбран несуществующий тип аккаунта</string>
+
+    <!-- Local Error Code Messages -->
+    <string name="lec_mai_description_is_not_set">Не задано описание поломки</string>
+    <string name="lec_mai_category_is_not_set">Не выбрана категория поломки</string>
+    <string name="lec_mai_photos_are_not_set">Не выбраны фотографии поломки</string>
+
     <string name="choose_malfunction_category_textview_title">Выберите категорию поломки</string>
     <string name="computer_category_button_title">Компьютер</string>
     <string name="notebook_category_button_title">Ноутбук</string>
@@ -16,8 +23,6 @@
     <string name="done_button_title">Готово</string>
     <string name="malfunction_short_description_edittext_hint">Краткое описание поломки</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="send_application_button_title">Отправить заявку</string>
     <string name="clickable_imageview_content_description">Clickable imageView</string>
     <string name="add_malfunction_photos_textview_text">Добавьте фото поломки</string>

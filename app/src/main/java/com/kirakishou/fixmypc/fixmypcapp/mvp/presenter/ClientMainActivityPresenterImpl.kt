@@ -1,6 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter
 
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionRequestInfo
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionApplicationInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceAnswer
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.ClientMainActivityView
@@ -16,21 +17,33 @@ open class ClientMainActivityPresenterImpl
 
     override fun initPresenter() {
         Timber.d("ClientMainActivityPresenterImpl.initPresenter()")
+
+        mEventBus.register(this)
     }
 
     override fun destroyPresenter() {
+        mEventBus.unregister(this)
+
         Timber.d("ClientMainActivityPresenterImpl.destroyPresenter()")
     }
 
     override fun sendServiceMessage(message: ServiceMessage) {
-
+        mEventBus.postSticky(message)
     }
 
-    override fun sendMalfunctionRequestToServer(malfunctionRequestInfo: MalfunctionRequestInfo) {
-        //TODO: send request to the service via eventBus
+    override fun sendMalfunctionRequestToServer(malfunctionApplicationInfo: MalfunctionApplicationInfo) {
+        sendServiceMessage(ServiceMessage(ServiceMessageType.SERVICE_MESSAGE_SEND_MALFUNCTION_APPLICATION,
+                malfunctionApplicationInfo))
     }
 
     override fun onEventAnswer(answer: ServiceAnswer) {
+        when (answer.type) {
+            ServiceMessageType.SERVICE_MESSAGE_SEND_MALFUNCTION_APPLICATION -> onMalfunctionApplicationResponse(answer)
+            else -> Timber.e("Unsupported answerType: ${answer.type}")
+        }
+    }
+
+    private fun onMalfunctionApplicationResponse(answer: ServiceAnswer) {
 
     }
 }

@@ -17,9 +17,9 @@ import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionPhotosFragme
 import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionPhotosFragmentCallbacks
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServerErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.MalfunctionCategory
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionRequestInfo
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionApplicationInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.ClientMainActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.ClientMainActivityView
 import javax.inject.Inject
@@ -33,7 +33,7 @@ class ClientMainActivity : BaseActivity(), ClientMainActivityView {
     @Inject
     lateinit var mPermissionManager: PermissionManager
 
-    private val malfunctionRequestInfo = MalfunctionRequestInfo()
+    private val malfunctionRequestInfo = MalfunctionApplicationInfo()
 
     override fun getContentView() = R.layout.activity_client_main
     override fun loadStartAnimations() = AnimatorSet()
@@ -133,7 +133,7 @@ class ClientMainActivity : BaseActivity(), ClientMainActivityView {
         showToast(message, Toast.LENGTH_SHORT)
     }
 
-    override fun onServerError(serverErrorCode: ServerErrorCode) {
+    override fun onServerError(errorCode: ErrorCode) {
 
     }
 

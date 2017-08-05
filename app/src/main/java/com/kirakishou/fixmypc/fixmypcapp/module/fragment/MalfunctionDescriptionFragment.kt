@@ -14,6 +14,7 @@ import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.module.activity.ClientMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
 
 
@@ -37,7 +38,7 @@ class MalfunctionDescriptionFragment : BaseFragment() {
     }
 
     private fun initBindings() {
-        addDisposable(RxTextView.textChanges(mMalfunctionDescriptionEditText)
+        mCompositeDisposable += RxTextView.textChanges(mMalfunctionDescriptionEditText)
                 .skipInitialValue()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .map { text ->
@@ -49,16 +50,16 @@ class MalfunctionDescriptionFragment : BaseFragment() {
                     mButtonDone.isEnabled = !isEmpty
                 }, { error ->
                     Timber.e(error)
-                }))
+                })
 
-        addDisposable(RxView.clicks(mButtonDone)
+        mCompositeDisposable += RxView.clicks(mButtonDone)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
                     setMalfunctionDescription(mMalfunctionDescriptionEditText.text.toString())
                     loadNextFragment(Constant.FragmentTags.MALFUNCTION_PHOTOS_FRAGMENT_TAG)
                 }, { error ->
                     Timber.e(error)
-                }))
+                })
     }
 
     private fun loadNextFragment(fragmentTag: String) {

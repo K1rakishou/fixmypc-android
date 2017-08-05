@@ -16,8 +16,8 @@ import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionDescriptionF
 import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionPhotosFragment
 import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionPhotosFragmentCallbacks
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.MalfunctionCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionApplicationInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.ClientMainActivityPresenterImpl
@@ -133,7 +133,7 @@ class ClientMainActivity : BaseActivity(), ClientMainActivityView {
         showToast(message, Toast.LENGTH_SHORT)
     }
 
-    override fun onServerError(errorCode: ErrorCode) {
+    override fun onServerError(errorCode: ErrorCode.Remote) {
 
     }
 

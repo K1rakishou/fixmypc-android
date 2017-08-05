@@ -13,11 +13,11 @@ class StatusCodeTypeAdapter<T> : TypeAdapter<T>() {
 
     override fun read(input: JsonReader?): T {
         val secValue = input!!.nextInt()
-        return ErrorCode.from(secValue) as T
+        return ErrorCode.Remote.from(secValue) as T
     }
 
     override fun write(output: JsonWriter?, value: T) {
-        val secValue = value as ErrorCode
+        val secValue = value as ErrorCode.Remote
 
         output!!.jsonValue(Constant.SerializedNames.SERVER_ERROR_CODE_SERIALIZED_NAME)!!.value(secValue.value)
     }

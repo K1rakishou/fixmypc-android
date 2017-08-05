@@ -31,7 +31,7 @@ class RxValue<T> {
             return RxValue(value)
         }
 
-        fun <T> error(error: ErrorCode.Local): RxValue<T> {
+        fun error(error: ErrorCode.Local): RxValue<Throwable> {
             return RxValue(error)
         }
     }

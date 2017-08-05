@@ -6,6 +6,8 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceAnswer
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.ClientMainActivityView
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -36,6 +38,7 @@ open class ClientMainActivityPresenterImpl
                 malfunctionApplicationInfo))
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     override fun onEventAnswer(answer: ServiceAnswer) {
         when (answer.type) {
             ServiceMessageType.SERVICE_MESSAGE_SEND_MALFUNCTION_APPLICATION -> onMalfunctionApplicationResponse(answer)

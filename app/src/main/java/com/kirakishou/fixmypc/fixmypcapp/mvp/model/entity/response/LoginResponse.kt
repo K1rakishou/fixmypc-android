@@ -10,4 +10,4 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
  */
 class LoginResponse(@SerializedName(Constant.SerializedNames.SESSION_ID_SERIALIZED_NAME) val sessionId: String,
                     @SerializedName(Constant.SerializedNames.ACCOUNT_TYPE_SERIALIZED_NAME) val accountType: AccountType,
-                    error: ErrorCode) : StatusResponse(error)
+                    error: ErrorCode.Remote) : StatusResponse(error)

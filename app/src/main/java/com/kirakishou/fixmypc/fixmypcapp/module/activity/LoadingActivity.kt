@@ -82,7 +82,7 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
         mAppSettings.accountType = Fickle.of(accountType)
     }
 
-    override fun onServerError(errorCode: ErrorCode) {
+    override fun onServerError(errorCode: ErrorCode.Remote) {
         val message = ErrorMessage.getRemoteErrorMessage(this, errorCode)
         showToast(message, Toast.LENGTH_LONG)
     }

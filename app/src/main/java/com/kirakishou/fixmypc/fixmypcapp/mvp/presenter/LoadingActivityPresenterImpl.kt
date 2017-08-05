@@ -61,7 +61,7 @@ open class LoadingActivityPresenterImpl
                 val accountType = loginResponse.value.accountType
                 val serverErrorCode = loginResponse.value.error
 
-                if (serverErrorCode != ErrorCode.SEC_OK) {
+                if (serverErrorCode != ErrorCode.Remote.REC_OK) {
                     throw IllegalStateException("ServerResponse is Success but serverErrorCode is not SEC_OK: $serverErrorCode")
                 }
 
@@ -83,8 +83,8 @@ open class LoadingActivityPresenterImpl
                 val errCode = loginResponse.errorCode
 
                 when (errCode) {
-                    ErrorCode.SEC_WRONG_LOGIN_OR_PASSWORD,
-                    ErrorCode.SEC_UNKNOWN_SERVER_ERROR -> {
+                    ErrorCode.Remote.REC_WRONG_LOGIN_OR_PASSWORD,
+                    ErrorCode.Remote.REC_UNKNOWN_SERVER_ERROR -> {
                         callbacks.runGuestMainActivity()
                     }
 

@@ -5,11 +5,11 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.kirakishou.fixmypc.fixmypcapp.manager.permission.PermissionManager
+import com.kirakishou.fixmypc.fixmypcapp.module.shared_preference.AppSharedPreferences
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
-import com.kirakishou.fixmypc.fixmypcapp.module.shared_preference.AppSharedPreferences
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverterImpl
 import com.kirakishou.fixmypc.fixmypcapp.util.type_adapter.AccountTypeTypeAdapter
@@ -50,7 +50,7 @@ class ApplicationModule(private val mContext: Context,
     fun provideGson(): Gson {
         return GsonBuilder()
                 .registerTypeAdapter(AccountType::class.java, AccountTypeTypeAdapter<AccountType>())
-                .registerTypeAdapter(ErrorCode::class.java, StatusCodeTypeAdapter<ErrorCode>())
+                .registerTypeAdapter(ErrorCode.Remote::class.java, StatusCodeTypeAdapter<ErrorCode.Remote>())
                 .create()
     }
 

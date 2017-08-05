@@ -20,5 +20,6 @@ interface ApiService {
 
     @Multipart
     @POST("/v1/api/m_request")
-    fun sendMalfunctionRequest(@Part photos: Array<MultipartBody.Part>, @Part requestBody: MalfunctionRequest): Single<MalfunctionResponse>
+    fun sendMalfunctionRequest(@Part photos: Array<MultipartBody.Part>,
+                               @Part("request") requestBody: MalfunctionRequest): Single<MalfunctionResponse>
 }

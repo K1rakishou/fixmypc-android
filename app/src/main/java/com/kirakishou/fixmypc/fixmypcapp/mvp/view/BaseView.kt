@@ -8,6 +8,6 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
  */
 interface BaseView : BaseCallbacks {
     fun onShowToast(message: String)
-    fun onServerError(errorCode: ErrorCode)
+    fun onServerError(errorCode: ErrorCode.Remote)
     fun onUnknownError(error: Throwable)
 }

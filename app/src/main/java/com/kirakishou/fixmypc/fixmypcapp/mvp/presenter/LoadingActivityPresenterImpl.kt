@@ -59,10 +59,10 @@ open class LoadingActivityPresenterImpl
             is ServerResponse.Success -> {
                 val sessionId = loginResponse.value.sessionId
                 val accountType = loginResponse.value.accountType
-                val serverErrorCode = loginResponse.value.error
+                val errorCode = loginResponse.value.errorCode
 
-                if (serverErrorCode != ErrorCode.Remote.REC_OK) {
-                    throw IllegalStateException("ServerResponse is Success but serverErrorCode is not SEC_OK: $serverErrorCode")
+                if (errorCode != ErrorCode.Remote.REC_OK) {
+                    throw IllegalStateException("ServerResponse is Success but errorCode is not SEC_OK: $errorCode")
                 }
 
                 when (accountType) {

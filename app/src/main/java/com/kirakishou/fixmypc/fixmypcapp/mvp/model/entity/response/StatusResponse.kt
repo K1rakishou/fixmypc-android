@@ -7,4 +7,4 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
 /**
  * Created by kirakishou on 7/25/2017.
  */
-open class StatusResponse(@SerializedName(Constant.SerializedNames.SERVER_ERROR_CODE_SERIALIZED_NAME) var error: ErrorCode.Remote)
+open class StatusResponse(@SerializedName(Constant.SerializedNames.SERVER_ERROR_CODE_SERIALIZED_NAME) var errorCode: ErrorCode.Remote)

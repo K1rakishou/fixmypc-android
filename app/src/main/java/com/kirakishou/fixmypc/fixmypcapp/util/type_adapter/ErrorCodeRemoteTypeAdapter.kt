@@ -9,7 +9,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
 /**
  * Created by kirakishou on 7/27/2017.
  */
-class StatusCodeTypeAdapter<T> : TypeAdapter<T>() {
+class ErrorCodeRemoteTypeAdapter<T> : TypeAdapter<T>() {
 
     override fun read(input: JsonReader?): T {
         val secValue = input!!.nextInt()

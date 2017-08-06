@@ -13,7 +13,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverterImpl
 import com.kirakishou.fixmypc.fixmypcapp.util.type_adapter.AccountTypeTypeAdapter
-import com.kirakishou.fixmypc.fixmypcapp.util.type_adapter.StatusCodeTypeAdapter
+import com.kirakishou.fixmypc.fixmypcapp.util.type_adapter.ErrorCodeRemoteTypeAdapter
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -50,7 +50,7 @@ class ApplicationModule(private val mContext: Context,
     fun provideGson(): Gson {
         return GsonBuilder()
                 .registerTypeAdapter(AccountType::class.java, AccountTypeTypeAdapter<AccountType>())
-                .registerTypeAdapter(ErrorCode.Remote::class.java, StatusCodeTypeAdapter<ErrorCode.Remote>())
+                .registerTypeAdapter(ErrorCode.Remote::class.java, ErrorCodeRemoteTypeAdapter<ErrorCode.Remote>())
                 .create()
     }
 

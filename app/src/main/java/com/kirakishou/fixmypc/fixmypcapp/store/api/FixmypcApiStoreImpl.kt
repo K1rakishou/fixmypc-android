@@ -1,10 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.store.api
 
 import com.kirakishou.fixmypc.fixmypcapp.api.ApiService
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.RxValue
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.*
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionApplicationInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServerResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceAnswer
@@ -94,7 +91,8 @@ class FixmypcApiStoreImpl
                         multipartBodyPartsList.add(MultipartBody.Part.createFormData("photos", photoFile.name, requestBody))
                     }
 
-                    val request = MalfunctionRequest(requestInfo.malfunctionCategory.get().ordinal, requestInfo.malfunctionDescription.get())
+                    val request = MalfunctionRequest(requestInfo.malfunctionCategory.get().ordinal,
+                            requestInfo.malfunctionDescription.get())
 
                     return@flatMap Single.just(RxValue.value(RequestAndPhotoParts(request, multipartBodyPartsList)))
                 }
@@ -104,7 +102,9 @@ class FixmypcApiStoreImpl
                     }
 
                     val requestAndPhotos = requestAndPhotoParts.value.get() as RequestAndPhotoParts
-                    return@flatMap mApiService.sendMalfunctionRequest(requestAndPhotos.photoParts.toTypedArray(), requestAndPhotos.request)
+
+                    return@flatMap mApiService.sendMalfunctionRequest(requestAndPhotos.photoParts.toTypedArray(),
+                            requestAndPhotos.request, ImageType.IMAGE_TYPE_MALFUNCTION_PHOTO.value)
                 }
                 .subscribe({ answer ->
                     if (answer is RxValue<*>) {

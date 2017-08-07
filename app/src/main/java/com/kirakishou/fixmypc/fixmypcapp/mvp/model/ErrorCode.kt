@@ -35,6 +35,7 @@ class ErrorCode {
         LEC_MAI_PHOTOS_ARE_NOT_SET(1),
         LEC_MAI_DESCRIPTION_IS_NOT_SET(2),
         LEC_MAI_CATEGORY_IS_NOT_SET(3),
+
         LEC_SELECTED_PHOTO_DOES_NOT_EXIST(4);
 
         companion object {

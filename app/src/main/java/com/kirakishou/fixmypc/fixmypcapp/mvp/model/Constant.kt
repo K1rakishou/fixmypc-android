@@ -8,6 +8,7 @@ object Constant {
     val SHARED_PREFS_PREFIX = "${APPLICATION_ID}_SHARED_PREF"
     val MALFUNCTION_PHOTO_ADAPTER_MAX_PHOTOS = 3
     val RECYCLERVIEW_MAX_COLUMNS_COUNT = 10
+    val MAX_FILE_SIZE = 5242880
 
     object SerializedNames {
         const val LOGIN_SERIALIZED_NAME = "login"

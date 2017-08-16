@@ -53,13 +53,13 @@ open class LoadingActivityPresenterImpl
     }
 
     fun onLoginEventResponse(answer: ServiceAnswer) {
-        val loginResponse = answer.data as ServerResponse<LoginResponse>
+        val response = answer.data as ServerResponse<LoginResponse>
 
-        when (loginResponse) {
+        when (response) {
             is ServerResponse.Success -> {
-                val sessionId = loginResponse.value.sessionId
-                val accountType = loginResponse.value.accountType
-                val errorCode = loginResponse.value.errorCode
+                val sessionId = response.value.sessionId
+                val accountType = response.value.accountType
+                val errorCode = response.value.errorCode
 
                 if (errorCode != ErrorCode.Remote.REC_OK) {
                     throw IllegalStateException("ServerResponse is Success but errorCode is not SEC_OK: $errorCode")
@@ -75,12 +75,12 @@ open class LoadingActivityPresenterImpl
                     }
 
                     //should never happen
-                    AccountType.Guest -> throw IllegalStateException("Server returned accountType.Guest")
+                    else -> throw IllegalStateException("Server returned accountType ${accountType}")
                 }
             }
 
             is ServerResponse.ServerError -> {
-                val errCode = loginResponse.errorCode
+                val errCode = response.errorCode
 
                 when (errCode) {
                     ErrorCode.Remote.REC_WRONG_LOGIN_OR_PASSWORD,
@@ -88,17 +88,17 @@ open class LoadingActivityPresenterImpl
                         callbacks.runGuestMainActivity()
                     }
 
-                    else -> callbacks.onServerError(errCode)
+                    else -> throw IllegalStateException("This should never happen errCode = $errCode")
                 }
             }
 
             is ServerResponse.UnknownError -> {
-                if (loginResponse.error is TimeoutException || loginResponse.error is UnknownHostException) {
-                    callbacks.onCouldNotConnectToServer(loginResponse.error)
+                if (response.error is TimeoutException || response.error is UnknownHostException) {
+                    callbacks.onCouldNotConnectToServer(response.error)
                     return
                 }
 
-                callbacks.onUnknownError(loginResponse.error)
+                callbacks.onUnknownError(response.error)
             }
         }
     }

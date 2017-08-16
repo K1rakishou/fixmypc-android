@@ -7,15 +7,13 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerLoadingActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.LoadingActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.module.shared_preference.AppSharedPreferences
+import com.kirakishou.fixmypc.fixmypcapp.module.shared_preference.preference.AccountInfoPreference
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.LoadingActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.LoadingActivityView
-import com.kirakishou.fixmypc.fixmypcapp.module.shared_preference.AppSharedPreferences
-import com.kirakishou.fixmypc.fixmypcapp.module.shared_preference.preference.AccountInfoPreference
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -80,11 +78,6 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
     private fun saveSettings(sessionId: String, accountType: AccountType) {
         mAppSettings.sessionId = Fickle.of(sessionId)
         mAppSettings.accountType = Fickle.of(accountType)
-    }
-
-    override fun onServerError(errorCode: ErrorCode.Remote) {
-        val message = ErrorMessage.getRemoteErrorMessage(this, errorCode)
-        showToast(message, Toast.LENGTH_LONG)
     }
 
     override fun onUnknownError(error: Throwable) {

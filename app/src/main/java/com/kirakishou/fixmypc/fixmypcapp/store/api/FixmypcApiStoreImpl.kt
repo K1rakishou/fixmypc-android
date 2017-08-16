@@ -12,13 +12,13 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.MalfunctionRe
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.rxholder.RequestAndPhotoParts
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.BackgroundServicePresenter
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
+import com.kirakishou.fixmypc.fixmypcapp.util.retrofit.ProgressRequestBody
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
-import okhttp3.MediaType
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import retrofit2.HttpException
 import timber.log.Timber
 import java.io.File
@@ -47,6 +47,8 @@ class FixmypcApiStoreImpl
                         it.returnAnswer(ServiceAnswer(type, ServerResponse.Success(answer)))
                     }
                 }, { error ->
+                    Timber.e(error)
+
                     if (error is HttpException) {
                         val response = errorBodyConverter.convert<LoginResponse>(error.response().errorBody()!!.string(), LoginResponse::class.java)
                         callbacks.ifPresent {
@@ -82,13 +84,28 @@ class FixmypcApiStoreImpl
 
                     for (photoPath in photoPaths) {
                         val photoFile = File(photoPath)
+                        if (photoFile.length() > Constant.MAX_FILE_SIZE) {
+                            return@flatMap Single.just(RxValue.error(ErrorCode.Local.LEC_FILE_SIZE_EXCEEDED))
+                        }
 
                         if (!photoFile.isFile || !photoFile.exists() || photoFile.isDirectory) {
                             return@flatMap Single.just(RxValue.error(ErrorCode.Local.LEC_SELECTED_PHOTO_DOES_NOT_EXIST))
                         }
 
-                        val requestBody = RequestBody.create(MediaType.parse("image/*"), photoFile)
-                        multipartBodyPartsList.add(MultipartBody.Part.createFormData("photos", photoFile.name, requestBody))
+                        //val requestBody = RequestBody.create(MediaType.parse("image/*"), photoFile)
+                        val progressRequestBody = ProgressRequestBody(photoFile)
+                        mCompositeDisposable += progressRequestBody.getProgressSubject()
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe({ percent ->
+                                    Timber.d("percent: $percent")
+                                }, { error ->
+                                    Timber.e(error)
+                                }, {
+                                    Timber.d("=== DONE ===")
+                                })
+
+                        multipartBodyPartsList.add(MultipartBody.Part.createFormData("photos", photoFile.name, progressRequestBody))
                     }
 
                     val request = MalfunctionRequest(requestInfo.malfunctionCategory.get().ordinal,
@@ -108,12 +125,27 @@ class FixmypcApiStoreImpl
                 }
                 .subscribe({ answer ->
                     if (answer is RxValue<*>) {
-
+                        callbacks.ifPresent {
+                            it.returnAnswer(ServiceAnswer(type, ServerResponse.LocalError(answer.error.get())))
+                        }
                     } else if (answer is MalfunctionResponse) {
-
+                        callbacks.ifPresent {
+                            it.returnAnswer(ServiceAnswer(type, ServerResponse.Success(answer)))
+                        }
                     }
                 }, { error ->
                     Timber.e(error)
+
+                    if (error is HttpException) {
+                        val response = errorBodyConverter.convert<MalfunctionResponse>(error.response().errorBody()!!.string(), MalfunctionResponse::class.java)
+                        callbacks.ifPresent {
+                            it.returnAnswer(ServiceAnswer(type, ServerResponse.ServerError(response.errorCode)))
+                        }
+                    } else {
+                        callbacks.ifPresent {
+                            it.returnAnswer(ServiceAnswer(type, ServerResponse.UnknownError(error)))
+                        }
+                    }
                 })
     }
 }

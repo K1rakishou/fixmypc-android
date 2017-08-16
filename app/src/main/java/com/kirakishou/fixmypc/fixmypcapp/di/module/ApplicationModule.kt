@@ -82,7 +82,7 @@ class ApplicationModule(private val mContext: Context,
                 .connectTimeout(15000, TimeUnit.SECONDS) //TODO: Don't forget to change this on release build
                 .writeTimeout(15000, TimeUnit.SECONDS)  //TODO: Don't forget to change this on release build
                 .readTimeout(15000, TimeUnit.SECONDS)    //TODO: Don't forget to change this on release build
-                .addInterceptor(loggingInterceptor)
+                //.addInterceptor(loggingInterceptor)
                 .build()
     }
 

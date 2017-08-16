@@ -1,12 +1,9 @@
 package com.kirakishou.fixmypc.fixmypcapp.store.cache
 
-import com.google.common.cache.Cache
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
-
 /**
  * Created by kirakishou on 7/26/2017.
  */
-class CacheStore<K, V>(val cache: Cache<K, V>) {
+/*class CacheStore<K, V>(val cache: Cache<K, V>) {
 
     fun put(key: K, value: V) {
         cache.put(key, value)
@@ -27,4 +24,4 @@ class CacheStore<K, V>(val cache: Cache<K, V>) {
     fun size(): Long {
         return cache.size()
     }
-}
+}*/

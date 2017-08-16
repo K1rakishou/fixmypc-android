@@ -83,9 +83,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.1'
     compile 'com.jakewharton.timber:timber:4.5.1'
     compile 'org.greenrobot:eventbus:3.0.0'
-    compile 'com.google.guava:guava:22.0'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    compile 'com.karumi:dexter:4.1.0'
     compile 'com.github.jkwiecien:EasyImage:2.0.2'
 
     compile('com.afollestad.material-dialogs:core:0.9.4.5') {

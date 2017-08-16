@@ -16,7 +16,6 @@ import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionDescriptionF
 import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionPhotosFragment
 import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionPhotosFragmentCallbacks
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.MalfunctionCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionApplicationInfo
@@ -133,8 +132,24 @@ class ClientMainActivity : BaseActivity(), ClientMainActivityView {
         showToast(message, Toast.LENGTH_SHORT)
     }
 
-    override fun onServerError(errorCode: ErrorCode.Remote) {
+    override fun onMalfunctionRequestSuccessfullyCreated() {
+        showToast("Заявка успещно создана", Toast.LENGTH_LONG)
+    }
 
+    override fun onFileSizeExceeded() {
+        showToast("Размер одного из выбранных изображений превышает лимит", Toast.LENGTH_LONG)
+    }
+
+    override fun onRequestSizeExceeded() {
+        showToast("Размер двух и более изображений превышает лимит", Toast.LENGTH_LONG)
+    }
+
+    override fun onAllFileServersAreNotWorking() {
+        showToast("Не удалось обработать запрос. Сервера не работают. Попробуйте позже.", Toast.LENGTH_LONG)
+    }
+
+    override fun onCouldNotConnectToServer(error: Throwable) {
+        showToast("Не удалось подключиться к серверу", Toast.LENGTH_LONG)
     }
 
     override fun onUnknownError(error: Throwable) {

@@ -5,5 +5,6 @@ package com.kirakishou.fixmypc.fixmypcapp.mvp.model
  */
 enum class ServiceMessageType(val value: Int) {
     SERVICE_MESSAGE_LOGIN(0),
-    SERVICE_MESSAGE_SEND_MALFUNCTION_APPLICATION(1)
+    SERVICE_MESSAGE_SEND_MALFUNCTION_APPLICATION(1),
+    SERVICE_MESSAGE_FILE_UPLOAD(2)
 }

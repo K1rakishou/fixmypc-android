@@ -55,7 +55,7 @@ open class LoadingActivityPresenterImpl
                         }
 
                         //should never happen
-                        else -> throw IllegalStateException("Server returned accountType ${accountType}")
+                        else -> throw IllegalStateException("Server returned accountType $accountType")
                     }
                 }, { error ->
                     handleResponse(error)

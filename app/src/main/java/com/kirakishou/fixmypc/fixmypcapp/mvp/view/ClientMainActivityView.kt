@@ -11,4 +11,8 @@ interface ClientMainActivityView : BaseView {
     fun onCouldNotConnectToServer(error: Throwable)
     fun onPhotosAreNotSet()
     fun onSelectedPhotoDoesNotExists()
+    fun onInitProgressDialog(filesCount: Int)
+    fun onProgressDialogUpdate(progress: Int)
+    fun onFileUploaded()
+    fun onAllFilesUploaded()
 }

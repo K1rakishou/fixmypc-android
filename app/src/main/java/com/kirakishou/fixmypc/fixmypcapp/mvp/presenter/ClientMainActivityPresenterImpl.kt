@@ -9,7 +9,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_reques
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.ClientMainActivityView
 import com.kirakishou.fixmypc.fixmypcapp.store.api.FixmypcApiStore
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
-import com.kirakishou.fixmypc.fixmypcapp.util.progress_updater.FileUploadProgressUpdater
+import com.kirakishou.fixmypc.fixmypcapp.util.dialog.FileUploadProgressUpdater
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import retrofit2.HttpException
@@ -47,9 +47,11 @@ open class ClientMainActivityPresenterImpl
                         throw IllegalStateException("ServerResponse is Success but errorCode is not SEC_OK: $errorCode")
                     }
 
+                    callbacks.onAllFilesUploaded()
                     callbacks.onMalfunctionRequestSuccessfullyCreated()
 
                 }, { error ->
+                    callbacks.onAllFilesUploaded()
                     handleResponse(error)
                 })
     }
@@ -89,11 +91,15 @@ open class ClientMainActivityPresenterImpl
         }
     }
 
-    override fun onPartWrite(percent: Float) {
-        Timber.d("percent: $percent")
+    override fun init(filesCount: Int) {
+        callbacks.onInitProgressDialog(filesCount)
+    }
+
+    override fun onPartWrite(progress: Int) {
+        callbacks.onProgressDialogUpdate(progress)
     }
 
     override fun onFileDone() {
-        Timber.d("file done")
+        callbacks.onFileUploaded()
     }
 }

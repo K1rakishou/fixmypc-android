@@ -11,12 +11,13 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.MalfunctionRe
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.FileSizeExceededException
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.PhotosAreNotSetException
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.SelectedPhotoDoesNotExistsException
-import com.kirakishou.fixmypc.fixmypcapp.util.progress_updater.FileUploadProgressUpdater
+import com.kirakishou.fixmypc.fixmypcapp.util.dialog.FileUploadProgressUpdater
 import com.kirakishou.fixmypc.fixmypcapp.util.retrofit.ProgressRequestBody
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.MultipartBody
+import timber.log.Timber
 import java.io.File
 import java.lang.ref.WeakReference
 import javax.inject.Inject
@@ -30,16 +31,18 @@ class FixmypcApiStoreImpl
     override fun loginRequest(loginRequest: LoginRequest): Single<LoginResponse> {
         return mApiService.doLogin(loginRequest)
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
     }
 
     override fun sendMalfunctionRequest(malfunctionApplicationInfo: MalfunctionApplicationInfo,
                                         uploadProgressCallback: WeakReference<FileUploadProgressUpdater>): Single<MalfunctionResponse> {
+
+        uploadProgressCallback.get()?.init(malfunctionApplicationInfo.malfunctionPhotos.size)
+
         return Single.just(malfunctionApplicationInfo)
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
                 .flatMap { requestInfo ->
-                    if (!requestInfo.malfunctionPhotos.isEmpty()) {
+                    if (requestInfo.malfunctionPhotos.isEmpty()) {
                         return@flatMap Single.error<MalfunctionResponse>(PhotosAreNotSetException())
                     }
 
@@ -64,7 +67,10 @@ class FixmypcApiStoreImpl
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe({ percent ->
-                                    uploadProgressCallback.get()?.onPartWrite(percent)
+                                    uploadProgressCallback.get()?.onPartWrite(percent.toInt())
+                                }, { error ->
+                                    //should never happen
+                                    Timber.e(error)
                                 }, {
                                     uploadProgressCallback.get()?.onFileDone()
                                 })
@@ -75,5 +81,6 @@ class FixmypcApiStoreImpl
                     val request = MalfunctionRequest(requestInfo.malfunctionCategory.ordinal, requestInfo.malfunctionDescription)
                     return@flatMap mApiService.sendMalfunctionRequest(multipartBodyPartsList, request, ImageType.IMAGE_TYPE_MALFUNCTION_PHOTO.value)
                 }
+                .observeOn(AndroidSchedulers.mainThread())
     }
 }

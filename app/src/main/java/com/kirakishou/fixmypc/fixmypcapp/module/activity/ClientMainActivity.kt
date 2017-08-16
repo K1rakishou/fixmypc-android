@@ -20,6 +20,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.MalfunctionCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionApplicationInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.ClientMainActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.ClientMainActivityView
+import com.kirakishou.fixmypc.fixmypcapp.util.dialog.ProgressDialog
 import javax.inject.Inject
 
 
@@ -32,6 +33,7 @@ class ClientMainActivity : BaseActivity(), ClientMainActivityView {
     lateinit var mPermissionManager: PermissionManager
 
     private val malfunctionRequestInfo = MalfunctionApplicationInfo()
+    private var progressDialog: ProgressDialog? = null
 
     override fun getContentView() = R.layout.activity_client_main
     override fun loadStartAnimations() = AnimatorSet()
@@ -131,8 +133,26 @@ class ClientMainActivity : BaseActivity(), ClientMainActivityView {
         showToast(message, Toast.LENGTH_SHORT)
     }
 
+    override fun onInitProgressDialog(filesCount: Int) {
+        progressDialog = ProgressDialog(this, filesCount)
+        progressDialog!!.show()
+    }
+
+    override fun onProgressDialogUpdate(progress: Int) {
+        progressDialog?.setProgress(progress)
+    }
+
+    override fun onFileUploaded() {
+        progressDialog?.onFileUploaded()
+    }
+
+    override fun onAllFilesUploaded() {
+        progressDialog?.dismiss()
+        progressDialog = null
+    }
+
     override fun onMalfunctionRequestSuccessfullyCreated() {
-        showToast("Заявка успещно создана", Toast.LENGTH_LONG)
+        showToast("Заявка успешно создана", Toast.LENGTH_LONG)
     }
 
     override fun onFileSizeExceeded() {
@@ -152,15 +172,15 @@ class ClientMainActivity : BaseActivity(), ClientMainActivityView {
     }
 
     override fun onPhotosAreNotSet() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        showToast("Не выбраны фото поломки", Toast.LENGTH_LONG)
     }
 
     override fun onSelectedPhotoDoesNotExists() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        showToast("Не удалось прочитать фото с диска (оно было удалено или перемещено)", Toast.LENGTH_LONG)
     }
 
     override fun onUnknownError(error: Throwable) {
-        showToast(error.localizedMessage, Toast.LENGTH_LONG)
+        showErrorMessageDialog(error.message!!)
     }
 
     override fun onBackPressed() {

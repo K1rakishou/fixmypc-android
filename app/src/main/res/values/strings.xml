@@ -26,5 +26,7 @@
     <string name="send_application_button_title">Отправить заявку</string>
     <string name="clickable_imageview_content_description">Clickable imageView</string>
     <string name="add_malfunction_photos_textview_text">Добавьте фото поломки</string>
+    <string name="uploading_in_progress">Загружаем...</string>
+    <string name="uploading_photo_num">Загружаем фото: %d/%d</string>
 
 </resources>

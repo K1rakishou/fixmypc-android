@@ -80,12 +80,12 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
         mAppSettings.accountType = Fickle.of(accountType)
     }
 
-    override fun onUnknownError(error: Throwable) {
-        showErrorMessageDialog(error.message!!)
-    }
-
     override fun onShowToast(message: String) {
         showToast(message, Toast.LENGTH_SHORT)
+    }
+
+    override fun onUnknownError(error: Throwable) {
+        showErrorMessageDialog(error.message!!)
     }
 
     override fun resolveDaggerDependency() {

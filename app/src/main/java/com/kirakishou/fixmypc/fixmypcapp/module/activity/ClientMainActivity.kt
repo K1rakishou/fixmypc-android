@@ -16,7 +16,6 @@ import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionDescriptionF
 import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionPhotosFragment
 import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionPhotosFragmentCallbacks
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.MalfunctionCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionApplicationInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.ClientMainActivityPresenterImpl
@@ -93,15 +92,15 @@ class ClientMainActivity : BaseActivity(), ClientMainActivityView {
     }
 
     fun setMalfunctionCategory(malfunctionCategory: MalfunctionCategory) {
-        this.malfunctionRequestInfo.malfunctionCategory = Fickle.of(malfunctionCategory)
+        this.malfunctionRequestInfo.malfunctionCategory = malfunctionCategory
     }
 
     fun setMalfunctionDescription(malfunctionDescription: String) {
-        this.malfunctionRequestInfo.malfunctionDescription = Fickle.of(malfunctionDescription)
+        this.malfunctionRequestInfo.malfunctionDescription = malfunctionDescription
     }
 
     fun setMalfunctionPhotos(malfunctionPhotos: ArrayList<String>) {
-        this.malfunctionRequestInfo.malfunctionPhotos = Fickle.of(malfunctionPhotos)
+        this.malfunctionRequestInfo.malfunctionPhotos = malfunctionPhotos
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -150,6 +149,14 @@ class ClientMainActivity : BaseActivity(), ClientMainActivityView {
 
     override fun onCouldNotConnectToServer(error: Throwable) {
         showToast("Не удалось подключиться к серверу", Toast.LENGTH_LONG)
+    }
+
+    override fun onPhotosAreNotSet() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onSelectedPhotoDoesNotExists() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onUnknownError(error: Throwable) {

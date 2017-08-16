@@ -1,17 +1,20 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter
 
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionApplicationInfo
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServerResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceAnswer
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.MalfunctionResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.FileSizeExceededException
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.PhotosAreNotSetException
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.SelectedPhotoDoesNotExistsException
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.ClientMainActivityView
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
+import com.kirakishou.fixmypc.fixmypcapp.store.api.FixmypcApiStore
+import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
+import com.kirakishou.fixmypc.fixmypcapp.util.progress_updater.FileUploadProgressUpdater
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
+import retrofit2.HttpException
 import timber.log.Timber
+import java.lang.ref.WeakReference
 import java.net.UnknownHostException
 import java.util.concurrent.TimeoutException
 import javax.inject.Inject
@@ -20,83 +23,49 @@ import javax.inject.Inject
  * Created by kirakishou on 7/27/2017.
  */
 open class ClientMainActivityPresenterImpl
-@Inject constructor(protected val mEventBus: EventBus) : ClientMainActivityPresenter<ClientMainActivityView>() {
+@Inject constructor(protected val mFixmypcApiStore: FixmypcApiStore,
+                    protected val errorBodyConverter: ErrorBodyConverter) : ClientMainActivityPresenter<ClientMainActivityView>(), FileUploadProgressUpdater {
+
+    private val mCompositeDisposable = CompositeDisposable()
 
     override fun initPresenter() {
         Timber.d("ClientMainActivityPresenterImpl.initPresenter()")
-
-        mEventBus.register(this)
     }
 
     override fun destroyPresenter() {
-        mEventBus.unregister(this)
+        mCompositeDisposable.clear()
 
         Timber.d("ClientMainActivityPresenterImpl.destroyPresenter()")
     }
 
-    override fun sendServiceMessage(message: ServiceMessage) {
-        mEventBus.postSticky(message)
-    }
-
     override fun sendMalfunctionRequestToServer(malfunctionApplicationInfo: MalfunctionApplicationInfo) {
-        sendServiceMessage(ServiceMessage(ServiceMessageType.SERVICE_MESSAGE_SEND_MALFUNCTION_APPLICATION,
-                malfunctionApplicationInfo))
-    }
+        mCompositeDisposable += mFixmypcApiStore.sendMalfunctionRequest(malfunctionApplicationInfo, WeakReference(this))
+                .subscribe({ response ->
+                    val errorCode = response.errorCode
 
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    override fun onEventAnswer(answer: ServiceAnswer) {
-        when (answer.type) {
-            ServiceMessageType.SERVICE_MESSAGE_SEND_MALFUNCTION_APPLICATION -> onMalfunctionApplicationResponse(answer)
-            ServiceMessageType.SERVICE_MESSAGE_FILE_UPLOAD -> onFileUploadUpdate(answer)
-            else -> Timber.e("Unsupported answerType: ${answer.type}")
-        }
-    }
-
-    private fun onFileUploadUpdate(answer: ServiceAnswer) {
-
-    }
-
-    private fun onMalfunctionApplicationResponse(answer: ServiceAnswer) {
-        val response = answer.data as ServerResponse<MalfunctionResponse>
-
-        when (response) {
-            is ServerResponse.Success -> {
-                val errorCode = response.value.errorCode
-
-                if (errorCode != ErrorCode.Remote.REC_OK) {
-                    throw IllegalStateException("ServerResponse is Success but errorCode is not SEC_OK: $errorCode")
-                }
-
-                callbacks.onMalfunctionRequestSuccessfullyCreated()
-            }
-
-            is ServerResponse.LocalError -> {
-                val localErrorCode = response.errorCode
-
-                when (localErrorCode) {
-                    ErrorCode.Local.LEC_FILE_SIZE_EXCEEDED -> callbacks.onFileSizeExceeded()
-
-                    //Client should check for these three. These will ever happen unless the client is patched
-                    ErrorCode.Local.LEC_MAI_PHOTOS_ARE_NOT_SET,
-                    ErrorCode.Local.LEC_MAI_CATEGORY_IS_NOT_SET,
-                    ErrorCode.Local.LEC_MAI_DESCRIPTION_IS_NOT_SET -> {
-                        //wtf
-                        throw IllegalStateException("This should've never happened, but you did it! You somehow managed to " +
-                                "skip one of the malfunction request's info selection fragments")
+                    if (errorCode != ErrorCode.Remote.REC_OK) {
+                        throw IllegalStateException("ServerResponse is Success but errorCode is not SEC_OK: $errorCode")
                     }
 
-                    //wtf^2
-                    else -> throw IllegalStateException("This should never happen localErrorCode = $localErrorCode")
-                }
-            }
+                    callbacks.onMalfunctionRequestSuccessfullyCreated()
 
-            is ServerResponse.ServerError -> {
+                }, { error ->
+                    handleResponse(error)
+                })
+    }
+
+    private fun handleResponse(error: Throwable) {
+        Timber.e(error)
+
+        when (error) {
+            is HttpException -> {
+                val response = errorBodyConverter.convert<MalfunctionResponse>(error.response().errorBody()!!.string(), MalfunctionResponse::class.java)
                 val remoteErrorCode = response.errorCode
 
                 when (remoteErrorCode) {
                     //Client should check for these two. These will ever happen unless the client is patched
                     ErrorCode.Remote.REC_NO_FILES_WERE_SELECTED_TO_UPLOAD,
-                    ErrorCode.Remote.REC_IMAGES_COUNT_EXCEEDED  -> {
+                    ErrorCode.Remote.REC_IMAGES_COUNT_EXCEEDED -> {
                         throw IllegalStateException("This should never happen")
                     }
 
@@ -108,31 +77,23 @@ open class ClientMainActivityPresenterImpl
                 }
             }
 
-            is ServerResponse.UnknownError -> {
-                if (response.error is TimeoutException || response.error is UnknownHostException) {
-                    callbacks.onCouldNotConnectToServer(response.error)
-                    return
-                }
-
-                callbacks.onUnknownError(response.error)
+            is TimeoutException,
+            is UnknownHostException -> {
+                callbacks.onCouldNotConnectToServer(error)
             }
+
+            is FileSizeExceededException -> callbacks.onFileSizeExceeded()
+            is PhotosAreNotSetException -> callbacks.onPhotosAreNotSet()
+            is SelectedPhotoDoesNotExistsException -> callbacks.onSelectedPhotoDoesNotExists()
+            else -> callbacks.onUnknownError(error)
         }
     }
 
-    class FileUploadProgressUpdater : UploadProgress {
-
-        override fun onPartWritten(percent: Float) {
-
-        }
-
-        override fun onFileDone() {
-
-        }
-
+    override fun onPartWrite(percent: Float) {
+        Timber.d("percent: $percent")
     }
 
-    interface UploadProgress {
-        fun onPartWritten(percent: Float)
-        fun onFileDone()
+    override fun onFileDone() {
+        Timber.d("file done")
     }
 }

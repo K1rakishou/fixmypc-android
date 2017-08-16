@@ -52,31 +52,26 @@ class ProgressRequestBody : RequestBody {
         val fis = FileInputStream(mFile)
         var uploaded: Long = 0
 
-        try {
-            fis.use {
-                var read: Int
+        fis.use {
+            var read: Int
+            read = it.read(buffer)
+
+            while (read != -1) {
+                uploaded += read.toLong()
+                sink.write(buffer, 0, read)
                 read = it.read(buffer)
 
-                while (read != -1) {
-                    uploaded += read.toLong()
-                    sink.write(buffer, 0, read)
-                    read = it.read(buffer)
+                if (numWriteToCalls > ignoreFirstNumberOfWriteToCalls) {
+                    val progress = (uploaded.toFloat() / fileLength.toFloat()) * 100f
 
-                    if (numWriteToCalls > ignoreFirstNumberOfWriteToCalls) {
-                        val progress = (uploaded.toFloat() / fileLength.toFloat()) * 100f
-
-                        if (progress - lastProgressPercentUpdate > 3 || progress == 100f) {
-                            getProgressSubject.onNext(progress)
-                            lastProgressPercentUpdate = progress
-                        }
+                    if (progress - lastProgressPercentUpdate > 3 || progress == 100f) {
+                        getProgressSubject.onNext(progress)
+                        lastProgressPercentUpdate = progress
                     }
                 }
-
-                getProgressSubject.onComplete()
             }
 
-        } catch (e: Exception) {
-            getProgressSubject.onError(e)
+            getProgressSubject.onComplete()
         }
     }
 

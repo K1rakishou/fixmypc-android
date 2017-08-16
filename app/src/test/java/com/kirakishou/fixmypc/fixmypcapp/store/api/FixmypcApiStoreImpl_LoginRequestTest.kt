@@ -6,7 +6,6 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServerResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceAnswer
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.LoginRequest
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.LoginResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.BackgroundServicePresenter
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
 import io.reactivex.Single
 import io.reactivex.plugins.RxJavaPlugins

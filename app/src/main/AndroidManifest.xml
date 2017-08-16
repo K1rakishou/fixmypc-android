@@ -17,10 +17,6 @@
         android:supportsRtl="true"
         android:theme="@style/FixmypcTheme">
 
-        <service
-            android:name=".module.service.BackgroundService"
-            android:exported="false" />
-
         <receiver android:name=".module.receiver.BootBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

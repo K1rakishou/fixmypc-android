@@ -8,7 +8,4 @@ import javax.inject.Inject
 abstract class BasePresenter<V : BaseCallbacks> {
     @Inject
     lateinit var callbacks: V
-
-    abstract fun initPresenter()
-    abstract fun destroyPresenter()
 }

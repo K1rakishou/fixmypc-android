@@ -4,12 +4,15 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.kirakishou.fixmypc.fixmypcapp.api.ApiService
 import com.kirakishou.fixmypc.fixmypcapp.manager.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.module.shared_preference.AppSharedPreferences
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.store.api.FixmypcApiStore
+import com.kirakishou.fixmypc.fixmypcapp.store.api.FixmypcApiStoreImpl
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverterImpl
 import com.kirakishou.fixmypc.fixmypcapp.util.type_adapter.AccountTypeTypeAdapter
@@ -101,6 +104,18 @@ class ApplicationModule(private val mContext: Context,
                 .addCallAdapterFactory(adapterFactory)
                 .client(client)
                 .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideApiService(retrofit: Retrofit): ApiService {
+        return retrofit.create(ApiService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideFixmypcApiStore(mApiService: ApiService): FixmypcApiStore {
+        return FixmypcApiStoreImpl(mApiService)
     }
 
     @Singleton

@@ -9,4 +9,6 @@ interface ClientMainActivityView : BaseView {
     fun onRequestSizeExceeded()
     fun onAllFileServersAreNotWorking()
     fun onCouldNotConnectToServer(error: Throwable)
+    fun onPhotosAreNotSet()
+    fun onSelectedPhotoDoesNotExists()
 }

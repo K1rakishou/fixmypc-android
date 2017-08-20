@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.module.fragment
+package com.kirakishou.fixmypc.fixmypcapp.module.fragment.malfunction
 
 import android.animation.AnimatorSet
 import android.os.Bundle

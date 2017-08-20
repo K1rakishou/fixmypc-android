@@ -1,6 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter
 
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.LoginRequest
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.LoginResponse
@@ -20,7 +21,8 @@ import javax.inject.Inject
  */
 open class LoadingActivityPresenterImpl
 @Inject constructor(protected val mFixmypcApiStore: FixmypcApiStore,
-                    protected val errorBodyConverter: ErrorBodyConverter) : LoadingActivityPresenter<LoadingActivityView>() {
+                    protected val mErrorBodyConverter: ErrorBodyConverter,
+                    protected val mAppSettings: AppSettings) : LoadingActivityPresenter<LoadingActivityView>() {
 
     private val mCompositeDisposable = CompositeDisposable()
 
@@ -45,6 +47,8 @@ open class LoadingActivityPresenterImpl
                         throw IllegalStateException("ServerResponse is Success but errorCode is not SEC_OK: $errorCode")
                     }
 
+                    mAppSettings.saveUserInfo(login, password, sessionId)
+
                     when (accountType) {
                         AccountType.Client -> {
                             callbacks.runClientMainActivity(sessionId, accountType)
@@ -58,16 +62,16 @@ open class LoadingActivityPresenterImpl
                         else -> throw IllegalStateException("Server returned accountType $accountType")
                     }
                 }, { error ->
-                    handleResponse(error)
+                    handleError(error)
                 })
     }
 
-    private fun handleResponse(error: Throwable) {
+    private fun handleError(error: Throwable) {
         Timber.e(error)
 
         when (error) {
             is HttpException -> {
-                val response = errorBodyConverter.convert<LoginResponse>(error.response().errorBody()!!.string(), LoginResponse::class.java)
+                val response = mErrorBodyConverter.convert<LoginResponse>(error.response().errorBody()!!.string(), LoginResponse::class.java)
                 val remoteErrorCode = response.errorCode
 
                 when (remoteErrorCode) {

@@ -114,8 +114,14 @@ class ApplicationModule(private val mContext: Context,
 
     @Singleton
     @Provides
-    fun provideFixmypcApiStore(mApiService: ApiService): FixmypcApiStore {
-        return FixmypcApiStoreImpl(mApiService)
+    fun provideAppSettings(): AppSettings {
+        return AppSettings()
+    }
+
+    @Singleton
+    @Provides
+    fun provideFixmypcApiStore(mApiService: ApiService, mErrorBodyConverter: ErrorBodyConverter, mAppSettings: AppSettings): FixmypcApiStore {
+        return FixmypcApiStoreImpl(mApiService, mErrorBodyConverter, mAppSettings)
     }
 
     @Singleton
@@ -128,12 +134,6 @@ class ApplicationModule(private val mContext: Context,
     @Provides
     fun provideAppSharedPreferences(sharedPreferences: SharedPreferences): AppSharedPreferences {
         return AppSharedPreferences(sharedPreferences)
-    }
-
-    @Singleton
-    @Provides
-    fun provideAppSettings(): AppSettings {
-        return AppSettings()
     }
 
     @Singleton

@@ -4,6 +4,10 @@ package com.kirakishou.fixmypc.fixmypcapp.mvp.model
  * Created by kirakishou on 7/26/2017.
  */
 class AppSettings {
-    var sessionId: Fickle<String> = Fickle.empty()
+    var userInfo: Fickle<UserInfo> = Fickle.empty()
     var accountType: Fickle<AccountType> = Fickle.empty()
+
+    fun saveUserInfo(login: String, password: String, sessionId: String) {
+        this.userInfo = Fickle.of(UserInfo(login, password, sessionId))
+    }
 }

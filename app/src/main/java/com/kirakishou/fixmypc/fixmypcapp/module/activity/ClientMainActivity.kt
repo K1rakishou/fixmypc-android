@@ -11,10 +11,10 @@ import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerChooseCategoryActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ChooseCategoryActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.manager.permission.PermissionManager
-import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionCategoryFragment
-import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionDescriptionFragment
-import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionPhotosFragment
-import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionPhotosFragmentCallbacks
+import com.kirakishou.fixmypc.fixmypcapp.module.fragment.malfunction.MalfunctionCategoryFragment
+import com.kirakishou.fixmypc.fixmypcapp.module.fragment.malfunction.MalfunctionDescriptionFragment
+import com.kirakishou.fixmypc.fixmypcapp.module.fragment.malfunction.MalfunctionPhotosFragment
+import com.kirakishou.fixmypc.fixmypcapp.module.fragment.malfunction.MalfunctionPhotosFragmentCallbacks
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.MalfunctionCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionRequestInfo

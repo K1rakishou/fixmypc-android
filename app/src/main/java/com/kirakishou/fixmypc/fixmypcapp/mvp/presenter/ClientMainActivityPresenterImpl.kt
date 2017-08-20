@@ -52,11 +52,11 @@ open class ClientMainActivityPresenterImpl
 
                 }, { error ->
                     callbacks.onAllFilesUploaded()
-                    handleResponse(error)
+                    handleError(error)
                 })
     }
 
-    private fun handleResponse(error: Throwable) {
+    private fun handleError(error: Throwable) {
         Timber.e(error)
 
         when (error) {
@@ -65,7 +65,7 @@ open class ClientMainActivityPresenterImpl
                 val remoteErrorCode = response.errorCode
 
                 when (remoteErrorCode) {
-                    //Client should check for these two. These will ever happen unless the client is patched
+                    //Client should check for these two. They should never happen unless the client is patched
                     ErrorCode.Remote.REC_NO_FILES_WERE_SELECTED_TO_UPLOAD,
                     ErrorCode.Remote.REC_IMAGES_COUNT_EXCEEDED -> {
                         throw IllegalStateException("This should never happen")
@@ -76,7 +76,7 @@ open class ClientMainActivityPresenterImpl
                     ErrorCode.Remote.REC_ALL_FILE_SERVERS_ARE_NOT_WORKING -> callbacks.onAllFileServersAreNotWorking()
                     ErrorCode.Remote.REC_DATABASE_ERROR -> callbacks.onServerDatabaseError()
 
-                    else -> throw IllegalStateException("This should never happen remoteErrorCode = $remoteErrorCode")
+                    else -> throw IllegalStateException("Unknown error code remoteErrorCode = $remoteErrorCode")
                 }
             }
 
@@ -100,7 +100,7 @@ open class ClientMainActivityPresenterImpl
         callbacks.onProgressDialogUpdate(progress)
     }
 
-    override fun onFileDone() {
+    override fun onFileUploaded() {
         callbacks.onFileUploaded()
     }
 }

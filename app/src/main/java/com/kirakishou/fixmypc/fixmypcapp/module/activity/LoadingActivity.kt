@@ -61,23 +61,16 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
     }
 
     override fun runClientMainActivity(sessionId: String, accountType: AccountType) {
-        saveSettings(sessionId, accountType)
         runActivity(ClientMainActivity::class.java, true)
     }
 
     override fun runSpecialistMainActivity(sessionId: String, accountType: AccountType) {
-        saveSettings(sessionId, accountType)
     }
 
     override fun onCouldNotConnectToServer(error: Throwable) {
         Timber.e(error)
 
         //TODO: show reconnection button
-    }
-
-    private fun saveSettings(sessionId: String, accountType: AccountType) {
-        mAppSettings.sessionId = Fickle.of(sessionId)
-        mAppSettings.accountType = Fickle.of(accountType)
     }
 
     override fun onShowToast(message: String) {

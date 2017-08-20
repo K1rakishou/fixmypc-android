@@ -21,7 +21,7 @@ abstract class AbstractRepository<T> : WiFiConnectivityObserver {
                 .build<String, T>())
     }
 
-    fun init() {
+    fun onPrepareForUploading() {
         WiFiConnectivityManager.registerWifiListener(this)
     }
 

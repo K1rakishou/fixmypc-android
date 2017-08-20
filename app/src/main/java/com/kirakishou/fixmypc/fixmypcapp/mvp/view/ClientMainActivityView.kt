@@ -15,4 +15,5 @@ interface ClientMainActivityView : BaseView {
     fun onProgressDialogUpdate(progress: Int)
     fun onFileUploaded()
     fun onAllFilesUploaded()
+    fun onServerDatabaseError()
 }

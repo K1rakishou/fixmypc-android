@@ -5,7 +5,7 @@ package com.kirakishou.fixmypc.fixmypcapp.util.dialog
  */
 
 interface FileUploadProgressUpdater {
-    fun init(filesCount: Int)
-    fun onPartWrite(progress: Int)
+    fun onPrepareForUploading(filesCount: Int)
+    fun onChunkWrite(progress: Int)
     fun onFileDone()
 }

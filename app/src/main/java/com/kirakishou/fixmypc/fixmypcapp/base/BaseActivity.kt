@@ -22,7 +22,7 @@ import io.reactivex.disposables.CompositeDisposable
 abstract class BaseActivity : AppCompatActivity() {
 
     val mCompositeDisposable = CompositeDisposable()
-    private var mUnbinder: Fickle<Unbinder> = Fickle.empty()
+    private var mUnBinder: Fickle<Unbinder> = Fickle.empty()
 
     private fun overridePendingTransitionEnter() {
         overridePendingTransition(0, 0)
@@ -46,7 +46,7 @@ abstract class BaseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(getContentView())
-        mUnbinder = Fickle.of(ButterKnife.bind(this))
+        mUnBinder = Fickle.of(ButterKnife.bind(this))
         //Fabric.with(this, Crashlytics())
 
         onPrepareView(savedInstanceState, intent)
@@ -77,7 +77,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
         onDestroyPresenter()
 
-        mUnbinder.ifPresent {
+        mUnBinder.ifPresent {
             it.unbind()
         }
     }

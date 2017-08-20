@@ -17,7 +17,7 @@ import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionPhotosFragme
 import com.kirakishou.fixmypc.fixmypcapp.module.fragment.MalfunctionPhotosFragmentCallbacks
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.MalfunctionCategory
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionApplicationInfo
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionRequestInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.ClientMainActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.ClientMainActivityView
 import com.kirakishou.fixmypc.fixmypcapp.util.dialog.ProgressDialog
@@ -32,7 +32,7 @@ class ClientMainActivity : BaseActivity(), ClientMainActivityView {
     @Inject
     lateinit var mPermissionManager: PermissionManager
 
-    private val malfunctionRequestInfo = MalfunctionApplicationInfo()
+    private val malfunctionRequestInfo = MalfunctionRequestInfo()
     private var progressDialog: ProgressDialog? = null
 
     override fun getContentView() = R.layout.activity_client_main
@@ -164,7 +164,11 @@ class ClientMainActivity : BaseActivity(), ClientMainActivityView {
     }
 
     override fun onAllFileServersAreNotWorking() {
-        showToast("Не удалось обработать запрос. Сервера не работают. Попробуйте позже.", Toast.LENGTH_LONG)
+        showToast("Не удалось обработать запрос. Сервера не работают. Попробуйте повторить запрос позже.", Toast.LENGTH_LONG)
+    }
+
+    override fun onServerDatabaseError() {
+        showToast("Ошибка БД на сервере. Попробуйте повторить запрос позже.", Toast.LENGTH_LONG)
     }
 
     override fun onCouldNotConnectToServer(error: Throwable) {

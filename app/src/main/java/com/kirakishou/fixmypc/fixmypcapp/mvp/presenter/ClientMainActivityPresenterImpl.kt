@@ -1,7 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter
 
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionApplicationInfo
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionRequestInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.MalfunctionResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.FileSizeExceededException
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.PhotosAreNotSetException
@@ -38,8 +38,8 @@ open class ClientMainActivityPresenterImpl
         Timber.d("ClientMainActivityPresenterImpl.destroyPresenter()")
     }
 
-    override fun sendMalfunctionRequestToServer(malfunctionApplicationInfo: MalfunctionApplicationInfo) {
-        mCompositeDisposable += mFixmypcApiStore.sendMalfunctionRequest(malfunctionApplicationInfo, WeakReference(this))
+    override fun sendMalfunctionRequestToServer(malfunctionRequestInfo: MalfunctionRequestInfo) {
+        mCompositeDisposable += mFixmypcApiStore.sendMalfunctionRequest(malfunctionRequestInfo, WeakReference(this))
                 .subscribe({ response ->
                     val errorCode = response.errorCode
 
@@ -74,6 +74,7 @@ open class ClientMainActivityPresenterImpl
                     ErrorCode.Remote.REC_FILE_SIZE_EXCEEDED -> callbacks.onFileSizeExceeded()
                     ErrorCode.Remote.REC_REQUEST_SIZE_EXCEEDED -> callbacks.onRequestSizeExceeded()
                     ErrorCode.Remote.REC_ALL_FILE_SERVERS_ARE_NOT_WORKING -> callbacks.onAllFileServersAreNotWorking()
+                    ErrorCode.Remote.REC_DATABASE_ERROR -> callbacks.onServerDatabaseError()
 
                     else -> throw IllegalStateException("This should never happen remoteErrorCode = $remoteErrorCode")
                 }
@@ -91,11 +92,11 @@ open class ClientMainActivityPresenterImpl
         }
     }
 
-    override fun init(filesCount: Int) {
+    override fun onPrepareForUploading(filesCount: Int) {
         callbacks.onInitProgressDialog(filesCount)
     }
 
-    override fun onPartWrite(progress: Int) {
+    override fun onChunkWrite(progress: Int) {
         callbacks.onProgressDialogUpdate(progress)
     }
 

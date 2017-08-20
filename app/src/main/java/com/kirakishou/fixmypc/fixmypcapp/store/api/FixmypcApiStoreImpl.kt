@@ -3,7 +3,7 @@ package com.kirakishou.fixmypc.fixmypcapp.store.api
 import com.kirakishou.fixmypc.fixmypcapp.api.ApiService
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ImageType
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionApplicationInfo
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionRequestInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.LoginRequest
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.MalfunctionRequest
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.LoginResponse
@@ -17,7 +17,6 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.MultipartBody
-import timber.log.Timber
 import java.io.File
 import java.lang.ref.WeakReference
 import javax.inject.Inject
@@ -26,7 +25,7 @@ import javax.inject.Inject
  * Created by kirakishou on 7/22/2017.
  */
 class FixmypcApiStoreImpl
-    @Inject constructor(val mApiService: ApiService) : FixmypcApiStore {
+    @Inject constructor(protected val mApiService: ApiService) : FixmypcApiStore {
 
     override fun loginRequest(loginRequest: LoginRequest): Single<LoginResponse> {
         return mApiService.doLogin(loginRequest)
@@ -34,19 +33,19 @@ class FixmypcApiStoreImpl
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun sendMalfunctionRequest(malfunctionApplicationInfo: MalfunctionApplicationInfo,
+    override fun sendMalfunctionRequest(malfunctionRequestInfo: MalfunctionRequestInfo,
                                         uploadProgressCallback: WeakReference<FileUploadProgressUpdater>): Single<MalfunctionResponse> {
 
-        uploadProgressCallback.get()?.init(malfunctionApplicationInfo.malfunctionPhotos.size)
+        uploadProgressCallback.get()?.onPrepareForUploading(malfunctionRequestInfo.malfunctionPhotos.size)
 
-        return Single.just(malfunctionApplicationInfo)
+        return Single.just(malfunctionRequestInfo)
                 .subscribeOn(Schedulers.io())
                 .flatMap { requestInfo ->
                     if (requestInfo.malfunctionPhotos.isEmpty()) {
                         return@flatMap Single.error<MalfunctionResponse>(PhotosAreNotSetException())
                     }
 
-                    val photoPaths = malfunctionApplicationInfo.malfunctionPhotos
+                    val photoPaths = malfunctionRequestInfo.malfunctionPhotos
                     val multipartBodyPartsList = arrayListOf<MultipartBody.Part>()
 
                     for (photoPath in photoPaths) {
@@ -55,7 +54,7 @@ class FixmypcApiStoreImpl
                             return@flatMap Single.error<MalfunctionResponse>(FileSizeExceededException())
                         }
 
-                        if (!photoFile.isFile || !photoFile.exists() || photoFile.isDirectory) {
+                        if (!photoFile.isFile || !photoFile.exists()) {
                             return@flatMap Single.error<MalfunctionResponse>(SelectedPhotoDoesNotExistsException())
                         }
 
@@ -67,10 +66,10 @@ class FixmypcApiStoreImpl
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe({ percent ->
-                                    uploadProgressCallback.get()?.onPartWrite(percent.toInt())
+                                    uploadProgressCallback.get()?.onChunkWrite(percent.toInt())
                                 }, { error ->
-                                    //should never happen
-                                    Timber.e(error)
+                                    //should never happen, but if it somehow happens - just rethrow it
+                                    throw RuntimeException(error)
                                 }, {
                                     uploadProgressCallback.get()?.onFileDone()
                                 })

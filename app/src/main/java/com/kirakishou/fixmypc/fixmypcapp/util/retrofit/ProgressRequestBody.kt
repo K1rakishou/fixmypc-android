@@ -14,11 +14,11 @@ import java.io.IOException
  */
 class ProgressRequestBody : RequestBody {
 
-    val mFile: File
-    val ignoreFirstNumberOfWriteToCalls: Int
-    var lastProgressPercentUpdate = 0f
-    var numWriteToCalls = 0
-    protected val getProgressSubject: PublishSubject<Float> = PublishSubject.create<Float>()
+    private val mFile: File
+    private val ignoreFirstNumberOfWriteToCalls: Int
+    private var lastProgressPercentUpdate = 0f
+    private var numWriteToCalls = 0
+    private val getProgressSubject: PublishSubject<Float> = PublishSubject.create<Float>()
 
     constructor(file: File) : super() {
         this.mFile = file

@@ -12,14 +12,13 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.util.extension.myAddListener
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 
 /**
  * Created by kirakishou on 7/30/2017.
  */
 abstract class BaseFragment : Fragment() {
 
-    private var mUnbinder: Fickle<Unbinder> = Fickle.empty()
+    private var mUnBinder: Fickle<Unbinder> = Fickle.empty()
     val mCompositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +30,7 @@ abstract class BaseFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val viewId = getContentView()
         val root = inflater!!.inflate(viewId, container, false)
-        mUnbinder = Fickle.of(ButterKnife.bind(this, root))
+        mUnBinder = Fickle.of(ButterKnife.bind(this, root))
 
         return root
     }
@@ -54,7 +53,7 @@ abstract class BaseFragment : Fragment() {
             onFragmentStop()
         }
 
-        mUnbinder.ifPresent {
+        mUnBinder.ifPresent {
             it.unbind()
         }
     }

@@ -1,6 +1,6 @@
 package com.kirakishou.fixmypc.fixmypcapp.store.api
 
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionApplicationInfo
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionRequestInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.LoginRequest
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.LoginResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.MalfunctionResponse
@@ -13,6 +13,6 @@ import java.lang.ref.WeakReference
  */
 interface FixmypcApiStore {
     fun loginRequest(loginRequest: LoginRequest): Single<LoginResponse>
-    fun sendMalfunctionRequest(malfunctionApplicationInfo: MalfunctionApplicationInfo,
+    fun sendMalfunctionRequest(malfunctionRequestInfo: MalfunctionRequestInfo,
                                uploadProgressCallback: WeakReference<FileUploadProgressUpdater>): Single<MalfunctionResponse>
 }

@@ -8,7 +8,6 @@ import android.support.v7.widget.AppCompatButton
 import android.support.v7.widget.CardView
 import butterknife.BindView
 import com.jakewharton.rxbinding2.view.RxView
-import com.jakewharton.rxbinding2.widget.RxTextView
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.module.activity.ClientMainActivity
@@ -38,20 +37,6 @@ class MalfunctionDescriptionFragment : BaseFragment() {
     }
 
     private fun initBindings() {
-        mCompositeDisposable += RxTextView.textChanges(mMalfunctionDescriptionEditText)
-                .skipInitialValue()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .map { text ->
-                    return@map text.isEmpty()
-                }
-                .distinctUntilChanged()
-                .subscribe({ isEmpty ->
-                    Timber.e("isEmpty: $isEmpty")
-                    mButtonDone.isEnabled = !isEmpty
-                }, { error ->
-                    Timber.e(error)
-                })
-
         mCompositeDisposable += RxView.clicks(mButtonDone)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->

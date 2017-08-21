@@ -18,33 +18,43 @@ import com.kirakishou.fixmypc.fixmypcapp.module.fragment.malfunction.Malfunction
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.MalfunctionCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionRequestInfo
-import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.ClientMainActivityPresenterImpl
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.ClientMainActivityView
+import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.ClientNewMalfunctionPresenterImpl
+import com.kirakishou.fixmypc.fixmypcapp.mvp.view.ClientNewMalfunctionActivityView
 import com.kirakishou.fixmypc.fixmypcapp.util.dialog.ProgressDialog
+import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
 
-class ClientMainActivity : BaseActivity(), ClientMainActivityView {
+class ClientNewMalfunctionActivity : BaseActivity(), ClientNewMalfunctionActivityView {
 
     @Inject
-    lateinit var mPresenter: ClientMainActivityPresenterImpl
+    lateinit var mPresenter: ClientNewMalfunctionPresenterImpl
 
     @Inject
     lateinit var mPermissionManager: PermissionManager
 
+    @Inject
+    lateinit var mRefWatcher: RefWatcher
+
     private val malfunctionRequestInfo = MalfunctionRequestInfo()
-    private var progressDialog: ProgressDialog? = null
+    private lateinit var progressDialog: ProgressDialog
 
     override fun getContentView() = R.layout.activity_client_main
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
-    override fun onInitPresenter() = mPresenter.initPresenter()
-    override fun onDestroyPresenter() = mPresenter.destroyPresenter()
 
-    override fun onPrepareView(savedInstanceState: Bundle?, intent: Intent) {
-        super.onPrepareView(savedInstanceState, intent)
+    override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
+        mPresenter.initPresenter()
 
         pushFragment(Constant.FragmentTags.MALFUNCTION_CATEGORY_FRAGMENT_TAG)
+        progressDialog = ProgressDialog(this)
+    }
+
+    override fun onActivityDestroy() {
+        mPresenter.destroyPresenter()
+        progressDialog.dismiss()
+
+        mRefWatcher.watch(this)
     }
 
     fun pushFragment(fragmentTag: String) {
@@ -69,7 +79,7 @@ class ClientMainActivity : BaseActivity(), ClientMainActivityView {
         }
     }
 
-    fun replaceFragment(fragment: Fragment, fragmentTag: String) {
+    private fun replaceFragment(fragment: Fragment, fragmentTag: String) {
         supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.frame, fragment, fragmentTag)
@@ -134,21 +144,36 @@ class ClientMainActivity : BaseActivity(), ClientMainActivityView {
     }
 
     override fun onInitProgressDialog(filesCount: Int) {
-        progressDialog = ProgressDialog(this, filesCount)
-        progressDialog!!.show()
+        progressDialog.init(filesCount)
+        progressDialog.show()
     }
 
     override fun onProgressDialogUpdate(progress: Int) {
-        progressDialog?.setProgress(progress)
+        progressDialog.setProgress(progress)
     }
 
     override fun onFileUploaded() {
-        progressDialog?.onFileUploaded()
+        progressDialog.onFileUploaded()
     }
 
     override fun onAllFilesUploaded() {
-        progressDialog?.dismiss()
-        progressDialog = null
+        progressDialog.hide()
+    }
+
+    override fun resetProgressDialog() {
+        progressDialog.reset()
+    }
+
+    override fun onFileUploadingError(e: Throwable) {
+        progressDialog.hide()
+
+        runOnUiThread {
+            if (e.message != null) {
+                showErrorMessageDialog(e.message!!, true)
+            }  else {
+                showErrorMessageDialog("Неизвестная ошибка при попытке заливки фото", true)
+            }
+        }
     }
 
     override fun onMalfunctionRequestSuccessfullyCreated() {
@@ -183,8 +208,20 @@ class ClientMainActivity : BaseActivity(), ClientMainActivityView {
         showToast("Не удалось прочитать фото с диска (оно было удалено или перемещено)", Toast.LENGTH_LONG)
     }
 
+    override fun onResponseBodyIsEmpty() {
+        showErrorMessageDialog("Response body is empty!", true)
+    }
+
+    override fun onFileAlreadySelected() {
+        showToast("Нельзя отправить два одинаковых файла", Toast.LENGTH_LONG)
+    }
+
     override fun onUnknownError(error: Throwable) {
-        showErrorMessageDialog(error.message!!)
+        if (error.message != null) {
+            showErrorMessageDialog(error.message!!)
+        } else {
+            showErrorMessageDialog("Неизвестная ошибка")
+        }
     }
 
     override fun onBackPressed() {

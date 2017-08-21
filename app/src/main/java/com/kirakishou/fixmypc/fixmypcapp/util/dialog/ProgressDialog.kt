@@ -3,6 +3,7 @@ package com.kirakishou.fixmypc.fixmypcapp.util.dialog
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
 import android.widget.ProgressBar
 import android.widget.TextView
 import butterknife.BindView
@@ -24,13 +25,12 @@ class ProgressDialog : Dialog {
     private var unbinder: Unbinder? = null
     private var totalFiles = 0
     private var currentFile = 0
+    private lateinit var handler: Handler
 
     private constructor() : super(null)
 
-    constructor(ctx: Context, filesCount: Int) : super(ctx) {
-        this.totalFiles = filesCount
-        this.setCancelable(false)
-        this.setTitle(context.getString(com.kirakishou.fixmypc.fixmypcapp.R.string.uploading_in_progress))
+    constructor(ctx: Context) : super(ctx) {
+        handler = Handler(ctx.mainLooper)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,12 +47,43 @@ class ProgressDialog : Dialog {
         unbinder?.unbind()
     }
 
+    fun init(filesCount: Int) {
+        handler.post {
+            this.totalFiles = filesCount
+            this.setCancelable(false)
+            this.setTitle(context.getString(com.kirakishou.fixmypc.fixmypcapp.R.string.uploading_in_progress))
+        }
+    }
+
+    override fun show() {
+        handler.post {
+            super.show()
+        }
+    }
+
+    override fun hide() {
+        handler.post {
+            super.hide()
+        }
+    }
+
     fun setProgress(progress: Int) {
-        this.progressBar.progress = progress
+        handler.post {
+            this.progressBar.progress = progress
+        }
     }
 
     fun onFileUploaded() {
-        ++currentFile
-        this.currentPhotoText.text = String.format(context.getString(R.string.uploading_photo_num), currentFile, totalFiles)
+        handler.post {
+            ++currentFile
+            this.currentPhotoText.text = String.format(context.getString(R.string.uploading_photo_num), currentFile, totalFiles)
+        }
+    }
+
+    fun reset() {
+        handler.post {
+            currentFile = 0
+            this.currentPhotoText.text = String.format(context.getString(R.string.uploading_photo_num), currentFile, totalFiles)
+        }
     }
 }

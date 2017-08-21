@@ -8,4 +8,6 @@ interface FileUploadProgressUpdater {
     fun onPrepareForUploading(filesCount: Int)
     fun onChunkWrite(progress: Int)
     fun onFileUploaded()
+    fun onError(e: Throwable)
+    fun onReset()
 }

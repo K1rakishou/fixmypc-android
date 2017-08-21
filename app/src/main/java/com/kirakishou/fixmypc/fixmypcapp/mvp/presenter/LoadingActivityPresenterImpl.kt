@@ -71,7 +71,12 @@ open class LoadingActivityPresenterImpl
 
         when (error) {
             is HttpException -> {
-                val response = mErrorBodyConverter.convert<LoginResponse>(error.response().errorBody()!!.string(), LoginResponse::class.java)
+                val responseFickle = mErrorBodyConverter.convert<LoginResponse>(error, LoginResponse::class.java)
+                if (!responseFickle.isPresent()) {
+                    callbacks.onResponseBodyIsEmpty()
+                }
+
+                val response = responseFickle.get()
                 val remoteErrorCode = response.errorCode
 
                 when (remoteErrorCode) {

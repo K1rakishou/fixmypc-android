@@ -3,7 +3,7 @@ package com.kirakishou.fixmypc.fixmypcapp.mvp.view
 /**
  * Created by kirakishou on 7/31/2017.
  */
-interface ClientMainActivityView : BaseView {
+interface ClientNewMalfunctionActivityView : BaseView {
     fun onMalfunctionRequestSuccessfullyCreated()
     fun onFileSizeExceeded()
     fun onRequestSizeExceeded()
@@ -16,4 +16,8 @@ interface ClientMainActivityView : BaseView {
     fun onFileUploaded()
     fun onAllFilesUploaded()
     fun onServerDatabaseError()
+    fun onFileUploadingError(e: Throwable)
+    fun onResponseBodyIsEmpty()
+    fun resetProgressDialog()
+    fun onFileAlreadySelected()
 }

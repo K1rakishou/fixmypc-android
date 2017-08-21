@@ -1,13 +1,13 @@
 package com.kirakishou.fixmypc.fixmypcapp.util.retrofit
 
-import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
+import com.kirakishou.fixmypc.fixmypcapp.util.dialog.FileUploadProgressUpdater
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import okio.BufferedSink
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
+import java.lang.ref.WeakReference
 
 /**
  * Created by kirakishou on 8/16/2017.
@@ -18,20 +18,18 @@ class ProgressRequestBody : RequestBody {
     private val ignoreFirstNumberOfWriteToCalls: Int
     private var lastProgressPercentUpdate = 0f
     private var numWriteToCalls = 0
-    private val getProgressSubject: PublishSubject<Float> = PublishSubject.create<Float>()
+    private val callback: WeakReference<FileUploadProgressUpdater>
 
-    constructor(file: File) : super() {
+    constructor(file: File, uploadProgressCallback: WeakReference<FileUploadProgressUpdater>) : super() {
         this.mFile = file
+        this.callback = uploadProgressCallback
         ignoreFirstNumberOfWriteToCalls = 0
     }
 
-    constructor(file: File, ignoreFirstNumberOfWriteToCalls: Int) : super() {
+    constructor(file: File, ignoreFirstNumberOfWriteToCalls: Int, uploadProgressCallback: WeakReference<FileUploadProgressUpdater>) : super() {
         this.mFile = file
+        this.callback = uploadProgressCallback
         this.ignoreFirstNumberOfWriteToCalls = ignoreFirstNumberOfWriteToCalls
-    }
-
-    fun getProgressSubject(): Observable<Float> {
-        return getProgressSubject
     }
 
     override fun contentType(): MediaType? {
@@ -52,26 +50,31 @@ class ProgressRequestBody : RequestBody {
         val fis = FileInputStream(mFile)
         var uploaded: Long = 0
 
-        fis.use {
-            var read: Int
-            read = it.read(buffer)
-
-            while (read != -1) {
-                uploaded += read.toLong()
-                sink.write(buffer, 0, read)
+        try {
+            fis.use {
+                var read: Int
                 read = it.read(buffer)
 
-                if (numWriteToCalls > ignoreFirstNumberOfWriteToCalls) {
-                    val progress = (uploaded.toFloat() / fileLength.toFloat()) * 100f
+                while (read != -1) {
+                    uploaded += read.toLong()
+                    sink.write(buffer, 0, read)
+                    read = it.read(buffer)
 
-                    if (progress - lastProgressPercentUpdate > 3 || progress == 100f) {
-                        getProgressSubject.onNext(progress)
-                        lastProgressPercentUpdate = progress
+                    if (numWriteToCalls > ignoreFirstNumberOfWriteToCalls) {
+                        val progress = (uploaded.toFloat() / fileLength.toFloat()) * 100f
+
+                        if (progress - lastProgressPercentUpdate > 5 || progress == 100f) {
+                            callback.get()?.onChunkWrite(progress.toInt())
+                            lastProgressPercentUpdate = progress
+                        }
                     }
                 }
+
+                callback.get()?.onFileUploaded()
             }
 
-            getProgressSubject.onComplete()
+        } catch (e: Exception) {
+            callback.get()?.onError(e)
         }
     }
 

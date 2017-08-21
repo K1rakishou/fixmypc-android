@@ -1,5 +1,6 @@
 package com.kirakishou.fixmypc.fixmypcapp.di.module
 
+import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
@@ -17,6 +18,8 @@ import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverterImpl
 import com.kirakishou.fixmypc.fixmypcapp.util.type_adapter.AccountTypeTypeAdapter
 import com.kirakishou.fixmypc.fixmypcapp.util.type_adapter.ErrorCodeRemoteTypeAdapter
+import com.squareup.leakcanary.LeakCanary
+import com.squareup.leakcanary.RefWatcher
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -33,13 +36,19 @@ import javax.inject.Singleton
  */
 
 @Module
-class ApplicationModule(private val mContext: Context,
+class ApplicationModule(private val mApplication: Application,
                         private val mBaseUrl: String) {
 
     @Singleton
     @Provides
+    fun provideApplication(): Application {
+        return mApplication
+    }
+
+    @Singleton
+    @Provides
     fun provideContext(): Context {
-        return mContext
+        return mApplication.applicationContext
     }
 
     @Singleton
@@ -140,6 +149,12 @@ class ApplicationModule(private val mContext: Context,
     @Provides
     fun providePermissionManager(): PermissionManager {
         return PermissionManager()
+    }
+
+    @Singleton
+    @Provides
+    fun provideRefWatcher(application: Application): RefWatcher {
+        return LeakCanary.install(application)
     }
 }
 

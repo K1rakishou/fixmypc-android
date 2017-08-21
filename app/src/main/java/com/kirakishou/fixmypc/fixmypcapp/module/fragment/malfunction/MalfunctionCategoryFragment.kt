@@ -8,7 +8,7 @@ import butterknife.BindView
 import com.jakewharton.rxbinding2.view.RxView
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
-import com.kirakishou.fixmypc.fixmypcapp.module.activity.ClientMainActivity
+import com.kirakishou.fixmypc.fixmypcapp.module.activity.ClientNewMalfunctionActivity
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.MalfunctionCategory
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -64,12 +64,12 @@ class MalfunctionCategoryFragment : BaseFragment() {
     }
 
     private fun loadNextFragment(fragmentTag: String) {
-        val activityHolder = activity as ClientMainActivity
+        val activityHolder = activity as ClientNewMalfunctionActivity
         activityHolder.pushFragment(fragmentTag)
     }
 
     private fun setMalfunctionCategory(category: MalfunctionCategory) {
-        val activityHolder = activity as ClientMainActivity
+        val activityHolder = activity as ClientNewMalfunctionActivity
         activityHolder.setMalfunctionCategory(category)
     }
 

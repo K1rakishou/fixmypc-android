@@ -10,7 +10,7 @@ import butterknife.BindView
 import com.jakewharton.rxbinding2.view.RxView
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
-import com.kirakishou.fixmypc.fixmypcapp.module.activity.ClientMainActivity
+import com.kirakishou.fixmypc.fixmypcapp.module.activity.ClientNewMalfunctionActivity
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
@@ -48,12 +48,12 @@ class MalfunctionDescriptionFragment : BaseFragment() {
     }
 
     private fun loadNextFragment(fragmentTag: String) {
-        val activityHolder = activity as ClientMainActivity
+        val activityHolder = activity as ClientNewMalfunctionActivity
         activityHolder.pushFragment(fragmentTag)
     }
 
     private fun setMalfunctionDescription(description: String) {
-        val activityHolder = activity as ClientMainActivity
+        val activityHolder = activity as ClientNewMalfunctionActivity
         activityHolder.setMalfunctionDescription(description)
     }
 

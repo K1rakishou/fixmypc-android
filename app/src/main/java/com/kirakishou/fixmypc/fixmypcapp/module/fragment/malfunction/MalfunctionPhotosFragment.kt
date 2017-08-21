@@ -14,7 +14,7 @@ import butterknife.BindView
 import com.jakewharton.rxbinding2.view.RxView
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
-import com.kirakishou.fixmypc.fixmypcapp.module.activity.ClientMainActivity
+import com.kirakishou.fixmypc.fixmypcapp.module.activity.ClientNewMalfunctionActivity
 import com.kirakishou.fixmypc.fixmypcapp.module.adapter.MalfunctionPhotosAdapter
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AdapterItem
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AdapterItemType
@@ -77,17 +77,17 @@ class MalfunctionPhotosFragment : BaseFragment(),
     }
 
     private fun sendApplicationToServer() {
-        val activityHolder = activity as ClientMainActivity
+        val activityHolder = activity as ClientNewMalfunctionActivity
         activityHolder.sendRequestToServer()
     }
 
     private fun setMalfunctionPhotos(photos: ArrayList<String>) {
-        val activityHolder = activity as ClientMainActivity
+        val activityHolder = activity as ClientNewMalfunctionActivity
         activityHolder.setMalfunctionPhotos(photos)
     }
 
     override fun onPhotoAddClick(position: Int) {
-        val activityHolder = activity as ClientMainActivity
+        val activityHolder = activity as ClientNewMalfunctionActivity
         activityHolder.requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Constant.PermissionCodes.PERMISSION_CODE_WRITE_EXTERNAL_STORAGE)
     }

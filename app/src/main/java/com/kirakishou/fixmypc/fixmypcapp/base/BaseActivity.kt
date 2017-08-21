@@ -3,7 +3,6 @@ package com.kirakishou.fixmypc.fixmypcapp.base
 import android.animation.AnimatorSet
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.CallSuper
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import butterknife.ButterKnife
@@ -49,13 +48,8 @@ abstract class BaseActivity : AppCompatActivity() {
         mUnBinder = Fickle.of(ButterKnife.bind(this))
         //Fabric.with(this, Crashlytics())
 
-        onPrepareView(savedInstanceState, intent)
-    }
-
-    @CallSuper
-    protected open fun onPrepareView(savedInstanceState: Bundle?, intent: Intent) {
         resolveDaggerDependency()
-        onInitPresenter()
+        onActivityCreate(savedInstanceState, intent)
     }
 
     override fun onStart() {
@@ -75,7 +69,7 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        onDestroyPresenter()
+        onActivityDestroy()
 
         mUnBinder.ifPresent {
             it.unbind()
@@ -133,8 +127,8 @@ abstract class BaseActivity : AppCompatActivity() {
     protected abstract fun getContentView(): Int
     protected abstract fun loadStartAnimations(): AnimatorSet
     protected abstract fun loadExitAnimations(): AnimatorSet
-    protected abstract fun onInitPresenter()
-    protected abstract fun onDestroyPresenter()
+    protected abstract fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent)
+    protected abstract fun onActivityDestroy()
     protected abstract fun onViewReady()
     protected abstract fun onViewStop()
     protected abstract fun resolveDaggerDependency()

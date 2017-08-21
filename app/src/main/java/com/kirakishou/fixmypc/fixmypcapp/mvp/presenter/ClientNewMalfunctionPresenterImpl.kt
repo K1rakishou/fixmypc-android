@@ -3,10 +3,12 @@ package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionRequestInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.MalfunctionResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.ResponseBodyIsEmpty
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.FileAlreadySelectedException
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.FileSizeExceededException
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.PhotosAreNotSetException
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.SelectedPhotoDoesNotExistsException
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.ClientMainActivityView
+import com.kirakishou.fixmypc.fixmypcapp.mvp.view.ClientNewMalfunctionActivityView
 import com.kirakishou.fixmypc.fixmypcapp.store.api.FixmypcApiStore
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
 import com.kirakishou.fixmypc.fixmypcapp.util.dialog.FileUploadProgressUpdater
@@ -22,20 +24,20 @@ import javax.inject.Inject
 /**
  * Created by kirakishou on 7/27/2017.
  */
-open class ClientMainActivityPresenterImpl
+open class ClientNewMalfunctionPresenterImpl
 @Inject constructor(protected val mFixmypcApiStore: FixmypcApiStore,
-                    protected val errorBodyConverter: ErrorBodyConverter) : ClientMainActivityPresenter<ClientMainActivityView>(), FileUploadProgressUpdater {
+                    protected val errorBodyConverter: ErrorBodyConverter) : ClientNewMalfunctionPresenter<ClientNewMalfunctionActivityView>(), FileUploadProgressUpdater {
 
     private val mCompositeDisposable = CompositeDisposable()
 
     override fun initPresenter() {
-        Timber.d("ClientMainActivityPresenterImpl.initPresenter()")
+        Timber.d("ClientNewMalfunctionPresenterImpl.initPresenter()")
     }
 
     override fun destroyPresenter() {
         mCompositeDisposable.clear()
 
-        Timber.d("ClientMainActivityPresenterImpl.destroyPresenter()")
+        Timber.d("ClientNewMalfunctionPresenterImpl.destroyPresenter()")
     }
 
     override fun sendMalfunctionRequestToServer(malfunctionRequestInfo: MalfunctionRequestInfo) {
@@ -61,7 +63,12 @@ open class ClientMainActivityPresenterImpl
 
         when (error) {
             is HttpException -> {
-                val response = errorBodyConverter.convert<MalfunctionResponse>(error.response().errorBody()!!.string(), MalfunctionResponse::class.java)
+                val responseFickle = errorBodyConverter.convert<MalfunctionResponse>(error, MalfunctionResponse::class.java)
+                if (!responseFickle.isPresent()) {
+                    callbacks.onResponseBodyIsEmpty()
+                }
+
+                val response = responseFickle.get()
                 val remoteErrorCode = response.errorCode
 
                 when (remoteErrorCode) {
@@ -88,6 +95,9 @@ open class ClientMainActivityPresenterImpl
             is FileSizeExceededException -> callbacks.onFileSizeExceeded()
             is PhotosAreNotSetException -> callbacks.onPhotosAreNotSet()
             is SelectedPhotoDoesNotExistsException -> callbacks.onSelectedPhotoDoesNotExists()
+            is ResponseBodyIsEmpty -> callbacks.onResponseBodyIsEmpty()
+            is FileAlreadySelectedException -> callbacks.onFileAlreadySelected()
+
             else -> callbacks.onUnknownError(error)
         }
     }
@@ -102,5 +112,13 @@ open class ClientMainActivityPresenterImpl
 
     override fun onFileUploaded() {
         callbacks.onFileUploaded()
+    }
+
+    override fun onReset() {
+        callbacks.resetProgressDialog()
+    }
+
+    override fun onError(e: Throwable) {
+        callbacks.onFileUploadingError(e)
     }
 }

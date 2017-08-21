@@ -25,7 +25,10 @@ class FixmypcApplication : Application() {
                 .applicationModule(ApplicationModule(this, mBaseUrl))
                 .build()
 
+        initTimber()
+    }
+
+    private fun initTimber() {
         Timber.plant(DebugTree())
-        Timber.tag("FixmypcApplication")
     }
 }

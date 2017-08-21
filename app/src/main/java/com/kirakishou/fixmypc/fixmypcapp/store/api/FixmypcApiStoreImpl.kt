@@ -8,17 +8,18 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.MalfunctionReq
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.LoginResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.MalfunctionResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.CouldNotUpdateSessionId
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.ResponseBodyIsEmpty
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.UserInfoIsEmpty
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.FileAlreadySelectedException
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.FileSizeExceededException
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.PhotosAreNotSetException
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.SelectedPhotoDoesNotExistsException
+import com.kirakishou.fixmypc.fixmypcapp.util.Utils
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
 import com.kirakishou.fixmypc.fixmypcapp.util.dialog.FileUploadProgressUpdater
 import com.kirakishou.fixmypc.fixmypcapp.util.retrofit.ProgressRequestBody
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import okhttp3.MultipartBody
 import retrofit2.HttpException
@@ -44,30 +45,29 @@ class FixmypcApiStoreImpl
     override fun sendMalfunctionRequest(malfunctionRequestInfo: MalfunctionRequestInfo,
                                         uploadProgressCallback: WeakReference<FileUploadProgressUpdater>): Single<MalfunctionResponse> {
 
-        uploadProgressCallback.get()?.onPrepareForUploading(malfunctionRequestInfo.malfunctionPhotos.size)
-        val compositeDisposable = CompositeDisposable()
-
         return Single.just(malfunctionRequestInfo)
                 .subscribeOn(Schedulers.io())
                 .flatMap {
-                    send(it, malfunctionRequestInfo, compositeDisposable, uploadProgressCallback)
-                }
-                .doOnEvent {
-                    _, _ -> compositeDisposable.clear()
+                    send(it, malfunctionRequestInfo, uploadProgressCallback)
                 }
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
     private fun send(requestInfo: MalfunctionRequestInfo, malfunctionRequestInfo: MalfunctionRequestInfo,
-                     compositeDisposable: CompositeDisposable, uploadProgressCallback: WeakReference<FileUploadProgressUpdater>): Single<MalfunctionResponse> {
+                     uploadProgressCallback: WeakReference<FileUploadProgressUpdater>): Single<MalfunctionResponse> {
 
         if (requestInfo.malfunctionPhotos.isEmpty()) {
             return Single.error<MalfunctionResponse>(PhotosAreNotSetException())
         }
 
+        //notify the activity to show upload dialog
+        uploadProgressCallback.get()?.onPrepareForUploading(malfunctionRequestInfo.malfunctionPhotos.size)
+
         val photoPaths = malfunctionRequestInfo.malfunctionPhotos
         val multipartBodyPartsList = arrayListOf<MultipartBody.Part>()
+        val filesMd5 = hashSetOf<String>()
 
+        //prepare photos
         for (photoPath in photoPaths) {
             val photoFile = File(photoPath)
             if (photoFile.length() > Constant.MAX_FILE_SIZE) {
@@ -78,23 +78,18 @@ class FixmypcApiStoreImpl
                 return Single.error<MalfunctionResponse>(SelectedPhotoDoesNotExistsException())
             }
 
-            val progressRequestBody = ProgressRequestBody(photoFile)
+            val fileMd5 = Utils.getFileMd5(photoFile)
+            if (filesMd5.contains(fileMd5)) {
+                return Single.error<MalfunctionResponse>(FileAlreadySelectedException())
+            }
 
-            compositeDisposable += progressRequestBody.getProgressSubject()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({ percent ->
-                        uploadProgressCallback.get()?.onChunkWrite(percent.toInt())
-                    }, { error ->
-                        //should never happen, but if it somehow happens - just rethrow it
-                        throw RuntimeException(error)
-                    }, {
-                        uploadProgressCallback.get()?.onFileUploaded()
-                    })
+            filesMd5.add(fileMd5)
 
+            val progressRequestBody = ProgressRequestBody(photoFile, uploadProgressCallback)
             multipartBodyPartsList.add(MultipartBody.Part.createFormData("photos", photoFile.name, progressRequestBody))
         }
 
+        //we need sessionId for this request
         if (!mAppSettings.userInfo.isPresent()) {
             //Should never happen. userInfo must be set on user successful log in
             return Single.error<MalfunctionResponse>(UserInfoIsEmpty())
@@ -103,19 +98,29 @@ class FixmypcApiStoreImpl
         val userInfo = mAppSettings.userInfo.get()
         val request = MalfunctionRequest(requestInfo.malfunctionCategory.ordinal, requestInfo.malfunctionDescription)
 
+        //send request
         return mApiService.sendMalfunctionRequest(userInfo.sessionId, multipartBodyPartsList, request, ImageType.IMAGE_TYPE_MALFUNCTION_PHOTO.value)
+                //handle HttpException
                 .onErrorResumeNext { error ->
-                    return@onErrorResumeNext handleMalfunctionErrorResponse(error, userInfo, multipartBodyPartsList, request)
+                    return@onErrorResumeNext handleBadHttpStatus(error, userInfo, multipartBodyPartsList, uploadProgressCallback, request)
                 }
     }
 
-    private fun handleMalfunctionErrorResponse(error: Throwable, userInfo: UserInfo, multipartBodyPartsList: ArrayList<MultipartBody.Part>,
-                                               request: MalfunctionRequest): Single<MalfunctionResponse> {
+    private fun handleBadHttpStatus(error: Throwable, userInfo: UserInfo,
+                                    multipartBodyPartsList: ArrayList<MultipartBody.Part>,
+                                    uploadProgressCallback: WeakReference<FileUploadProgressUpdater>,
+                                    request: MalfunctionRequest): Single<MalfunctionResponse> {
+
         if (error !is HttpException) {
             return Single.error<MalfunctionResponse>(error)
         }
 
-        val malfunctionResponse = mErrorBodyConverter.convert<MalfunctionResponse>(error.response().errorBody()!!.string(), MalfunctionResponse::class.java)
+        val malfunctionResponseFickle = mErrorBodyConverter.convert<MalfunctionResponse>(error, MalfunctionResponse::class.java)
+        if (!malfunctionResponseFickle.isPresent()) {
+            return Single.error<MalfunctionResponse>(ResponseBodyIsEmpty())
+        }
+
+        val malfunctionResponse = malfunctionResponseFickle.get()
 
         //if server returned REC_SESSION_ID_EXPIRED that means our session was removed from the cache and we need to re login
         if (malfunctionResponse.errorCode != ErrorCode.Remote.REC_SESSION_ID_EXPIRED) {
@@ -131,6 +136,7 @@ class FixmypcApiStoreImpl
                         return@flatMap Single.error<MalfunctionResponse>(CouldNotUpdateSessionId())
                     }
 
+                    uploadProgressCallback.get()?.onReset()
                     mAppSettings.userInfo.get().sessionId = loginResponse.sessionId
 
                     Timber.d("Re login success!")

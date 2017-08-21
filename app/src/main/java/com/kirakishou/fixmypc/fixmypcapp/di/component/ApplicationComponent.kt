@@ -10,6 +10,7 @@ import com.kirakishou.fixmypc.fixmypcapp.module.shared_preference.AppSharedPrefe
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.store.api.FixmypcApiStore
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
+import com.squareup.leakcanary.RefWatcher
 import dagger.Component
 import org.greenrobot.eventbus.EventBus
 import retrofit2.Retrofit
@@ -33,4 +34,5 @@ interface ApplicationComponent {
     fun exposeAppSharedPreferences(): AppSharedPreferences
     fun exposeAppSettings(): AppSettings
     fun exposePermissionManager(): PermissionManager
+    fun exposeRefWatcher(): RefWatcher
 }

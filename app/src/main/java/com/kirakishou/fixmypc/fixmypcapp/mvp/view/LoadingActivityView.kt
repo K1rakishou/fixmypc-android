@@ -10,4 +10,5 @@ interface LoadingActivityView : BaseView {
     fun runSpecialistMainActivity(sessionId: String, accountType: AccountType)
     fun runGuestMainActivity()
     fun onCouldNotConnectToServer(error: Throwable)
+    fun onResponseBodyIsEmpty()
 }

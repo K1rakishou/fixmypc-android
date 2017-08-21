@@ -1,11 +1,11 @@
-package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter
+package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity
 
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.LoginRequest
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.LoginResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.LoadingActivityView
+import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.LoadingActivityView
 import com.kirakishou.fixmypc.fixmypcapp.store.api.FixmypcApiStore
 import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
 import io.reactivex.disposables.CompositeDisposable

@@ -24,7 +24,7 @@ abstract class BaseFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //resolveDaggerDependency()
+        resolveDaggerDependency()
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -73,4 +73,5 @@ abstract class BaseFragment : Fragment() {
     protected abstract fun loadExitAnimations(): AnimatorSet
     protected abstract fun onFragmentReady()
     protected abstract fun onFragmentStop()
+    protected abstract fun resolveDaggerDependency()
 }

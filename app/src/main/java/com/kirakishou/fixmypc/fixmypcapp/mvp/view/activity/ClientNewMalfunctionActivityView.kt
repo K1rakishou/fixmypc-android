@@ -1,9 +1,11 @@
-package com.kirakishou.fixmypc.fixmypcapp.mvp.view
+package com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity
+
+import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivityView
 
 /**
  * Created by kirakishou on 7/31/2017.
  */
-interface ClientNewMalfunctionActivityView : BaseView {
+interface ClientNewMalfunctionActivityView : BaseActivityView {
     fun onMalfunctionRequestSuccessfullyCreated()
     fun onFileSizeExceeded()
     fun onRequestSizeExceeded()

@@ -7,7 +7,7 @@ import android.support.v4.app.Fragment
 import android.widget.Toast
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
-import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
+import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragmentedActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerChooseCategoryActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewMalfunctionActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.manager.permission.PermissionManager
@@ -18,14 +18,14 @@ import com.kirakishou.fixmypc.fixmypcapp.module.fragment.malfunction.Malfunction
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.MalfunctionCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionRequestInfo
-import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.ClientNewMalfunctionPresenterImpl
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.ClientNewMalfunctionActivityView
+import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity.ClientNewMalfunctionPresenterImpl
+import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.ClientNewMalfunctionActivityView
 import com.kirakishou.fixmypc.fixmypcapp.util.dialog.ProgressDialog
 import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
 
-class ClientNewMalfunctionActivity : BaseActivity(), ClientNewMalfunctionActivityView {
+class ClientNewMalfunctionActivity : BaseFragmentedActivity(), ClientNewMalfunctionActivityView {
 
     @Inject
     lateinit var mPresenter: ClientNewMalfunctionPresenterImpl
@@ -38,6 +38,15 @@ class ClientNewMalfunctionActivity : BaseActivity(), ClientNewMalfunctionActivit
 
     private val malfunctionRequestInfo = MalfunctionRequestInfo()
     private lateinit var progressDialog: ProgressDialog
+
+    override fun getFragmentFromTag(fragmentTag: String): Fragment {
+        return when (fragmentTag) {
+            Constant.FragmentTags.MALFUNCTION_CATEGORY_FRAGMENT_TAG -> MalfunctionCategoryFragment.newInstance()
+            Constant.FragmentTags.MALFUNCTION_DESCRIPTION_FRAGMENT_TAG -> MalfunctionDescriptionFragment.newInstance()
+            Constant.FragmentTags.MALFUNCTION_PHOTOS_FRAGMENT_TAG -> MalfunctionPhotosFragment.newInstance()
+            else -> throw IllegalArgumentException("Unknown fragmentTag: $fragmentTag")
+        }
+    }
 
     override fun getContentView() = R.layout.activity_client_new_malfunction
     override fun loadStartAnimations() = AnimatorSet()
@@ -55,36 +64,6 @@ class ClientNewMalfunctionActivity : BaseActivity(), ClientNewMalfunctionActivit
         progressDialog.dismiss()
 
         mRefWatcher.watch(this)
-    }
-
-    fun pushFragment(fragmentTag: String) {
-        var fragment = supportFragmentManager.findFragmentByTag(fragmentTag)
-        if (fragment == null) {
-            fragment = instantiateFragment(fragmentTag)
-        }
-
-        replaceFragment(fragment, fragmentTag)
-    }
-
-    fun popFragment() {
-        supportFragmentManager.popBackStack()
-    }
-
-    private fun instantiateFragment(fragmentTag: String): Fragment {
-        when (fragmentTag) {
-            Constant.FragmentTags.MALFUNCTION_CATEGORY_FRAGMENT_TAG -> return MalfunctionCategoryFragment.newInstance()
-            Constant.FragmentTags.MALFUNCTION_DESCRIPTION_FRAGMENT_TAG -> return MalfunctionDescriptionFragment.newInstance()
-            Constant.FragmentTags.MALFUNCTION_PHOTOS_FRAGMENT_TAG -> return MalfunctionPhotosFragment.newInstance()
-            else -> throw IllegalArgumentException("Unknown fragmentTag: $fragmentTag")
-        }
-    }
-
-    private fun replaceFragment(fragment: Fragment, fragmentTag: String) {
-        supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.frame, fragment, fragmentTag)
-                .addToBackStack(fragmentTag)
-                .commit()
     }
 
     fun requestPermission(permission: String, requestCode: Int) {
@@ -178,6 +157,7 @@ class ClientNewMalfunctionActivity : BaseActivity(), ClientNewMalfunctionActivit
 
     override fun onMalfunctionRequestSuccessfullyCreated() {
         showToast("Заявка успешно создана", Toast.LENGTH_LONG)
+        runActivity(ClientMainActivity::class.java, true)
     }
 
     override fun onFileSizeExceeded() {

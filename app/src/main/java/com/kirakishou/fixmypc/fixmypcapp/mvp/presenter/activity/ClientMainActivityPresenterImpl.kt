@@ -1,6 +1,6 @@
-package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter
+package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity
 
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.ClientMainActivityView
+import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.ClientMainActivityView
 import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
 import javax.inject.Inject

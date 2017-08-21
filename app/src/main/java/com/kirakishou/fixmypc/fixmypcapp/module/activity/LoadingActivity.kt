@@ -14,8 +14,8 @@ import com.kirakishou.fixmypc.fixmypcapp.module.shared_preference.preference.Acc
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
-import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.LoadingActivityPresenterImpl
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.LoadingActivityView
+import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity.LoadingActivityPresenterImpl
+import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.LoadingActivityView
 import com.squareup.leakcanary.RefWatcher
 import timber.log.Timber
 import javax.inject.Inject

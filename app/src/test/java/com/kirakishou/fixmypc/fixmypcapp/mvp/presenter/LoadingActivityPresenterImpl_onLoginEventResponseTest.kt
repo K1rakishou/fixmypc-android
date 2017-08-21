@@ -6,7 +6,8 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ServiceMessageType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServerResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.ServiceAnswer
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.LoginResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.LoadingActivityView
+import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity.LoadingActivityPresenterImpl
+import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.LoadingActivityView
 import org.greenrobot.eventbus.EventBus
 import org.junit.Before
 import org.junit.Test

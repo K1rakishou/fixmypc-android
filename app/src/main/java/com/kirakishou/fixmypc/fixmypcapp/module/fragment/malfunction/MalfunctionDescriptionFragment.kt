@@ -61,6 +61,10 @@ class MalfunctionDescriptionFragment : BaseFragment() {
 
     }
 
+    override fun resolveDaggerDependency() {
+
+    }
+
     companion object {
         fun newInstance(): Fragment {
             val fragment = MalfunctionDescriptionFragment()

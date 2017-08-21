@@ -1,6 +1,6 @@
 package com.kirakishou.fixmypc.fixmypcapp.di.component
 
-import com.kirakishou.fixmypc.fixmypcapp.di.module.ChooseCategoryActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewMalfunctionActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerActivity
 import com.kirakishou.fixmypc.fixmypcapp.module.activity.ClientNewMalfunctionActivity
 import dagger.Component
@@ -10,7 +10,7 @@ import dagger.Component
  */
 
 @PerActivity
-@Component(modules = arrayOf(ChooseCategoryActivityModule::class), dependencies = arrayOf(ApplicationComponent::class))
+@Component(modules = arrayOf(ClientNewMalfunctionActivityModule::class), dependencies = arrayOf(ApplicationComponent::class))
 interface ChooseCategoryActivityComponent {
     fun inject(activity: ClientNewMalfunctionActivity)
 }

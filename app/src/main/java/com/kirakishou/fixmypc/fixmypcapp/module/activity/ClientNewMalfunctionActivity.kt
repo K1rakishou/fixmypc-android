@@ -9,7 +9,7 @@ import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerChooseCategoryActivityComponent
-import com.kirakishou.fixmypc.fixmypcapp.di.module.ChooseCategoryActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewMalfunctionActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.manager.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.module.fragment.malfunction.MalfunctionCategoryFragment
 import com.kirakishou.fixmypc.fixmypcapp.module.fragment.malfunction.MalfunctionDescriptionFragment
@@ -39,7 +39,7 @@ class ClientNewMalfunctionActivity : BaseActivity(), ClientNewMalfunctionActivit
     private val malfunctionRequestInfo = MalfunctionRequestInfo()
     private lateinit var progressDialog: ProgressDialog
 
-    override fun getContentView() = R.layout.activity_client_main
+    override fun getContentView() = R.layout.activity_client_new_malfunction
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
@@ -134,7 +134,7 @@ class ClientNewMalfunctionActivity : BaseActivity(), ClientNewMalfunctionActivit
     override fun resolveDaggerDependency() {
         DaggerChooseCategoryActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
-                .chooseCategoryActivityModule(ChooseCategoryActivityModule(this))
+                .clientNewMalfunctionActivityModule(ClientNewMalfunctionActivityModule(this))
                 .build()
                 .inject(this)
     }

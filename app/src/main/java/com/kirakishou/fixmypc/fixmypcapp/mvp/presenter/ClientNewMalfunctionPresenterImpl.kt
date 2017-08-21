@@ -41,7 +41,7 @@ open class ClientNewMalfunctionPresenterImpl
     }
 
     override fun sendMalfunctionRequestToServer(malfunctionRequestInfo: MalfunctionRequestInfo) {
-        mCompositeDisposable += mFixmypcApiStore.sendMalfunctionRequest(malfunctionRequestInfo, WeakReference(this))
+        mCompositeDisposable += mFixmypcApiStore.createMalfunctionRequest(malfunctionRequestInfo, WeakReference(this))
                 .subscribe({ response ->
                     val errorCode = response.errorCode
 

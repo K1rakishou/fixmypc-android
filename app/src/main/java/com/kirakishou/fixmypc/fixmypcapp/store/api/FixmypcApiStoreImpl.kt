@@ -42,19 +42,19 @@ class FixmypcApiStoreImpl
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun sendMalfunctionRequest(malfunctionRequestInfo: MalfunctionRequestInfo,
-                                        uploadProgressCallback: WeakReference<FileUploadProgressUpdater>): Single<MalfunctionResponse> {
+    override fun createMalfunctionRequest(malfunctionRequestInfo: MalfunctionRequestInfo,
+                                          uploadProgressCallback: WeakReference<FileUploadProgressUpdater>): Single<MalfunctionResponse> {
 
         return Single.just(malfunctionRequestInfo)
                 .subscribeOn(Schedulers.io())
                 .flatMap {
-                    send(it, malfunctionRequestInfo, uploadProgressCallback)
+                    sendMalfunctionRequest(it, malfunctionRequestInfo, uploadProgressCallback)
                 }
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
-    private fun send(requestInfo: MalfunctionRequestInfo, malfunctionRequestInfo: MalfunctionRequestInfo,
-                     uploadProgressCallback: WeakReference<FileUploadProgressUpdater>): Single<MalfunctionResponse> {
+    private fun sendMalfunctionRequest(requestInfo: MalfunctionRequestInfo, malfunctionRequestInfo: MalfunctionRequestInfo,
+                                       uploadProgressCallback: WeakReference<FileUploadProgressUpdater>): Single<MalfunctionResponse> {
 
         if (requestInfo.malfunctionPhotos.isEmpty()) {
             return Single.error<MalfunctionResponse>(PhotosAreNotSetException())

@@ -10,7 +10,7 @@ import dagger.Provides
  */
 
 @Module
-class ChooseCategoryActivityModule(val mView: ClientNewMalfunctionActivityView) {
+class ClientNewMalfunctionActivityModule(val mView: ClientNewMalfunctionActivityView) {
 
     @PerActivity
     @Provides

@@ -13,6 +13,6 @@ import java.lang.ref.WeakReference
  */
 interface FixmypcApiStore {
     fun loginRequest(loginRequest: LoginRequest): Single<LoginResponse>
-    fun sendMalfunctionRequest(malfunctionRequestInfo: MalfunctionRequestInfo,
-                               uploadProgressCallback: WeakReference<FileUploadProgressUpdater>): Single<MalfunctionResponse>
+    fun createMalfunctionRequest(malfunctionRequestInfo: MalfunctionRequestInfo,
+                                 uploadProgressCallback: WeakReference<FileUploadProgressUpdater>): Single<MalfunctionResponse>
 }

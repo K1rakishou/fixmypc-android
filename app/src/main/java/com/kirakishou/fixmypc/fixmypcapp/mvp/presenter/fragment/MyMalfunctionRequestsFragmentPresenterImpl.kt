@@ -1,6 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.fragment
 
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.fragment.MyMalfunctionRequestsFragmentView
+import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -10,11 +11,15 @@ import javax.inject.Inject
 class MyMalfunctionRequestsFragmentPresenterImpl
     @Inject constructor(): MyMalfunctionRequestsFragmentPresenter<MyMalfunctionRequestsFragmentView>() {
 
+    private val mCompositeDisposable = CompositeDisposable()
+
     override fun initPresenter() {
         Timber.d("MyMalfunctionRequestsFragmentPresenterImpl.initPresenter()")
     }
 
     override fun destroyPresenter() {
+        mCompositeDisposable.clear()
+
         Timber.d("MyMalfunctionRequestsFragmentPresenterImpl.destroyPresenter()")
     }
 }

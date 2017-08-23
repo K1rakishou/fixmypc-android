@@ -9,4 +9,4 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
  */
 data class SignupRequest(@SerializedName(Constant.SerializedNames.LOGIN_SERIALIZED_NAME) val login: String,
                          @SerializedName(Constant.SerializedNames.PASSWORD_SERIALIZED_NAME) val password: String,
-                         @SerializedName(Constant.SerializedNames.ACCOUNT_TYPE_SERIALIZED_NAME) val accountType: AccountType)
+                         @SerializedName(Constant.SerializedNames.ACCOUNT_TYPE_SERIALIZED_NAME) val accountType: AccountType) : BaseRequest

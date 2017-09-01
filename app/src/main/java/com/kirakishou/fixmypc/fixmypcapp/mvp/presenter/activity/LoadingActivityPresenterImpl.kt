@@ -1,16 +1,17 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity
 
+import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.LoginRequest
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.LoginResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.ApiException
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.LoadingActivityView
-import com.kirakishou.fixmypc.fixmypcapp.store.api.FixmypcApiStore
-import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import retrofit2.HttpException
+import io.reactivex.subjects.SingleSubject
 import timber.log.Timber
 import java.net.UnknownHostException
 import java.util.concurrent.TimeoutException
@@ -20,13 +21,17 @@ import javax.inject.Inject
  * Created by kirakishou on 7/20/2017.
  */
 open class LoadingActivityPresenterImpl
-@Inject constructor(protected val mFixmypcApiStore: FixmypcApiStore,
-                    protected val mErrorBodyConverter: ErrorBodyConverter,
+@Inject constructor(protected val mApiClient: ApiClient,
                     protected val mAppSettings: AppSettings) : LoadingActivityPresenter<LoadingActivityView>() {
 
     private val mCompositeDisposable = CompositeDisposable()
+    private val responseSubject: SingleSubject<Pair<LoginRequest, LoginResponse>> = SingleSubject.create()
 
     override fun initPresenter() {
+        mCompositeDisposable += responseSubject
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ handleResponse(it) }, { handleError(it) })
+
         Timber.d("LoadingActivityPresenterImpl.initPresenter()")
     }
 
@@ -37,47 +42,42 @@ open class LoadingActivityPresenterImpl
     }
 
     override fun startLoggingIn(login: String, password: String) {
-        mCompositeDisposable += mFixmypcApiStore.loginRequest(LoginRequest(login, password))
-                .subscribe({ response ->
-                    val sessionId = response.sessionId
-                    val accountType = response.accountType
-                    val errorCode = response.errorCode
+        mApiClient.loginRequest(LoginRequest(login, password), responseSubject)
+    }
 
-                    if (errorCode != ErrorCode.Remote.REC_OK) {
-                        throw IllegalStateException("ServerResponse is Success but errorCode is not SEC_OK: $errorCode")
-                    }
+    private fun handleResponse(response: Pair<LoginRequest, LoginResponse>) {
+        val sessionId = response.second.sessionId
+        val accountType = response.second.accountType
+        val errorCode = response.second.errorCode
 
-                    mAppSettings.saveUserInfo(login, password, sessionId)
+        if (errorCode != ErrorCode.Remote.REC_OK) {
+            throw IllegalStateException("ServerResponse is Success but errorCode is not SEC_OK: $errorCode")
+        }
 
-                    when (accountType) {
-                        AccountType.Client -> {
-                            callbacks.runClientMainActivity(sessionId, accountType)
-                        }
+        mAppSettings.saveUserInfo(response.first.login, response.first.password, sessionId)
 
-                        AccountType.Specialist -> {
-                            callbacks.runSpecialistMainActivity(sessionId, accountType)
-                        }
+        when (accountType) {
+            AccountType.Client -> {
+                callbacks.runClientMainActivity(sessionId, accountType)
+            }
 
-                        //should never happen
-                        else -> throw IllegalStateException("Server returned accountType $accountType")
-                    }
-                }, { error ->
-                    handleError(error)
-                })
+            AccountType.Specialist -> {
+                callbacks.runSpecialistMainActivity(sessionId, accountType)
+            }
+
+            //should never happen
+            else -> throw IllegalStateException("Server returned unknown accountType $accountType")
+        }
     }
 
     private fun handleError(error: Throwable) {
-        Timber.e(error)
+        if (error !is ApiException) {
+            Timber.e(error)
+        }
 
         when (error) {
-            is HttpException -> {
-                val responseFickle = mErrorBodyConverter.convert<LoginResponse>(error, LoginResponse::class.java)
-                if (!responseFickle.isPresent()) {
-                    callbacks.onResponseBodyIsEmpty()
-                }
-
-                val response = responseFickle.get()
-                val remoteErrorCode = response.errorCode
+            is ApiException -> {
+                val remoteErrorCode = error.errorCode
 
                 when (remoteErrorCode) {
                     ErrorCode.Remote.REC_WRONG_LOGIN_OR_PASSWORD,

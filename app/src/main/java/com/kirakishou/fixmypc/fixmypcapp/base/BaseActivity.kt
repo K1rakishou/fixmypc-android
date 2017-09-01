@@ -9,9 +9,9 @@ import butterknife.ButterKnife
 import butterknife.Unbinder
 import com.afollestad.materialdialogs.MaterialDialog
 import com.kirakishou.fixmypc.fixmypcapp.R
+import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
+import com.kirakishou.fixmypc.fixmypcapp.helper.util.extension.myAddListener
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
-import com.kirakishou.fixmypc.fixmypcapp.util.AndroidUtils
-import com.kirakishou.fixmypc.fixmypcapp.util.extension.myAddListener
 import io.reactivex.disposables.CompositeDisposable
 
 

@@ -25,8 +25,10 @@ class ErrorCode {
 
         REC_DATABASE_ERROR(11),
         REC_SESSION_ID_EXPIRED(12),
+        REC_LOGIN_IS_TOO_LONG(13),
 
-        REC_UNKNOWN_SERVER_ERROR(-1);
+        REC_UNKNOWN_SERVER_ERROR(-1),
+        REC_EMPTY_OBSERVABLE_ERROR(-2);
 
         companion object {
             fun from(value: Int): ErrorCode.Remote {

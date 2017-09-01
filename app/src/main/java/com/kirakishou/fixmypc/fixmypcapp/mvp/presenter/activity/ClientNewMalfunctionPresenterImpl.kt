@@ -1,22 +1,24 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity
 
+import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ProgressUpdate
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ProgressUpdateChunk
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ProgressUpdateType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionRequestInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.MalfunctionResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.ApiException
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.DuplicateObservableException
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.ResponseBodyIsEmpty
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.FileAlreadySelectedException
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.FileSizeExceededException
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.PhotosAreNotSetException
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.SelectedPhotoDoesNotExistsException
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.ClientNewMalfunctionActivityView
-import com.kirakishou.fixmypc.fixmypcapp.store.api.FixmypcApiStore
-import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
-import com.kirakishou.fixmypc.fixmypcapp.util.dialog.FileUploadProgressUpdater
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import retrofit2.HttpException
+import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
-import java.lang.ref.WeakReference
 import java.net.UnknownHostException
 import java.util.concurrent.TimeoutException
 import javax.inject.Inject
@@ -25,12 +27,26 @@ import javax.inject.Inject
  * Created by kirakishou on 7/27/2017.
  */
 open class ClientNewMalfunctionPresenterImpl
-@Inject constructor(protected val mFixmypcApiStore: FixmypcApiStore,
-                    protected val errorBodyConverter: ErrorBodyConverter) : ClientNewMalfunctionPresenter<ClientNewMalfunctionActivityView>(), FileUploadProgressUpdater {
+@Inject constructor(protected val mApiClient: ApiClient) : ClientNewMalfunctionPresenter<ClientNewMalfunctionActivityView>() {
 
     private val mCompositeDisposable = CompositeDisposable()
+    private val uploadProgressUpdateSubject = PublishSubject.create<ProgressUpdate>()
 
     override fun initPresenter() {
+        mCompositeDisposable += uploadProgressUpdateSubject
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ progressUpdate ->
+                    when (progressUpdate.type) {
+                        ProgressUpdateType.Chunk -> callbacks.onProgressDialogUpdate((progressUpdate as ProgressUpdateChunk).progress)
+                        ProgressUpdateType.FileUploaded -> callbacks.onFileUploaded()
+                        ProgressUpdateType.Reset -> callbacks.onResetProgressDialog()
+                    }
+                }, { error ->
+                    callbacks.onFileUploadingError(error)
+                }, {
+                    callbacks.onAllFilesUploaded()
+                })
+
         Timber.d("ClientNewMalfunctionPresenterImpl.initPresenter()")
     }
 
@@ -41,35 +57,40 @@ open class ClientNewMalfunctionPresenterImpl
     }
 
     override fun sendMalfunctionRequestToServer(malfunctionRequestInfo: MalfunctionRequestInfo) {
-        mCompositeDisposable += mFixmypcApiStore.createMalfunctionRequest(malfunctionRequestInfo, WeakReference(this))
-                .subscribe({ response ->
-                    val errorCode = response.errorCode
+        callbacks.onInitProgressDialog(malfunctionRequestInfo.malfunctionPhotos.size)
 
-                    if (errorCode != ErrorCode.Remote.REC_OK) {
-                        throw IllegalStateException("ServerResponse is Success but errorCode is not SEC_OK: $errorCode")
-                    }
-
-                    callbacks.onAllFilesUploaded()
-                    callbacks.onMalfunctionRequestSuccessfullyCreated()
-
-                }, { error ->
-                    callbacks.onAllFilesUploaded()
-                    handleError(error)
+        mCompositeDisposable += mApiClient.createMalfunctionRequest(malfunctionRequestInfo, uploadProgressUpdateSubject)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    Timber.e("responseSubject.onNext")
+                    handleResponse(it)
+                }, {
+                    Timber.e("responseSubject.onError")
+                    handleError(it)
                 })
     }
 
+    private fun handleResponse(response: MalfunctionResponse) {
+        val errorCode = response.errorCode
+
+        if (errorCode != ErrorCode.Remote.REC_OK) {
+            throw IllegalStateException("ServerResponse is Success but errorCode is not SEC_OK: $errorCode")
+        }
+
+        callbacks.onAllFilesUploaded()
+        callbacks.onMalfunctionRequestSuccessfullyCreated()
+    }
+
     private fun handleError(error: Throwable) {
-        Timber.e(error)
+        if (error !is ApiException) {
+            Timber.e(error)
+        }
+
+        callbacks.onAllFilesUploaded()
 
         when (error) {
-            is HttpException -> {
-                val responseFickle = errorBodyConverter.convert<MalfunctionResponse>(error, MalfunctionResponse::class.java)
-                if (!responseFickle.isPresent()) {
-                    callbacks.onResponseBodyIsEmpty()
-                }
-
-                val response = responseFickle.get()
-                val remoteErrorCode = response.errorCode
+            is ApiException -> {
+                val remoteErrorCode = error.errorCode
 
                 when (remoteErrorCode) {
                     //Client should check for these two. They should never happen unless the client is patched
@@ -96,29 +117,9 @@ open class ClientNewMalfunctionPresenterImpl
             is PhotosAreNotSetException -> callbacks.onPhotosAreNotSet()
             is SelectedPhotoDoesNotExistsException -> callbacks.onSelectedPhotoDoesNotExists()
             is ResponseBodyIsEmpty -> callbacks.onResponseBodyIsEmpty()
-            is FileAlreadySelectedException -> callbacks.onFileAlreadySelected()
+            is DuplicateObservableException -> callbacks.onFileAlreadySelected()
 
             else -> callbacks.onUnknownError(error)
         }
-    }
-
-    override fun onPrepareForUploading(filesCount: Int) {
-        callbacks.onInitProgressDialog(filesCount)
-    }
-
-    override fun onChunkWrite(progress: Int) {
-        callbacks.onProgressDialogUpdate(progress)
-    }
-
-    override fun onFileUploaded() {
-        callbacks.onFileUploaded()
-    }
-
-    override fun onReset() {
-        callbacks.resetProgressDialog()
-    }
-
-    override fun onError(e: Throwable) {
-        callbacks.onFileUploadingError(e)
     }
 }

@@ -2,7 +2,7 @@ package com.kirakishou.fixmypc.fixmypcapp.di.component
 
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerActivity
-import com.kirakishou.fixmypc.fixmypcapp.module.activity.ClientMainActivity
+import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
 import dagger.Component
 
 /**

@@ -2,7 +2,7 @@ package com.kirakishou.fixmypc.fixmypcapp.di.component
 
 import com.kirakishou.fixmypc.fixmypcapp.di.module.MyMalfunctionRequestsFragmentModule
 import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerFragment
-import com.kirakishou.fixmypc.fixmypcapp.module.fragment.main.MyMalfunctionRequestsFragment
+import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.main.MyMalfunctionRequestsFragment
 import dagger.Component
 
 /**

@@ -18,13 +18,17 @@ object Constant {
         const val SERVER_ERROR_CODE_SERIALIZED_NAME = "server_error_code"
         const val MALFUNCTION_CATEGORY = "m_category"
         const val MALFUNCTION_DESCRIPTION = "m_description"
+        const val MALFUNCTION_LOCATION = "m_location"
+        const val LOCATION_LAT = "lat"
+        const val LOCATION_LON = "lon"
     }
 
     object FragmentTags {
         private val BASE_FRAGMENT_TAG = "${APPLICATION_ID}_FRAGMENT_TAG"
-        val MALFUNCTION_CATEGORY_FRAGMENT_TAG = "${BASE_FRAGMENT_TAG}_CHOOSE_CATEGORY"
+        val MALFUNCTION_CATEGORY_FRAGMENT_TAG = "${BASE_FRAGMENT_TAG}_MALFUNCTION_CATEGORY"
         val MALFUNCTION_DESCRIPTION_FRAGMENT_TAG = "${BASE_FRAGMENT_TAG}_MALFUNCTION_DESCRIPTION"
         val MALFUNCTION_PHOTOS_FRAGMENT_TAG = "${BASE_FRAGMENT_TAG}_MALFUNCTION_PHOTOS"
+        val MALFUNCTION_LOCATION_FRAGMENT_TAG = "${BASE_FRAGMENT_TAG}_MALFUNCTION_LOCATION"
     }
 
     object Views {

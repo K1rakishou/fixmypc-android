@@ -16,30 +16,31 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/FixmypcTheme">
-        <receiver android:name=".module.receiver.BootBroadcastReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
+
         <receiver
-            android:name=".module.receiver.WiFiConnectivityChangeReceiver"
+            android:name="com.kirakishou.fixmypc.fixmypcapp.helper.wifi.WiFiConnectivityChangeReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
 
-        <activity android:name=".module.activity.LoadingActivity">
+        <activity android:name=".ui.activity.LoadingActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".module.activity.ClientNewMalfunctionActivity"
+            android:name=".ui.activity.ClientNewMalfunctionActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".module.activity.ClientMainActivity"></activity>
+
+        <activity android:name=".ui.activity.ClientMainActivity"/>
+
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyB3rwPBjBAw6GLkC8rnCTIpb1BAkoBKnZw"/>
+
     </application>
 
 </manifest>

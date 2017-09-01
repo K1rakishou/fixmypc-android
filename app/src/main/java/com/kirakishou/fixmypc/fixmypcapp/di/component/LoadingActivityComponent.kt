@@ -2,7 +2,7 @@ package com.kirakishou.fixmypc.fixmypcapp.di.component
 
 import com.kirakishou.fixmypc.fixmypcapp.di.module.LoadingActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerActivity
-import com.kirakishou.fixmypc.fixmypcapp.module.activity.LoadingActivity
+import com.kirakishou.fixmypc.fixmypcapp.ui.activity.LoadingActivity
 import dagger.Component
 
 /**

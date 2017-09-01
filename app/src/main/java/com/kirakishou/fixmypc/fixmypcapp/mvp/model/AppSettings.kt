@@ -10,4 +10,10 @@ class AppSettings {
     fun saveUserInfo(login: String, password: String, sessionId: String) {
         this.userInfo = Fickle.of(UserInfo(login, password, sessionId))
     }
+
+    fun updateSessionId(sessionId: String) {
+        userInfo.ifPresent {
+            it.sessionId = sessionId
+        }
+    }
 }

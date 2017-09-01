@@ -3,28 +3,27 @@ package com.kirakishou.fixmypc.fixmypcapp.di.module
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.kirakishou.fixmypc.fixmypcapp.api.ApiService
-import com.kirakishou.fixmypc.fixmypcapp.manager.permission.PermissionManager
-import com.kirakishou.fixmypc.fixmypcapp.module.shared_preference.AppSharedPreferences
+import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
+import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClientImpl
+import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiService
+import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
+import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreferences
+import com.kirakishou.fixmypc.fixmypcapp.helper.util.gson.AccountTypeTypeAdapter
+import com.kirakishou.fixmypc.fixmypcapp.helper.util.gson.ErrorCodeRemoteTypeAdapter
+import com.kirakishou.fixmypc.fixmypcapp.helper.util.gson.LatLngTypeAdapter
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
-import com.kirakishou.fixmypc.fixmypcapp.store.api.FixmypcApiStore
-import com.kirakishou.fixmypc.fixmypcapp.store.api.FixmypcApiStoreImpl
-import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverter
-import com.kirakishou.fixmypc.fixmypcapp.util.converter.ErrorBodyConverterImpl
-import com.kirakishou.fixmypc.fixmypcapp.util.type_adapter.AccountTypeTypeAdapter
-import com.kirakishou.fixmypc.fixmypcapp.util.type_adapter.ErrorCodeRemoteTypeAdapter
 import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.greenrobot.eventbus.EventBus
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -61,15 +60,10 @@ class ApplicationModule(private val mApplication: Application,
     @Provides
     fun provideGson(): Gson {
         return GsonBuilder()
-                .registerTypeAdapter(AccountType::class.java, AccountTypeTypeAdapter<AccountType>())
-                .registerTypeAdapter(ErrorCode.Remote::class.java, ErrorCodeRemoteTypeAdapter<ErrorCode.Remote>())
+                .registerTypeAdapter(AccountType::class.java, AccountTypeTypeAdapter())
+                .registerTypeAdapter(ErrorCode.Remote::class.java, ErrorCodeRemoteTypeAdapter())
+                .registerTypeAdapter(LatLng::class.java, LatLngTypeAdapter())
                 .create()
-    }
-
-    @Singleton
-    @Provides
-    fun provideErrorBodyConverter(gson: Gson): ErrorBodyConverter {
-        return ErrorBodyConverterImpl(gson)
     }
 
     @Singleton
@@ -129,14 +123,8 @@ class ApplicationModule(private val mApplication: Application,
 
     @Singleton
     @Provides
-    fun provideFixmypcApiStore(mApiService: ApiService, mErrorBodyConverter: ErrorBodyConverter, mAppSettings: AppSettings): FixmypcApiStore {
-        return FixmypcApiStoreImpl(mApiService, mErrorBodyConverter, mAppSettings)
-    }
-
-    @Singleton
-    @Provides
-    fun provideEventBus(): EventBus {
-        return EventBus.builder().build()
+    fun provideFixmypcApiStore(mApiService: ApiService, mAppSettings: AppSettings, mGson: Gson): ApiClient {
+        return ApiClientImpl(mApiService, mAppSettings, mGson)
     }
 
     @Singleton

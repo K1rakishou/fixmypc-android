@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.kirakishou.fixmypc.fixmypcapp.module.activity.ClientMainActivity">
+    tools:context="com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity">
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/fragment_frame"

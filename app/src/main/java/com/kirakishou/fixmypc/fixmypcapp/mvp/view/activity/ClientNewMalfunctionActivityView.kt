@@ -20,6 +20,6 @@ interface ClientNewMalfunctionActivityView : BaseActivityView {
     fun onServerDatabaseError()
     fun onFileUploadingError(e: Throwable)
     fun onResponseBodyIsEmpty()
-    fun resetProgressDialog()
+    fun onResetProgressDialog()
     fun onFileAlreadySelected()
 }

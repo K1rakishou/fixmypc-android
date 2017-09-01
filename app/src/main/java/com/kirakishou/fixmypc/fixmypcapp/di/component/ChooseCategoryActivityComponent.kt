@@ -2,7 +2,7 @@ package com.kirakishou.fixmypc.fixmypcapp.di.component
 
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewMalfunctionActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerActivity
-import com.kirakishou.fixmypc.fixmypcapp.module.activity.ClientNewMalfunctionActivity
+import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewMalfunctionActivity
 import dagger.Component
 
 /**

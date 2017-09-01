@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.kirakishou.fixmypc.fixmypcapp.module.fragment.malfunction.MalfunctionResults">
+    tools:context="com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction.MalfunctionResults">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView

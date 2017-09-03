@@ -81,8 +81,6 @@ class MalfunctionCategoryFragment : BaseFragment() {
 
     }
 
-
-
     companion object {
         fun newInstance(): Fragment {
             val fragment = MalfunctionCategoryFragment()

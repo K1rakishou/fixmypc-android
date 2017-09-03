@@ -29,6 +29,14 @@ class MyMalfunctionRequestsFragment : BaseFragment(), MyMalfunctionRequestsFragm
 
     }
 
+    override fun onShowToast(message: String) {
+        showToast(message)
+    }
+
+    override fun onUnknownError(throwable: Throwable) {
+        onUnknownError0(throwable)
+    }
+
     override fun resolveDaggerDependency() {
         DaggerMyMalfunctionRequestsFragmentComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)

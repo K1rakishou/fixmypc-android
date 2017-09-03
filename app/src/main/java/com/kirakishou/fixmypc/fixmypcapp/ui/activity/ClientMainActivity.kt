@@ -14,6 +14,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerClientMainActivityCo
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity.ClientMainActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.ClientMainActivityView
+import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
 class ClientMainActivity : BaseFragmentedActivity(), ClientMainActivityView {
@@ -22,10 +23,13 @@ class ClientMainActivity : BaseFragmentedActivity(), ClientMainActivityView {
     lateinit var myProfileButton: ImageView
 
     @Inject
-    lateinit var mPresenter: ClientMainActivityPresenterImpl
+    lateinit var mRefWatcher: RefWatcher
+
+    @Inject
+    lateinit var mActivityPresenter: ClientMainActivityPresenterImpl
 
     override fun getFragmentFromTag(fragmentTag: String): Fragment {
-        return Fragment()
+        throw NotImplementedError()
     }
 
     override fun getContentView() = R.layout.activity_client_main
@@ -33,11 +37,13 @@ class ClientMainActivity : BaseFragmentedActivity(), ClientMainActivityView {
     override fun loadExitAnimations() = AnimatorSet()
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
-        mPresenter.initPresenter()
+        mActivityPresenter.initPresenter()
     }
 
     override fun onActivityDestroy() {
-        mPresenter.destroyPresenter()
+        mActivityPresenter.destroyPresenter()
+
+        mRefWatcher.watch(this)
     }
 
     override fun onViewReady() {

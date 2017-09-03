@@ -26,8 +26,8 @@ import javax.inject.Inject
 /**
  * Created by kirakishou on 7/27/2017.
  */
-open class ClientNewMalfunctionPresenterImpl
-@Inject constructor(protected val mApiClient: ApiClient) : ClientNewMalfunctionPresenter<ClientNewMalfunctionActivityView>() {
+open class ClientNewMalfunctionActivityPresenterImpl
+@Inject constructor(protected val mApiClient: ApiClient) : ClientNewMalfunctionActivityPresenter<ClientNewMalfunctionActivityView>() {
 
     private val mCompositeDisposable = CompositeDisposable()
     private val uploadProgressUpdateSubject = PublishSubject.create<ProgressUpdate>()

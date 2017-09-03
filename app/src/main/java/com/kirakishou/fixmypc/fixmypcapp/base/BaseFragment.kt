@@ -11,6 +11,7 @@ import butterknife.Unbinder
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.extension.myAddListener
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
+import com.kirakishou.fixmypc.fixmypcapp.ui.activity.BaseActivityFragmentCallback
 import io.reactivex.disposables.CompositeDisposable
 
 /**
@@ -56,6 +57,22 @@ abstract class BaseFragment : Fragment() {
         mUnBinder.ifPresent {
             it.unbind()
         }
+    }
+
+    protected fun showToast(message: String) {
+        if (activity !is BaseActivityFragmentCallback) {
+            throw IllegalStateException("Activity should implement BaseActivityFragmentCallback!")
+        }
+
+        (activity as BaseActivityFragmentCallback).onShowToast(message)
+    }
+
+    protected open fun onUnknownError0(throwable: Throwable) {
+        if (activity !is BaseActivityFragmentCallback) {
+            throw IllegalStateException("Activity should implement BaseActivityFragmentCallback!")
+        }
+
+        (activity as BaseActivityFragmentCallback).onUnknownError(throwable)
     }
 
     protected fun runCallbackAfterAnimation(set: AnimatorSet, onExitAnimationCallback: () -> Unit) {

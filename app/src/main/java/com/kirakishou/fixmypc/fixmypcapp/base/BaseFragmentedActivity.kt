@@ -24,7 +24,7 @@ abstract class BaseFragmentedActivity : BaseActivity() {
     protected fun replaceFragment(fragment: Fragment, fragmentTag: String) {
         supportFragmentManager
                 .beginTransaction()
-                .replace(R.id.frame, fragment, fragmentTag)
+                .replace(R.id.fragment_frame, fragment, fragmentTag)
                 .addToBackStack(fragmentTag)
                 .commit()
     }

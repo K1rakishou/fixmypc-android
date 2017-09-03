@@ -15,7 +15,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.MalfunctionCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionRequestInfo
-import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity.ClientNewMalfunctionPresenterImpl
+import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity.ClientNewMalfunctionActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.ClientNewMalfunctionActivityView
 import com.kirakishou.fixmypc.fixmypcapp.ui.dialog.ProgressDialog
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction.*
@@ -26,7 +26,7 @@ import javax.inject.Inject
 class ClientNewMalfunctionActivity : BaseFragmentedActivity(), ClientNewMalfunctionActivityView, ClientNewMalfunctionActivityFragmentCallback {
 
     @Inject
-    lateinit var mPresenter: ClientNewMalfunctionPresenterImpl
+    lateinit var mActivityPresenter: ClientNewMalfunctionActivityPresenterImpl
 
     @Inject
     lateinit var mPermissionManager: PermissionManager
@@ -52,15 +52,15 @@ class ClientNewMalfunctionActivity : BaseFragmentedActivity(), ClientNewMalfunct
     override fun loadExitAnimations() = AnimatorSet()
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
-        mPresenter.initPresenter()
+        mActivityPresenter.initPresenter()
 
         pushFragment(Constant.FragmentTags.MALFUNCTION_CATEGORY_FRAGMENT_TAG)
         progressDialog = ProgressDialog(this)
     }
 
     override fun onActivityDestroy() {
-        mPresenter.destroyPresenter()
         progressDialog.dismiss()
+        mActivityPresenter.destroyPresenter()
 
         mRefWatcher.watch(this)
     }
@@ -106,7 +106,7 @@ class ClientNewMalfunctionActivity : BaseFragmentedActivity(), ClientNewMalfunct
     }
 
     override fun onSendPhotosButtonClick() {
-        mPresenter.sendMalfunctionRequestToServer(malfunctionRequestInfo)
+        mActivityPresenter.sendMalfunctionRequestToServer(malfunctionRequestInfo)
     }
 
     override fun onViewReady() {
@@ -123,10 +123,6 @@ class ClientNewMalfunctionActivity : BaseFragmentedActivity(), ClientNewMalfunct
                 .clientNewMalfunctionActivityModule(ClientNewMalfunctionActivityModule(this))
                 .build()
                 .inject(this)
-    }
-
-    override fun showToastFragment(msg: String) {
-        showToast(msg, Toast.LENGTH_LONG)
     }
 
     override fun onShowToast(message: String) {

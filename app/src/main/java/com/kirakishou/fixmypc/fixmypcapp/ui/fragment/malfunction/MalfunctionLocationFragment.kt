@@ -83,7 +83,7 @@ class MalfunctionLocationFragment : BaseFragment(), OnMapReadyCallback {
         val activityHolder = activity as ClientNewMalfunctionActivityFragmentCallback
 
         if (mLocation == null) {
-            activityHolder.showToastFragment("Текущее местоположение не задано!")
+            activityHolder.onShowToast("Текущее местоположение не задано!")
         } else {
             activityHolder.retrieveLocation(mLocation!!)
         }

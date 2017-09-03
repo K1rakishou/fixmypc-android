@@ -55,7 +55,7 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
 
         //FIXME: accountInfoPrefs should be loaded from preferences via accountInfoPrefs.load()
         //don't forger to delete the following:
-        accountInfoPrefs.login = Fickle.of("test@gmail.com")
+        accountInfoPrefs.login = Fickle.of("test2@gmail.com")
         accountInfoPrefs.password = Fickle.of("1234567890")
 
         if (accountInfoPrefs.exists()) {
@@ -81,6 +81,7 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
 
     override fun runSpecialistMainActivity(sessionId: String, accountType: AccountType) {
         Timber.e("Running specialist MainActivity")
+        runActivity(SpecialistMainActivity::class.java, true)
     }
 
     override fun onCouldNotConnectToServer(error: Throwable) {

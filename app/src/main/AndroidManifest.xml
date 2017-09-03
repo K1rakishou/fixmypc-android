@@ -16,9 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/FixmypcTheme">
-
         <receiver
-            android:name="com.kirakishou.fixmypc.fixmypcapp.helper.wifi.WiFiConnectivityChangeReceiver"
+            android:name=".helper.wifi.WiFiConnectivityChangeReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
@@ -28,19 +27,20 @@
         <activity android:name=".ui.activity.LoadingActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.activity.ClientNewMalfunctionActivity"
             android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.activity.ClientMainActivity" />
 
-        <activity android:name=".ui.activity.ClientMainActivity"/>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyB3rwPBjBAw6GLkC8rnCTIpb1BAkoBKnZw" />
 
-        <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyB3rwPBjBAw6GLkC8rnCTIpb1BAkoBKnZw"/>
-
+        <activity android:name=".ui.activity.SpecialistMainActivity"></activity>
     </application>
 
 </manifest>

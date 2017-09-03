@@ -1,6 +1,8 @@
 package com.kirakishou.fixmypc.fixmypcapp.helper.api
 
 import com.google.gson.Gson
+import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
+import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdateReset
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.operator.OnApiErrorObservable
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.operator.OnApiErrorSingle
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.Utils
@@ -114,7 +116,7 @@ class ApiClientImpl
 
     private fun resendRequest(it: Triple<String, List<MultipartBody.Part>, MalfunctionRequestInfo>): Observable<MalfunctionResponse> {
         Timber.e("resendRequest")
-        val request = MalfunctionRequest(it.third.malfunctionCategory.ordinal, it.third.malfunctionDescription,
+        val request = MalfunctionRequest(it.third.damageClaimCategory.ordinal, it.third.malfunctionDescription,
                 it.third.malfunctionLocation.latitude, it.third.malfunctionLocation.longitude)
 
         return mApiService.sendMalfunctionRequest(it.first, it.second, request, ImageType.IMAGE_TYPE_MALFUNCTION_PHOTO.value)
@@ -150,7 +152,7 @@ class ApiClientImpl
         }
 
         val sessionId = userInfoFickle.get().sessionId
-        val request = MalfunctionRequest(it.second.malfunctionCategory.ordinal, it.second.malfunctionDescription,
+        val request = MalfunctionRequest(it.second.damageClaimCategory.ordinal, it.second.malfunctionDescription,
                 it.second.malfunctionLocation.latitude, it.second.malfunctionLocation.longitude)
 
         return mApiService.sendMalfunctionRequest(sessionId, it.first, request, ImageType.IMAGE_TYPE_MALFUNCTION_PHOTO.value)

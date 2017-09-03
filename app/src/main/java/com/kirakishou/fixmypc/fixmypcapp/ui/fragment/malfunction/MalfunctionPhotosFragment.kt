@@ -18,7 +18,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AdapterItem
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AdapterItemType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionPhoto
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.DamagePhoto
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewMalfunctionActivityFragmentCallback
 import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.MalfunctionPhotosAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -54,7 +54,7 @@ class MalfunctionPhotosFragment : BaseFragment(),
         mPhotoAdapter = MalfunctionPhotosAdapter(activity, this)
 
         //we need a button so we can add photos
-        mPhotoAdapter.add(AdapterItem(AdapterItemType.Photo.VIEW_ADD_BUTTON))
+        mPhotoAdapter.add(AdapterItem(AdapterItemType.MalfunctionPhotosAdapter.VIEW_ADD_BUTTON))
 
         val layoutManager = GridLayoutManager(activity,
                 AndroidUtils.calculateColumnsCount(activity, Constant.Views.PHOTO_ADAPTER_VIEW_WITH))
@@ -119,7 +119,7 @@ class MalfunctionPhotosFragment : BaseFragment(),
 
                 override fun onImagesPicked(imageFiles: List<File>, source: EasyImage.ImageSource, type: Int) {
                     for (file in imageFiles) {
-                        mPhotoAdapter.add(AdapterItem(MalfunctionPhoto(file.absolutePath), AdapterItemType.Photo.VIEW_PHOTO))
+                        mPhotoAdapter.add(AdapterItem(DamagePhoto(file.absolutePath), AdapterItemType.MalfunctionPhotosAdapter.VIEW_PHOTO))
                     }
 
                     if (mPhotoAdapter.getPhotosCount() > 0) {

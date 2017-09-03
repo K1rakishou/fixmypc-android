@@ -9,7 +9,7 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.MalfunctionCategory
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.DamageClaimCategory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewMalfunctionActivityFragmentCallback
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
@@ -38,7 +38,7 @@ class MalfunctionCategoryFragment : BaseFragment() {
         mCompositeDisposable += RxView.clicks(mComputerCategoryButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
-                    setMalfunctionCategory(MalfunctionCategory.Computer)
+                    setMalfunctionCategory(DamageClaimCategory.Computer)
                     loadNextFragment(Constant.FragmentTags.MALFUNCTION_DESCRIPTION_FRAGMENT_TAG)
                 }, { error ->
                     Timber.e(error)
@@ -47,7 +47,7 @@ class MalfunctionCategoryFragment : BaseFragment() {
         mCompositeDisposable += RxView.clicks(mNotebookCategoryButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
-                    setMalfunctionCategory(MalfunctionCategory.Notebook)
+                    setMalfunctionCategory(DamageClaimCategory.Notebook)
                     loadNextFragment(Constant.FragmentTags.MALFUNCTION_DESCRIPTION_FRAGMENT_TAG)
                 }, { error ->
                     Timber.e(error)
@@ -56,7 +56,7 @@ class MalfunctionCategoryFragment : BaseFragment() {
         mCompositeDisposable += RxView.clicks(mPhoneCategoryButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
-                    setMalfunctionCategory(MalfunctionCategory.Phone)
+                    setMalfunctionCategory(DamageClaimCategory.Phone)
                     loadNextFragment(Constant.FragmentTags.MALFUNCTION_DESCRIPTION_FRAGMENT_TAG)
                 }, { error ->
                     Timber.e(error)
@@ -68,7 +68,7 @@ class MalfunctionCategoryFragment : BaseFragment() {
         activityHolder.replaceWithFragment(fragmentTag)
     }
 
-    private fun setMalfunctionCategory(category: MalfunctionCategory) {
+    private fun setMalfunctionCategory(category: DamageClaimCategory) {
         val activityHolder = activity as ClientNewMalfunctionActivityFragmentCallback
         activityHolder.retrieveCategory(category)
     }

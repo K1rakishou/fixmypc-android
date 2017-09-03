@@ -2,9 +2,9 @@ package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity
 
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ProgressUpdate
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ProgressUpdateChunk
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ProgressUpdateType
+import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
+import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdateChunk
+import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdateType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionRequestInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.MalfunctionResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.ApiException

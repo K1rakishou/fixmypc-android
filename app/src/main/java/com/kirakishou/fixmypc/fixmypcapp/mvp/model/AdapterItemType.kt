@@ -5,8 +5,14 @@ package com.kirakishou.fixmypc.fixmypcapp.mvp.model
  */
 object AdapterItemType {
 
-    enum class Photo {
+    enum class MalfunctionPhotosAdapter {
         VIEW_ADD_BUTTON,
         VIEW_PHOTO
+    }
+
+    enum class DamageClaimListAdapter {
+        VIEW_ITEM,
+        VIEW_PROGRESS,
+        VIEW_MESSAGE
     }
 }

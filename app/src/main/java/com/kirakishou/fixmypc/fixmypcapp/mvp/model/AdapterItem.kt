@@ -7,16 +7,16 @@ open class AdapterItem<Value> {
     private var type: Int = -1
     var value: Fickle<Value> = Fickle.empty()
 
-    constructor(value: Value, type: AdapterItemType.Photo) {
+    constructor(value: Value, type: AdapterItemType.MalfunctionPhotosAdapter) {
         this.type = type.ordinal
         this.value = Fickle.of(value)
     }
 
-    constructor(type: AdapterItemType.Photo) {
+    constructor(type: AdapterItemType.MalfunctionPhotosAdapter) {
         this.type = type.ordinal
     }
 
-    fun setType(type: AdapterItemType.Photo) {
+    fun setType(type: AdapterItemType.MalfunctionPhotosAdapter) {
         this.type = type.ordinal
     }
 

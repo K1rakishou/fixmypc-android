@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.mvp.model
+package com.kirakishou.fixmypc.fixmypcapp.helper
 
 /**
  * Created by kirakishou on 8/26/2017.

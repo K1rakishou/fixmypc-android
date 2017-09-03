@@ -1,6 +1,6 @@
 package com.kirakishou.fixmypc.fixmypcapp.helper.api
 
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ProgressUpdate
+import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionRequestInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.LoginRequest
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.LoginResponse

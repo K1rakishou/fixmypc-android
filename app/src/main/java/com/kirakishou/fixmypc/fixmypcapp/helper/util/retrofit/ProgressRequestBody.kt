@@ -1,8 +1,8 @@
 package com.kirakishou.fixmypc.fixmypcapp.helper.util.retrofit
 
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ProgressUpdate
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ProgressUpdateChunk
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ProgressUpdateFileUploaded
+import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
+import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdateChunk
+import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdateFileUploaded
 import io.reactivex.subjects.PublishSubject
 import okhttp3.MediaType
 import okhttp3.RequestBody

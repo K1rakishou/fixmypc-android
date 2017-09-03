@@ -16,7 +16,7 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AdapterItem
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AdapterItemType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionPhoto
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.DamagePhoto
 import timber.log.Timber
 import java.io.File
 
@@ -26,7 +26,7 @@ import java.io.File
 class MalfunctionPhotosAdapter(context: Context, callback: PhotoClickCallback) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val mLayoutInflater: LayoutInflater
-    private val mMalfunctionPhotos = arrayListOf<AdapterItem<MalfunctionPhoto>>()
+    private val mItems = arrayListOf<AdapterItem<DamagePhoto>>()
     private val mCallback: PhotoClickCallback
     private val mContext: Context
 
@@ -36,38 +36,38 @@ class MalfunctionPhotosAdapter(context: Context, callback: PhotoClickCallback) :
         this.mContext = context
     }
 
-    fun add(item: AdapterItem<MalfunctionPhoto>) {
+    fun add(item: AdapterItem<DamagePhoto>) {
         if (item.getType() == -1) {
-            item.setType(AdapterItemType.Photo.VIEW_ADD_BUTTON)
+            item.setType(AdapterItemType.MalfunctionPhotosAdapter.VIEW_ADD_BUTTON)
         }
 
-        if (item.getType() == AdapterItemType.Photo.VIEW_ADD_BUTTON.ordinal) {
-            mMalfunctionPhotos.add(item)
-            notifyItemInserted(mMalfunctionPhotos.size - 1)
+        if (item.getType() == AdapterItemType.MalfunctionPhotosAdapter.VIEW_ADD_BUTTON.ordinal) {
+            mItems.add(item)
+            notifyItemInserted(mItems.size - 1)
         } else {
-            mMalfunctionPhotos.add(mMalfunctionPhotos.size - 1, item)
-            notifyItemInserted(mMalfunctionPhotos.size - 2)
+            mItems.add(mItems.size - 1, item)
+            notifyItemInserted(mItems.size - 2)
         }
 
-        val photosCount = mMalfunctionPhotos.size
+        val photosCount = mItems.size
 
         //if photosCount > maxPhotos + 1 (button)
         if (photosCount > (Constant.MALFUNCTION_PHOTO_ADAPTER_MAX_PHOTOS + 1)) {
             //if last element of list is button
-            if (mMalfunctionPhotos.last().getType() == AdapterItemType.Photo.VIEW_ADD_BUTTON.ordinal) {
+            if (mItems.last().getType() == AdapterItemType.MalfunctionPhotosAdapter.VIEW_ADD_BUTTON.ordinal) {
                 //remove it
-                mMalfunctionPhotos.removeAt(photosCount - 1)
-                notifyItemRemoved(mMalfunctionPhotos.size - 1)
+                mItems.removeAt(photosCount - 1)
+                notifyItemRemoved(mItems.size - 1)
             }
         }
     }
 
     fun remove(position: Int) {
-        if (position < 0 || position > mMalfunctionPhotos.size) {
+        if (position < 0 || position > mItems.size) {
             return
         }
 
-        mMalfunctionPhotos.removeAt(position)
+        mItems.removeAt(position)
         //notifyItemRemoved(position)
 
         //FIXME: for some reason recyclerview doesn't change it's size on element removing when using notifyItemRemoved.
@@ -75,39 +75,39 @@ class MalfunctionPhotosAdapter(context: Context, callback: PhotoClickCallback) :
         notifyDataSetChanged()
 
         //if we don't have a button yet
-        if (mMalfunctionPhotos.last().getType() != AdapterItemType.Photo.VIEW_ADD_BUTTON.ordinal) {
+        if (mItems.last().getType() != AdapterItemType.MalfunctionPhotosAdapter.VIEW_ADD_BUTTON.ordinal) {
             //if photosCount <= maxPhotos
-            if (mMalfunctionPhotos.size <= (Constant.MALFUNCTION_PHOTO_ADAPTER_MAX_PHOTOS)) {
+            if (mItems.size <= (Constant.MALFUNCTION_PHOTO_ADAPTER_MAX_PHOTOS)) {
                 //add button again
-                mMalfunctionPhotos.add(AdapterItem(AdapterItemType.Photo.VIEW_ADD_BUTTON))
-                notifyItemInserted(mMalfunctionPhotos.size - 1)
+                mItems.add(AdapterItem(AdapterItemType.MalfunctionPhotosAdapter.VIEW_ADD_BUTTON))
+                notifyItemInserted(mItems.size - 1)
             }
         }
     }
 
     fun getPhotosCount(): Int {
-        return mMalfunctionPhotos
-                .filter { it.getType() == AdapterItemType.Photo.VIEW_PHOTO.ordinal }
+        return mItems
+                .filter { it.getType() == AdapterItemType.MalfunctionPhotosAdapter.VIEW_PHOTO.ordinal }
                 .count()
     }
 
     fun getPhotos(): ArrayList<String> {
-        return ArrayList(mMalfunctionPhotos.filter { it.getType() == AdapterItemType.Photo.VIEW_PHOTO.ordinal }
+        return ArrayList(mItems.filter { it.getType() == AdapterItemType.MalfunctionPhotosAdapter.VIEW_PHOTO.ordinal }
                 .map { it.value.get().path })
     }
 
     override fun getItemViewType(position: Int): Int {
-        return mMalfunctionPhotos[position].getType()
+        return mItems[position].getType()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
         when (viewType) {
-            AdapterItemType.Photo.VIEW_ADD_BUTTON.ordinal -> {
+            AdapterItemType.MalfunctionPhotosAdapter.VIEW_ADD_BUTTON.ordinal -> {
                 val view = mLayoutInflater.inflate(R.layout.adapter_photo_add_button, parent, false)
                 return AddPhotoButtonViewHolder(view)
             }
 
-            AdapterItemType.Photo.VIEW_PHOTO.ordinal -> {
+            AdapterItemType.MalfunctionPhotosAdapter.VIEW_PHOTO.ordinal -> {
                 val view = mLayoutInflater.inflate(R.layout.adapter_photo_image, parent, false)
                 return PhotoViewHolder(view)
             }
@@ -128,7 +128,7 @@ class MalfunctionPhotosAdapter(context: Context, callback: PhotoClickCallback) :
             }
 
             is PhotoViewHolder -> {
-                val malfunctionPhoto = mMalfunctionPhotos[position].value
+                val malfunctionPhoto = mItems[position].value
 
                 if (malfunctionPhoto.isPresent()) {
                     val photoPath = malfunctionPhoto.get()
@@ -157,7 +157,7 @@ class MalfunctionPhotosAdapter(context: Context, callback: PhotoClickCallback) :
         }
     }
 
-    override fun getItemCount() = mMalfunctionPhotos.size
+    override fun getItemCount() = mItems.size
 
     inner class PhotoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 

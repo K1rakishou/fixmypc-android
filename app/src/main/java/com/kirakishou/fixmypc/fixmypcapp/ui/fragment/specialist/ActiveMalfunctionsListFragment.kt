@@ -4,6 +4,8 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist
 import android.animation.AnimatorSet
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.RecyclerView
+import butterknife.BindView
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
@@ -15,6 +17,9 @@ import javax.inject.Inject
 
 class ActiveMalfunctionsListFragment : BaseFragment(), ActiveMalfunctionsListFragmentView {
 
+    @BindView(R.id.damage_claim_list)
+    lateinit var mDamageClaimList: RecyclerView
+
     @Inject
     lateinit var mPresenter: ActiveMalfunctionsListFragmentPresenterImpl
 
@@ -24,6 +29,8 @@ class ActiveMalfunctionsListFragment : BaseFragment(), ActiveMalfunctionsListFra
 
     override fun onFragmentReady() {
         mPresenter.initPresenter()
+
+
     }
 
     override fun onFragmentStop() {

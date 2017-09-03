@@ -13,7 +13,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerChooseCategoryActivi
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewMalfunctionActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.MalfunctionCategory
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.DamageClaimCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionRequestInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity.ClientNewMalfunctionActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.ClientNewMalfunctionActivityView
@@ -89,8 +89,8 @@ class ClientNewMalfunctionActivity : BaseFragmentedActivity(), ClientNewMalfunct
         mPermissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    override fun retrieveCategory(category: MalfunctionCategory) {
-        malfunctionRequestInfo.malfunctionCategory = category
+    override fun retrieveCategory(category: DamageClaimCategory) {
+        malfunctionRequestInfo.damageClaimCategory = category
     }
 
     override fun retrieveDescription(description: String) {

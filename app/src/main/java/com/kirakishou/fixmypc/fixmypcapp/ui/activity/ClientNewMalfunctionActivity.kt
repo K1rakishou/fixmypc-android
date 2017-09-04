@@ -14,7 +14,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewMalfunctionActivityM
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.DamageClaimCategory
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionRequestInfo
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.DamageClaimInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity.ClientNewMalfunctionActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.ClientNewMalfunctionActivityView
 import com.kirakishou.fixmypc.fixmypcapp.ui.dialog.ProgressDialog
@@ -34,15 +34,15 @@ class ClientNewMalfunctionActivity : BaseFragmentedActivity(), ClientNewMalfunct
     @Inject
     lateinit var mRefWatcher: RefWatcher
 
-    private val malfunctionRequestInfo = MalfunctionRequestInfo()
+    private val malfunctionRequestInfo = DamageClaimInfo()
     private lateinit var progressDialog: ProgressDialog
 
     override fun getFragmentFromTag(fragmentTag: String): Fragment {
         return when (fragmentTag) {
-            Constant.FragmentTags.MALFUNCTION_CATEGORY_FRAGMENT_TAG -> MalfunctionCategoryFragment.newInstance()
-            Constant.FragmentTags.MALFUNCTION_DESCRIPTION_FRAGMENT_TAG -> MalfunctionDescriptionFragment.newInstance()
-            Constant.FragmentTags.MALFUNCTION_PHOTOS_FRAGMENT_TAG -> MalfunctionPhotosFragment.newInstance()
-            Constant.FragmentTags.MALFUNCTION_LOCATION_FRAGMENT_TAG -> MalfunctionLocationFragment.newInstance()
+            Constant.FragmentTags.MALFUNCTION_CATEGORY -> MalfunctionCategoryFragment.newInstance()
+            Constant.FragmentTags.MALFUNCTION_DESCRIPTION -> MalfunctionDescriptionFragment.newInstance()
+            Constant.FragmentTags.MALFUNCTION_PHOTOS -> MalfunctionPhotosFragment.newInstance()
+            Constant.FragmentTags.MALFUNCTION_LOCATION -> MalfunctionLocationFragment.newInstance()
             else -> throw IllegalArgumentException("Unknown fragmentTag: $fragmentTag")
         }
     }
@@ -54,7 +54,7 @@ class ClientNewMalfunctionActivity : BaseFragmentedActivity(), ClientNewMalfunct
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
         mActivityPresenter.initPresenter()
 
-        pushFragment(Constant.FragmentTags.MALFUNCTION_CATEGORY_FRAGMENT_TAG)
+        pushFragment(Constant.FragmentTags.MALFUNCTION_CATEGORY)
         progressDialog = ProgressDialog(this)
     }
 
@@ -94,15 +94,15 @@ class ClientNewMalfunctionActivity : BaseFragmentedActivity(), ClientNewMalfunct
     }
 
     override fun retrieveDescription(description: String) {
-        malfunctionRequestInfo.malfunctionDescription = description
+        malfunctionRequestInfo.damageClaimDescription = description
     }
 
     override fun retrievePhotos(photos: List<String>) {
-        malfunctionRequestInfo.malfunctionPhotos = ArrayList(photos)
+        malfunctionRequestInfo.damageClaimPhotos = ArrayList(photos)
     }
 
     override fun retrieveLocation(location: LatLng) {
-        malfunctionRequestInfo.malfunctionLocation = location
+        malfunctionRequestInfo.damageClaimLocation = location
     }
 
     override fun onSendPhotosButtonClick() {

@@ -3,14 +3,17 @@ package com.kirakishou.fixmypc.fixmypcapp.helper.api
 import com.google.gson.Gson
 import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
 import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdateReset
-import com.kirakishou.fixmypc.fixmypcapp.helper.rx.operator.OnApiErrorObservable
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.operator.OnApiErrorSingle
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.Utils
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.retrofit.ProgressRequestBody
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.*
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionRequestInfo
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ImageType
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.DamageClaimInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.LoginRequest
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.MalfunctionRequest
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.DamageClaimsResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.LoginResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.MalfunctionResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.ApiException
@@ -22,10 +25,8 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.functions.Function
 import io.reactivex.rxkotlin.Observables
-import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
-import io.reactivex.subjects.SingleSubject
 import okhttp3.MultipartBody
 import timber.log.Timber
 import java.io.File
@@ -40,21 +41,17 @@ class ApiClientImpl
                     protected val mAppSettings: AppSettings,
                     protected val mGson: Gson) : ApiClient {
 
-    override fun loginRequest(loginRequest: LoginRequest,
-                              responseSubject: SingleSubject<Pair<LoginRequest, LoginResponse>>) {
-        val loginResponse = mApiService.doLogin(loginRequest)
+    override fun loginRequest(loginRequest: LoginRequest): Single<LoginResponse> {
+        return mApiService.doLogin(loginRequest)
                 .lift(OnApiErrorSingle(mGson))
                 .subscribeOn(Schedulers.io())
-
-        Singles.zip(Single.just(loginRequest), loginResponse)
-                .subscribe(responseSubject)
     }
 
-    override fun createMalfunctionRequest(malfunctionRequestInfo: MalfunctionRequestInfo,
+    override fun createMalfunctionRequest(damageClaimInfo: DamageClaimInfo,
                                           uploadProgressUpdateSubject: PublishSubject<ProgressUpdate>): Single<MalfunctionResponse> {
 
         //create MultipartFile bodies, check if user has selected the same file twice
-        val progressBodyListObservable = Observable.fromIterable(malfunctionRequestInfo.malfunctionPhotos)
+        val progressBodyListObservable = Observable.fromIterable(damageClaimInfo.damageClaimPhotos)
                 .subscribeOn(Schedulers.io())
                 .map { prepareRequest(it, uploadProgressUpdateSubject) }
                 //it.second is md5 string of the selected file
@@ -67,7 +64,7 @@ class ApiClientImpl
                 .publish()
                 .autoConnect(2)
 
-        val requestObservable = Observable.just(malfunctionRequestInfo)
+        val requestObservable = Observable.just(damageClaimInfo)
 
         //send request
         val responseObservable = Observables.zip(progressBodyListObservable, requestObservable, { a, b -> Pair(a, b) })
@@ -114,13 +111,27 @@ class ApiClientImpl
                 .single(MalfunctionResponse(ErrorCode.Remote.REC_EMPTY_OBSERVABLE_ERROR))
     }
 
-    private fun resendRequest(it: Triple<String, List<MultipartBody.Part>, MalfunctionRequestInfo>): Observable<MalfunctionResponse> {
+    override fun getDamageClaims(page: Long): Single<DamageClaimsResponse> {
+        val userInfoFickle = mAppSettings.userInfo
+
+        if (!userInfoFickle.isPresent()) {
+            throw UserInfoIsEmpty()
+        }
+
+        val sessionId = userInfoFickle.get().sessionId
+        return mApiService.getDamageClaims(sessionId, page)
+                .subscribeOn(Schedulers.io())
+                .lift(OnApiErrorSingle(mGson))
+    }
+
+    private fun resendRequest(it: Triple<String, List<MultipartBody.Part>, DamageClaimInfo>): Observable<MalfunctionResponse> {
         Timber.e("resendRequest")
-        val request = MalfunctionRequest(it.third.damageClaimCategory.ordinal, it.third.malfunctionDescription,
-                it.third.malfunctionLocation.latitude, it.third.malfunctionLocation.longitude)
+        val request = MalfunctionRequest(it.third.damageClaimCategory.ordinal, it.third.damageClaimDescription,
+                it.third.damageClaimLocation.latitude, it.third.damageClaimLocation.longitude)
 
         return mApiService.sendMalfunctionRequest(it.first, it.second, request, ImageType.IMAGE_TYPE_MALFUNCTION_PHOTO.value)
-                .lift(OnApiErrorObservable(mGson))
+                .lift(OnApiErrorSingle(mGson))
+                .toObservable()
     }
 
     private fun reLogin(): Observable<String> {
@@ -132,8 +143,9 @@ class ApiClientImpl
         }
 
         val userInfo = userInfoFickle.get()
-        return mApiService.doLogin2(LoginRequest(userInfo.login, userInfo.password))
-                .lift(OnApiErrorObservable(mGson))
+        return mApiService.doLogin(LoginRequest(userInfo.login, userInfo.password))
+                .lift(OnApiErrorSingle(mGson))
+                .toObservable()
                 .map {
                     if (it.errorCode != ErrorCode.Remote.REC_OK) {
                         throw CouldNotUpdateSessionId()
@@ -143,7 +155,7 @@ class ApiClientImpl
                 }
     }
 
-    private fun sendRequest(it: Pair<List<MultipartBody.Part>, MalfunctionRequestInfo>): Observable<MalfunctionResponse> {
+    private fun sendRequest(it: Pair<List<MultipartBody.Part>, DamageClaimInfo>): Observable<MalfunctionResponse> {
         Timber.e("sendRequest")
         val userInfoFickle = mAppSettings.userInfo
 
@@ -152,11 +164,12 @@ class ApiClientImpl
         }
 
         val sessionId = userInfoFickle.get().sessionId
-        val request = MalfunctionRequest(it.second.damageClaimCategory.ordinal, it.second.malfunctionDescription,
-                it.second.malfunctionLocation.latitude, it.second.malfunctionLocation.longitude)
+        val request = MalfunctionRequest(it.second.damageClaimCategory.ordinal, it.second.damageClaimDescription,
+                it.second.damageClaimLocation.latitude, it.second.damageClaimLocation.longitude)
 
         return mApiService.sendMalfunctionRequest(sessionId, it.first, request, ImageType.IMAGE_TYPE_MALFUNCTION_PHOTO.value)
-                .lift(OnApiErrorObservable(mGson))
+                .lift(OnApiErrorSingle(mGson))
+                .toObservable()
     }
 
     private fun prepareRequest(photoPath: String, uploadProgressUpdateSubject: PublishSubject<ProgressUpdate>): Pair<MultipartBody.Part, String> {

@@ -39,7 +39,7 @@ class MalfunctionCategoryFragment : BaseFragment() {
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
                     setMalfunctionCategory(DamageClaimCategory.Computer)
-                    loadNextFragment(Constant.FragmentTags.MALFUNCTION_DESCRIPTION_FRAGMENT_TAG)
+                    loadNextFragment(Constant.FragmentTags.MALFUNCTION_DESCRIPTION)
                 }, { error ->
                     Timber.e(error)
                 })
@@ -48,7 +48,7 @@ class MalfunctionCategoryFragment : BaseFragment() {
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
                     setMalfunctionCategory(DamageClaimCategory.Notebook)
-                    loadNextFragment(Constant.FragmentTags.MALFUNCTION_DESCRIPTION_FRAGMENT_TAG)
+                    loadNextFragment(Constant.FragmentTags.MALFUNCTION_DESCRIPTION)
                 }, { error ->
                     Timber.e(error)
                 })
@@ -57,7 +57,7 @@ class MalfunctionCategoryFragment : BaseFragment() {
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
                     setMalfunctionCategory(DamageClaimCategory.Phone)
-                    loadNextFragment(Constant.FragmentTags.MALFUNCTION_DESCRIPTION_FRAGMENT_TAG)
+                    loadNextFragment(Constant.FragmentTags.MALFUNCTION_DESCRIPTION)
                 }, { error ->
                     Timber.e(error)
                 })

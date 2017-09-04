@@ -11,11 +11,11 @@ object Constant {
     val MAX_FILE_SIZE = 5242880
 
     object SerializedNames {
-        const val LOGIN_SERIALIZED_NAME = "login"
-        const val PASSWORD_SERIALIZED_NAME = "password"
-        const val ACCOUNT_TYPE_SERIALIZED_NAME = "account_type"
-        const val SESSION_ID_SERIALIZED_NAME = "session_id"
-        const val SERVER_ERROR_CODE_SERIALIZED_NAME = "server_error_code"
+        const val LOGIN = "login"
+        const val PASSWORD = "password"
+        const val ACCOUNT_TYPE = "account_type"
+        const val SESSION_ID = "session_id"
+        const val SERVER_ERROR_CODE = "server_error_code"
         const val MALFUNCTION_CATEGORY = "m_category"
         const val MALFUNCTION_DESCRIPTION = "m_description"
         const val MALFUNCTION_LOCATION = "m_location"
@@ -25,12 +25,12 @@ object Constant {
 
     object FragmentTags {
         private val BASE_FRAGMENT_TAG = "${APPLICATION_ID}_FRAGMENT_TAG"
-        val MALFUNCTION_CATEGORY_FRAGMENT_TAG = "${BASE_FRAGMENT_TAG}_MALFUNCTION_CATEGORY"
-        val MALFUNCTION_DESCRIPTION_FRAGMENT_TAG = "${BASE_FRAGMENT_TAG}_MALFUNCTION_DESCRIPTION"
-        val MALFUNCTION_PHOTOS_FRAGMENT_TAG = "${BASE_FRAGMENT_TAG}_MALFUNCTION_PHOTOS"
-        val MALFUNCTION_LOCATION_FRAGMENT_TAG = "${BASE_FRAGMENT_TAG}_MALFUNCTION_LOCATION"
+        val MALFUNCTION_CATEGORY = "${BASE_FRAGMENT_TAG}_MALFUNCTION_CATEGORY"
+        val MALFUNCTION_DESCRIPTION = "${BASE_FRAGMENT_TAG}_MALFUNCTION_DESCRIPTION"
+        val MALFUNCTION_PHOTOS = "${BASE_FRAGMENT_TAG}_MALFUNCTION_PHOTOS"
+        val MALFUNCTION_LOCATION = "${BASE_FRAGMENT_TAG}_MALFUNCTION_LOCATION"
 
-        val ACTIVE_MALFUNCTIONS_LIST_FRAGMENT_TAG = "${BASE_FRAGMENT_TAG}_ACTIVE_MALFUNCTIONS_LIST"
+        val ACTIVE_MALFUNCTIONS_LIST = "${BASE_FRAGMENT_TAG}_ACTIVE_MALFUNCTIONS_LIST"
     }
 
     object Views {

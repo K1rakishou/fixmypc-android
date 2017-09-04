@@ -7,6 +7,6 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 /**
  * Created by kirakishou on 7/26/2017.
  */
-data class SignupRequest(@SerializedName(Constant.SerializedNames.LOGIN_SERIALIZED_NAME) val login: String,
-                         @SerializedName(Constant.SerializedNames.PASSWORD_SERIALIZED_NAME) val password: String,
-                         @SerializedName(Constant.SerializedNames.ACCOUNT_TYPE_SERIALIZED_NAME) val accountType: AccountType) : BaseRequest
+data class SignupRequest(@SerializedName(Constant.SerializedNames.LOGIN) val login: String,
+                         @SerializedName(Constant.SerializedNames.PASSWORD) val password: String,
+                         @SerializedName(Constant.SerializedNames.ACCOUNT_TYPE) val accountType: AccountType) : BaseRequest

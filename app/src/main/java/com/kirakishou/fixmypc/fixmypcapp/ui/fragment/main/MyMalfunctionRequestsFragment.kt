@@ -34,7 +34,7 @@ class MyMalfunctionRequestsFragment : BaseFragment(), MyMalfunctionRequestsFragm
     }
 
     override fun onUnknownError(throwable: Throwable) {
-        onUnknownError0(throwable)
+        unknownError(throwable)
     }
 
     override fun resolveDaggerDependency() {

@@ -1,11 +1,11 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity
 
-import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
 import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdateChunk
 import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdateType
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.MalfunctionRequestInfo
+import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.DamageClaimInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.MalfunctionResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.ApiException
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.DuplicateObservableException
@@ -56,16 +56,14 @@ open class ClientNewMalfunctionActivityPresenterImpl
         Timber.d("ClientNewMalfunctionPresenterImpl.destroyPresenter()")
     }
 
-    override fun sendMalfunctionRequestToServer(malfunctionRequestInfo: MalfunctionRequestInfo) {
-        callbacks.onInitProgressDialog(malfunctionRequestInfo.malfunctionPhotos.size)
+    override fun sendMalfunctionRequestToServer(damageClaimInfo: DamageClaimInfo) {
+        callbacks.onInitProgressDialog(damageClaimInfo.damageClaimPhotos.size)
 
-        mCompositeDisposable += mApiClient.createMalfunctionRequest(malfunctionRequestInfo, uploadProgressUpdateSubject)
+        mCompositeDisposable += mApiClient.createMalfunctionRequest(damageClaimInfo, uploadProgressUpdateSubject)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    Timber.e("responseSubject.onNext")
                     handleResponse(it)
                 }, {
-                    Timber.e("responseSubject.onError")
                     handleError(it)
                 })
     }

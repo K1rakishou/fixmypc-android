@@ -52,7 +52,7 @@ class MalfunctionLocationFragment : BaseFragment(), OnMapReadyCallback {
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
                     setMalfunctionLocation()
-                    loadNextFragment(Constant.FragmentTags.MALFUNCTION_PHOTOS_FRAGMENT_TAG)
+                    loadNextFragment(Constant.FragmentTags.MALFUNCTION_PHOTOS)
                 }, { error ->
                     Timber.e(error)
                 })

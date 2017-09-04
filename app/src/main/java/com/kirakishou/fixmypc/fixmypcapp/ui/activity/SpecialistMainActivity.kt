@@ -31,7 +31,7 @@ class SpecialistMainActivity : BaseFragmentedActivity(), SpecialistMainActivityV
 
     override fun getFragmentFromTag(fragmentTag: String): Fragment {
         return when (fragmentTag) {
-            Constant.FragmentTags.ACTIVE_MALFUNCTIONS_LIST_FRAGMENT_TAG -> ActiveMalfunctionsListFragment.newInstance()
+            Constant.FragmentTags.ACTIVE_MALFUNCTIONS_LIST -> ActiveMalfunctionsListFragment.newInstance()
             else -> throw IllegalArgumentException("Unknown fragmentTag: $fragmentTag")
         }
     }
@@ -39,7 +39,7 @@ class SpecialistMainActivity : BaseFragmentedActivity(), SpecialistMainActivityV
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
         mPresenter.initPresenter()
 
-        pushFragment(Constant.FragmentTags.ACTIVE_MALFUNCTIONS_LIST_FRAGMENT_TAG)
+        pushFragment(Constant.FragmentTags.ACTIVE_MALFUNCTIONS_LIST)
     }
 
     override fun onActivityDestroy() {

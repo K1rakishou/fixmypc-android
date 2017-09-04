@@ -10,8 +10,6 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.ApiException
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.LoadingActivityView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.subjects.SingleSubject
 import timber.log.Timber
 import java.net.UnknownHostException
 import java.util.concurrent.TimeoutException
@@ -25,13 +23,8 @@ open class LoadingActivityPresenterImpl
                     protected val mAppSettings: AppSettings) : LoadingActivityPresenter<LoadingActivityView>() {
 
     private val mCompositeDisposable = CompositeDisposable()
-    private val responseSubject: SingleSubject<Pair<LoginRequest, LoginResponse>> = SingleSubject.create()
 
     override fun initPresenter() {
-        mCompositeDisposable += responseSubject
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ handleResponse(it) }, { handleError(it) })
-
         Timber.d("LoadingActivityPresenterImpl.initPresenter()")
     }
 
@@ -42,19 +35,21 @@ open class LoadingActivityPresenterImpl
     }
 
     override fun startLoggingIn(login: String, password: String) {
-        mApiClient.loginRequest(LoginRequest(login, password), responseSubject)
+        mApiClient.loginRequest(LoginRequest(login, password))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ handleResponse(login, password, it) }, { handleError(it) })
     }
 
-    private fun handleResponse(response: Pair<LoginRequest, LoginResponse>) {
-        val sessionId = response.second.sessionId
-        val accountType = response.second.accountType
-        val errorCode = response.second.errorCode
+    private fun handleResponse(login: String, password: String, response: LoginResponse) {
+        val sessionId = response.sessionId
+        val accountType = response.accountType
+        val errorCode = response.errorCode
 
         if (errorCode != ErrorCode.Remote.REC_OK) {
             throw IllegalStateException("ServerResponse is Success but errorCode is not SEC_OK: $errorCode")
         }
 
-        mAppSettings.saveUserInfo(response.first.login, response.first.password, sessionId)
+        mAppSettings.saveUserInfo(login, password, sessionId)
 
         when (accountType) {
             AccountType.Client -> {

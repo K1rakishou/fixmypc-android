@@ -6,9 +6,9 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.DamageClaimCategory
 /**
  * Created by kirakishou on 8/1/2017.
  */
-class MalfunctionRequestInfo {
+class DamageClaimInfo {
     var damageClaimCategory: DamageClaimCategory = DamageClaimCategory.Computer
-    var malfunctionDescription: String = ""
-    var malfunctionPhotos: ArrayList<String> = arrayListOf()
-    var malfunctionLocation: LatLng = LatLng(0.0, 0.0)
+    var damageClaimDescription: String = ""
+    var damageClaimPhotos: ArrayList<String> = arrayListOf()
+    var damageClaimLocation: LatLng = LatLng(0.0, 0.0)
 }

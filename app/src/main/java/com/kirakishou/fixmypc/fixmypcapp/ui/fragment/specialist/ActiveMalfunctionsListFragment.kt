@@ -4,6 +4,7 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist
 import android.animation.AnimatorSet
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import butterknife.BindView
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
@@ -13,6 +14,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerActiveMalfunctionsLi
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ActiveMalfunctionsListFragmentModule
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.fragment.ActiveMalfunctionsListFragmentPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.fragment.ActiveMalfunctionsListFragmentView
+import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.DamageClaimListAdapter
 import javax.inject.Inject
 
 class ActiveMalfunctionsListFragment : BaseFragment(), ActiveMalfunctionsListFragmentView {
@@ -23,6 +25,8 @@ class ActiveMalfunctionsListFragment : BaseFragment(), ActiveMalfunctionsListFra
     @Inject
     lateinit var mPresenter: ActiveMalfunctionsListFragmentPresenterImpl
 
+    private lateinit var mAdapter: DamageClaimListAdapter
+
     override fun getContentView() = R.layout.fragment_active_malfunctions_list
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
@@ -30,7 +34,12 @@ class ActiveMalfunctionsListFragment : BaseFragment(), ActiveMalfunctionsListFra
     override fun onFragmentReady() {
         mPresenter.initPresenter()
 
+        mAdapter = DamageClaimListAdapter(activity)
+        mAdapter.setHasStableIds(true)
+        mDamageClaimList.layoutManager = LinearLayoutManager(activity)
+        mDamageClaimList.adapter = mAdapter
 
+        mPresenter.getDamageClaims(0)
     }
 
     override fun onFragmentStop() {
@@ -50,7 +59,7 @@ class ActiveMalfunctionsListFragment : BaseFragment(), ActiveMalfunctionsListFra
     }
 
     override fun onUnknownError(throwable: Throwable) {
-        onUnknownError0(throwable)
+        unknownError(throwable)
     }
 
     companion object {

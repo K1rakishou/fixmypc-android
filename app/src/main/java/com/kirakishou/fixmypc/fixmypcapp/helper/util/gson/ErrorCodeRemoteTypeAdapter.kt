@@ -17,6 +17,6 @@ class ErrorCodeRemoteTypeAdapter : TypeAdapter<ErrorCode.Remote>() {
     }
 
     override fun write(output: JsonWriter, secValue: ErrorCode.Remote) {
-        output.jsonValue(Constant.SerializedNames.SERVER_ERROR_CODE_SERIALIZED_NAME)!!.value(secValue.value)
+        output.jsonValue(Constant.SerializedNames.SERVER_ERROR_CODE)!!.value(secValue.value)
     }
 }

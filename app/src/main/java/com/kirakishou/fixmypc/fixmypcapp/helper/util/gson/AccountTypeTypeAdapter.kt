@@ -18,6 +18,6 @@ class AccountTypeTypeAdapter : TypeAdapter<AccountType>() {
     }
 
     override fun write(output: JsonWriter, accountTypeValue: AccountType) {
-        output.jsonValue(Constant.SerializedNames.ACCOUNT_TYPE_SERIALIZED_NAME)!!.value(accountTypeValue.value)
+        output.jsonValue(Constant.SerializedNames.ACCOUNT_TYPE)!!.value(accountTypeValue.value)
     }
 }

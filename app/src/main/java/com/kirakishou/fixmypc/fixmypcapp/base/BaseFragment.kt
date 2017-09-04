@@ -67,7 +67,7 @@ abstract class BaseFragment : Fragment() {
         (activity as BaseActivityFragmentCallback).onShowToast(message)
     }
 
-    protected open fun onUnknownError0(throwable: Throwable) {
+    protected open fun unknownError(throwable: Throwable) {
         if (activity !is BaseActivityFragmentCallback) {
             throw IllegalStateException("Activity should implement BaseActivityFragmentCallback!")
         }

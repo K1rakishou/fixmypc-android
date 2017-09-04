@@ -7,4 +7,5 @@ import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragmentView
  * Created by kirakishou on 9/3/2017.
  */
 abstract class ActiveMalfunctionsListFragmentPresenter<V: BaseFragmentView> : BaseFragmentPresenter<V>() {
+    abstract fun getDamageClaims(page: Long)
 }

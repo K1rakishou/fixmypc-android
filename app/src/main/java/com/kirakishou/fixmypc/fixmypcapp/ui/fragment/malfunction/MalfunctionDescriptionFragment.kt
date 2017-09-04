@@ -41,7 +41,7 @@ class MalfunctionDescriptionFragment : BaseFragment() {
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
                     setMalfunctionDescription(mMalfunctionDescriptionEditText.text.toString())
-                    loadNextFragment(Constant.FragmentTags.MALFUNCTION_LOCATION_FRAGMENT_TAG)
+                    loadNextFragment(Constant.FragmentTags.MALFUNCTION_LOCATION)
                 }, { error ->
                     Timber.e(error)
                 })

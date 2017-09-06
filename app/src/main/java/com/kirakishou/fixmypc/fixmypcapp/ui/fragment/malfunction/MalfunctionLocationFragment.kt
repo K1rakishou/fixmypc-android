@@ -25,6 +25,7 @@ import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
 
 
+
 class MalfunctionLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     @BindView(R.id.button_done)
@@ -52,7 +53,7 @@ class MalfunctionLocationFragment : BaseFragment(), OnMapReadyCallback {
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
                     setMalfunctionLocation()
-                    loadNextFragment(Constant.FragmentTags.MALFUNCTION_PHOTOS)
+                    loadNextFragment(Constant.FragmentTags.DAMAGE_PHOTOS)
                 }, { error ->
                     Timber.e(error)
                 })

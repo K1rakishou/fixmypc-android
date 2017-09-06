@@ -6,8 +6,8 @@ package com.kirakishou.fixmypc.fixmypcapp.mvp.model
 object Constant {
     private val APPLICATION_ID = "com.kirakishou.fixmypc.fixmypcapp"
     val SHARED_PREFS_PREFIX = "${APPLICATION_ID}_SHARED_PREF"
-    val MALFUNCTION_PHOTO_ADAPTER_MAX_PHOTOS = 3
-    val RECYCLERVIEW_MAX_COLUMNS_COUNT = 10
+    val DAMAGE_CLAIM_PHOTO_ADAPTER_MAX_PHOTOS = 4
+    val RECYCLER_VIEW_MAX_COLUMNS_COUNT = 10
     val MAX_FILE_SIZE = 5242880
 
     object SerializedNames {
@@ -16,21 +16,21 @@ object Constant {
         const val ACCOUNT_TYPE = "account_type"
         const val SESSION_ID = "session_id"
         const val SERVER_ERROR_CODE = "server_error_code"
-        const val MALFUNCTION_CATEGORY = "m_category"
-        const val MALFUNCTION_DESCRIPTION = "m_description"
-        const val MALFUNCTION_LOCATION = "m_location"
+        const val DAMAGE_CATEGORY = "damage_category"
+        const val DAMAGE_DESCRIPTION = "damage_description"
+        const val DAMAGE_LOCATION = "damage_location"
         const val LOCATION_LAT = "lat"
         const val LOCATION_LON = "lon"
     }
 
     object FragmentTags {
         private val BASE_FRAGMENT_TAG = "${APPLICATION_ID}_FRAGMENT_TAG"
-        val MALFUNCTION_CATEGORY = "${BASE_FRAGMENT_TAG}_MALFUNCTION_CATEGORY"
-        val MALFUNCTION_DESCRIPTION = "${BASE_FRAGMENT_TAG}_MALFUNCTION_DESCRIPTION"
-        val MALFUNCTION_PHOTOS = "${BASE_FRAGMENT_TAG}_MALFUNCTION_PHOTOS"
-        val MALFUNCTION_LOCATION = "${BASE_FRAGMENT_TAG}_MALFUNCTION_LOCATION"
+        val DAMAGE_CATEGORY = "${BASE_FRAGMENT_TAG}_DAMAGE_CATEGORY"
+        val DAMAGE_DESCRIPTION = "${BASE_FRAGMENT_TAG}_DAMAGE_DESCRIPTION"
+        val DAMAGE_PHOTOS = "${BASE_FRAGMENT_TAG}_DAMAGE_PHOTOS"
+        val DAMAGE_LOCATION = "${BASE_FRAGMENT_TAG}_DAMAGE_LOCATION"
 
-        val ACTIVE_MALFUNCTIONS_LIST = "${BASE_FRAGMENT_TAG}_ACTIVE_MALFUNCTIONS_LIST"
+        val ACTIVE_DAMAGE_CLAIMS_LIST = "${BASE_FRAGMENT_TAG}_ACTIVE_DAMAGE_CLAIMS_LIST"
     }
 
     object Views {

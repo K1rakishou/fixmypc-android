@@ -39,10 +39,10 @@ class ClientNewMalfunctionActivity : BaseFragmentedActivity(), ClientNewMalfunct
 
     override fun getFragmentFromTag(fragmentTag: String): Fragment {
         return when (fragmentTag) {
-            Constant.FragmentTags.MALFUNCTION_CATEGORY -> MalfunctionCategoryFragment.newInstance()
-            Constant.FragmentTags.MALFUNCTION_DESCRIPTION -> MalfunctionDescriptionFragment.newInstance()
-            Constant.FragmentTags.MALFUNCTION_PHOTOS -> MalfunctionPhotosFragment.newInstance()
-            Constant.FragmentTags.MALFUNCTION_LOCATION -> MalfunctionLocationFragment.newInstance()
+            Constant.FragmentTags.DAMAGE_CATEGORY -> MalfunctionCategoryFragment.newInstance()
+            Constant.FragmentTags.DAMAGE_DESCRIPTION -> MalfunctionDescriptionFragment.newInstance()
+            Constant.FragmentTags.DAMAGE_PHOTOS -> MalfunctionPhotosFragment.newInstance()
+            Constant.FragmentTags.DAMAGE_LOCATION -> MalfunctionLocationFragment.newInstance()
             else -> throw IllegalArgumentException("Unknown fragmentTag: $fragmentTag")
         }
     }
@@ -54,7 +54,7 @@ class ClientNewMalfunctionActivity : BaseFragmentedActivity(), ClientNewMalfunct
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
         mActivityPresenter.initPresenter()
 
-        pushFragment(Constant.FragmentTags.MALFUNCTION_CATEGORY)
+        pushFragment(Constant.FragmentTags.DAMAGE_CATEGORY)
         progressDialog = ProgressDialog(this)
     }
 

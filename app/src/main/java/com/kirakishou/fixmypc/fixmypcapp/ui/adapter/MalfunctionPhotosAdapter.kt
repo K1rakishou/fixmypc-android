@@ -50,9 +50,7 @@ class MalfunctionPhotosAdapter(context: Context, callback: PhotoClickCallback) :
         }
 
         val photosCount = mItems.size
-
-        //if photosCount > maxPhotos + 1 (button)
-        if (photosCount > (Constant.MALFUNCTION_PHOTO_ADAPTER_MAX_PHOTOS + 1)) {
+        if (photosCount > (Constant.DAMAGE_CLAIM_PHOTO_ADAPTER_MAX_PHOTOS)) {
             //if last element of list is button
             if (mItems.last().getType() == AdapterItemType.MalfunctionPhotosAdapter.VIEW_ADD_BUTTON.ordinal) {
                 //remove it
@@ -77,7 +75,7 @@ class MalfunctionPhotosAdapter(context: Context, callback: PhotoClickCallback) :
         //if we don't have a button yet
         if (mItems.last().getType() != AdapterItemType.MalfunctionPhotosAdapter.VIEW_ADD_BUTTON.ordinal) {
             //if photosCount <= maxPhotos
-            if (mItems.size <= (Constant.MALFUNCTION_PHOTO_ADAPTER_MAX_PHOTOS)) {
+            if (mItems.size <= (Constant.DAMAGE_CLAIM_PHOTO_ADAPTER_MAX_PHOTOS)) {
                 //add button again
                 mItems.add(AdapterItem(AdapterItemType.MalfunctionPhotosAdapter.VIEW_ADD_BUTTON))
                 notifyItemInserted(mItems.size - 1)

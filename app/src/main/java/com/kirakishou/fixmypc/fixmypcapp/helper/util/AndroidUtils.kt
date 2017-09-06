@@ -45,7 +45,7 @@ object AndroidUtils {
     fun calculateColumnsCount(context: Context, viewWidth: Int): Int {
         val screenWidth = getScreenWidth(context)
         val viewWidthDp = dpToPx(viewWidth.toFloat(), context).toInt()
-        var columnsCount = Constant.RECYCLERVIEW_MAX_COLUMNS_COUNT
+        var columnsCount = Constant.RECYCLER_VIEW_MAX_COLUMNS_COUNT
 
         while (screenWidth / columnsCount < viewWidthDp) {
             --columnsCount

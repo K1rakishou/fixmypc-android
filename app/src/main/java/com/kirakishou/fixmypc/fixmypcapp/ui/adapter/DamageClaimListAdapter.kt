@@ -9,6 +9,7 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseAdapter
+import com.kirakishou.fixmypc.fixmypcapp.helper.util.Utils
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AdapterItemType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.dto.DamageClaimsWithDistanceDTO
 
@@ -25,20 +26,12 @@ class DamageClaimListAdapter<T : DamageClaimsWithDistanceDTO>(mContext: Context)
         when (holder) {
             is DamageClaimItemHolder -> {
                 val claim = mItems[position].value.get()
-                val distStr = distanceToString(claim.distance)
+                val distStr = Utils.distanceToString(claim.distance)
 
                 holder.damageCategory.text = claim.damageClaim.description
-                holder.distanceToMe.text = "$distStr KM"
+                holder.distanceToMe.text = "$distStr КМ"
             }
         }
-    }
-
-    private fun distanceToString(distance: Double): String {
-        if (distance < 1.0) {
-            return "<1.0"
-        }
-
-        return distance.toString()
     }
 
     class DamageClaimItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

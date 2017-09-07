@@ -13,7 +13,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity.SpecialistMainActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.SpecialistMainActivityView
-import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.ActiveMalfunctionsListFragment
+import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.ActiveDamageClaimsListFragment
 import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
@@ -31,7 +31,7 @@ class SpecialistMainActivity : BaseFragmentedActivity(), SpecialistMainActivityV
 
     override fun getFragmentFromTag(fragmentTag: String): Fragment {
         return when (fragmentTag) {
-            Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST -> ActiveMalfunctionsListFragment.newInstance()
+            Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST -> ActiveDamageClaimsListFragment.newInstance()
             else -> throw IllegalArgumentException("Unknown fragmentTag: $fragmentTag")
         }
     }

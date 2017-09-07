@@ -42,4 +42,12 @@ object Utils {
         val md5 = complete.digest()
         return ByteString.of(md5, 0, md5.size).hex()
     }
+
+    fun distanceToString(distance: Double): String {
+        if (distance < 1.0) {
+            return "<1.0"
+        }
+
+        return distance.toString()
+    }
 }

@@ -15,6 +15,23 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
  */
 object AndroidUtils {
 
+    fun pixelsToSp(context: Context, px: Float): Float {
+        val scaledDensity = context.resources.displayMetrics.scaledDensity
+        return px / scaledDensity
+    }
+
+    fun convertDpToPixel(dp: Float, context: Context): Float {
+        val resources = context.resources
+        val metrics = resources.displayMetrics
+        return dp * (metrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+    }
+
+    fun convertPixelsToDp(px: Float, context: Context): Float {
+        val resources = context.resources
+        val metrics = resources.displayMetrics
+        return px / (metrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+    }
+
     fun isLollipopOrHigher(): Boolean {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
     }
@@ -65,5 +82,31 @@ object AndroidUtils {
         if (activity.currentFocus != null) {
             inputMethodManager.hideSoftInputFromWindow(activity.currentFocus.windowToken, 0)
         }
+    }
+
+    fun getScreenSize(context: Context): Int {
+        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val display = wm.defaultDisplay
+        val size = Point()
+        display.getSize(size)
+
+        return size.x
+    }
+
+    fun calculateNoOfColumns(context: Context, viewWidth: Int): Int {
+        val screenSize = getScreenSize(context)
+        val dp = convertDpToPixel(viewWidth.toFloat(), context).toInt()
+
+        return when {
+            screenSize / 8 >= dp -> 8
+            screenSize / 7 >= dp -> 7
+            screenSize / 6 >= dp -> 6
+            screenSize / 5 >= dp -> 5
+            screenSize / 4 >= dp -> 4
+            screenSize / 3 >= dp -> 3
+            screenSize / 2 >= dp -> 2
+            else -> 1
+        }
+
     }
 }

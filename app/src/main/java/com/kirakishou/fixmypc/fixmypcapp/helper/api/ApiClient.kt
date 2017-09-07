@@ -18,5 +18,5 @@ interface ApiClient {
     fun createMalfunctionRequest(damageClaimInfo: DamageClaimInfo,
                                  uploadProgressUpdateSubject: PublishSubject<ProgressUpdate>): Single<MalfunctionResponse>
 
-    fun getDamageClaims(page: Long): Single<DamageClaimsResponse>
+    fun getDamageClaims(lat: Double, lon: Double, radius: Double, page: Long): Single<DamageClaimsResponse>
 }

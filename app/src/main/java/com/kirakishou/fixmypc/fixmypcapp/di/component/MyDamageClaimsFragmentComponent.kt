@@ -1,6 +1,6 @@
 package com.kirakishou.fixmypc.fixmypcapp.di.component
 
-import com.kirakishou.fixmypc.fixmypcapp.di.module.MyMalfunctionRequestsFragmentModule
+import com.kirakishou.fixmypc.fixmypcapp.di.module.MyDamageClaimsFragmentModule
 import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerFragment
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.main.MyMalfunctionRequestsFragment
 import dagger.Component
@@ -10,7 +10,7 @@ import dagger.Component
  */
 
 @PerFragment
-@Component(modules = arrayOf(MyMalfunctionRequestsFragmentModule::class), dependencies = arrayOf(ApplicationComponent::class))
-interface MyMalfunctionRequestsFragmentComponent {
+@Component(modules = arrayOf(MyDamageClaimsFragmentModule::class), dependencies = arrayOf(ApplicationComponent::class))
+interface MyDamageClaimsFragmentComponent {
     fun inject(fragment: MyMalfunctionRequestsFragment)
 }

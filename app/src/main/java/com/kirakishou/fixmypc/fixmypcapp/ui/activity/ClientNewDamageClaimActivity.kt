@@ -10,20 +10,20 @@ import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragmentedActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerChooseCategoryActivityComponent
-import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewMalfunctionActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewDamageClaimActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.DamageClaimCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.DamageClaimInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity.ClientNewMalfunctionActivityPresenterImpl
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.ClientNewMalfunctionActivityView
+import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.ClientNewDamageClaimActivityView
 import com.kirakishou.fixmypc.fixmypcapp.ui.dialog.ProgressDialog
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction.*
 import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
 
-class ClientNewMalfunctionActivity : BaseFragmentedActivity(), ClientNewMalfunctionActivityView, ClientNewMalfunctionActivityFragmentCallback {
+class ClientNewDamageClaimActivity : BaseFragmentedActivity(), ClientNewDamageClaimActivityView, ClientNewMalfunctionActivityFragmentCallback {
 
     @Inject
     lateinit var mActivityPresenter: ClientNewMalfunctionActivityPresenterImpl
@@ -39,10 +39,10 @@ class ClientNewMalfunctionActivity : BaseFragmentedActivity(), ClientNewMalfunct
 
     override fun getFragmentFromTag(fragmentTag: String): Fragment {
         return when (fragmentTag) {
-            Constant.FragmentTags.DAMAGE_CATEGORY -> MalfunctionCategoryFragment.newInstance()
-            Constant.FragmentTags.DAMAGE_DESCRIPTION -> MalfunctionDescriptionFragment.newInstance()
-            Constant.FragmentTags.DAMAGE_PHOTOS -> MalfunctionPhotosFragment.newInstance()
-            Constant.FragmentTags.DAMAGE_LOCATION -> MalfunctionLocationFragment.newInstance()
+            Constant.FragmentTags.DAMAGE_CATEGORY -> DamageClaimCategoryFragment.newInstance()
+            Constant.FragmentTags.DAMAGE_DESCRIPTION -> DamageClaimDescriptionFragment.newInstance()
+            Constant.FragmentTags.DAMAGE_PHOTOS -> DamageClaimPhotosFragment.newInstance()
+            Constant.FragmentTags.DAMAGE_LOCATION -> DamageClaimLocationFragment.newInstance()
             else -> throw IllegalArgumentException("Unknown fragmentTag: $fragmentTag")
         }
     }
@@ -75,7 +75,7 @@ class ClientNewMalfunctionActivity : BaseFragmentedActivity(), ClientNewMalfunct
                 val currentFragmentTag = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 1).name
                 val currentFragment = supportFragmentManager.findFragmentByTag(currentFragmentTag)
 
-                if (currentFragment is MalfunctionPhotosFragmentCallbacks) {
+                if (currentFragment is DamageClaimPhotosFragmentCallbacks) {
                     currentFragment.onPermissionGranted()
                 }
 
@@ -120,7 +120,7 @@ class ClientNewMalfunctionActivity : BaseFragmentedActivity(), ClientNewMalfunct
     override fun resolveDaggerDependency() {
         DaggerChooseCategoryActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
-                .clientNewMalfunctionActivityModule(ClientNewMalfunctionActivityModule(this))
+                .clientNewDamageClaimActivityModule(ClientNewDamageClaimActivityModule(this))
                 .build()
                 .inject(this)
     }

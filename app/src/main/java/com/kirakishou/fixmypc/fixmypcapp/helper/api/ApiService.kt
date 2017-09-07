@@ -24,7 +24,9 @@ interface ApiService {
                                @Part("request") requestBody: MalfunctionRequest,
                                @Part("images_type") imagesType: Int): Single<Response<MalfunctionResponse>>
 
-    @GET("/v1/api/m_request/{page}")
-    fun getDamageClaims(@Header("session_id") sessionId: String,
+    @GET("/v1/api/damage_claim_request/{lat}/{lon}/{radius}/{page}")
+    fun getDamageClaims(@Path("lat") lat: Double,
+                        @Path("lon") lon: Double,
+                        @Path("radius") radius: Double,
                         @Path("page") page: Long): Single<Response<DamageClaimsResponse>>
 }

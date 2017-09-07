@@ -5,19 +5,19 @@ import android.animation.AnimatorSet
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
-import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerMyMalfunctionRequestsFragmentComponent
-import com.kirakishou.fixmypc.fixmypcapp.di.module.MyMalfunctionRequestsFragmentModule
+import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerMyDamageClaimsFragmentComponent
+import com.kirakishou.fixmypc.fixmypcapp.di.module.MyDamageClaimsFragmentModule
 import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.fragment.MyMalfunctionRequestsFragmentPresenterImpl
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.fragment.MyMalfunctionRequestsFragmentView
+import com.kirakishou.fixmypc.fixmypcapp.mvp.view.fragment.MyDamageClaimsFragmentView
 import javax.inject.Inject
 
 
-class MyMalfunctionRequestsFragment : BaseFragment(), MyMalfunctionRequestsFragmentView {
+class MyMalfunctionRequestsFragment : BaseFragment(), MyDamageClaimsFragmentView {
 
     @Inject
     lateinit var mPresenter: MyMalfunctionRequestsFragmentPresenterImpl
 
-    override fun getContentView() = R.layout.fragment_my_malfunction_requests
+    override fun getContentView() = R.layout.fragment_my_damage_claims
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
@@ -38,9 +38,9 @@ class MyMalfunctionRequestsFragment : BaseFragment(), MyMalfunctionRequestsFragm
     }
 
     override fun resolveDaggerDependency() {
-        DaggerMyMalfunctionRequestsFragmentComponent.builder()
+        DaggerMyDamageClaimsFragmentComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
-                .myMalfunctionRequestsFragmentModule(MyMalfunctionRequestsFragmentModule(this))
+                .myDamageClaimsFragmentModule(MyDamageClaimsFragmentModule(this))
                 .build()
                 .inject(this)
     }

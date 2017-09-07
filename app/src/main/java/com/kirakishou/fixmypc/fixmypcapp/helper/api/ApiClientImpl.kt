@@ -111,15 +111,8 @@ class ApiClientImpl
                 .single(MalfunctionResponse(ErrorCode.Remote.REC_EMPTY_OBSERVABLE_ERROR))
     }
 
-    override fun getDamageClaims(page: Long): Single<DamageClaimsResponse> {
-        val userInfoFickle = mAppSettings.userInfo
-
-        if (!userInfoFickle.isPresent()) {
-            throw UserInfoIsEmpty()
-        }
-
-        val sessionId = userInfoFickle.get().sessionId
-        return mApiService.getDamageClaims(sessionId, page)
+    override fun getDamageClaims(lat: Double, lon: Double, radius: Double, page: Long): Single<DamageClaimsResponse> {
+        return mApiService.getDamageClaims(lat, lon, radius, page)
                 .subscribeOn(Schedulers.io())
                 .lift(OnApiErrorSingle(mGson))
     }

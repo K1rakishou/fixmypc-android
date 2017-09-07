@@ -17,18 +17,18 @@ import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
 
 
-class MalfunctionDescriptionFragment : BaseFragment() {
+class DamageClaimDescriptionFragment : BaseFragment() {
 
     @BindView(R.id.card_view)
     lateinit var mViewHolderCardView: CardView
 
-    @BindView(R.id.malfunction_description)
-    lateinit var mMalfunctionDescriptionEditText: TextInputEditText
+    @BindView(R.id.damage_claim_description)
+    lateinit var mDamageClaimDescriptionEditText: TextInputEditText
 
     @BindView(R.id.button_done)
     lateinit var mButtonDone: AppCompatButton
 
-    override fun getContentView(): Int = R.layout.fragment_malfunction_description
+    override fun getContentView(): Int = R.layout.fragment_damage_claim_description
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
@@ -40,7 +40,7 @@ class MalfunctionDescriptionFragment : BaseFragment() {
         mCompositeDisposable += RxView.clicks(mButtonDone)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
-                    setMalfunctionDescription(mMalfunctionDescriptionEditText.text.toString())
+                    setMalfunctionDescription(mDamageClaimDescriptionEditText.text.toString())
                     loadNextFragment(Constant.FragmentTags.DAMAGE_LOCATION)
                 }, { error ->
                     Timber.e(error)
@@ -67,7 +67,7 @@ class MalfunctionDescriptionFragment : BaseFragment() {
 
     companion object {
         fun newInstance(): Fragment {
-            val fragment = MalfunctionDescriptionFragment()
+            val fragment = DamageClaimDescriptionFragment()
             val args = Bundle()
             fragment.arguments = args
             return fragment

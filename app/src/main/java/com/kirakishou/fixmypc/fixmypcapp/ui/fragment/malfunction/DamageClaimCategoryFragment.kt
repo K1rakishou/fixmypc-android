@@ -15,7 +15,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
 
-class MalfunctionCategoryFragment : BaseFragment() {
+class DamageClaimCategoryFragment : BaseFragment() {
 
     @BindView(R.id.computer_category_button)
     lateinit var mComputerCategoryButton: AppCompatButton
@@ -26,7 +26,7 @@ class MalfunctionCategoryFragment : BaseFragment() {
     @BindView(R.id.phone_category_button)
     lateinit var mPhoneCategoryButton: AppCompatButton
 
-    override fun getContentView(): Int = R.layout.fragment_malfunction_category
+    override fun getContentView(): Int = R.layout.fragment_damage_claim_category
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
@@ -83,7 +83,7 @@ class MalfunctionCategoryFragment : BaseFragment() {
 
     companion object {
         fun newInstance(): Fragment {
-            val fragment = MalfunctionCategoryFragment()
+            val fragment = DamageClaimCategoryFragment()
             val args = Bundle()
             fragment.arguments = args
             return fragment

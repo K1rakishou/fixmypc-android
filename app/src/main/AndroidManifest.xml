@@ -32,7 +32,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activity.ClientNewMalfunctionActivity"
+            android:name=".ui.activity.ClientNewDamageClaimActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ui.activity.ClientMainActivity" />
 

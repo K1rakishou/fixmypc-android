@@ -10,7 +10,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClientImpl
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiService
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
-import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreferences
+import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.gson.AccountTypeTypeAdapter
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.gson.ErrorCodeRemoteTypeAdapter
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.gson.LatLngTypeAdapter
@@ -63,6 +63,8 @@ class ApplicationModule(private val mApplication: Application,
                 .registerTypeAdapter(AccountType::class.java, AccountTypeTypeAdapter())
                 .registerTypeAdapter(ErrorCode.Remote::class.java, ErrorCodeRemoteTypeAdapter())
                 .registerTypeAdapter(LatLng::class.java, LatLngTypeAdapter())
+                .excludeFieldsWithoutExposeAnnotation()
+                .setPrettyPrinting()
                 .create()
     }
 
@@ -129,8 +131,8 @@ class ApplicationModule(private val mApplication: Application,
 
     @Singleton
     @Provides
-    fun provideAppSharedPreferences(sharedPreferences: SharedPreferences): AppSharedPreferences {
-        return AppSharedPreferences(sharedPreferences)
+    fun provideAppSharedPreferences(sharedPreferences: SharedPreferences): AppSharedPreference {
+        return AppSharedPreference(sharedPreferences)
     }
 
     @Singleton

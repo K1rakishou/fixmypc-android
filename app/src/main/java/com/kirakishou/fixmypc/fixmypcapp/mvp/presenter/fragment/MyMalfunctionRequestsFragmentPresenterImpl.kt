@@ -1,6 +1,6 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.fragment
 
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.fragment.MyMalfunctionRequestsFragmentView
+import com.kirakishou.fixmypc.fixmypcapp.mvp.view.fragment.MyDamageClaimsFragmentView
 import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
 import javax.inject.Inject
@@ -9,7 +9,7 @@ import javax.inject.Inject
  * Created by kirakishou on 8/21/2017.
  */
 class MyMalfunctionRequestsFragmentPresenterImpl
-    @Inject constructor(): MyMalfunctionRequestsFragmentPresenter<MyMalfunctionRequestsFragmentView>() {
+    @Inject constructor(): MyMalfunctionRequestsFragmentPresenter<MyDamageClaimsFragmentView>() {
 
     private val mCompositeDisposable = CompositeDisposable()
 

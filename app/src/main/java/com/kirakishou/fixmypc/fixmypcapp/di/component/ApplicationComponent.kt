@@ -7,7 +7,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.module.ApplicationModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiService
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
-import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreferences
+import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.squareup.leakcanary.RefWatcher
 import dagger.Component
@@ -27,7 +27,7 @@ interface ApplicationComponent {
     fun exposeRetrofit(): Retrofit
     fun exposeApiService(): ApiService
     fun exposeFixmypcApiStore(): ApiClient
-    fun exposeAppSharedPreferences(): AppSharedPreferences
+    fun exposeAppSharedPreferences(): AppSharedPreference
     fun exposeAppSettings(): AppSettings
     fun exposePermissionManager(): PermissionManager
     fun exposeRefWatcher(): RefWatcher

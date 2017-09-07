@@ -26,7 +26,7 @@ import timber.log.Timber
 
 
 
-class MalfunctionLocationFragment : BaseFragment(), OnMapReadyCallback {
+class DamageClaimLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     @BindView(R.id.button_done)
     lateinit var buttonDone: AppCompatButton
@@ -39,7 +39,7 @@ class MalfunctionLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     private lateinit var googleMap: GoogleMap
 
-    override fun getContentView() = R.layout.fragment_malfunction_coordinates
+    override fun getContentView() = R.layout.fragment_damage_claim_coordinates
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
@@ -120,7 +120,7 @@ class MalfunctionLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     companion object {
         fun newInstance(): Fragment {
-            val fragment = MalfunctionLocationFragment()
+            val fragment = DamageClaimLocationFragment()
             val args = Bundle()
             fragment.arguments = args
             return fragment

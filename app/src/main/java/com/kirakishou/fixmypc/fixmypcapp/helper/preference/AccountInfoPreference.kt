@@ -36,7 +36,5 @@ class AccountInfoPreference(private val mSharedPreferences: SharedPreferences) :
         }
     }
 
-    fun exists(): Boolean {
-        return login.isPresent() && password.isPresent()
-    }
+    fun exists() = login.isPresent() && password.isPresent()
 }

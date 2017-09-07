@@ -5,7 +5,7 @@ import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivityView
 /**
  * Created by kirakishou on 7/31/2017.
  */
-interface ClientNewMalfunctionActivityView : BaseActivityView {
+interface ClientNewDamageClaimActivityView : BaseActivityView {
     fun onMalfunctionRequestSuccessfullyCreated()
     fun onFileSizeExceeded()
     fun onRequestSizeExceeded()

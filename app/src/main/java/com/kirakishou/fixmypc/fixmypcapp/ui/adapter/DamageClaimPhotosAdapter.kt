@@ -23,7 +23,7 @@ import java.io.File
 /**
  * Created by kirakishou on 7/31/2017.
  */
-class MalfunctionPhotosAdapter(context: Context, callback: PhotoClickCallback) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class DamageClaimPhotosAdapter(context: Context, callback: PhotoClickCallback) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val mLayoutInflater: LayoutInflater
     private val mItems = arrayListOf<AdapterItem<DamagePhoto>>()
@@ -38,10 +38,10 @@ class MalfunctionPhotosAdapter(context: Context, callback: PhotoClickCallback) :
 
     fun add(item: AdapterItem<DamagePhoto>) {
         if (item.getType() == -1) {
-            item.setType(AdapterItemType.MalfunctionPhotosAdapter.VIEW_ADD_BUTTON)
+            item.setType(AdapterItemType.VIEW_ADD_BUTTON)
         }
 
-        if (item.getType() == AdapterItemType.MalfunctionPhotosAdapter.VIEW_ADD_BUTTON.ordinal) {
+        if (item.getType() == AdapterItemType.VIEW_ADD_BUTTON.ordinal) {
             mItems.add(item)
             notifyItemInserted(mItems.size - 1)
         } else {
@@ -52,7 +52,7 @@ class MalfunctionPhotosAdapter(context: Context, callback: PhotoClickCallback) :
         val photosCount = mItems.size
         if (photosCount > (Constant.DAMAGE_CLAIM_PHOTO_ADAPTER_MAX_PHOTOS)) {
             //if last element of list is button
-            if (mItems.last().getType() == AdapterItemType.MalfunctionPhotosAdapter.VIEW_ADD_BUTTON.ordinal) {
+            if (mItems.last().getType() == AdapterItemType.VIEW_ADD_BUTTON.ordinal) {
                 //remove it
                 mItems.removeAt(photosCount - 1)
                 notifyItemRemoved(mItems.size - 1)
@@ -69,15 +69,15 @@ class MalfunctionPhotosAdapter(context: Context, callback: PhotoClickCallback) :
         //notifyItemRemoved(position)
 
         //FIXME: for some reason recyclerview doesn't change it's size on element removing when using notifyItemRemoved.
-        //It works with notifyDataSetChanged but without animations
+        //For now it works with notifyDataSetChanged but the items don't have animations
         notifyDataSetChanged()
 
         //if we don't have a button yet
-        if (mItems.last().getType() != AdapterItemType.MalfunctionPhotosAdapter.VIEW_ADD_BUTTON.ordinal) {
+        if (mItems.last().getType() != AdapterItemType.VIEW_ADD_BUTTON.ordinal) {
             //if photosCount <= maxPhotos
             if (mItems.size <= (Constant.DAMAGE_CLAIM_PHOTO_ADAPTER_MAX_PHOTOS)) {
                 //add button again
-                mItems.add(AdapterItem(AdapterItemType.MalfunctionPhotosAdapter.VIEW_ADD_BUTTON))
+                mItems.add(AdapterItem(AdapterItemType.VIEW_ADD_BUTTON))
                 notifyItemInserted(mItems.size - 1)
             }
         }
@@ -85,12 +85,12 @@ class MalfunctionPhotosAdapter(context: Context, callback: PhotoClickCallback) :
 
     fun getPhotosCount(): Int {
         return mItems
-                .filter { it.getType() == AdapterItemType.MalfunctionPhotosAdapter.VIEW_PHOTO.ordinal }
+                .filter { it.getType() == AdapterItemType.VIEW_PHOTO.ordinal }
                 .count()
     }
 
     fun getPhotos(): ArrayList<String> {
-        return ArrayList(mItems.filter { it.getType() == AdapterItemType.MalfunctionPhotosAdapter.VIEW_PHOTO.ordinal }
+        return ArrayList(mItems.filter { it.getType() == AdapterItemType.VIEW_PHOTO.ordinal }
                 .map { it.value.get().path })
     }
 
@@ -100,12 +100,12 @@ class MalfunctionPhotosAdapter(context: Context, callback: PhotoClickCallback) :
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
         when (viewType) {
-            AdapterItemType.MalfunctionPhotosAdapter.VIEW_ADD_BUTTON.ordinal -> {
+            AdapterItemType.VIEW_ADD_BUTTON.ordinal -> {
                 val view = mLayoutInflater.inflate(R.layout.adapter_photo_add_button, parent, false)
                 return AddPhotoButtonViewHolder(view)
             }
 
-            AdapterItemType.MalfunctionPhotosAdapter.VIEW_PHOTO.ordinal -> {
+            AdapterItemType.VIEW_PHOTO.ordinal -> {
                 val view = mLayoutInflater.inflate(R.layout.adapter_photo_image, parent, false)
                 return PhotoViewHolder(view)
             }

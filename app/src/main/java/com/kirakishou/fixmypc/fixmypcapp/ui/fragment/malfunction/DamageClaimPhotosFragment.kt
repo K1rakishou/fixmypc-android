@@ -20,7 +20,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AdapterItemType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.DamagePhoto
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewMalfunctionActivityFragmentCallback
-import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.MalfunctionPhotosAdapter
+import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.DamageClaimPhotosAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import pl.aprilapps.easyphotopicker.DefaultCallback
@@ -29,9 +29,9 @@ import timber.log.Timber
 import java.io.File
 
 
-class MalfunctionPhotosFragment : BaseFragment(),
-        MalfunctionPhotosFragmentCallbacks,
-        MalfunctionPhotosAdapter.PhotoClickCallback {
+class DamageClaimPhotosFragment : BaseFragment(),
+        DamageClaimPhotosFragmentCallbacks,
+        DamageClaimPhotosAdapter.PhotoClickCallback {
 
     @BindView(R.id.photo_recycler_view)
     lateinit var mPhotoRecyclerView: RecyclerView
@@ -39,9 +39,9 @@ class MalfunctionPhotosFragment : BaseFragment(),
     @BindView(R.id.button_send_application)
     lateinit var mButtonSendApplication: AppCompatButton
 
-    lateinit var mPhotoAdapter: MalfunctionPhotosAdapter
+    lateinit var mPhotoAdapter: DamageClaimPhotosAdapter
 
-    override fun getContentView() = R.layout.fragment_malfunction_photos
+    override fun getContentView() = R.layout.fragment_damage_claim_photos
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
@@ -51,10 +51,10 @@ class MalfunctionPhotosFragment : BaseFragment(),
     }
 
     private fun initRecyclerView() {
-        mPhotoAdapter = MalfunctionPhotosAdapter(activity, this)
+        mPhotoAdapter = DamageClaimPhotosAdapter(activity, this)
 
         //we need a button so we can add photos
-        mPhotoAdapter.add(AdapterItem(AdapterItemType.MalfunctionPhotosAdapter.VIEW_ADD_BUTTON))
+        mPhotoAdapter.add(AdapterItem(AdapterItemType.VIEW_ADD_BUTTON))
 
         val layoutManager = GridLayoutManager(activity,
                 AndroidUtils.calculateColumnsCount(activity, Constant.Views.PHOTO_ADAPTER_VIEW_WITH))
@@ -112,14 +112,14 @@ class MalfunctionPhotosFragment : BaseFragment(),
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == AppCompatActivity.RESULT_OK) {
-            EasyImage.handleActivityResult(requestCode, resultCode, data, this@MalfunctionPhotosFragment.activity, object : DefaultCallback() {
+            EasyImage.handleActivityResult(requestCode, resultCode, data, this@DamageClaimPhotosFragment.activity, object : DefaultCallback() {
                 override fun onImagePickerError(e: Exception, source: EasyImage.ImageSource?, type: Int) {
                     Timber.e(e)
                 }
 
                 override fun onImagesPicked(imageFiles: List<File>, source: EasyImage.ImageSource, type: Int) {
                     for (file in imageFiles) {
-                        mPhotoAdapter.add(AdapterItem(DamagePhoto(file.absolutePath), AdapterItemType.MalfunctionPhotosAdapter.VIEW_PHOTO))
+                        mPhotoAdapter.add(AdapterItem(DamagePhoto(file.absolutePath), AdapterItemType.VIEW_PHOTO))
                     }
 
                     if (mPhotoAdapter.getPhotosCount() > 0) {
@@ -149,7 +149,7 @@ class MalfunctionPhotosFragment : BaseFragment(),
 
     companion object {
         fun newInstance(): Fragment {
-            val fragment = MalfunctionPhotosFragment()
+            val fragment = DamageClaimPhotosFragment()
             val args = Bundle()
             fragment.arguments = args
             return fragment

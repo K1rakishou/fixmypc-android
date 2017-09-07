@@ -13,7 +13,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.ResponseBodyIsEmpt
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.FileSizeExceededException
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.PhotosAreNotSetException
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.SelectedPhotoDoesNotExistsException
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.ClientNewMalfunctionActivityView
+import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.ClientNewDamageClaimActivityView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -27,7 +27,7 @@ import javax.inject.Inject
  * Created by kirakishou on 7/27/2017.
  */
 open class ClientNewMalfunctionActivityPresenterImpl
-@Inject constructor(protected val mApiClient: ApiClient) : ClientNewMalfunctionActivityPresenter<ClientNewMalfunctionActivityView>() {
+@Inject constructor(protected val mApiClient: ApiClient) : ClientNewMalfunctionActivityPresenter<ClientNewDamageClaimActivityView>() {
 
     private val mCompositeDisposable = CompositeDisposable()
     private val uploadProgressUpdateSubject = PublishSubject.create<ProgressUpdate>()

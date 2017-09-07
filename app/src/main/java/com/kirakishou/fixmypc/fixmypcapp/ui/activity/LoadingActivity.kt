@@ -10,7 +10,7 @@ import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerLoadingActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.LoadingActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AccountInfoPreference
-import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreferences
+import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
@@ -26,7 +26,7 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
     lateinit var mPresenter: LoadingActivityPresenterImpl
 
     @Inject
-    lateinit var mAppSharedPreferences: AppSharedPreferences
+    lateinit var mAppSharedPreference: AppSharedPreference
 
     @Inject
     lateinit var mAppSettings: AppSettings
@@ -51,7 +51,7 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
     }
 
     override fun onViewReady() {
-        accountInfoPrefs = mAppSharedPreferences.prepare()
+        accountInfoPrefs = mAppSharedPreference.prepare()
 
         //FIXME: accountInfoPrefs should be loaded from preferences via accountInfoPrefs.load()
         //don't forger to delete the following:
@@ -76,7 +76,7 @@ class LoadingActivity : BaseActivity(), LoadingActivityView {
 
     override fun runClientMainActivity(sessionId: String, accountType: AccountType) {
         Timber.e("Running client MainActivity")
-        runActivity(ClientNewMalfunctionActivity::class.java, true)
+        runActivity(ClientNewDamageClaimActivity::class.java, true)
     }
 
     override fun runSpecialistMainActivity(sessionId: String, accountType: AccountType) {

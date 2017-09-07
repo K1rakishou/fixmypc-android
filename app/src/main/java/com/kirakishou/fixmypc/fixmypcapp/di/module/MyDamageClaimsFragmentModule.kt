@@ -1,7 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.di.module
 
 import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerFragment
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.fragment.MyMalfunctionRequestsFragmentView
+import com.kirakishou.fixmypc.fixmypcapp.mvp.view.fragment.MyDamageClaimsFragmentView
 import dagger.Module
 import dagger.Provides
 
@@ -10,11 +10,11 @@ import dagger.Provides
  */
 
 @Module
-class MyMalfunctionRequestsFragmentModule(val mView: MyMalfunctionRequestsFragmentView) {
+class MyDamageClaimsFragmentModule(val mView: MyDamageClaimsFragmentView) {
 
     @PerFragment
     @Provides
-    fun provideView(): MyMalfunctionRequestsFragmentView {
+    fun provideView(): MyDamageClaimsFragmentView {
         return mView
     }
 }

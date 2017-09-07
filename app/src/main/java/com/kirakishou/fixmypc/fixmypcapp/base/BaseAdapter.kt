@@ -1,7 +1,6 @@
 package com.kirakishou.fixmypc.fixmypcapp.base
 
 import android.content.Context
-import android.support.annotation.CallSuper
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +14,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AdapterItemType
 abstract class BaseAdapter<T>(private val mContext: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var mInited = false
-    private val mItems = mutableListOf<AdapterItem<T>>()
+    protected val mItems = mutableListOf<AdapterItem<T>>()
     private val mLayoutInflater = LayoutInflater.from(mContext)
 
     private lateinit var mBaseAdapterInfo: List<BaseAdapterInfo>
@@ -25,16 +24,14 @@ abstract class BaseAdapter<T>(private val mContext: Context) : RecyclerView.Adap
         mInited = true
     }
 
-    @CallSuper
-    protected fun add(item: AdapterItem<T>) {
+    open fun add(item: AdapterItem<T>) {
         checkIsInited()
 
         mItems.add(item)
         notifyItemInserted(mItems.size - 1)
     }
 
-    @CallSuper
-    protected fun addAll(items: List<AdapterItem<T>>) {
+    open fun addAll(items: List<AdapterItem<T>>) {
         checkIsInited()
 
         for (item in items) {
@@ -42,16 +39,14 @@ abstract class BaseAdapter<T>(private val mContext: Context) : RecyclerView.Adap
         }
     }
 
-    @CallSuper
-    protected fun remove(position: Int) {
+    open fun remove(position: Int) {
         checkIsInited()
 
         mItems.removeAt(position)
         notifyItemRemoved(position)
     }
 
-    @CallSuper
-    protected fun clear() {
+    open fun clear() {
         checkIsInited()
 
         mItems.clear()
@@ -79,11 +74,11 @@ abstract class BaseAdapter<T>(private val mContext: Context) : RecyclerView.Adap
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        onViewHolderBound(holder)
+        onViewHolderBound(holder, position)
     }
 
     abstract fun getBaseAdapterInfo(): List<BaseAdapterInfo>
-    abstract fun onViewHolderBound(holder: RecyclerView.ViewHolder)
+    abstract fun onViewHolderBound(holder: RecyclerView.ViewHolder, position: Int)
 
     inner class BaseAdapterInfo(val viewType: AdapterItemType,
                                 val layoutId: Int,

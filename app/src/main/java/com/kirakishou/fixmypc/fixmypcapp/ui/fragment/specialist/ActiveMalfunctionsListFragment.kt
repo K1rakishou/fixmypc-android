@@ -36,7 +36,7 @@ class ActiveMalfunctionsListFragment : BaseFragment(), ActiveDamageClaimsListFra
     @Inject
     lateinit var mAppSharedPreference: AppSharedPreference
 
-    private lateinit var mAdapter: DamageClaimListAdapter
+    private lateinit var mAdapter: DamageClaimListAdapter<DamageClaimsWithDistanceDTO>
     private lateinit var currentLocationPref: MyCurrentLocationPreference
 
     override fun getContentView() = R.layout.fragment_active_malfunctions_list
@@ -47,6 +47,8 @@ class ActiveMalfunctionsListFragment : BaseFragment(), ActiveDamageClaimsListFra
         mPresenter.initPresenter()
 
         mAdapter = DamageClaimListAdapter(activity)
+        mAdapter.init()
+
         mDamageClaimList.layoutManager = LinearLayoutManager(activity)
         mDamageClaimList.adapter = mAdapter
 

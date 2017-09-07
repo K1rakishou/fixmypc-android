@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.ui.activity
+package com.kirakishou.fixmypc.fixmypcapp.base
 
 /**
  * Created by kirakishou on 9/3/2017.

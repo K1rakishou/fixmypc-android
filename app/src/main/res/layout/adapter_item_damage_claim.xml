@@ -40,7 +40,7 @@
                 android:layout_marginTop="8dp"
                 android:background="#80000000"
                 android:text="5 км"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:textColor="#fff"
                 android:paddingTop="4dp"
                 android:paddingBottom="4dp"

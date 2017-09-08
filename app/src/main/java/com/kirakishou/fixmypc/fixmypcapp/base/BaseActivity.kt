@@ -1,27 +1,38 @@
 package com.kirakishou.fixmypc.fixmypcapp.base
 
 import android.animation.AnimatorSet
+import android.arch.lifecycle.LifecycleActivity
+import android.arch.lifecycle.ViewModel
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import butterknife.ButterKnife
 import butterknife.Unbinder
 import com.afollestad.materialdialogs.MaterialDialog
 import com.kirakishou.fixmypc.fixmypcapp.R
+import com.kirakishou.fixmypc.fixmypcapp.helper.MyViewModelProvider
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.extension.myAddListener
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
 import io.reactivex.disposables.CompositeDisposable
+import javax.inject.Inject
 
 
 /**
  * Created by kirakishou on 7/20/2017.
  */
-abstract class BaseActivity : AppCompatActivity() {
+abstract class BaseActivity<out T: ViewModel> : LifecycleActivity() {
 
-    val mCompositeDisposable = CompositeDisposable()
+    @Inject
+    protected lateinit var mViewModelProvider: MyViewModelProvider
+
+    protected val mCompositeDisposable = CompositeDisposable()
+    private var mViewModel: Fickle<T> = Fickle.empty()
     private var mUnBinder: Fickle<Unbinder> = Fickle.empty()
+
+    protected fun getViewModel(): T {
+        return mViewModel.get()
+    }
 
     private fun overridePendingTransitionEnter() {
         overridePendingTransition(0, 0)
@@ -43,12 +54,14 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        resolveDaggerDependency()
+
+        mViewModel = Fickle.of(mViewModelProvider.provideViewModel(this))
 
         setContentView(getContentView())
         mUnBinder = Fickle.of(ButterKnife.bind(this))
         //Fabric.with(this, Crashlytics())
 
-        resolveDaggerDependency()
         onActivityCreate(savedInstanceState, intent)
     }
 

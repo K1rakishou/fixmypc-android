@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity
+package com.kirakishou.fixmypc.fixmypcapp.mvp.viewmodel
 
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivityPresenter
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivityView

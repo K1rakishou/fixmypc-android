@@ -29,7 +29,7 @@ import timber.log.Timber
 import java.io.File
 
 
-class DamageClaimPhotosFragment : BaseFragment(),
+class DamageClaimPhotosFragment : BaseFragment<Nothing>(),
         DamageClaimPhotosFragmentCallbacks,
         DamageClaimPhotosAdapter.PhotoClickCallback {
 

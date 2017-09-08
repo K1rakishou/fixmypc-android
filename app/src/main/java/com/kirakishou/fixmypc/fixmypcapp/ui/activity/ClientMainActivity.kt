@@ -12,12 +12,14 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragmentedActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerClientMainActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientMainActivityModule
-import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity.ClientMainActivityPresenterImpl
+import com.kirakishou.fixmypc.fixmypcapp.helper.annotation.RequiresViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.ClientMainActivityView
+import com.kirakishou.fixmypc.fixmypcapp.mvp.viewmodel.ClientMainActivityPresenterImpl
 import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
-class ClientMainActivity : BaseFragmentedActivity(), ClientMainActivityView {
+@RequiresViewModel(ClientMainActivityPresenterImpl::class)
+class ClientMainActivity : BaseFragmentedActivity<ClientMainActivityPresenterImpl>(), ClientMainActivityView {
 
     @BindView(R.id.my_profile_button)
     lateinit var myProfileButton: ImageView
@@ -25,8 +27,8 @@ class ClientMainActivity : BaseFragmentedActivity(), ClientMainActivityView {
     @Inject
     lateinit var mRefWatcher: RefWatcher
 
-    @Inject
-    lateinit var mActivityPresenter: ClientMainActivityPresenterImpl
+    /*@Inject
+    lateinit var mActivityPresenter: ClientMainActivityPresenterImpl*/
 
     override fun getFragmentFromTag(fragmentTag: String): Fragment {
         throw NotImplementedError()
@@ -37,11 +39,11 @@ class ClientMainActivity : BaseFragmentedActivity(), ClientMainActivityView {
     override fun loadExitAnimations() = AnimatorSet()
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
-        mActivityPresenter.initPresenter()
+        //mViewModel.initPresenter()
     }
 
     override fun onActivityDestroy() {
-        mActivityPresenter.destroyPresenter()
+        //mActivityPresenter.destroyPresenter()
 
         mRefWatcher.watch(this)
     }

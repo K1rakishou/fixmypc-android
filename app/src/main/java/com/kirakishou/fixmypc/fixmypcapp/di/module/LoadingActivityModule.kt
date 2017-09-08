@@ -1,7 +1,9 @@
 package com.kirakishou.fixmypc.fixmypcapp.di.module
 
 import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerActivity
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.LoadingActivityView
+import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
+import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
+import com.kirakishou.fixmypc.fixmypcapp.mvp.viewmodel.LoadingActivityViewModelImpl
 import dagger.Module
 import dagger.Provides
 
@@ -10,11 +12,11 @@ import dagger.Provides
  */
 
 @Module
-class LoadingActivityModule(val mView: LoadingActivityView) {
+class LoadingActivityModule {
 
     @PerActivity
     @Provides
-    fun provideView(): LoadingActivityView {
-        return mView
+    fun provideLoadingActivityViewModel(mApiClient: ApiClient, mAppSettings: AppSettings): LoadingActivityViewModelImpl {
+        return LoadingActivityViewModelImpl(mApiClient, mAppSettings)
     }
 }

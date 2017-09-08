@@ -11,22 +11,25 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragmentedActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerChooseCategoryActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewDamageClaimActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.helper.annotation.RequiresViewModel
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.DamageClaimCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.DamageClaimInfo
-import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity.ClientNewMalfunctionActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.ClientNewDamageClaimActivityView
+import com.kirakishou.fixmypc.fixmypcapp.mvp.viewmodel.ClientNewMalfunctionActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.ui.dialog.ProgressDialog
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction.*
 import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
 
-class ClientNewDamageClaimActivity : BaseFragmentedActivity(), ClientNewDamageClaimActivityView, ClientNewMalfunctionActivityFragmentCallback {
+@RequiresViewModel(ClientNewMalfunctionActivityPresenterImpl::class)
+class ClientNewDamageClaimActivity : BaseFragmentedActivity<ClientNewMalfunctionActivityPresenterImpl>(),
+        ClientNewDamageClaimActivityView, ClientNewMalfunctionActivityFragmentCallback {
 
-    @Inject
-    lateinit var mActivityPresenter: ClientNewMalfunctionActivityPresenterImpl
+    /*@Inject
+    lateinit var mActivityPresenter: ClientNewMalfunctionActivityPresenterImpl*/
 
     @Inject
     lateinit var mPermissionManager: PermissionManager
@@ -52,7 +55,7 @@ class ClientNewDamageClaimActivity : BaseFragmentedActivity(), ClientNewDamageCl
     override fun loadExitAnimations() = AnimatorSet()
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
-        mActivityPresenter.initPresenter()
+        //mViewModel.initPresenter()
 
         pushFragment(Constant.FragmentTags.DAMAGE_CATEGORY)
         progressDialog = ProgressDialog(this)
@@ -60,7 +63,7 @@ class ClientNewDamageClaimActivity : BaseFragmentedActivity(), ClientNewDamageCl
 
     override fun onActivityDestroy() {
         progressDialog.dismiss()
-        mActivityPresenter.destroyPresenter()
+        //mActivityPresenter.destroyPresenter()
 
         mRefWatcher.watch(this)
     }
@@ -106,7 +109,7 @@ class ClientNewDamageClaimActivity : BaseFragmentedActivity(), ClientNewDamageCl
     }
 
     override fun onSendPhotosButtonClick() {
-        mActivityPresenter.sendMalfunctionRequestToServer(malfunctionRequestInfo)
+        //mViewModel.sendMalfunctionRequestToServer(malfunctionRequestInfo)
     }
 
     override fun onViewReady() {

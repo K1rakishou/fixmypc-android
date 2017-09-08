@@ -53,6 +53,7 @@ android {
 
 ext {
     supportLibraryVersion = '26.0.2'
+    archLifecycle = '1.0.0-alpha9'
 }
 
 dependencies {
@@ -70,6 +71,11 @@ dependencies {
     testCompile 'org.mockito:mockito-android:2.8.47'
 
     provided 'org.glassfish:javax.annotation:10.0-b28'
+
+    compile "android.arch.lifecycle:runtime:${archLifecycle}"
+    compile "android.arch.lifecycle:extensions:${archLifecycle}"
+    compile "android.arch.lifecycle:reactivestreams:${archLifecycle}"
+    compile "android.arch.lifecycle:compiler:${archLifecycle}"
 
     compile "com.android.support:mediarouter-v7:$supportLibraryVersion"
     compile "com.android.support:appcompat-v7:$supportLibraryVersion"

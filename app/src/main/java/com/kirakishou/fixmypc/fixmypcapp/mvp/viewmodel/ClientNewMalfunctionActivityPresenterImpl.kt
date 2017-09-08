@@ -1,39 +1,30 @@
-package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity
+package com.kirakishou.fixmypc.fixmypcapp.mvp.viewmodel
 
+import com.kirakishou.fixmypc.fixmypcapp.base.BaseViewModel
 import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
-import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdateChunk
-import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdateType
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.DamageClaimInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.MalfunctionResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.ApiException
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.DuplicateObservableException
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.ResponseBodyIsEmpty
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.FileSizeExceededException
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.PhotosAreNotSetException
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.malfunction_request.SelectedPhotoDoesNotExistsException
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.ClientNewDamageClaimActivityView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
-import java.net.UnknownHostException
-import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 
 /**
  * Created by kirakishou on 7/27/2017.
  */
 open class ClientNewMalfunctionActivityPresenterImpl
-@Inject constructor(protected val mApiClient: ApiClient) : ClientNewMalfunctionActivityPresenter<ClientNewDamageClaimActivityView>() {
+@Inject constructor(protected val mApiClient: ApiClient) : BaseViewModel() {
 
     private val mCompositeDisposable = CompositeDisposable()
     private val uploadProgressUpdateSubject = PublishSubject.create<ProgressUpdate>()
 
-    override fun initPresenter() {
-        mCompositeDisposable += uploadProgressUpdateSubject
+    fun initPresenter() {
+        /*mCompositeDisposable += uploadProgressUpdateSubject
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ progressUpdate ->
                     when (progressUpdate.type) {
@@ -45,19 +36,18 @@ open class ClientNewMalfunctionActivityPresenterImpl
                     callbacks.onFileUploadingError(error)
                 }, {
                     callbacks.onAllFilesUploaded()
-                })
+                })*/
 
         Timber.d("ClientNewMalfunctionPresenterImpl.initPresenter()")
     }
 
-    override fun destroyPresenter() {
+    override fun onCleared() {
+        super.onCleared()
         mCompositeDisposable.clear()
-
-        Timber.d("ClientNewMalfunctionPresenterImpl.destroyPresenter()")
     }
 
-    override fun sendMalfunctionRequestToServer(damageClaimInfo: DamageClaimInfo) {
-        callbacks.onInitProgressDialog(damageClaimInfo.damageClaimPhotos.size)
+    fun sendMalfunctionRequestToServer(damageClaimInfo: DamageClaimInfo) {
+        //callbacks.onInitProgressDialog(damageClaimInfo.damageClaimPhotos.size)
 
         mCompositeDisposable += mApiClient.createMalfunctionRequest(damageClaimInfo, uploadProgressUpdateSubject)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -75,8 +65,8 @@ open class ClientNewMalfunctionActivityPresenterImpl
             throw IllegalStateException("ServerResponse is Success but errorCode is not SEC_OK: $errorCode")
         }
 
-        callbacks.onAllFilesUploaded()
-        callbacks.onMalfunctionRequestSuccessfullyCreated()
+        /*callbacks.onAllFilesUploaded()
+        callbacks.onMalfunctionRequestSuccessfullyCreated()*/
     }
 
     private fun handleError(error: Throwable) {
@@ -84,10 +74,10 @@ open class ClientNewMalfunctionActivityPresenterImpl
             Timber.e(error)
         }
 
-        callbacks.onAllFilesUploaded()
+        //callbacks.onAllFilesUploaded()
 
         when (error) {
-            is ApiException -> {
+            /*is ApiException -> {
                 val remoteErrorCode = error.errorCode
 
                 when (remoteErrorCode) {
@@ -117,7 +107,7 @@ open class ClientNewMalfunctionActivityPresenterImpl
             is ResponseBodyIsEmpty -> callbacks.onResponseBodyIsEmpty()
             is DuplicateObservableException -> callbacks.onFileAlreadySelected()
 
-            else -> callbacks.onUnknownError(error)
+            else -> callbacks.onUnknownError(error)*/
         }
     }
 }

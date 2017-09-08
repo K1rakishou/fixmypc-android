@@ -15,7 +15,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
 
-class DamageClaimCategoryFragment : BaseFragment() {
+class DamageClaimCategoryFragment : BaseFragment<Nothing>() {
 
     @BindView(R.id.computer_category_button)
     lateinit var mComputerCategoryButton: AppCompatButton

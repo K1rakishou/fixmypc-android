@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.fragment
+package com.kirakishou.fixmypc.fixmypcapp.mvp.viewmodel
 
 import com.google.android.gms.maps.model.LatLng
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragmentPresenter

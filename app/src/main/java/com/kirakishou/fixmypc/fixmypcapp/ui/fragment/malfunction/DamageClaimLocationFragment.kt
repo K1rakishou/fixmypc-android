@@ -26,7 +26,7 @@ import timber.log.Timber
 
 
 
-class DamageClaimLocationFragment : BaseFragment(), OnMapReadyCallback {
+class DamageClaimLocationFragment : BaseFragment<Nothing>(), OnMapReadyCallback {
 
     @BindView(R.id.button_done)
     lateinit var buttonDone: AppCompatButton

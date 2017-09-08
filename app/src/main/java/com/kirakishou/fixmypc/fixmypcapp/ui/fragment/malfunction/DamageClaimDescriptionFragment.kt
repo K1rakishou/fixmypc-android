@@ -17,7 +17,7 @@ import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
 
 
-class DamageClaimDescriptionFragment : BaseFragment() {
+class DamageClaimDescriptionFragment : BaseFragment<Nothing>() {
 
     @BindView(R.id.card_view)
     lateinit var mViewHolderCardView: CardView

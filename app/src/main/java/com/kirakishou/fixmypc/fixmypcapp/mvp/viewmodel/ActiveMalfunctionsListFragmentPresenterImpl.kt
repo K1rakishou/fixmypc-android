@@ -1,12 +1,12 @@
-package com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.fragment
+package com.kirakishou.fixmypc.fixmypcapp.mvp.viewmodel
 
 import com.google.android.gms.maps.model.LatLng
+import com.kirakishou.fixmypc.fixmypcapp.base.BaseViewModel
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.MathUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.dto.DamageClaimsWithDistanceDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.DamageClaimsResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.fragment.ActiveDamageClaimsListFragmentView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -19,12 +19,12 @@ import javax.inject.Inject
  * Created by kirakishou on 9/3/2017.
  */
 class ActiveMalfunctionsListFragmentPresenterImpl
-    @Inject constructor(protected val mApiClient: ApiClient) : ActiveMalfunctionsListFragmentPresenter<ActiveDamageClaimsListFragmentView>() {
+    @Inject constructor(protected val mApiClient: ApiClient) : BaseViewModel() {
 
     private val mCompositeDisposable = CompositeDisposable()
     private val locationSubject = BehaviorSubject.create<GetDamageClaimsRequestParamsDTO>()
 
-    override fun initPresenter() {
+    fun initPresenter() {
         Timber.d("ActiveMalfunctionsListFragmentPresenterImpl.initPresenter()")
 
         mCompositeDisposable += locationSubject
@@ -37,13 +37,12 @@ class ActiveMalfunctionsListFragmentPresenterImpl
                 })
     }
 
-    override fun destroyPresenter() {
+    override fun onCleared() {
+        super.onCleared()
         mCompositeDisposable.clear()
-
-        Timber.d("ActiveMalfunctionsListFragmentPresenterImpl.destroyPresenter()")
     }
 
-    override fun getDamageClaimsWithinRadius(latLng: LatLng, radius: Double, page: Long) {
+    fun getDamageClaimsWithinRadius(latLng: LatLng, radius: Double, page: Long) {
         locationSubject.onNext(GetDamageClaimsRequestParamsDTO(latLng, radius, page))
     }
 
@@ -74,7 +73,7 @@ class ActiveMalfunctionsListFragmentPresenterImpl
     private fun handleResponse(responseDTO: DamageClaimResponseWithDistanceDTO) {
         Timber.d("items size = ${responseDTO.damageClaims.size}")
 
-        callbacks.onDamageClaimsPageReceived(responseDTO.damageClaims)
+        //callbacks.onDamageClaimsPageReceived(responseDTO.damageClaims)
     }
 
     private fun handleError(error: Throwable) {

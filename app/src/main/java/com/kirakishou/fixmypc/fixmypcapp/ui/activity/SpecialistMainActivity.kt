@@ -10,20 +10,22 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragmentedActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerSpecialistMainActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.helper.annotation.RequiresViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.activity.SpecialistMainActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.SpecialistMainActivityView
+import com.kirakishou.fixmypc.fixmypcapp.mvp.viewmodel.SpecialistMainActivityPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.ActiveDamageClaimsListFragment
 import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
-class SpecialistMainActivity : BaseFragmentedActivity(), SpecialistMainActivityView {
+@RequiresViewModel(SpecialistMainActivityPresenterImpl::class)
+class SpecialistMainActivity : BaseFragmentedActivity<SpecialistMainActivityPresenterImpl>(), SpecialistMainActivityView {
 
     @Inject
     lateinit var mRefWatcher: RefWatcher
 
-    @Inject
-    lateinit var mPresenter: SpecialistMainActivityPresenterImpl
+    /*@Inject
+    lateinit var mPresenter: SpecialistMainActivityPresenterImpl*/
 
     override fun getContentView() = R.layout.activity_specialist_main
     override fun loadStartAnimations() = AnimatorSet()
@@ -37,13 +39,13 @@ class SpecialistMainActivity : BaseFragmentedActivity(), SpecialistMainActivityV
     }
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
-        mPresenter.initPresenter()
+        //mViewModel.initPresenter()
 
         pushFragment(Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST)
     }
 
     override fun onActivityDestroy() {
-        mPresenter.destroyPresenter()
+        //mPresenter.destroyPresenter()
 
         mRefWatcher.watch(this)
     }

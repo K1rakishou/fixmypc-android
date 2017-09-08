@@ -14,6 +14,7 @@ import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerActiveDamageClaimsListFragmentComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ActiveDamageClaimsListFragmentModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.EndlessRecyclerOnScrollListener
+import com.kirakishou.fixmypc.fixmypcapp.helper.annotation.RequiresViewModel
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.MyCurrentLocationPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
@@ -23,8 +24,8 @@ import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.dto.DamageClaimsWithDistanceDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.DamageClaim
-import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.fragment.ActiveMalfunctionsListFragmentPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.fragment.ActiveDamageClaimsListFragmentView
+import com.kirakishou.fixmypc.fixmypcapp.mvp.viewmodel.ActiveMalfunctionsListFragmentPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.DamageClaimListAdapter
 import io.nlopez.smartlocation.SmartLocation
 import io.nlopez.smartlocation.location.config.LocationParams
@@ -34,15 +35,17 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class ActiveDamageClaimsListFragment : BaseFragment(), ActiveDamageClaimsListFragmentView {
+@RequiresViewModel(ActiveMalfunctionsListFragmentPresenterImpl::class)
+class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragmentPresenterImpl>(), ActiveDamageClaimsListFragmentView {
 
     @BindView(R.id.damage_claim_list)
     lateinit var mDamageClaimList: RecyclerView
 
-    @Inject
-    lateinit var mPresenter: ActiveMalfunctionsListFragmentPresenterImpl
+    /*@Inject
+    lateinit var mPresenter: ActiveMalfunctionsListFragmentPresenterImpl*/
 
     @Inject
     lateinit var mAppSharedPreference: AppSharedPreference
@@ -52,13 +55,15 @@ class ActiveDamageClaimsListFragment : BaseFragment(), ActiveDamageClaimsListFra
 
     private lateinit var mAdapter: DamageClaimListAdapter<DamageClaimsWithDistanceDTO>
     private lateinit var currentLocationPref: MyCurrentLocationPreference
+    private lateinit var mEndlessScrollListener: EndlessRecyclerOnScrollListener
 
     override fun getContentView() = R.layout.fragment_active_malfunctions_list
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
     override fun onFragmentReady() {
-        mPresenter.initPresenter()
+        //mPresenter.initPresenter()
+        //mViewModel.initPresenter()
 
         mAdapter = DamageClaimListAdapter(activity)
         mAdapter.init()
@@ -67,6 +72,11 @@ class ActiveDamageClaimsListFragment : BaseFragment(), ActiveDamageClaimsListFra
         initRecycler()
         loadCurrentLocationPrefs()
         getCurrentLocationGps()
+        recyclerStartLoadingItems()
+    }
+
+    private fun recyclerStartLoadingItems() {
+        mAdapter.add(AdapterItem(DamageClaimsWithDistanceDTO(1.0, DamageClaim()), AdapterItemType.VIEW_ITEM))
     }
 
     private fun getCurrentLocationGps() {
@@ -79,18 +89,9 @@ class ActiveDamageClaimsListFragment : BaseFragment(), ActiveDamageClaimsListFra
                 }
     }
 
-    private fun initRx() {
-        mCompositeDisposable += Observables.combineLatest(mLoadMoreSubject, mLocationSubject, { loadMore, location -> Pair(loadMore, location)})
-                .subscribeOn(Schedulers.io())
-                //.debounce(2, TimeUnit.SECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ (page, latlon) ->
-                    Timber.e("Fetching next damage claims page: $page at (lat: ${latlon.latitude}, lon: ${latlon.longitude})")
-                    saveCurrentLocation(latlon)
-                    getDamageClaims(page, latlon)
-                }, { error ->
-                    Timber.e(error)
-                })
+    private fun loadCurrentLocationPrefs() {
+        currentLocationPref = mAppSharedPreference.prepare()
+        currentLocationPref.load()
     }
 
     private fun initRecycler() {
@@ -108,56 +109,65 @@ class ActiveDamageClaimsListFragment : BaseFragment(), ActiveDamageClaimsListFra
             }
         }
 
-        val endlessScrollListener = object : EndlessRecyclerOnScrollListener(layoutManager, mLoadMoreSubject) {
-        }
+        mEndlessScrollListener = EndlessRecyclerOnScrollListener(layoutManager, mLoadMoreSubject)
 
         mDamageClaimList.layoutManager = layoutManager
-        mDamageClaimList.addOnScrollListener(endlessScrollListener)
+        mDamageClaimList.addOnScrollListener(mEndlessScrollListener)
         mDamageClaimList.adapter = mAdapter
         mDamageClaimList.setHasFixedSize(true)
-
-        mAdapter.add(AdapterItem(DamageClaimsWithDistanceDTO(1.0, DamageClaim()), AdapterItemType.VIEW_ITEM))
     }
 
-    private fun loadCurrentLocationPrefs() {
-        currentLocationPref = mAppSharedPreference.prepare()
-        currentLocationPref.load()
+    private fun initRx() {
+        mCompositeDisposable += Observables.combineLatest(mLoadMoreSubject, mLocationSubject, { loadMore, location -> Pair(loadMore, location)})
+                .subscribeOn(Schedulers.io())
+                .delay(1, TimeUnit.SECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ (page, latlon) ->
+                    Timber.e("Fetching next damage claims page: $page at (lat: ${latlon.latitude}, lon: ${latlon.longitude})")
+                    saveCurrentLocation(latlon)
+                    getDamageClaims(page, latlon)
+                }, { error ->
+                    Timber.e(error)
+                })
     }
 
-    private fun saveCurrentLocation(latlon: LatLng) {
-        currentLocationPref.mLocation = Fickle.of(latlon)
+    private fun saveCurrentLocation(location: LatLng) {
+        currentLocationPref.mLocation = Fickle.of(location)
         currentLocationPref.save()
     }
 
-    private fun getDamageClaims(page: Long, latlon: LatLng) {
-        mPresenter.getDamageClaimsWithinRadius(latlon, 75.0, page)
+    private fun getDamageClaims(page: Long, location: LatLng) {
+        //mPresenter.getDamageClaimsWithinRadius(location, 75.0, page)
+        //mViewModel.getDamageClaimsWithinRadius(location, 75.0, page)
 
         /*if (!currentLocationPref.exists()) {
             SmartLocation.with(activity)
                     .location()
                     .oneFix()
                     .start {
-                        val latlon = LatLng(it.latitude, it.longitude)
-                        saveCurrentLocation(latlon)
+                        val location = LatLng(it.latitude, it.longitude)
+                        saveCurrentLocation(location)
 
-                        //mPresenter.getDamageClaimsWithinRadius(latlon, 75.0, page)
+                        //mPresenter.getDamageClaimsWithinRadius(location, 75.0, page)
 
-                        mLocationSubject.onNext(latlon)
+                        mLocationSubject.onNext(location)
                     }
         } else {
-            //val latlon = currentLocationPref.mLocation.get()
-            //mPresenter.getDamageClaimsWithinRadius(latlon, 75.0, page)
+            //val location = currentLocationPref.mLocation.get()
+            //mPresenter.getDamageClaimsWithinRadius(location, 75.0, page)
         }*/
     }
 
     override fun onDamageClaimsPageReceived(damageClaimList: ArrayList<DamageClaimsWithDistanceDTO>) {
+        if (damageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
+            mEndlessScrollListener.reachedEnd()
+        }
+
         val adapterDamageClaims = damageClaimList.map { AdapterItem(it, AdapterItemType.VIEW_ITEM) }
         mAdapter.addAll(adapterDamageClaims)
     }
 
     override fun onFragmentStop() {
-        mPresenter.destroyPresenter()
-
         SmartLocation.with(context)
                 .location()
                 .stop()

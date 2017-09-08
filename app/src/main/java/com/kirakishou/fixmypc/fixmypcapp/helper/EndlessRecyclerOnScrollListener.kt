@@ -7,7 +7,7 @@ import io.reactivex.subjects.BehaviorSubject
 /**
  * Created by kirakishou on 9/7/2017.
  */
-abstract class EndlessRecyclerOnScrollListener(
+class EndlessRecyclerOnScrollListener(
         private val mGridLayoutManager: GridLayoutManager,
         private val mLoadMoreSubject: BehaviorSubject<Long>) : RecyclerView.OnScrollListener() {
 
@@ -18,6 +18,7 @@ abstract class EndlessRecyclerOnScrollListener(
     private var visibleItemCount: Int = 0
     private var totalItemCount: Int = 0
     private var currentPage = 0L
+    private var isEndReached = false
 
     init {
         visibleItemCount = visibleThreshold * mGridLayoutManager.spanCount
@@ -25,6 +26,10 @@ abstract class EndlessRecyclerOnScrollListener(
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
+
+        if (isEndReached) {
+            return
+        }
 
         visibleItemCount = recyclerView.childCount
         totalItemCount = mGridLayoutManager.itemCount
@@ -50,5 +55,10 @@ abstract class EndlessRecyclerOnScrollListener(
         totalItemCount = 0
         currentPage = 0L
         previousTotal = 0
+        isEndReached = false
+    }
+
+    fun reachedEnd() {
+        isEndReached = true
     }
 }

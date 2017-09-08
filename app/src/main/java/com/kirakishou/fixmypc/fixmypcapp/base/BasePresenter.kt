@@ -5,5 +5,4 @@ package com.kirakishou.fixmypc.fixmypcapp.base
  */
 abstract class BasePresenter {
     abstract fun initPresenter()
-    abstract fun destroyPresenter()
 }

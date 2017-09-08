@@ -7,15 +7,15 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerMyDamageClaimsFragmentComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.MyDamageClaimsFragmentModule
-import com.kirakishou.fixmypc.fixmypcapp.mvp.presenter.fragment.MyMalfunctionRequestsFragmentPresenterImpl
+import com.kirakishou.fixmypc.fixmypcapp.helper.annotation.RequiresViewModel
+import com.kirakishou.fixmypc.fixmypcapp.mvp.viewmodel.MyMalfunctionRequestsFragmentPresenterImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvp.view.fragment.MyDamageClaimsFragmentView
-import javax.inject.Inject
 
+@RequiresViewModel(MyMalfunctionRequestsFragmentPresenterImpl::class)
+class MyMalfunctionRequestsFragment : BaseFragment<MyMalfunctionRequestsFragmentPresenterImpl>(), MyDamageClaimsFragmentView {
 
-class MyMalfunctionRequestsFragment : BaseFragment(), MyDamageClaimsFragmentView {
-
-    @Inject
-    lateinit var mPresenter: MyMalfunctionRequestsFragmentPresenterImpl
+    /*@Inject
+    lateinit var mPresenter: MyMalfunctionRequestsFragmentPresenterImpl*/
 
     override fun getContentView() = R.layout.fragment_my_damage_claims
     override fun loadStartAnimations() = AnimatorSet()

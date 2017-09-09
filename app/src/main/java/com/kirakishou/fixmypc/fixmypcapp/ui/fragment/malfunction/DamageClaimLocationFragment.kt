@@ -2,6 +2,7 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction
 
 
 import android.animation.AnimatorSet
+import android.arch.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
@@ -16,7 +17,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.jakewharton.rxbinding2.view.RxView
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewMalfunctionActivityFragmentCallback
 import io.nlopez.smartlocation.SmartLocation
 import io.nlopez.smartlocation.location.config.LocationParams
@@ -38,6 +39,10 @@ class DamageClaimLocationFragment : BaseFragment<Nothing>(), OnMapReadyCallback 
     lateinit var buttonZoomOut: FloatingActionButton
 
     private lateinit var googleMap: GoogleMap
+
+    override fun getViewModelFactory(): ViewModelProvider.Factory {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     override fun getContentView() = R.layout.fragment_damage_claim_coordinates
     override fun loadStartAnimations() = AnimatorSet()

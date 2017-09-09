@@ -3,8 +3,8 @@ package com.kirakishou.fixmypc.fixmypcapp.helper.preference
 import android.content.SharedPreferences
 import com.google.android.gms.maps.model.LatLng
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.extension.edit
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import timber.log.Timber
 
 
@@ -20,6 +20,11 @@ class MyCurrentLocationPreference(private val mSharedPreferences: SharedPreferen
     private val mLongitudeSharedPrefKey = "${Constant.SHARED_PREFS_PREFIX}_${mThisPrefPrefix}_longitude"
 
     override fun save() {
+        if (!mLocation.isPresent()) {
+            Timber.w("Attempt to save not existing preference")
+            return
+        }
+
         mSharedPreferences.edit {
             //sharedprefs can't save a double (why???) so we have to convert them and save them as strings
             it.putString(mLatitudeSharedPrefKey, mLocation.get().latitude.toString())

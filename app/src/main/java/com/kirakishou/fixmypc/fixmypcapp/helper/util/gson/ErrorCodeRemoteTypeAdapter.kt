@@ -3,8 +3,8 @@ package com.kirakishou.fixmypc.fixmypcapp.helper.util.gson
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 
 /**
  * Created by kirakishou on 7/27/2017.

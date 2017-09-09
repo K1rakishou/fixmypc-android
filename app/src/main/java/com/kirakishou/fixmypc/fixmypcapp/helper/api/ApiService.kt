@@ -1,10 +1,10 @@
 package com.kirakishou.fixmypc.fixmypcapp.helper.api
 
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.LoginRequest
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.request.MalfunctionRequest
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.DamageClaimsResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.LoginResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.MalfunctionResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.LoginRequest
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.MalfunctionRequest
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.LoginResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.MalfunctionResponse
 import io.reactivex.Single
 import okhttp3.MultipartBody
 import retrofit2.Response

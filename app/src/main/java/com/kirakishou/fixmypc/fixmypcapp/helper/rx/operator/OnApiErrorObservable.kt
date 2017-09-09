@@ -1,8 +1,8 @@
 package com.kirakishou.fixmypc.fixmypcapp.helper.rx.operator
 
 import com.google.gson.Gson
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.response.StatusResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.ApiException
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
 import io.reactivex.ObservableOperator
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable

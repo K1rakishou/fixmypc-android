@@ -2,8 +2,8 @@ package com.kirakishou.fixmypc.fixmypcapp.di.module
 
 import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerActivity
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
-import com.kirakishou.fixmypc.fixmypcapp.mvp.viewmodel.LoadingActivityViewModelImpl
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.LoadingActivityViewModelFactory
 import dagger.Module
 import dagger.Provides
 
@@ -16,7 +16,8 @@ class LoadingActivityModule {
 
     @PerActivity
     @Provides
-    fun provideLoadingActivityViewModel(mApiClient: ApiClient, mAppSettings: AppSettings): LoadingActivityViewModelImpl {
-        return LoadingActivityViewModelImpl(mApiClient, mAppSettings)
+    fun provideViewModelFactory(mApiClient: ApiClient, mAppSettings: AppSettings): LoadingActivityViewModelFactory {
+        return LoadingActivityViewModelFactory(mApiClient, mAppSettings)
     }
+
 }

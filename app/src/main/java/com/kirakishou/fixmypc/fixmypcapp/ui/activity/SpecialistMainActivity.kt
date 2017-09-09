@@ -1,6 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.ui.activity
 
 import android.animation.AnimatorSet
+import android.arch.lifecycle.ViewModelProvider
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -10,23 +11,22 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragmentedActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerSpecialistMainActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
-import com.kirakishou.fixmypc.fixmypcapp.helper.annotation.RequiresViewModel
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.SpecialistMainActivityView
-import com.kirakishou.fixmypc.fixmypcapp.mvp.viewmodel.SpecialistMainActivityPresenterImpl
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityViewModel
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.ActiveDamageClaimsListFragment
 import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
-@RequiresViewModel(SpecialistMainActivityPresenterImpl::class)
-class SpecialistMainActivity : BaseFragmentedActivity<SpecialistMainActivityPresenterImpl>(), SpecialistMainActivityView {
+class SpecialistMainActivity : BaseFragmentedActivity<SpecialistMainActivityViewModel>() {
 
     @Inject
     lateinit var mRefWatcher: RefWatcher
 
-    /*@Inject
-    lateinit var mPresenter: SpecialistMainActivityPresenterImpl*/
+    @Inject
+    lateinit var mViewModelFactory: SpecialistMainActivityViewModelFactory
 
+    override fun getViewModelFactory(): ViewModelProvider.Factory = mViewModelFactory
     override fun getContentView() = R.layout.activity_specialist_main
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
@@ -59,15 +59,15 @@ class SpecialistMainActivity : BaseFragmentedActivity<SpecialistMainActivityPres
     override fun resolveDaggerDependency() {
         DaggerSpecialistMainActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
-                .specialistMainActivityModule(SpecialistMainActivityModule(this))
+                .specialistMainActivityModule(SpecialistMainActivityModule())
                 .build()
                 .inject(this)
     }
 
-    override fun onShowToast(message: String) {
+    fun onShowToast(message: String) {
         showToast(message, Toast.LENGTH_LONG)
     }
 
-    override fun onUnknownError(error: Throwable) {
+    fun onUnknownError(error: Throwable) {
     }
 }

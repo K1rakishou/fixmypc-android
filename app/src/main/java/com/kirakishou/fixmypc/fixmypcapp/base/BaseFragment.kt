@@ -3,26 +3,24 @@ package com.kirakishou.fixmypc.fixmypcapp.base
 import android.animation.AnimatorSet
 import android.arch.lifecycle.LifecycleFragment
 import android.arch.lifecycle.ViewModel
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import butterknife.ButterKnife
 import butterknife.Unbinder
-import com.kirakishou.fixmypc.fixmypcapp.helper.MyViewModelProvider
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.extension.myAddListener
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.LoadingActivityViewModel
 import io.reactivex.disposables.CompositeDisposable
-import javax.inject.Inject
 
 /**
  * Created by kirakishou on 7/30/2017.
  */
 abstract class BaseFragment<T : ViewModel> : LifecycleFragment() {
-
-    @Inject
-    protected lateinit var mViewModelProvider: MyViewModelProvider
 
     private var mUnBinder: Fickle<Unbinder> = Fickle.empty()
     protected var mViewModel: Fickle<T> = Fickle.empty()
@@ -32,25 +30,18 @@ abstract class BaseFragment<T : ViewModel> : LifecycleFragment() {
         return mViewModel.get()
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        resolveDaggerDependency()
-    }
-
+    @Suppress("UNCHECKED_CAST")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        resolveDaggerDependency()
+
+        val viewModelFactory = getViewModelFactory()
+        mViewModel = Fickle.of(ViewModelProviders.of(this, viewModelFactory).get(LoadingActivityViewModel::class.java) as T)
+
         val viewId = getContentView()
         val root = inflater.inflate(viewId, container, false)
         mUnBinder = Fickle.of(ButterKnife.bind(this, root))
 
         return root
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        mViewModel = Fickle.of(mViewModelProvider.provideViewModel(this))
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
@@ -102,6 +93,7 @@ abstract class BaseFragment<T : ViewModel> : LifecycleFragment() {
         set.start()
     }
 
+    protected abstract fun getViewModelFactory(): ViewModelProvider.Factory
     protected abstract fun getContentView(): Int
     protected abstract fun loadStartAnimations(): AnimatorSet
     protected abstract fun loadExitAnimations(): AnimatorSet

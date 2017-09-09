@@ -1,6 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction
 
 import android.animation.AnimatorSet
+import android.arch.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.AppCompatButton
@@ -8,8 +9,8 @@ import butterknife.BindView
 import com.jakewharton.rxbinding2.view.RxView
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.DamageClaimCategory
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.DamageClaimCategory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewMalfunctionActivityFragmentCallback
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
@@ -25,6 +26,10 @@ class DamageClaimCategoryFragment : BaseFragment<Nothing>() {
 
     @BindView(R.id.phone_category_button)
     lateinit var mPhoneCategoryButton: AppCompatButton
+
+    override fun getViewModelFactory(): ViewModelProvider.Factory {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     override fun getContentView(): Int = R.layout.fragment_damage_claim_category
     override fun loadStartAnimations() = AnimatorSet()

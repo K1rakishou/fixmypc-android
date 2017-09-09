@@ -1,6 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.ui.activity
 
 import android.animation.AnimatorSet
+import android.arch.lifecycle.ViewModelProvider
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -9,25 +10,24 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerLoadingActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.LoadingActivityModule
-import com.kirakishou.fixmypc.fixmypcapp.helper.annotation.RequiresViewModel
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AccountInfoPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.dto.LoginPasswordDTO
-import com.kirakishou.fixmypc.fixmypcapp.mvp.viewmodel.LoadingActivityViewModelImpl
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AccountType
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.LoginPasswordDTO
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.LoadingActivityViewModel
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.LoadingActivityViewModelFactory
 import com.squareup.leakcanary.RefWatcher
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
 import javax.inject.Inject
 
-@RequiresViewModel(LoadingActivityViewModelImpl::class)
-class LoadingActivity : BaseActivity<LoadingActivityViewModelImpl>() {
+class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
 
-    /*@Inject
-    lateinit var mPresenter: LoadingActivityPresenterImpl*/
+    @Inject
+    lateinit var mViewModelFactory: LoadingActivityViewModelFactory
 
     @Inject
     lateinit var mAppSharedPreference: AppSharedPreference
@@ -40,6 +40,7 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModelImpl>() {
 
     private val accountInfoPrefs by lazy { mAppSharedPreference.prepare<AccountInfoPreference>() }
 
+    override fun getViewModelFactory(): ViewModelProvider.Factory = mViewModelFactory
     override fun getContentView(): Int = R.layout.activity_loading
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
@@ -64,6 +65,16 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModelImpl>() {
         mCompositeDisposable += getViewModel().mErrors.onUnknownError()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUnknownError(it) })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        accountInfoPrefs.load()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        accountInfoPrefs.save()
     }
 
     override fun onViewReady() {

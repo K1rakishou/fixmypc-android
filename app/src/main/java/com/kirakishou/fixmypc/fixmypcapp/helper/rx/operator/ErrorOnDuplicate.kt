@@ -1,6 +1,6 @@
 package com.kirakishou.fixmypc.fixmypcapp.helper.rx.operator
 
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.exceptions.DuplicateObservableException
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.DuplicateObservableException
 import io.reactivex.ObservableOperator
 import io.reactivex.Observer
 import io.reactivex.internal.functions.ObjectHelper

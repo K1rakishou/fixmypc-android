@@ -10,8 +10,8 @@ import butterknife.ButterKnife
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseAdapter
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.Utils
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AdapterItemType
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.dto.DamageClaimsWithDistanceDTO
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItemType
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.DamageClaimsWithDistanceDTO
 
 /**
  * Created by kirakishou on 9/3/2017.

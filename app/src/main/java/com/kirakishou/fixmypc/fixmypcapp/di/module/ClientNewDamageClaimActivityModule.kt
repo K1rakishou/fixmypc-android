@@ -1,7 +1,8 @@
 package com.kirakishou.fixmypc.fixmypcapp.di.module
 
 import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerActivity
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.ClientNewDamageClaimActivityView
+import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
 import dagger.Module
 import dagger.Provides
 
@@ -10,11 +11,11 @@ import dagger.Provides
  */
 
 @Module
-class ClientNewDamageClaimActivityModule(val mView: ClientNewDamageClaimActivityView) {
+class ClientNewDamageClaimActivityModule {
 
     @PerActivity
     @Provides
-    fun provideView(): ClientNewDamageClaimActivityView {
-        return mView
+    fun provideViewModelFactory(mApiClient: ApiClient): ClientNewMalfunctionActivityViewModelFactory {
+        return ClientNewMalfunctionActivityViewModelFactory(mApiClient)
     }
 }

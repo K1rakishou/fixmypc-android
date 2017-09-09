@@ -4,7 +4,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 
 /**
  * Created by kirakishou on 8/29/2017.

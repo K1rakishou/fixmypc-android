@@ -4,12 +4,11 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ApplicationModule
-import com.kirakishou.fixmypc.fixmypcapp.helper.MyViewModelProvider
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiService
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.squareup.leakcanary.RefWatcher
 import dagger.Component
 import retrofit2.Retrofit
@@ -32,5 +31,4 @@ interface ApplicationComponent {
     fun exposeAppSettings(): AppSettings
     fun exposePermissionManager(): PermissionManager
     fun exposeRefWatcher(): RefWatcher
-    fun exposeMyViewModelProvider(): MyViewModelProvider
 }

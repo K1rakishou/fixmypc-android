@@ -1,6 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.ui.activity
 
 import android.animation.AnimatorSet
+import android.arch.lifecycle.ViewModelProvider
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -11,31 +12,27 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragmentedActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerChooseCategoryActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewDamageClaimActivityModule
-import com.kirakishou.fixmypc.fixmypcapp.helper.annotation.RequiresViewModel
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.DamageClaimCategory
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.DamageClaimInfo
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.ClientNewDamageClaimActivityView
-import com.kirakishou.fixmypc.fixmypcapp.mvp.viewmodel.ClientNewMalfunctionActivityPresenterImpl
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.DamageClaimCategory
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimInfo
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewMalfunctionActivityViewModel
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.dialog.ProgressDialog
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction.*
 import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
-
-@RequiresViewModel(ClientNewMalfunctionActivityPresenterImpl::class)
-class ClientNewDamageClaimActivity : BaseFragmentedActivity<ClientNewMalfunctionActivityPresenterImpl>(),
-        ClientNewDamageClaimActivityView, ClientNewMalfunctionActivityFragmentCallback {
-
-    /*@Inject
-    lateinit var mActivityPresenter: ClientNewMalfunctionActivityPresenterImpl*/
+class ClientNewDamageClaimActivity : BaseFragmentedActivity<ClientNewMalfunctionActivityViewModel>(), ClientNewMalfunctionActivityFragmentCallback {
 
     @Inject
     lateinit var mPermissionManager: PermissionManager
 
     @Inject
     lateinit var mRefWatcher: RefWatcher
+
+    @Inject
+    lateinit var mViewModelFactory: ClientNewMalfunctionActivityViewModelFactory
 
     private val malfunctionRequestInfo = DamageClaimInfo()
     private lateinit var progressDialog: ProgressDialog
@@ -50,6 +47,7 @@ class ClientNewDamageClaimActivity : BaseFragmentedActivity<ClientNewMalfunction
         }
     }
 
+    override fun getViewModelFactory(): ViewModelProvider.Factory = mViewModelFactory
     override fun getContentView() = R.layout.activity_client_new_malfunction
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
@@ -123,7 +121,7 @@ class ClientNewDamageClaimActivity : BaseFragmentedActivity<ClientNewMalfunction
     override fun resolveDaggerDependency() {
         DaggerChooseCategoryActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
-                .clientNewDamageClaimActivityModule(ClientNewDamageClaimActivityModule(this))
+                .clientNewDamageClaimActivityModule(ClientNewDamageClaimActivityModule())
                 .build()
                 .inject(this)
     }
@@ -132,28 +130,28 @@ class ClientNewDamageClaimActivity : BaseFragmentedActivity<ClientNewMalfunction
         showToast(message, Toast.LENGTH_SHORT)
     }
 
-    override fun onInitProgressDialog(filesCount: Int) {
+    fun onInitProgressDialog(filesCount: Int) {
         progressDialog.init(filesCount)
         progressDialog.show()
     }
 
-    override fun onProgressDialogUpdate(progress: Int) {
+    fun onProgressDialogUpdate(progress: Int) {
         progressDialog.setProgress(progress)
     }
 
-    override fun onFileUploaded() {
+    fun onFileUploaded() {
         progressDialog.onFileUploaded()
     }
 
-    override fun onAllFilesUploaded() {
+    fun onAllFilesUploaded() {
         progressDialog.hide()
     }
 
-    override fun onResetProgressDialog() {
+    fun onResetProgressDialog() {
         progressDialog.reset()
     }
 
-    override fun onFileUploadingError(e: Throwable) {
+    fun onFileUploadingError(e: Throwable) {
         progressDialog.hide()
 
         runOnUiThread {
@@ -165,44 +163,44 @@ class ClientNewDamageClaimActivity : BaseFragmentedActivity<ClientNewMalfunction
         }
     }
 
-    override fun onMalfunctionRequestSuccessfullyCreated() {
+    fun onMalfunctionRequestSuccessfullyCreated() {
         showToast("Заявка успешно создана", Toast.LENGTH_LONG)
         //runActivity(ClientMainActivity::class.java, true)
     }
 
-    override fun onFileSizeExceeded() {
+    fun onFileSizeExceeded() {
         showToast("Размер одного из выбранных изображений превышает лимит", Toast.LENGTH_LONG)
     }
 
-    override fun onRequestSizeExceeded() {
+    fun onRequestSizeExceeded() {
         showToast("Размер двух и более изображений превышает лимит", Toast.LENGTH_LONG)
     }
 
-    override fun onAllFileServersAreNotWorking() {
+    fun onAllFileServersAreNotWorking() {
         showToast("Не удалось обработать запрос. Сервера не работают. Попробуйте повторить запрос позже.", Toast.LENGTH_LONG)
     }
 
-    override fun onServerDatabaseError() {
+    fun onServerDatabaseError() {
         showToast("Ошибка БД на сервере. Попробуйте повторить запрос позже.", Toast.LENGTH_LONG)
     }
 
-    override fun onCouldNotConnectToServer(error: Throwable) {
+    fun onCouldNotConnectToServer(error: Throwable) {
         showToast("Не удалось подключиться к серверу", Toast.LENGTH_LONG)
     }
 
-    override fun onPhotosAreNotSet() {
+    fun onPhotosAreNotSet() {
         showToast("Не выбраны фото поломки", Toast.LENGTH_LONG)
     }
 
-    override fun onSelectedPhotoDoesNotExists() {
+    fun onSelectedPhotoDoesNotExists() {
         showToast("Не удалось прочитать фото с диска (оно было удалено или перемещено)", Toast.LENGTH_LONG)
     }
 
-    override fun onResponseBodyIsEmpty() {
+    fun onResponseBodyIsEmpty() {
         showErrorMessageDialog("Response body is empty!", true)
     }
 
-    override fun onFileAlreadySelected() {
+    fun onFileAlreadySelected() {
         showToast("Нельзя отправить два одинаковых файла", Toast.LENGTH_LONG)
     }
 

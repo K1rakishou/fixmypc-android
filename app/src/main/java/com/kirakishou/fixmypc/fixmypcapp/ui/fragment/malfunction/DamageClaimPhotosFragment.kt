@@ -3,6 +3,7 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction
 
 import android.Manifest
 import android.animation.AnimatorSet
+import android.arch.lifecycle.ViewModelProvider
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -15,10 +16,10 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AdapterItem
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AdapterItemType
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.DamagePhoto
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItem
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItemType
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamagePhoto
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewMalfunctionActivityFragmentCallback
 import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.DamageClaimPhotosAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -40,6 +41,10 @@ class DamageClaimPhotosFragment : BaseFragment<Nothing>(),
     lateinit var mButtonSendApplication: AppCompatButton
 
     lateinit var mPhotoAdapter: DamageClaimPhotosAdapter
+
+    override fun getViewModelFactory(): ViewModelProvider.Factory {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     override fun getContentView() = R.layout.fragment_damage_claim_photos
     override fun loadStartAnimations() = AnimatorSet()

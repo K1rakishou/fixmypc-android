@@ -1,7 +1,8 @@
 package com.kirakishou.fixmypc.fixmypcapp.di.module
 
 import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerFragment
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.fragment.ActiveDamageClaimsListFragmentView
+import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ActiveMalfunctionsListFragmentViewModelFactory
 import dagger.Module
 import dagger.Provides
 
@@ -10,11 +11,11 @@ import dagger.Provides
  */
 
 @Module
-class ActiveDamageClaimsListFragmentModule(val mView: ActiveDamageClaimsListFragmentView) {
+class ActiveDamageClaimsListFragmentModule {
 
     @PerFragment
     @Provides
-    fun provideView(): ActiveDamageClaimsListFragmentView {
-        return mView
+    fun provideViewModelFactory(mApiClient: ApiClient): ActiveMalfunctionsListFragmentViewModelFactory {
+        return ActiveMalfunctionsListFragmentViewModelFactory(mApiClient)
     }
 }

@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.kirakishou.fixmypc.fixmypcapp.helper.MyViewModelProvider
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClientImpl
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiService
@@ -15,10 +14,10 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.gson.AccountTypeTypeAdapter
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.gson.ErrorCodeRemoteTypeAdapter
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.gson.LatLngTypeAdapter
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AccountType
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AppSettings
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.ErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AccountType
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher
 import dagger.Module
@@ -146,18 +145,6 @@ class ApplicationModule(private val mApplication: Application,
     @Provides
     fun provideRefWatcher(application: Application): RefWatcher {
         return LeakCanary.install(application)
-    }
-
-    @Singleton
-    @Provides
-    fun provideViewModelFactory(): ViewModelFactory {
-        return ViewModelFactory()
-    }
-
-    @Singleton
-    @Provides
-    fun provideViewModelProvider(factory: ViewModelFactory): MyViewModelProvider {
-        return MyViewModelProvider(factory)
     }
 }
 

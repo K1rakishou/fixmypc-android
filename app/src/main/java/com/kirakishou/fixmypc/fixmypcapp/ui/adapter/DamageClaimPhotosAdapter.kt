@@ -13,10 +13,10 @@ import butterknife.ButterKnife
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.kirakishou.fixmypc.fixmypcapp.R
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AdapterItem
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AdapterItemType
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.DamagePhoto
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItem
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItemType
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamagePhoto
 import timber.log.Timber
 import java.io.File
 

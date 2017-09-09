@@ -2,7 +2,7 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.activity
 
 import com.google.android.gms.maps.model.LatLng
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivityFragmentCallback
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.DamageClaimCategory
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.DamageClaimCategory
 
 /**
  * Created by kirakishou on 8/29/2017.

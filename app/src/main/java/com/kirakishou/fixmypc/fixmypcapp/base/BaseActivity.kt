@@ -3,6 +3,8 @@ package com.kirakishou.fixmypc.fixmypcapp.base
 import android.animation.AnimatorSet
 import android.arch.lifecycle.LifecycleActivity
 import android.arch.lifecycle.ViewModel
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -10,21 +12,17 @@ import butterknife.ButterKnife
 import butterknife.Unbinder
 import com.afollestad.materialdialogs.MaterialDialog
 import com.kirakishou.fixmypc.fixmypcapp.R
-import com.kirakishou.fixmypc.fixmypcapp.helper.MyViewModelProvider
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.extension.myAddListener
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.LoadingActivityViewModel
 import io.reactivex.disposables.CompositeDisposable
-import javax.inject.Inject
 
 
 /**
  * Created by kirakishou on 7/20/2017.
  */
 abstract class BaseActivity<out T: ViewModel> : LifecycleActivity() {
-
-    @Inject
-    protected lateinit var mViewModelProvider: MyViewModelProvider
 
     protected val mCompositeDisposable = CompositeDisposable()
     private var mViewModel: Fickle<T> = Fickle.empty()
@@ -52,11 +50,13 @@ abstract class BaseActivity<out T: ViewModel> : LifecycleActivity() {
         overridePendingTransitionExit()
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         resolveDaggerDependency()
 
-        mViewModel = Fickle.of(mViewModelProvider.provideViewModel(this))
+        val viewModelFactory = getViewModelFactory()
+        mViewModel = Fickle.of(ViewModelProviders.of(this, viewModelFactory).get(LoadingActivityViewModel::class.java) as T)
 
         setContentView(getContentView())
         mUnBinder = Fickle.of(ButterKnife.bind(this))
@@ -137,6 +137,7 @@ abstract class BaseActivity<out T: ViewModel> : LifecycleActivity() {
         }
     }
 
+    protected abstract fun getViewModelFactory(): ViewModelProvider.Factory
     protected abstract fun getContentView(): Int
     protected abstract fun loadStartAnimations(): AnimatorSet
     protected abstract fun loadExitAnimations(): AnimatorSet

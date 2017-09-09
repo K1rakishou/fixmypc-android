@@ -5,8 +5,8 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AdapterItem
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AdapterItemType
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItem
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItemType
 
 /**
  * Created by kirakishou on 9/7/2017.

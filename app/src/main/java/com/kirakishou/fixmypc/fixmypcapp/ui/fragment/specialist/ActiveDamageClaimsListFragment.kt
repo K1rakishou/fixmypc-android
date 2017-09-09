@@ -2,6 +2,7 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist
 
 
 import android.animation.AnimatorSet
+import android.arch.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
@@ -14,18 +15,17 @@ import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerActiveDamageClaimsListFragmentComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ActiveDamageClaimsListFragmentModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.EndlessRecyclerOnScrollListener
-import com.kirakishou.fixmypc.fixmypcapp.helper.annotation.RequiresViewModel
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.MyCurrentLocationPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AdapterItem
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.AdapterItemType
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.Fickle
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.dto.DamageClaimsWithDistanceDTO
-import com.kirakishou.fixmypc.fixmypcapp.mvp.model.entity.DamageClaim
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.fragment.ActiveDamageClaimsListFragmentView
-import com.kirakishou.fixmypc.fixmypcapp.mvp.viewmodel.ActiveMalfunctionsListFragmentPresenterImpl
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItem
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItemType
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.DamageClaimsWithDistanceDTO
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ActiveMalfunctionsListFragmentViewModel
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ActiveMalfunctionsListFragmentViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.DamageClaimListAdapter
 import io.nlopez.smartlocation.SmartLocation
 import io.nlopez.smartlocation.location.config.LocationParams
@@ -38,39 +38,46 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-@RequiresViewModel(ActiveMalfunctionsListFragmentPresenterImpl::class)
-class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragmentPresenterImpl>(), ActiveDamageClaimsListFragmentView {
+class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragmentViewModel>() {
 
     @BindView(R.id.damage_claim_list)
     lateinit var mDamageClaimList: RecyclerView
 
-    /*@Inject
-    lateinit var mPresenter: ActiveMalfunctionsListFragmentPresenterImpl*/
-
     @Inject
     lateinit var mAppSharedPreference: AppSharedPreference
+
+    @Inject
+    lateinit var mViewModelFactory: ActiveMalfunctionsListFragmentViewModelFactory
 
     private val mLoadMoreSubject = BehaviorSubject.create<Long>()
     private val mLocationSubject = BehaviorSubject.create<LatLng>()
 
+    private val currentLocationPref by lazy { mAppSharedPreference.prepare<MyCurrentLocationPreference>() }
+
     private lateinit var mAdapter: DamageClaimListAdapter<DamageClaimsWithDistanceDTO>
-    private lateinit var currentLocationPref: MyCurrentLocationPreference
     private lateinit var mEndlessScrollListener: EndlessRecyclerOnScrollListener
 
+    override fun getViewModelFactory(): ViewModelProvider.Factory = mViewModelFactory
     override fun getContentView() = R.layout.fragment_active_malfunctions_list
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
-    override fun onFragmentReady() {
-        //mPresenter.initPresenter()
-        //mViewModel.initPresenter()
+    override fun onResume() {
+        super.onResume()
+        currentLocationPref.load()
+    }
 
+    override fun onPause() {
+        super.onPause()
+        currentLocationPref.save()
+    }
+
+    override fun onFragmentReady() {
         mAdapter = DamageClaimListAdapter(activity)
         mAdapter.init()
 
         initRx()
         initRecycler()
-        loadCurrentLocationPrefs()
         getCurrentLocationGps()
         recyclerStartLoadingItems()
     }
@@ -87,11 +94,6 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
                 .start {
                     mLocationSubject.onNext(LatLng(it.latitude, it.longitude))
                 }
-    }
-
-    private fun loadCurrentLocationPrefs() {
-        currentLocationPref = mAppSharedPreference.prepare()
-        currentLocationPref.load()
     }
 
     private fun initRecycler() {
@@ -112,8 +114,8 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
         mEndlessScrollListener = EndlessRecyclerOnScrollListener(layoutManager, mLoadMoreSubject)
 
         mDamageClaimList.layoutManager = layoutManager
-        mDamageClaimList.addOnScrollListener(mEndlessScrollListener)
         mDamageClaimList.adapter = mAdapter
+        mDamageClaimList.addOnScrollListener(mEndlessScrollListener)
         mDamageClaimList.setHasFixedSize(true)
     }
 
@@ -129,6 +131,14 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
                 }, { error ->
                     Timber.e(error)
                 })
+
+        mCompositeDisposable += getViewModel().mOutputs.onDamageClaimsPageReceived()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onDamageClaimsPageReceived(it) })
+
+        mCompositeDisposable += getViewModel().mErrors.onUnknownError()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onUnknownError(it) })
     }
 
     private fun saveCurrentLocation(location: LatLng) {
@@ -137,8 +147,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
     }
 
     private fun getDamageClaims(page: Long, location: LatLng) {
-        //mPresenter.getDamageClaimsWithinRadius(location, 75.0, page)
-        //mViewModel.getDamageClaimsWithinRadius(location, 75.0, page)
+        getViewModel().mInputs.getDamageClaimsWithinRadius(location, 75.0, page)
 
         /*if (!currentLocationPref.exists()) {
             SmartLocation.with(activity)
@@ -158,7 +167,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
         }*/
     }
 
-    override fun onDamageClaimsPageReceived(damageClaimList: ArrayList<DamageClaimsWithDistanceDTO>) {
+    private fun onDamageClaimsPageReceived(damageClaimList: ArrayList<DamageClaimsWithDistanceDTO>) {
         if (damageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
             mEndlessScrollListener.reachedEnd()
         }
@@ -176,16 +185,16 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
     override fun resolveDaggerDependency() {
         DaggerActiveDamageClaimsListFragmentComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
-                .activeDamageClaimsListFragmentModule(ActiveDamageClaimsListFragmentModule(this))
+                .activeDamageClaimsListFragmentModule(ActiveDamageClaimsListFragmentModule())
                 .build()
                 .inject(this)
     }
 
-    override fun onShowToast(message: String) {
+    fun onShowToast(message: String) {
         showToast(message)
     }
 
-    override fun onUnknownError(throwable: Throwable) {
+    fun onUnknownError(throwable: Throwable) {
         unknownError(throwable)
     }
 

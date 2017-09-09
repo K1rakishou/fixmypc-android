@@ -2,6 +2,7 @@ package com.kirakishou.fixmypc.fixmypcapp.helper
 
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import io.reactivex.subjects.BehaviorSubject
 
 /**
@@ -13,16 +14,12 @@ class EndlessRecyclerOnScrollListener(
 
     private var previousTotal = 0
     private var loading = true
-    private val visibleThreshold = 5
-    private var firstVisibleItem: Int = 0
-    private var visibleItemCount: Int = 0
-    private var totalItemCount: Int = 0
+    private val visibleThreshold = Constant.MAX_DAMAGE_CLAIMS_PER_PAGE
+    private var firstVisibleItem = 0
+    private var visibleItemCount = visibleThreshold * mGridLayoutManager.spanCount
+    private var totalItemCount = 0
     private var currentPage = 0L
     private var isEndReached = false
-
-    init {
-        visibleItemCount = visibleThreshold * mGridLayoutManager.spanCount
-    }
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)

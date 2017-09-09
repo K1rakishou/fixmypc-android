@@ -1,7 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.di.module
 
 import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerActivity
-import com.kirakishou.fixmypc.fixmypcapp.mvp.view.activity.SpecialistMainActivityView
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainActivityViewModelFactory
 import dagger.Module
 import dagger.Provides
 
@@ -10,11 +10,11 @@ import dagger.Provides
  */
 
 @Module
-class SpecialistMainActivityModule(val mView: SpecialistMainActivityView) {
+class SpecialistMainActivityModule {
 
     @PerActivity
     @Provides
-    fun provideView(): SpecialistMainActivityView {
-        return mView
+    fun provideViewModelFactory(): SpecialistMainActivityViewModelFactory {
+        return SpecialistMainActivityViewModelFactory()
     }
 }

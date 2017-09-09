@@ -1,59 +1,83 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel
 
+import com.google.android.gms.maps.model.LatLng
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseViewModel
 import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.DamageClaimCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.MalfunctionResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.ClientNewMalfunctionActivityErrors
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.ClientNewMalfunctionActivityInputs
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.ClientNewMalfunctionActivityOutputs
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 import javax.inject.Inject
 
 /**
  * Created by kirakishou on 7/27/2017.
  */
-open class ClientNewMalfunctionActivityViewModel
-@Inject constructor(protected val mApiClient: ApiClient) : BaseViewModel() {
+class ClientNewMalfunctionActivityViewModel
+@Inject constructor(protected val mApiClient: ApiClient) : BaseViewModel(),
+        ClientNewMalfunctionActivityInputs, ClientNewMalfunctionActivityOutputs,
+        ClientNewMalfunctionActivityErrors {
+
+    val mInputs: ClientNewMalfunctionActivityInputs = this
+    val mOutputs: ClientNewMalfunctionActivityOutputs = this
+    val mErrors: ClientNewMalfunctionActivityErrors = this
 
     private val mCompositeDisposable = CompositeDisposable()
-    private val uploadProgressUpdateSubject = PublishSubject.create<ProgressUpdate>()
+    private val malfunctionRequestInfo = DamageClaimInfo()
+
+    lateinit var mUploadProgressUpdateSubject: BehaviorSubject<ProgressUpdate>
+    private val mSendMalfunctionRequestToServerSubject = BehaviorSubject.create<DamageClaimInfo>()
 
     init {
-        /*mCompositeDisposable += uploadProgressUpdateSubject
+        mCompositeDisposable += mSendMalfunctionRequestToServerSubject
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ progressUpdate ->
-                    when (progressUpdate.type) {
-                        ProgressUpdateType.Chunk -> callbacks.onProgressDialogUpdate((progressUpdate as ProgressUpdateChunk).progress)
-                        ProgressUpdateType.FileUploaded -> callbacks.onFileUploaded()
-                        ProgressUpdateType.Reset -> callbacks.onResetProgressDialog()
-                    }
-                }, { error ->
-                    callbacks.onFileUploadingError(error)
-                }, {
-                    callbacks.onAllFilesUploaded()
-                })*/
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        mCompositeDisposable.clear()
-    }
-
-    fun sendMalfunctionRequestToServer(damageClaimInfo: DamageClaimInfo) {
-        //callbacks.onInitProgressDialog(damageClaimInfo.damageClaimPhotos.size)
-
-        mCompositeDisposable += mApiClient.createMalfunctionRequest(damageClaimInfo, uploadProgressUpdateSubject)
+                .doOnNext { mUploadProgressUpdateSubject.onNext(ProgressUpdate.ProgressUpdateStart(it.damageClaimPhotos.size)) }
+                .observeOn(Schedulers.io())
+                .flatMap { mApiClient.createMalfunctionRequest(it, mUploadProgressUpdateSubject).toObservable() }
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext { mUploadProgressUpdateSubject.onNext(ProgressUpdate.ProgressUpdateDone()) }
                 .subscribe({
                     handleResponse(it)
                 }, {
                     handleError(it)
                 })
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+
+        Timber.e("ClientNewMalfunctionActivityViewModel.onCleared()")
+        mCompositeDisposable.clear()
+    }
+
+    fun setCategory(category: DamageClaimCategory) {
+        malfunctionRequestInfo.damageClaimCategory = category
+    }
+
+    fun setDescription(description: String) {
+        malfunctionRequestInfo.damageClaimDescription = description
+    }
+
+    fun setPhotos(photos: List<String>) {
+        malfunctionRequestInfo.damageClaimPhotos = ArrayList(photos)
+    }
+
+    fun setLocation(location: LatLng) {
+        malfunctionRequestInfo.damageClaimLocation = location
+    }
+
+    override fun sendMalfunctionRequestToServer() {
+        mSendMalfunctionRequestToServerSubject.onNext(malfunctionRequestInfo)
     }
 
     private fun handleResponse(response: MalfunctionResponse) {

@@ -1,6 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel
 
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseViewModel
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -11,5 +12,6 @@ class SpecialistMainActivityViewModel
 
     override fun onCleared() {
         super.onCleared()
+        Timber.e("MyDamageClaimsFragmentViewModel.onCleared()")
     }
 }

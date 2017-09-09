@@ -2,7 +2,7 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist
 
 
 import android.animation.AnimatorSet
-import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
@@ -57,7 +57,10 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
     private lateinit var mAdapter: DamageClaimListAdapter<DamageClaimsWithDistanceDTO>
     private lateinit var mEndlessScrollListener: EndlessRecyclerOnScrollListener
 
-    override fun getViewModelFactory(): ViewModelProvider.Factory = mViewModelFactory
+    override fun getViewModel0(): ActiveMalfunctionsListFragmentViewModel? {
+        return ViewModelProviders.of(this, mViewModelFactory).get(ActiveMalfunctionsListFragmentViewModel::class.java)
+    }
+
     override fun getContentView() = R.layout.fragment_active_malfunctions_list
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()

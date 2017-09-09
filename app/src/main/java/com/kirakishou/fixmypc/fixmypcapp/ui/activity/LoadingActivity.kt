@@ -1,7 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.ui.activity
 
 import android.animation.AnimatorSet
-import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -40,7 +40,10 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
 
     private val accountInfoPrefs by lazy { mAppSharedPreference.prepare<AccountInfoPreference>() }
 
-    override fun getViewModelFactory(): ViewModelProvider.Factory = mViewModelFactory
+    override fun getViewModel0(): LoadingActivityViewModel? {
+        return ViewModelProviders.of(this, mViewModelFactory).get(LoadingActivityViewModel::class.java)
+    }
+
     override fun getContentView(): Int = R.layout.activity_loading
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
@@ -80,7 +83,7 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
     override fun onViewReady() {
         //FIXME: accountInfoPrefs should be loaded from preferences via accountInfoPrefs.load()
         //don't forger to delete the following:
-        accountInfoPrefs.login = Fickle.of("test2@gmail.com")
+        accountInfoPrefs.login = Fickle.of("test@gmail.com")
         accountInfoPrefs.password = Fickle.of("1234567890")
 
         if (accountInfoPrefs.exists()) {

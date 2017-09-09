@@ -3,8 +3,6 @@ package com.kirakishou.fixmypc.fixmypcapp.base
 import android.animation.AnimatorSet
 import android.arch.lifecycle.LifecycleActivity
 import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -15,7 +13,6 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.extension.myAddListener
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.LoadingActivityViewModel
 import io.reactivex.disposables.CompositeDisposable
 
 
@@ -53,10 +50,9 @@ abstract class BaseActivity<out T: ViewModel> : LifecycleActivity() {
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        resolveDaggerDependency()
 
-        val viewModelFactory = getViewModelFactory()
-        mViewModel = Fickle.of(ViewModelProviders.of(this, viewModelFactory).get(LoadingActivityViewModel::class.java) as T)
+        resolveDaggerDependency()
+        mViewModel = Fickle.of(getViewModel0())
 
         setContentView(getContentView())
         mUnBinder = Fickle.of(ButterKnife.bind(this))
@@ -137,7 +133,7 @@ abstract class BaseActivity<out T: ViewModel> : LifecycleActivity() {
         }
     }
 
-    protected abstract fun getViewModelFactory(): ViewModelProvider.Factory
+    protected abstract fun getViewModel0(): T?
     protected abstract fun getContentView(): Int
     protected abstract fun loadStartAnimations(): AnimatorSet
     protected abstract fun loadExitAnimations(): AnimatorSet

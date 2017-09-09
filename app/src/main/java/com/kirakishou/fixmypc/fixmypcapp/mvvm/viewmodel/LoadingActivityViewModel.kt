@@ -30,9 +30,7 @@ import javax.inject.Inject
 class LoadingActivityViewModel
 @Inject constructor(protected val mApiClient: ApiClient,
                     protected val mAppSettings: AppSettings) : BaseViewModel(),
-        LoadingActivityInputs,
-        LoadingActivityOutputs,
-        LoadingActivityErrors {
+        LoadingActivityInputs, LoadingActivityOutputs, LoadingActivityErrors {
 
     val mInputs: LoadingActivityInputs = this
     val mOutputs: LoadingActivityOutputs = this

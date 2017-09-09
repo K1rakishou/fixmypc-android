@@ -7,7 +7,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaims
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.LoginResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.MalfunctionResponse
 import io.reactivex.Single
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.subjects.BehaviorSubject
 
 /**
  * Created by kirakishou on 7/23/2017.
@@ -16,7 +16,7 @@ interface ApiClient {
     fun loginRequest(loginRequest: LoginRequest): Single<LoginResponse>
 
     fun createMalfunctionRequest(damageClaimInfo: DamageClaimInfo,
-                                 uploadProgressUpdateSubject: PublishSubject<ProgressUpdate>): Single<MalfunctionResponse>
+                                 uploadProgressUpdateSubject: BehaviorSubject<ProgressUpdate>): Single<MalfunctionResponse>
 
     fun getDamageClaims(lat: Double, lon: Double, radius: Double, page: Long): Single<DamageClaimsResponse>
 }

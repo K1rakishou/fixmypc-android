@@ -1,7 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.ui.activity
 
 import android.animation.AnimatorSet
-import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -33,7 +33,10 @@ class ClientMainActivity : BaseFragmentedActivity<ClientMainActivityViewModel>()
         throw NotImplementedError()
     }
 
-    override fun getViewModelFactory(): ViewModelProvider.Factory = mViewModelFactory
+    override fun getViewModel0(): ClientMainActivityViewModel? {
+        return ViewModelProviders.of(this, mViewModelFactory).get(ClientMainActivityViewModel::class.java)
+    }
+
     override fun getContentView() = R.layout.activity_client_main
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()

@@ -2,7 +2,7 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.main
 
 
 import android.animation.AnimatorSet
-import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
@@ -17,7 +17,10 @@ class MyDamageClaimsFragment  : BaseFragment<MyDamageClaimsFragmentViewModel>() 
     @Inject
     lateinit var mViewModelFactory: MyDamageClaimsFragmentViewModelFactory
 
-    override fun getViewModelFactory(): ViewModelProvider.Factory = mViewModelFactory
+    override fun getViewModel0(): MyDamageClaimsFragmentViewModel? {
+        return ViewModelProviders.of(this, mViewModelFactory).get(MyDamageClaimsFragmentViewModel::class.java)
+    }
+
     override fun getContentView() = R.layout.fragment_my_damage_claims
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()

@@ -2,7 +2,6 @@ package com.kirakishou.fixmypc.fixmypcapp.helper.api
 
 import com.google.gson.Gson
 import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
-import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdateReset
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.operator.OnApiErrorSingle
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.Utils
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.retrofit.ProgressRequestBody
@@ -26,7 +25,7 @@ import io.reactivex.Single
 import io.reactivex.functions.Function
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.subjects.BehaviorSubject
 import okhttp3.MultipartBody
 import timber.log.Timber
 import java.io.File
@@ -48,7 +47,7 @@ class ApiClientImpl
     }
 
     override fun createMalfunctionRequest(damageClaimInfo: DamageClaimInfo,
-                                          uploadProgressUpdateSubject: PublishSubject<ProgressUpdate>): Single<MalfunctionResponse> {
+                                          uploadProgressUpdateSubject: BehaviorSubject<ProgressUpdate>): Single<MalfunctionResponse> {
 
         //create MultipartFile bodies, check if user has selected the same file twice
         val progressBodyListObservable = Observable.fromIterable(damageClaimInfo.damageClaimPhotos)
@@ -98,7 +97,7 @@ class ApiClientImpl
 
         //re send the request
         val secondAttemptObservable = Observables.zip(sessionIdObservable, progressBodyListObservable, requestObservable, { a, b, c -> Triple(a, b, c) })
-                .doOnNext { _ -> uploadProgressUpdateSubject.onNext(ProgressUpdateReset()) }
+                .doOnNext { _ -> uploadProgressUpdateSubject.onNext(ProgressUpdate.ProgressUpdateReset()) }
                 .flatMap { resendRequest(it) }
                 .doOnNext { _ -> uploadProgressUpdateSubject.onComplete() }
 
@@ -165,7 +164,7 @@ class ApiClientImpl
                 .toObservable()
     }
 
-    private fun prepareRequest(photoPath: String, uploadProgressUpdateSubject: PublishSubject<ProgressUpdate>): Pair<MultipartBody.Part, String> {
+    private fun prepareRequest(photoPath: String, uploadProgressUpdateSubject: BehaviorSubject<ProgressUpdate>): Pair<MultipartBody.Part, String> {
         Timber.e("prepareRequest")
 
         val photoFile = File(photoPath)

@@ -1,7 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.ui.activity
 
 import android.animation.AnimatorSet
-import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -26,7 +26,10 @@ class SpecialistMainActivity : BaseFragmentedActivity<SpecialistMainActivityView
     @Inject
     lateinit var mViewModelFactory: SpecialistMainActivityViewModelFactory
 
-    override fun getViewModelFactory(): ViewModelProvider.Factory = mViewModelFactory
+    override fun getViewModel0(): SpecialistMainActivityViewModel? {
+        return ViewModelProviders.of(this, mViewModelFactory).get(SpecialistMainActivityViewModel::class.java)
+    }
+
     override fun getContentView() = R.layout.activity_specialist_main
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()

@@ -7,7 +7,7 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 /**
  * Created by kirakishou on 8/21/2017.
  */
-abstract class BaseFragmentedActivity<T : ViewModel> : BaseActivity<T>() {
+abstract class BaseFragmentedActivity<out T : ViewModel> : BaseActivity<T>() {
 
     fun pushFragment(fragmentTag: String) {
         var fragment = supportFragmentManager.findFragmentByTag(fragmentTag)

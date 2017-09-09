@@ -3,8 +3,6 @@ package com.kirakishou.fixmypc.fixmypcapp.base
 import android.animation.AnimatorSet
 import android.arch.lifecycle.LifecycleFragment
 import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +12,6 @@ import butterknife.Unbinder
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.extension.myAddListener
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.LoadingActivityViewModel
 import io.reactivex.disposables.CompositeDisposable
 
 /**
@@ -33,9 +30,7 @@ abstract class BaseFragment<T : ViewModel> : LifecycleFragment() {
     @Suppress("UNCHECKED_CAST")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         resolveDaggerDependency()
-
-        val viewModelFactory = getViewModelFactory()
-        mViewModel = Fickle.of(ViewModelProviders.of(this, viewModelFactory).get(LoadingActivityViewModel::class.java) as T)
+        mViewModel = Fickle.of(getViewModel0())
 
         val viewId = getContentView()
         val root = inflater.inflate(viewId, container, false)
@@ -93,7 +88,7 @@ abstract class BaseFragment<T : ViewModel> : LifecycleFragment() {
         set.start()
     }
 
-    protected abstract fun getViewModelFactory(): ViewModelProvider.Factory
+    protected abstract fun getViewModel0(): T?
     protected abstract fun getContentView(): Int
     protected abstract fun loadStartAnimations(): AnimatorSet
     protected abstract fun loadExitAnimations(): AnimatorSet

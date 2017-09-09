@@ -2,6 +2,7 @@ package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel
 
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseViewModel
 import io.reactivex.disposables.CompositeDisposable
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -14,6 +15,8 @@ class MyDamageClaimsFragmentViewModel
 
     override fun onCleared() {
         super.onCleared()
+
+        Timber.e("MyDamageClaimsFragmentViewModel.onCleared()")
         mCompositeDisposable.clear()
     }
 }

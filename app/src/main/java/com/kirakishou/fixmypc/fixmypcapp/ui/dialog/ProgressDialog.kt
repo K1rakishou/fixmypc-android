@@ -3,18 +3,23 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.dialog
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
 import android.widget.ProgressBar
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.Unbinder
 import com.kirakishou.fixmypc.fixmypcapp.R
+import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.subjects.BehaviorSubject
+import timber.log.Timber
 
 /**
  * Created by kirakishou on 8/16/2017.
  */
-class ProgressDialog : Dialog {
+class ProgressDialog(context: Context?) : Dialog(context) {
 
     @BindView(R.id.current_photo_text)
     lateinit var currentPhotoText: TextView
@@ -25,20 +30,24 @@ class ProgressDialog : Dialog {
     private var unbinder: Unbinder? = null
     private var totalFiles = 0
     private var currentFile = 0
-    private lateinit var handler: Handler
-
-    private constructor() : super(null)
-
-    constructor(ctx: Context) : super(ctx) {
-        handler = Handler(ctx.mainLooper)
-    }
+    private val compositeDisposable = CompositeDisposable()
+    val progressUpdateSubject = BehaviorSubject.create<ProgressUpdate>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.dialog_progress)
         unbinder = ButterKnife.bind(this)
 
         this.currentPhotoText.text = String.format(context.getString(R.string.uploading_photo_num), currentFile, totalFiles)
+
+        compositeDisposable += progressUpdateSubject
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ event ->
+                    handleEvent(event)
+                }, { error ->
+                    Timber.e(error)
+                })
     }
 
     override fun onStop() {
@@ -47,43 +56,33 @@ class ProgressDialog : Dialog {
         unbinder?.unbind()
     }
 
-    fun init(filesCount: Int) {
-        handler.post {
-            this.totalFiles = filesCount
-            this.setCancelable(false)
-            this.setTitle(context.getString(com.kirakishou.fixmypc.fixmypcapp.R.string.uploading_in_progress))
-        }
-    }
+    private fun handleEvent(event: ProgressUpdate) {
+        when (event) {
+            is ProgressUpdate.ProgressUpdateStart -> {
+                super.show()
 
-    override fun show() {
-        handler.post {
-            super.show()
-        }
-    }
+                this.totalFiles = event.filesCount
+                this.setCancelable(false)
+                this.setTitle(context.getString(com.kirakishou.fixmypc.fixmypcapp.R.string.uploading_in_progress))
+            }
 
-    override fun hide() {
-        handler.post {
-            super.hide()
-        }
-    }
+            is ProgressUpdate.ProgressUpdateChunk -> {
+                progressBar.progress = event.progress
+            }
 
-    fun setProgress(progress: Int) {
-        handler.post {
-            this.progressBar.progress = progress
-        }
-    }
+            is ProgressUpdate.ProgressUpdateFileUploaded -> {
+                ++currentFile
+                currentPhotoText.text = String.format(context.getString(R.string.uploading_photo_num), currentFile, totalFiles)
+            }
 
-    fun onFileUploaded() {
-        handler.post {
-            ++currentFile
-            this.currentPhotoText.text = String.format(context.getString(R.string.uploading_photo_num), currentFile, totalFiles)
-        }
-    }
+            is ProgressUpdate.ProgressUpdateReset -> {
+                currentFile = 0
+                currentPhotoText.text = String.format(context.getString(R.string.uploading_photo_num), currentFile, totalFiles)
+            }
 
-    fun reset() {
-        handler.post {
-            currentFile = 0
-            this.currentPhotoText.text = String.format(context.getString(R.string.uploading_photo_num), currentFile, totalFiles)
+            is ProgressUpdate.ProgressUpdateDone -> {
+                super.hide()
+            }
         }
     }
 }

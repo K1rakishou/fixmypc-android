@@ -2,7 +2,7 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction
 
 
 import android.animation.AnimatorSet
-import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
@@ -15,19 +15,25 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.jakewharton.rxbinding2.view.RxView
+import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
+import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerChooseCategoryActivityComponent
+import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewDamageClaimActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewMalfunctionActivityViewModel
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewMalfunctionActivityFragmentCallback
 import io.nlopez.smartlocation.SmartLocation
 import io.nlopez.smartlocation.location.config.LocationParams
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
+import javax.inject.Inject
 
 
-
-class DamageClaimLocationFragment : BaseFragment<Nothing>(), OnMapReadyCallback {
+class DamageClaimLocationFragment : BaseFragment<ClientNewMalfunctionActivityViewModel>(),
+        OnMapReadyCallback {
 
     @BindView(R.id.button_done)
     lateinit var buttonDone: AppCompatButton
@@ -38,10 +44,13 @@ class DamageClaimLocationFragment : BaseFragment<Nothing>(), OnMapReadyCallback 
     @BindView(R.id.button_zoom_out)
     lateinit var buttonZoomOut: FloatingActionButton
 
+    @Inject
+    lateinit var mViewModelFactory: ClientNewMalfunctionActivityViewModelFactory
+
     private lateinit var googleMap: GoogleMap
 
-    override fun getViewModelFactory(): ViewModelProvider.Factory {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getViewModel0(): ClientNewMalfunctionActivityViewModel? {
+        return ViewModelProviders.of(activity, mViewModelFactory).get(ClientNewMalfunctionActivityViewModel::class.java)
     }
 
     override fun getContentView() = R.layout.fragment_damage_claim_coordinates
@@ -54,6 +63,10 @@ class DamageClaimLocationFragment : BaseFragment<Nothing>(), OnMapReadyCallback 
         val mapFrag = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFrag.getMapAsync(this)
 
+        initRx()
+    }
+
+    private fun initRx() {
         mCompositeDisposable += RxView.clicks(buttonDone)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
@@ -91,7 +104,7 @@ class DamageClaimLocationFragment : BaseFragment<Nothing>(), OnMapReadyCallback 
         if (mLocation == null) {
             activityHolder.onShowToast("Текущее местоположение не задано!")
         } else {
-            activityHolder.retrieveLocation(mLocation!!)
+            getViewModel().setLocation(mLocation!!)
         }
     }
 
@@ -120,7 +133,11 @@ class DamageClaimLocationFragment : BaseFragment<Nothing>(), OnMapReadyCallback 
     }
 
     override fun resolveDaggerDependency() {
-
+        DaggerChooseCategoryActivityComponent.builder()
+                .applicationComponent(FixmypcApplication.applicationComponent)
+                .clientNewDamageClaimActivityModule(ClientNewDamageClaimActivityModule())
+                .build()
+                .inject(this)
     }
 
     companion object {

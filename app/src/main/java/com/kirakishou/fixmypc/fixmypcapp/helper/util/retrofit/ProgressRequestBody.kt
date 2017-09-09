@@ -1,9 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.helper.util.retrofit
 
 import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
-import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdateChunk
-import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdateFileUploaded
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.subjects.BehaviorSubject
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import okio.BufferedSink
@@ -20,15 +18,15 @@ class ProgressRequestBody : RequestBody {
     private val ignoreFirstNumberOfWriteToCalls: Int
     private var lastProgressPercentUpdate = 0f
     private var numWriteToCalls = 0
-    private lateinit var uploadProgressUpdateSubject: PublishSubject<ProgressUpdate>
+    private lateinit var uploadProgressUpdateSubject: BehaviorSubject<ProgressUpdate>
 
-    constructor(file: File, uploadProgressUpdateSubject: PublishSubject<ProgressUpdate>) : super() {
+    constructor(file: File, uploadProgressUpdateSubject: BehaviorSubject<ProgressUpdate>) : super() {
         this.mFile = file
         this.uploadProgressUpdateSubject = uploadProgressUpdateSubject
         ignoreFirstNumberOfWriteToCalls = 0
     }
 
-    constructor(file: File, ignoreFirstNumberOfWriteToCalls: Int, uploadProgressUpdateSubject: PublishSubject<ProgressUpdate>) : super() {
+    constructor(file: File, ignoreFirstNumberOfWriteToCalls: Int, uploadProgressUpdateSubject: BehaviorSubject<ProgressUpdate>) : super() {
         this.mFile = file
         this.uploadProgressUpdateSubject = uploadProgressUpdateSubject
         this.ignoreFirstNumberOfWriteToCalls = ignoreFirstNumberOfWriteToCalls
@@ -67,14 +65,14 @@ class ProgressRequestBody : RequestBody {
 
                         if (progress - lastProgressPercentUpdate > 5 || progress == 100f) {
                             //callback.get()?.onChunkWrite(progress.toInt())
-                            uploadProgressUpdateSubject.onNext(ProgressUpdateChunk(progress.toInt()))
+                            uploadProgressUpdateSubject.onNext(ProgressUpdate.ProgressUpdateChunk(progress.toInt()))
                             lastProgressPercentUpdate = progress
                         }
                     }
                 }
 
                 //callback.get()?.onFileUploaded()
-                uploadProgressUpdateSubject.onNext(ProgressUpdateFileUploaded())
+                uploadProgressUpdateSubject.onNext(ProgressUpdate.ProgressUpdateFileUploaded())
             }
 
         } catch (e: Exception) {

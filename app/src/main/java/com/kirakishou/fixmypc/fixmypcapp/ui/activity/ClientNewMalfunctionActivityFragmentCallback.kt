@@ -6,6 +6,5 @@ import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivityFragmentCallback
  * Created by kirakishou on 8/29/2017.
  */
 interface ClientNewMalfunctionActivityFragmentCallback : BaseActivityFragmentCallback {
-    fun replaceWithFragment(fragmentTag: String)
     fun requestPermission(permission: String, requestCode: Int)
 }

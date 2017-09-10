@@ -14,4 +14,5 @@ class LoginResponse(@Expose
 
                     @Expose
                     @SerializedName(Constant.SerializedNames.ACCOUNT_TYPE) val accountType: AccountType,
+
                     errorCode: ErrorCode.Remote) : StatusResponse(errorCode)

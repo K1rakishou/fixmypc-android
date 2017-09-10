@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.support.v7.widget.AppCompatButton
+import android.widget.Toast
 import butterknife.BindView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -20,10 +21,11 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerChooseCategoryActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewDamageClaimActivityModule
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewMalfunctionActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
+import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewDamageClaimActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewMalfunctionActivityFragmentCallback
+import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientNewDamageClaimActivityNavigator
 import io.nlopez.smartlocation.SmartLocation
 import io.nlopez.smartlocation.location.config.LocationParams
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -47,9 +49,12 @@ class DamageClaimLocationFragment : BaseFragment<ClientNewMalfunctionActivityVie
     @Inject
     lateinit var mViewModelFactory: ClientNewMalfunctionActivityViewModelFactory
 
+    @Inject
+    lateinit var mNavigator: ClientNewDamageClaimActivityNavigator
+
     private lateinit var googleMap: GoogleMap
 
-    override fun getViewModel0(): ClientNewMalfunctionActivityViewModel? {
+    override fun initViewModel(): ClientNewMalfunctionActivityViewModel? {
         return ViewModelProviders.of(activity, mViewModelFactory).get(ClientNewMalfunctionActivityViewModel::class.java)
     }
 
@@ -71,7 +76,7 @@ class DamageClaimLocationFragment : BaseFragment<ClientNewMalfunctionActivityVie
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
                     setMalfunctionLocation()
-                    loadNextFragment(Constant.FragmentTags.DAMAGE_PHOTOS)
+                    loadNextFragment()
                 }, { error ->
                     Timber.e(error)
                 })
@@ -93,16 +98,15 @@ class DamageClaimLocationFragment : BaseFragment<ClientNewMalfunctionActivityVie
                 })
     }
 
-    private fun loadNextFragment(fragmentTag: String) {
-        val activityHolder = activity as ClientNewMalfunctionActivityFragmentCallback
-        activityHolder.replaceWithFragment(fragmentTag)
+    private fun loadNextFragment() {
+        mNavigator.navigateToDamageClaimPhotosFragment()
     }
 
     private fun setMalfunctionLocation() {
         val activityHolder = activity as ClientNewMalfunctionActivityFragmentCallback
 
         if (mLocation == null) {
-            activityHolder.onShowToast("Текущее местоположение не задано!")
+            activityHolder.onShowToast("Текущее местоположение не задано!", Toast.LENGTH_LONG)
         } else {
             getViewModel().setLocation(mLocation!!)
         }
@@ -135,7 +139,7 @@ class DamageClaimLocationFragment : BaseFragment<ClientNewMalfunctionActivityVie
     override fun resolveDaggerDependency() {
         DaggerChooseCategoryActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
-                .clientNewDamageClaimActivityModule(ClientNewDamageClaimActivityModule())
+                .clientNewDamageClaimActivityModule(ClientNewDamageClaimActivityModule(activity as ClientNewDamageClaimActivity))
                 .build()
                 .inject(this)
     }

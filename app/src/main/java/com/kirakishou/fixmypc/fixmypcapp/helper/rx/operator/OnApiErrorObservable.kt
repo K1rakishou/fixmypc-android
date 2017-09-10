@@ -3,6 +3,7 @@ package com.kirakishou.fixmypc.fixmypcapp.helper.rx.operator
 import com.google.gson.Gson
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.BadServerResponseException
 import io.reactivex.ObservableOperator
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
@@ -11,7 +12,7 @@ import retrofit2.Response
 /**
  * Created by kirakishou on 8/27/2017.
  */
-class OnApiErrorObservable<T>(val gson: Gson) : ObservableOperator<T, Response<T>> {
+class OnApiErrorObservable<T : StatusResponse>(val gson: Gson) : ObservableOperator<T, Response<T>> {
 
     override fun apply(observer: Observer<in T>): Observer<in Response<T>> {
         return object : Observer<Response<T>> {
@@ -26,7 +27,12 @@ class OnApiErrorObservable<T>(val gson: Gson) : ObservableOperator<T, Response<T
                         val responseJson = response.errorBody()!!.string()
                         val error = gson.fromJson<StatusResponse>(responseJson, StatusResponse::class.java)
 
-                        observer.onError(ApiException(error.errorCode, response.code()))
+                        //may happen in some rare cases
+                        if (error.errorCode != null) {
+                            observer.onError(ApiException(error.errorCode))
+                        } else {
+                            observer.onError(BadServerResponseException(responseJson))
+                        }
                     } catch (e: Exception) {
                         observer.onError(e)
                     }

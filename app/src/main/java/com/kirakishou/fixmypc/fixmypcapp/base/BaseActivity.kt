@@ -1,15 +1,15 @@
 package com.kirakishou.fixmypc.fixmypcapp.base
 
 import android.animation.AnimatorSet
-import android.arch.lifecycle.LifecycleActivity
+import android.arch.lifecycle.LifecycleRegistry
+import android.arch.lifecycle.LifecycleRegistryOwner
 import android.arch.lifecycle.ViewModel
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import butterknife.ButterKnife
 import butterknife.Unbinder
-import com.afollestad.materialdialogs.MaterialDialog
-import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.extension.myAddListener
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
@@ -19,7 +19,13 @@ import io.reactivex.disposables.CompositeDisposable
 /**
  * Created by kirakishou on 7/20/2017.
  */
-abstract class BaseActivity<out T: ViewModel> : LifecycleActivity() {
+abstract class BaseActivity<out T: ViewModel> : AppCompatActivity(), LifecycleRegistryOwner {
+
+    private val mRegistry by lazy {
+        LifecycleRegistry(this)
+    }
+
+    override fun getLifecycle(): LifecycleRegistry = mRegistry
 
     protected val mCompositeDisposable = CompositeDisposable()
     private var mViewModel: Fickle<T> = Fickle.empty()
@@ -52,7 +58,7 @@ abstract class BaseActivity<out T: ViewModel> : LifecycleActivity() {
         super.onCreate(savedInstanceState)
 
         resolveDaggerDependency()
-        mViewModel = Fickle.of(getViewModel0())
+        mViewModel = Fickle.of(initViewModel())
 
         setContentView(getContentView())
         mUnBinder = Fickle.of(ButterKnife.bind(this))
@@ -107,21 +113,8 @@ abstract class BaseActivity<out T: ViewModel> : LifecycleActivity() {
         set.start()
     }
 
-    protected fun showToast(message: String, duration: Int) {
+    protected fun showToast(message: String, duration: Int = Toast.LENGTH_LONG) {
         Toast.makeText(this, message, duration).show()
-    }
-
-    protected fun showErrorMessageDialog(message: String, finishActivity: Boolean = false) {
-        MaterialDialog.Builder(this)
-                .title(R.string.rec_unknown_server_error_has_occurred)
-                .content(message)
-                .positiveText(R.string.ok)
-                .onPositive { _, _ ->
-                    if (finishActivity) {
-                        finish()
-                    }
-                }
-                .show()
     }
 
     protected fun runActivity(clazz: Class<*>, finishCurrentActivity: Boolean = false) {
@@ -133,7 +126,7 @@ abstract class BaseActivity<out T: ViewModel> : LifecycleActivity() {
         }
     }
 
-    protected abstract fun getViewModel0(): T?
+    protected abstract fun initViewModel(): T?
     protected abstract fun getContentView(): Int
     protected abstract fun loadStartAnimations(): AnimatorSet
     protected abstract fun loadExitAnimations(): AnimatorSet

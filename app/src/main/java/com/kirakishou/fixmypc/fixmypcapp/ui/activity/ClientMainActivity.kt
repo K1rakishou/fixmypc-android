@@ -4,13 +4,11 @@ import android.animation.AnimatorSet
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.widget.ImageView
-import android.widget.Toast
 import butterknife.BindView
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
-import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragmentedActivity
+import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerClientMainActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientMainActivityViewModel
@@ -18,7 +16,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientMainActivi
 import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
-class ClientMainActivity : BaseFragmentedActivity<ClientMainActivityViewModel>() {
+class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>() {
 
     @BindView(R.id.my_profile_button)
     lateinit var myProfileButton: ImageView
@@ -29,11 +27,7 @@ class ClientMainActivity : BaseFragmentedActivity<ClientMainActivityViewModel>()
     @Inject
     lateinit var mViewModelFactory: ClientMainActivityViewModelFactory
 
-    override fun getFragmentFromTag(fragmentTag: String): Fragment {
-        throw NotImplementedError()
-    }
-
-    override fun getViewModel0(): ClientMainActivityViewModel? {
+    override fun initViewModel(): ClientMainActivityViewModel? {
         return ViewModelProviders.of(this, mViewModelFactory).get(ClientMainActivityViewModel::class.java)
     }
 
@@ -67,15 +61,17 @@ class ClientMainActivity : BaseFragmentedActivity<ClientMainActivityViewModel>()
                 .inject(this)
     }
 
-    fun onShowToast(message: String) {
-        showToast(message, Toast.LENGTH_SHORT)
+    fun onShowToast(message: String, duration: Int) {
+        showToast(message, duration)
     }
 
     fun onUnknownError(error: Throwable) {
         if (error.message != null) {
-            showErrorMessageDialog(error.message!!)
+            showToast(error.message!!)
         } else {
-            showErrorMessageDialog("Неизвестная ошибка")
+            showToast("Неизвестная ошибка")
         }
+
+        finish()
     }
 }

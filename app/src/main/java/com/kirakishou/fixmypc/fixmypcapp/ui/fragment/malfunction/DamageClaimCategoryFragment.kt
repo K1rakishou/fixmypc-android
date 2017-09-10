@@ -12,11 +12,11 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerChooseCategoryActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewDamageClaimActivityModule
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.DamageClaimCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewMalfunctionActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
-import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewMalfunctionActivityFragmentCallback
+import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewDamageClaimActivity
+import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientNewDamageClaimActivityNavigator
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
@@ -36,7 +36,10 @@ class DamageClaimCategoryFragment : BaseFragment<ClientNewMalfunctionActivityVie
     @Inject
     lateinit var mViewModelFactory: ClientNewMalfunctionActivityViewModelFactory
 
-    override fun getViewModel0(): ClientNewMalfunctionActivityViewModel {
+    @Inject
+    lateinit var mNavigator: ClientNewDamageClaimActivityNavigator
+
+    override fun initViewModel(): ClientNewMalfunctionActivityViewModel {
         return ViewModelProviders.of(activity, mViewModelFactory).get(ClientNewMalfunctionActivityViewModel::class.java)
     }
 
@@ -53,7 +56,7 @@ class DamageClaimCategoryFragment : BaseFragment<ClientNewMalfunctionActivityVie
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
                     setMalfunctionCategory(DamageClaimCategory.Computer)
-                    loadNextFragment(Constant.FragmentTags.DAMAGE_DESCRIPTION)
+                    loadNextFragment()
                 }, { error ->
                     Timber.e(error)
                 })
@@ -62,7 +65,7 @@ class DamageClaimCategoryFragment : BaseFragment<ClientNewMalfunctionActivityVie
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
                     setMalfunctionCategory(DamageClaimCategory.Notebook)
-                    loadNextFragment(Constant.FragmentTags.DAMAGE_DESCRIPTION)
+                    loadNextFragment()
                 }, { error ->
                     Timber.e(error)
                 })
@@ -71,15 +74,14 @@ class DamageClaimCategoryFragment : BaseFragment<ClientNewMalfunctionActivityVie
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
                     setMalfunctionCategory(DamageClaimCategory.Phone)
-                    loadNextFragment(Constant.FragmentTags.DAMAGE_DESCRIPTION)
+                    loadNextFragment()
                 }, { error ->
                     Timber.e(error)
                 })
     }
 
-    private fun loadNextFragment(fragmentTag: String) {
-        val activityHolder = activity as ClientNewMalfunctionActivityFragmentCallback
-        activityHolder.replaceWithFragment(fragmentTag)
+    private fun loadNextFragment() {
+        mNavigator.navigateToDamageClaimDescriptionFragment()
     }
 
     private fun setMalfunctionCategory(category: DamageClaimCategory) {
@@ -93,7 +95,7 @@ class DamageClaimCategoryFragment : BaseFragment<ClientNewMalfunctionActivityVie
     override fun resolveDaggerDependency() {
         DaggerChooseCategoryActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
-                .clientNewDamageClaimActivityModule(ClientNewDamageClaimActivityModule())
+                .clientNewDamageClaimActivityModule(ClientNewDamageClaimActivityModule(activity as ClientNewDamageClaimActivity))
                 .build()
                 .inject(this)
     }

@@ -17,7 +17,7 @@ class MyDamageClaimsFragment  : BaseFragment<MyDamageClaimsFragmentViewModel>() 
     @Inject
     lateinit var mViewModelFactory: MyDamageClaimsFragmentViewModelFactory
 
-    override fun getViewModel0(): MyDamageClaimsFragmentViewModel? {
+    override fun initViewModel(): MyDamageClaimsFragmentViewModel? {
         return ViewModelProviders.of(this, mViewModelFactory).get(MyDamageClaimsFragmentViewModel::class.java)
     }
 
@@ -33,8 +33,8 @@ class MyDamageClaimsFragment  : BaseFragment<MyDamageClaimsFragmentViewModel>() 
 
     }
 
-    fun onShowToast(message: String) {
-        showToast(message)
+    fun onShowToast(message: String, duration: Int) {
+        showToast(message, duration)
     }
 
     fun onUnknownError(throwable: Throwable) {

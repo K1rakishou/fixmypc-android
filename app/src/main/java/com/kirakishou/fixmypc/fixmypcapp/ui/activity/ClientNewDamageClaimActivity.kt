@@ -4,23 +4,22 @@ import android.animation.AnimatorSet
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.widget.Toast
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
-import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragmentedActivity
+import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerChooseCategoryActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewDamageClaimActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewMalfunctionActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.dialog.ProgressDialog
-import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction.*
+import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction.DamageClaimPhotosFragmentCallbacks
+import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientNewDamageClaimActivityNavigator
 import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
-class ClientNewDamageClaimActivity : BaseFragmentedActivity<ClientNewMalfunctionActivityViewModel>(),
+class ClientNewDamageClaimActivity : BaseActivity<ClientNewMalfunctionActivityViewModel>(),
         ClientNewMalfunctionActivityFragmentCallback {
 
     @Inject
@@ -32,19 +31,12 @@ class ClientNewDamageClaimActivity : BaseFragmentedActivity<ClientNewMalfunction
     @Inject
     lateinit var mViewModelFactory: ClientNewMalfunctionActivityViewModelFactory
 
+    @Inject
+    lateinit var mNavigator: ClientNewDamageClaimActivityNavigator
+
     private lateinit var progressDialog: ProgressDialog
 
-    override fun getFragmentFromTag(fragmentTag: String): Fragment {
-        return when (fragmentTag) {
-            Constant.FragmentTags.DAMAGE_CATEGORY -> DamageClaimCategoryFragment.newInstance()
-            Constant.FragmentTags.DAMAGE_DESCRIPTION -> DamageClaimDescriptionFragment.newInstance()
-            Constant.FragmentTags.DAMAGE_PHOTOS -> DamageClaimPhotosFragment.newInstance()
-            Constant.FragmentTags.DAMAGE_LOCATION -> DamageClaimLocationFragment.newInstance()
-            else -> throw IllegalArgumentException("Unknown fragmentTag: $fragmentTag")
-        }
-    }
-
-    override fun getViewModel0(): ClientNewMalfunctionActivityViewModel? {
+    override fun initViewModel(): ClientNewMalfunctionActivityViewModel? {
         return ViewModelProviders.of(this, mViewModelFactory).get(ClientNewMalfunctionActivityViewModel::class.java)
     }
 
@@ -53,7 +45,7 @@ class ClientNewDamageClaimActivity : BaseFragmentedActivity<ClientNewMalfunction
     override fun loadExitAnimations() = AnimatorSet()
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
-        pushFragment(Constant.FragmentTags.DAMAGE_CATEGORY)
+        mNavigator.navigateToDamageClaimCategoryFragment()
         progressDialog = ProgressDialog(this)
 
         getViewModel().mUploadProgressUpdateSubject = progressDialog.progressUpdateSubject
@@ -62,10 +54,6 @@ class ClientNewDamageClaimActivity : BaseFragmentedActivity<ClientNewMalfunction
     override fun onActivityDestroy() {
         progressDialog.dismiss()
         mRefWatcher.watch(this)
-    }
-
-    override fun replaceWithFragment(fragmentTag: String) {
-        pushFragment(fragmentTag)
     }
 
     override fun requestPermission(permission: String, requestCode: Int) {
@@ -79,7 +67,7 @@ class ClientNewDamageClaimActivity : BaseFragmentedActivity<ClientNewMalfunction
                 }
 
             } else {
-                showErrorMessageDialog("Не удалось получить разрешение на открытие галлереи фото")
+                showToast("Не удалось получить разрешение на открытие галлереи фото", Toast.LENGTH_LONG)
             }
         }
     }
@@ -99,69 +87,31 @@ class ClientNewDamageClaimActivity : BaseFragmentedActivity<ClientNewMalfunction
     override fun resolveDaggerDependency() {
         DaggerChooseCategoryActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
-                .clientNewDamageClaimActivityModule(ClientNewDamageClaimActivityModule())
+                .clientNewDamageClaimActivityModule(ClientNewDamageClaimActivityModule(this))
                 .build()
                 .inject(this)
     }
 
-    override fun onShowToast(message: String) {
-        showToast(message, Toast.LENGTH_SHORT)
+    override fun onShowToast(message: String, duration: Int) {
+        showToast(message, duration)
     }
 
-    fun onMalfunctionRequestSuccessfullyCreated() {
-        showToast("Заявка успешно создана", Toast.LENGTH_LONG)
-        //runActivity(ClientMainActivity::class.java, true)
-    }
-
-    fun onFileSizeExceeded() {
-        showToast("Размер одного из выбранных изображений превышает лимит", Toast.LENGTH_LONG)
-    }
-
-    fun onRequestSizeExceeded() {
-        showToast("Размер двух и более изображений превышает лимит", Toast.LENGTH_LONG)
-    }
-
-    fun onAllFileServersAreNotWorking() {
-        showToast("Не удалось обработать запрос. Сервера не работают. Попробуйте повторить запрос позже.", Toast.LENGTH_LONG)
-    }
-
-    fun onServerDatabaseError() {
-        showToast("Ошибка БД на сервере. Попробуйте повторить запрос позже.", Toast.LENGTH_LONG)
-    }
-
-    fun onCouldNotConnectToServer(error: Throwable) {
-        showToast("Не удалось подключиться к серверу", Toast.LENGTH_LONG)
-    }
-
-    fun onPhotosAreNotSet() {
-        showToast("Не выбраны фото поломки", Toast.LENGTH_LONG)
-    }
-
-    fun onSelectedPhotoDoesNotExists() {
-        showToast("Не удалось прочитать фото с диска (оно было удалено или перемещено)", Toast.LENGTH_LONG)
-    }
-
-    fun onResponseBodyIsEmpty() {
-        showErrorMessageDialog("Response body is empty!", true)
-    }
-
-    fun onFileAlreadySelected() {
-        showToast("Нельзя отправить два одинаковых файла", Toast.LENGTH_LONG)
+    override fun startActivity(activityClass: Class<*>, finishCurrentActivity: Boolean) {
+        runActivity(activityClass, finishCurrentActivity)
     }
 
     override fun onUnknownError(error: Throwable) {
         if (error.message != null) {
-            showErrorMessageDialog(error.message!!)
+            showToast(error.message!!)
         } else {
-            showErrorMessageDialog("Неизвестная ошибка")
+            showToast("Неизвестная ошибка")
         }
+
+        finish()
     }
 
     override fun onBackPressed() {
-        val fragmentsCount = supportFragmentManager.backStackEntryCount
-        if (fragmentsCount > 1) {
-            supportFragmentManager.popBackStack()
-        } else {
+        if (mNavigator.popFragment()) {
             super.onBackPressed()
         }
     }

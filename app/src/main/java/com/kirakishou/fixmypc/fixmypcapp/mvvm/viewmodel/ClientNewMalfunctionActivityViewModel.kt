@@ -8,10 +8,10 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.DamageClaimCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.MalfunctionResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.ClientNewMalfunctionActivityErrors
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.ClientNewMalfunctionActivityInputs
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.ClientNewMalfunctionActivityOutputs
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -37,6 +37,17 @@ class ClientNewMalfunctionActivityViewModel
 
     lateinit var mUploadProgressUpdateSubject: BehaviorSubject<ProgressUpdate>
     private val mSendMalfunctionRequestToServerSubject = BehaviorSubject.create<DamageClaimInfo>()
+    private val mOnMalfunctionRequestSuccessfullyCreatedSubject = BehaviorSubject.create<Unit>()
+    private val mOnFileSizeExceededSubject = BehaviorSubject.create<Unit>()
+    private val mOnRequestSizeExceededSubject = BehaviorSubject.create<Unit>()
+    private val mOnAllFileServersAreNotWorkingSubject = BehaviorSubject.create<Unit>()
+    private val mOnServerDatabaseErrorSubject = BehaviorSubject.create<Unit>()
+    private val mOnCouldNotConnectToServerSubject = BehaviorSubject.create<Unit>()
+    private val mOnPhotosAreNotSelectedSubject = BehaviorSubject.create<Unit>()
+    private val mOnSelectedPhotoDoesNotExistsSubject = BehaviorSubject.create<Unit>()
+    private val mOnResponseBodyIsEmptySubject = BehaviorSubject.create<Unit>()
+    private val mOnFileAlreadySelectedSubject = BehaviorSubject.create<Unit>()
+    private val mOnUnknownErrorSubject = BehaviorSubject.create<Throwable>()
 
     init {
         mCompositeDisposable += mSendMalfunctionRequestToServerSubject
@@ -84,52 +95,50 @@ class ClientNewMalfunctionActivityViewModel
         val errorCode = response.errorCode
 
         if (errorCode != ErrorCode.Remote.REC_OK) {
-            throw IllegalStateException("ServerResponse is Success but errorCode is not SEC_OK: $errorCode")
+            handleBadResponse(response.errorCode)
         }
 
-        /*callbacks.onAllFilesUploaded()
-        callbacks.onMalfunctionRequestSuccessfullyCreated()*/
+        mOnMalfunctionRequestSuccessfullyCreatedSubject.onNext(Unit)
+    }
+
+    private fun handleBadResponse(errorCode: ErrorCode.Remote) {
+        when (errorCode) {
+            ErrorCode.Remote.REC_NO_PHOTOS_WERE_SELECTED_TO_UPLOAD -> TODO()
+            ErrorCode.Remote.REC_IMAGES_COUNT_EXCEEDED -> {
+                throw IllegalStateException("This should never happen")
+            }
+
+            ErrorCode.Remote.REC_FILE_SIZE_EXCEEDED -> mOnFileSizeExceededSubject.onNext(Unit)
+            ErrorCode.Remote.REC_REQUEST_SIZE_EXCEEDED -> mOnRequestSizeExceededSubject.onNext(Unit)
+            ErrorCode.Remote.REC_ALL_FILE_SERVERS_ARE_NOT_WORKING -> mOnAllFileServersAreNotWorkingSubject.onNext(Unit)
+            ErrorCode.Remote.REC_DATABASE_ERROR -> mOnServerDatabaseErrorSubject.onNext(Unit)
+
+            ErrorCode.Remote.REC_TIMEOUT,
+            ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER -> {
+                mOnCouldNotConnectToServerSubject.onNext(Unit)
+            }
+
+            ErrorCode.Remote.REC_SELECTED_PHOTO_DOES_NOT_EXISTS -> mOnSelectedPhotoDoesNotExistsSubject.onNext(Unit)
+            ErrorCode.Remote.REC_RESPONSE_BODY_IS_EMPTY -> mOnResponseBodyIsEmptySubject.onNext(Unit)
+            ErrorCode.Remote.REC_DUPLICATE_ENTRY_EXCEPTION -> mOnFileAlreadySelectedSubject.onNext(Unit)
+
+            else -> throw RuntimeException("Unknown errorCode: $errorCode")
+        }
     }
 
     private fun handleError(error: Throwable) {
-        if (error !is ApiException) {
-            Timber.e(error)
-        }
-
-        //callbacks.onAllFilesUploaded()
-
-        when (error) {
-            /*is ApiException -> {
-                val remoteErrorCode = error.errorCode
-
-                when (remoteErrorCode) {
-                    //Client should check for these two. They should never happen unless the client is patched
-                    ErrorCode.Remote.REC_NO_FILES_WERE_SELECTED_TO_UPLOAD,
-                    ErrorCode.Remote.REC_IMAGES_COUNT_EXCEEDED -> {
-                        throw IllegalStateException("This should never happen")
-                    }
-
-                    ErrorCode.Remote.REC_FILE_SIZE_EXCEEDED -> callbacks.onFileSizeExceeded()
-                    ErrorCode.Remote.REC_REQUEST_SIZE_EXCEEDED -> callbacks.onRequestSizeExceeded()
-                    ErrorCode.Remote.REC_ALL_FILE_SERVERS_ARE_NOT_WORKING -> callbacks.onAllFileServersAreNotWorking()
-                    ErrorCode.Remote.REC_DATABASE_ERROR -> callbacks.onServerDatabaseError()
-
-                    else -> throw IllegalStateException("Unknown error code remoteErrorCode = $remoteErrorCode")
-                }
-            }
-
-            is TimeoutException,
-            is UnknownHostException -> {
-                callbacks.onCouldNotConnectToServer(error)
-            }
-
-            is FileSizeExceededException -> callbacks.onFileSizeExceeded()
-            is PhotosAreNotSetException -> callbacks.onPhotosAreNotSet()
-            is SelectedPhotoDoesNotExistsException -> callbacks.onSelectedPhotoDoesNotExists()
-            is ResponseBodyIsEmpty -> callbacks.onResponseBodyIsEmpty()
-            is DuplicateObservableException -> callbacks.onFileAlreadySelected()
-
-            else -> callbacks.onUnknownError(error)*/
-        }
+        Timber.e(error)
+        mOnUnknownErrorSubject.onNext(error)
     }
+
+    override fun onMalfunctionRequestSuccessfullyCreated(): Observable<Unit> = mOnMalfunctionRequestSuccessfullyCreatedSubject
+    override fun onFileSizeExceeded(): Observable<Unit> = mOnFileSizeExceededSubject
+    override fun onAllFileServersAreNotWorking(): Observable<Unit> = mOnAllFileServersAreNotWorkingSubject
+    override fun onServerDatabaseError(): Observable<Unit> = mOnServerDatabaseErrorSubject
+    override fun onCouldNotConnectToServer(): Observable<Unit> = mOnCouldNotConnectToServerSubject
+    override fun onPhotosAreNotSelected(): Observable<Unit> = mOnPhotosAreNotSelectedSubject
+    override fun onSelectedPhotoDoesNotExists(): Observable<Unit> = mOnSelectedPhotoDoesNotExistsSubject
+    override fun onResponseBodyIsEmpty(): Observable<Unit> = mOnResponseBodyIsEmptySubject
+    override fun onFileAlreadySelected(): Observable<Unit> = mOnFileAlreadySelectedSubject
+    override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
 }

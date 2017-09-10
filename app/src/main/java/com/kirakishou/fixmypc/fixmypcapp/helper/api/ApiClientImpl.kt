@@ -15,20 +15,20 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.MalfunctionRe
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.LoginResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.MalfunctionResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.CouldNotUpdateSessionId
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UserInfoIsEmpty
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.malfunction_request.FileSizeExceededException
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.malfunction_request.PhotosAreNotSelectedException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.malfunction_request.SelectedPhotoDoesNotExistsException
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.functions.Function
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import okhttp3.MultipartBody
 import timber.log.Timber
 import java.io.File
+import java.net.UnknownHostException
+import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 
 /**
@@ -42,7 +42,7 @@ class ApiClientImpl
 
     override fun loginRequest(loginRequest: LoginRequest): Single<LoginResponse> {
         return mApiService.doLogin(loginRequest)
-                .lift(OnApiErrorSingle(mGson))
+                .lift(OnApiErrorSingle<LoginResponse>(mGson))
                 .subscribeOn(Schedulers.io())
     }
 
@@ -68,13 +68,6 @@ class ApiClientImpl
         //send request
         val responseObservable = Observables.zip(progressBodyListObservable, requestObservable, { a, b -> Pair(a, b) })
                 .flatMap { sendRequest(it) }
-                .onErrorResumeNext(Function {
-                    if (it is ApiException) {
-                        return@Function Observable.just(MalfunctionResponse(it.errorCode))
-                    }
-
-                    return@Function Observable.error(it)
-                })
                 .publish()
                 .autoConnect(3)
 
@@ -108,6 +101,22 @@ class ApiClientImpl
         //We are merging all of these three possibilities and retrieving the first observable (and the only one, we should only have ONE observable at this point)
         return Observable.merge(firstAttemptOkObservable, firstAttemptErrorObservable, secondAttemptObservable)
                 .single(MalfunctionResponse(ErrorCode.Remote.REC_EMPTY_OBSERVABLE_ERROR))
+                .onErrorResumeNext { error ->
+                    val response = when (error) {
+                        is ApiException -> MalfunctionResponse(error.errorCode)
+                        is TimeoutException -> MalfunctionResponse(ErrorCode.Remote.REC_TIMEOUT)
+                        is UnknownHostException -> MalfunctionResponse(ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
+                        is FileSizeExceededException -> MalfunctionResponse(ErrorCode.Remote.REC_FILE_SIZE_EXCEEDED)
+                        is PhotosAreNotSelectedException -> MalfunctionResponse(ErrorCode.Remote.REC_NO_PHOTOS_WERE_SELECTED_TO_UPLOAD)
+                        is SelectedPhotoDoesNotExistsException -> MalfunctionResponse(ErrorCode.Remote.REC_SELECTED_PHOTO_DOES_NOT_EXISTS)
+                        is ResponseBodyIsEmpty -> MalfunctionResponse(ErrorCode.Remote.REC_RESPONSE_BODY_IS_EMPTY)
+                        is DuplicateEntryException -> MalfunctionResponse(ErrorCode.Remote.REC_DUPLICATE_ENTRY_EXCEPTION)
+
+                        else -> throw RuntimeException("Unknown exception")
+                    }
+
+                    return@onErrorResumeNext Single.just(response)
+                }
     }
 
     override fun getDamageClaims(lat: Double, lon: Double, radius: Double, page: Long): Single<DamageClaimsResponse> {

@@ -1,6 +1,6 @@
 package com.kirakishou.fixmypc.fixmypcapp.helper.rx.operator
 
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.DuplicateObservableException
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.DuplicateEntryException
 import io.reactivex.ObservableOperator
 import io.reactivex.Observer
 import io.reactivex.internal.functions.ObjectHelper
@@ -45,7 +45,7 @@ class ErrorOnDuplicate<T, out V>(val valueSelector: (T) -> V) : ObservableOperat
                         actual.onNext(inValue)
                     } else {
                         //actual.onError(DuplicateObservableException())
-                        fail(DuplicateObservableException())
+                        fail(DuplicateEntryException())
                     }
                 } else {
                     actual.onNext(null)

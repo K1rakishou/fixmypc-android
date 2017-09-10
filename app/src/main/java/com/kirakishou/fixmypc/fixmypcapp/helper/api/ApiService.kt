@@ -18,7 +18,7 @@ interface ApiService {
     fun doLogin(@Body request: LoginRequest): Single<Response<LoginResponse>>
 
     @Multipart
-    @POST("/v1/api/m_request")
+    @POST("/v1/api/damage_claim_request")
     fun sendMalfunctionRequest(@Header("session_id") sessionId: String,
                                @Part photos: List<MultipartBody.Part>,
                                @Part("request") requestBody: MalfunctionRequest,

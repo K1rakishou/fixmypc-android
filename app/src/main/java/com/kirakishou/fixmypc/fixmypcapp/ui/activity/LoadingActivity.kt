@@ -40,7 +40,7 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
 
     private val accountInfoPrefs by lazy { mAppSharedPreference.prepare<AccountInfoPreference>() }
 
-    override fun getViewModel0(): LoadingActivityViewModel? {
+    override fun initViewModel(): LoadingActivityViewModel? {
         return ViewModelProviders.of(this, mViewModelFactory).get(LoadingActivityViewModel::class.java)
     }
 
@@ -126,7 +126,8 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
     }
 
     private fun onUnknownError(error: Throwable) {
-        showErrorMessageDialog(error.message!!)
+        showToast(error.message!!)
+        finish()
     }
 
     private fun onShowToast(message: String) {

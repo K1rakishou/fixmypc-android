@@ -57,7 +57,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
     private lateinit var mAdapter: DamageClaimListAdapter<DamageClaimsWithDistanceDTO>
     private lateinit var mEndlessScrollListener: EndlessRecyclerOnScrollListener
 
-    override fun getViewModel0(): ActiveMalfunctionsListFragmentViewModel? {
+    override fun initViewModel(): ActiveMalfunctionsListFragmentViewModel? {
         return ViewModelProviders.of(this, mViewModelFactory).get(ActiveMalfunctionsListFragmentViewModel::class.java)
     }
 
@@ -193,8 +193,8 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
                 .inject(this)
     }
 
-    fun onShowToast(message: String) {
-        showToast(message)
+    fun onShowToast(message: String, duration: Int) {
+        showToast(message, duration)
     }
 
     fun onUnknownError(throwable: Throwable) {

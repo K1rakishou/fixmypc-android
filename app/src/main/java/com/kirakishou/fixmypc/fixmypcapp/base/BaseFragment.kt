@@ -1,9 +1,11 @@
 package com.kirakishou.fixmypc.fixmypcapp.base
 
 import android.animation.AnimatorSet
-import android.arch.lifecycle.LifecycleFragment
+import android.arch.lifecycle.LifecycleRegistry
+import android.arch.lifecycle.LifecycleRegistryOwner
 import android.arch.lifecycle.ViewModel
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +19,13 @@ import io.reactivex.disposables.CompositeDisposable
 /**
  * Created by kirakishou on 7/30/2017.
  */
-abstract class BaseFragment<T : ViewModel> : LifecycleFragment() {
+abstract class BaseFragment<T : ViewModel> : Fragment(), LifecycleRegistryOwner {
+
+    private val mRegistry by lazy {
+        LifecycleRegistry(this)
+    }
+
+    override fun getLifecycle(): LifecycleRegistry = mRegistry
 
     private var mUnBinder: Fickle<Unbinder> = Fickle.empty()
     protected var mViewModel: Fickle<T> = Fickle.empty()
@@ -30,7 +38,7 @@ abstract class BaseFragment<T : ViewModel> : LifecycleFragment() {
     @Suppress("UNCHECKED_CAST")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         resolveDaggerDependency()
-        mViewModel = Fickle.of(getViewModel0())
+        mViewModel = Fickle.of(initViewModel())
 
         val viewId = getContentView()
         val root = inflater.inflate(viewId, container, false)
@@ -62,12 +70,12 @@ abstract class BaseFragment<T : ViewModel> : LifecycleFragment() {
         }
     }
 
-    protected fun showToast(message: String) {
+    protected fun showToast(message: String, duration: Int) {
         if (activity !is BaseActivityFragmentCallback) {
             throw IllegalStateException("Activity should implement BaseActivityFragmentCallback!")
         }
 
-        (activity as BaseActivityFragmentCallback).onShowToast(message)
+        (activity as BaseActivityFragmentCallback).onShowToast(message, duration)
     }
 
     protected open fun unknownError(throwable: Throwable) {
@@ -76,6 +84,14 @@ abstract class BaseFragment<T : ViewModel> : LifecycleFragment() {
         }
 
         (activity as BaseActivityFragmentCallback).onUnknownError(throwable)
+    }
+
+    protected fun runActivity(activityClass: Class<*>, finishCurrentActivity: Boolean = false) {
+        if (activity !is BaseActivityFragmentCallback) {
+            throw IllegalStateException("Activity should implement BaseActivityFragmentCallback!")
+        }
+
+        (activity as BaseActivityFragmentCallback).startActivity(activityClass, finishCurrentActivity)
     }
 
     protected fun runCallbackAfterAnimation(set: AnimatorSet, onExitAnimationCallback: () -> Unit) {
@@ -88,7 +104,7 @@ abstract class BaseFragment<T : ViewModel> : LifecycleFragment() {
         set.start()
     }
 
-    protected abstract fun getViewModel0(): T?
+    protected abstract fun initViewModel(): T?
     protected abstract fun getContentView(): Int
     protected abstract fun loadStartAnimations(): AnimatorSet
     protected abstract fun loadExitAnimations(): AnimatorSet

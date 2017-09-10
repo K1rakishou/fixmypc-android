@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.AppCompatButton
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.widget.Toast
 import butterknife.BindView
 import com.jakewharton.rxbinding2.view.RxView
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
@@ -25,8 +26,11 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamagePhoto
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewMalfunctionActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
+import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
+import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewDamageClaimActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewMalfunctionActivityFragmentCallback
 import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.DamageClaimPhotosAdapter
+import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientNewDamageClaimActivityNavigator
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import pl.aprilapps.easyphotopicker.DefaultCallback
@@ -51,7 +55,10 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewMalfunctionActivityViewM
 
     lateinit var mPhotoAdapter: DamageClaimPhotosAdapter
 
-    override fun getViewModel0(): ClientNewMalfunctionActivityViewModel? {
+    @Inject
+    lateinit var mNavigator: ClientNewDamageClaimActivityNavigator
+
+    override fun initViewModel(): ClientNewMalfunctionActivityViewModel? {
         return ViewModelProviders.of(activity, mViewModelFactory).get(ClientNewMalfunctionActivityViewModel::class.java)
     }
 
@@ -88,6 +95,46 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewMalfunctionActivityViewM
                 }, { error ->
                     Timber.e(error)
                 })
+
+        mCompositeDisposable += getViewModel().mOutputs.onMalfunctionRequestSuccessfullyCreated()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onMalfunctionRequestSuccessfullyCreated() })
+
+        mCompositeDisposable += getViewModel().mErrors.onFileSizeExceeded()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onFileSizeExceeded() })
+
+        mCompositeDisposable += getViewModel().mErrors.onAllFileServersAreNotWorking()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onAllFileServersAreNotWorking() })
+
+        mCompositeDisposable += getViewModel().mErrors.onServerDatabaseError()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onServerDatabaseError() })
+
+        mCompositeDisposable += getViewModel().mErrors.onCouldNotConnectToServer()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onCouldNotConnectToServer() })
+
+        mCompositeDisposable += getViewModel().mErrors.onPhotosAreNotSelected()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onPhotosAreNotSelected() })
+
+        mCompositeDisposable += getViewModel().mErrors.onSelectedPhotoDoesNotExists()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onSelectedPhotoDoesNotExists() })
+
+        mCompositeDisposable += getViewModel().mErrors.onResponseBodyIsEmpty()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onResponseBodyIsEmpty() })
+
+        mCompositeDisposable += getViewModel().mErrors.onFileAlreadySelected()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onFileAlreadySelected() })
+
+        mCompositeDisposable += getViewModel().mErrors.onUnknownError()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onUnknownError(it) })
     }
 
     private fun sendApplicationToServer() {
@@ -155,10 +202,55 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewMalfunctionActivityViewM
 
     }
 
+    private fun onMalfunctionRequestSuccessfullyCreated() {
+        showToast("Заявка успешно создана", Toast.LENGTH_LONG)
+        runActivity(ClientMainActivity::class.java, true)
+    }
+
+    private fun onFileSizeExceeded() {
+        showToast("Размер одного из выбранных изображений превышает лимит", Toast.LENGTH_LONG)
+    }
+
+    private fun onRequestSizeExceeded() {
+        showToast("Размер двух и более изображений превышает лимит", Toast.LENGTH_LONG)
+    }
+
+    private fun onAllFileServersAreNotWorking() {
+        showToast("Не удалось обработать запрос. Сервера не работают. Попробуйте повторить запрос позже.", Toast.LENGTH_LONG)
+    }
+
+    private fun onServerDatabaseError() {
+        showToast("Ошибка БД на сервере. Попробуйте повторить запрос позже.", Toast.LENGTH_LONG)
+    }
+
+    private fun onCouldNotConnectToServer() {
+        showToast("Не удалось подключиться к серверу", Toast.LENGTH_LONG)
+    }
+
+    private fun onPhotosAreNotSelected() {
+        showToast("Не выбраны фото поломки", Toast.LENGTH_LONG)
+    }
+
+    private fun onSelectedPhotoDoesNotExists() {
+        showToast("Не удалось прочитать фото с диска (оно было удалено или перемещено)", Toast.LENGTH_LONG)
+    }
+
+    private fun onResponseBodyIsEmpty() {
+        showToast("Response body is empty!", Toast.LENGTH_LONG)
+    }
+
+    private fun onFileAlreadySelected() {
+        showToast("Нельзя отправить два одинаковых файла", Toast.LENGTH_LONG)
+    }
+
+    private fun onUnknownError(error: Throwable) {
+        super.unknownError(error)
+    }
+
     override fun resolveDaggerDependency() {
         DaggerChooseCategoryActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
-                .clientNewDamageClaimActivityModule(ClientNewDamageClaimActivityModule())
+                .clientNewDamageClaimActivityModule(ClientNewDamageClaimActivityModule(activity as ClientNewDamageClaimActivity))
                 .build()
                 .inject(this)
     }

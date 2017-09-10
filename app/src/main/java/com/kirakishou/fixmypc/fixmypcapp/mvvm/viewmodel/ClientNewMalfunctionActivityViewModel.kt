@@ -96,6 +96,7 @@ class ClientNewMalfunctionActivityViewModel
 
         if (errorCode != ErrorCode.Remote.REC_OK) {
             handleBadResponse(response.errorCode)
+            return
         }
 
         mOnMalfunctionRequestSuccessfullyCreatedSubject.onNext(Unit)

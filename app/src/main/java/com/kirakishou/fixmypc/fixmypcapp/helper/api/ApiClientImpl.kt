@@ -21,6 +21,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.malfunction_reque
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.malfunction_request.SelectedPhotoDoesNotExistsException
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.functions.Function
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
@@ -68,6 +69,13 @@ class ApiClientImpl
         //send request
         val responseObservable = Observables.zip(progressBodyListObservable, requestObservable, { a, b -> Pair(a, b) })
                 .flatMap { sendRequest(it) }
+                .onErrorResumeNext(Function {
+                    if (it is ApiException) {
+                        return@Function Observable.just(MalfunctionResponse(it.errorCode))
+                    }
+
+                    return@Function Observable.error(it)
+                })
                 .publish()
                 .autoConnect(3)
 

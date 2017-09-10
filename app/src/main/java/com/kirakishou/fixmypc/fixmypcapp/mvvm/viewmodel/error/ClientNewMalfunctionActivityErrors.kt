@@ -5,7 +5,7 @@ import io.reactivex.Observable
 /**
  * Created by kirakishou on 9/9/2017.
  */
-interface ClientNewMalfunctionActivityErrors {
+interface ClientNewMalfunctionActivityErrors : ClientNewMalfunctionActivityErrorBase{
     fun onFileSizeExceeded(): Observable<Unit>
     fun onAllFileServersAreNotWorking(): Observable<Unit>
     fun onServerDatabaseError(): Observable<Unit>
@@ -14,5 +14,4 @@ interface ClientNewMalfunctionActivityErrors {
     fun onSelectedPhotoDoesNotExists(): Observable<Unit>
     fun onResponseBodyIsEmpty(): Observable<Unit>
     fun onFileAlreadySelected(): Observable<Unit>
-    fun onUnknownError(): Observable<Throwable>
 }

@@ -47,6 +47,7 @@ class ClientNewMalfunctionActivityViewModel
     private val mOnSelectedPhotoDoesNotExistsSubject = BehaviorSubject.create<Unit>()
     private val mOnResponseBodyIsEmptySubject = BehaviorSubject.create<Unit>()
     private val mOnFileAlreadySelectedSubject = BehaviorSubject.create<Unit>()
+    private val mOnBadServerResponseSubject = BehaviorSubject.create<Unit>()
     private val mOnUnknownErrorSubject = BehaviorSubject.create<Throwable>()
 
     init {
@@ -104,7 +105,7 @@ class ClientNewMalfunctionActivityViewModel
 
     private fun handleBadResponse(errorCode: ErrorCode.Remote) {
         when (errorCode) {
-            ErrorCode.Remote.REC_NO_PHOTOS_WERE_SELECTED_TO_UPLOAD -> TODO()
+            ErrorCode.Remote.REC_NO_PHOTOS_WERE_SELECTED_TO_UPLOAD,
             ErrorCode.Remote.REC_IMAGES_COUNT_EXCEEDED -> {
                 throw IllegalStateException("This should never happen")
             }
@@ -122,6 +123,7 @@ class ClientNewMalfunctionActivityViewModel
             ErrorCode.Remote.REC_SELECTED_PHOTO_DOES_NOT_EXISTS -> mOnSelectedPhotoDoesNotExistsSubject.onNext(Unit)
             ErrorCode.Remote.REC_RESPONSE_BODY_IS_EMPTY -> mOnResponseBodyIsEmptySubject.onNext(Unit)
             ErrorCode.Remote.REC_DUPLICATE_ENTRY_EXCEPTION -> mOnFileAlreadySelectedSubject.onNext(Unit)
+            ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION -> mOnBadServerResponseSubject.onNext(Unit)
 
             else -> throw RuntimeException("Unknown errorCode: $errorCode")
         }
@@ -141,5 +143,6 @@ class ClientNewMalfunctionActivityViewModel
     override fun onSelectedPhotoDoesNotExists(): Observable<Unit> = mOnSelectedPhotoDoesNotExistsSubject
     override fun onResponseBodyIsEmpty(): Observable<Unit> = mOnResponseBodyIsEmptySubject
     override fun onFileAlreadySelected(): Observable<Unit> = mOnFileAlreadySelectedSubject
+    override fun onBadServerResponse(): Observable<Unit> = mOnBadServerResponseSubject
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
 }

@@ -31,7 +31,7 @@ class OnApiErrorObservable<T : StatusResponse>(val gson: Gson) : ObservableOpera
                         if (error.errorCode != null) {
                             observer.onError(ApiException(error.errorCode))
                         } else {
-                            observer.onError(BadServerResponseException(responseJson))
+                            observer.onError(BadServerResponseException())
                         }
                     } catch (e: Exception) {
                         observer.onError(e)

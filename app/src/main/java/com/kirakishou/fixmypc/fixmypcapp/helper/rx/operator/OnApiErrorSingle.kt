@@ -41,7 +41,7 @@ class OnApiErrorSingle<T>(val gson: Gson) : SingleOperator<T, Response<T>> {
                         if (error.errorCode != null) {
                             observer.onError(ApiException(error.errorCode))
                         } else {
-                            observer.onError(BadServerResponseException(responseJson))
+                            observer.onError(BadServerResponseException())
                         }
                     } catch (e: Exception) {
                         observer.onError(e)

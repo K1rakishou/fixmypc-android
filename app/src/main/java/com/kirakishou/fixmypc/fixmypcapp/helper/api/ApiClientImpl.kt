@@ -109,6 +109,7 @@ class ApiClientImpl
         //We are merging all of these three possibilities and retrieving the first observable (and the only one, we should only have ONE observable at this point)
         return Observable.merge(firstAttemptOkObservable, firstAttemptErrorObservable, secondAttemptObservable)
                 .single(MalfunctionResponse(ErrorCode.Remote.REC_EMPTY_OBSERVABLE_ERROR))
+                //we don't want to end the reactive stream if some known error has happened
                 .onErrorResumeNext { error ->
                     val response = when (error) {
                         is ApiException -> MalfunctionResponse(error.errorCode)
@@ -119,6 +120,7 @@ class ApiClientImpl
                         is SelectedPhotoDoesNotExistsException -> MalfunctionResponse(ErrorCode.Remote.REC_SELECTED_PHOTO_DOES_NOT_EXISTS)
                         is ResponseBodyIsEmpty -> MalfunctionResponse(ErrorCode.Remote.REC_RESPONSE_BODY_IS_EMPTY)
                         is DuplicateEntryException -> MalfunctionResponse(ErrorCode.Remote.REC_DUPLICATE_ENTRY_EXCEPTION)
+                        is BadServerResponseException -> MalfunctionResponse(ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
 
                         else -> throw RuntimeException("Unknown exception")
                     }

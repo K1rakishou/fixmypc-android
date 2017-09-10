@@ -59,6 +59,7 @@ class ProgressDialog(context: Context?) : Dialog(context) {
     private fun handleEvent(event: ProgressUpdate) {
         when (event) {
             is ProgressUpdate.ProgressUpdateStart -> {
+                Timber.e("ProgressUpdateStart")
                 super.show()
 
                 this.totalFiles = event.filesCount
@@ -67,20 +68,24 @@ class ProgressDialog(context: Context?) : Dialog(context) {
             }
 
             is ProgressUpdate.ProgressUpdateChunk -> {
+                Timber.e("ProgressUpdateChunk")
                 progressBar.progress = event.progress
             }
 
             is ProgressUpdate.ProgressUpdateFileUploaded -> {
+                Timber.e("ProgressUpdateFileUploaded")
                 ++currentFile
                 currentPhotoText.text = String.format(context.getString(R.string.uploading_photo_num), currentFile, totalFiles)
             }
 
             is ProgressUpdate.ProgressUpdateReset -> {
+                Timber.e("ProgressUpdateReset")
                 currentFile = 0
                 currentPhotoText.text = String.format(context.getString(R.string.uploading_photo_num), currentFile, totalFiles)
             }
 
             is ProgressUpdate.ProgressUpdateDone -> {
+                Timber.e("ProgressUpdateDone")
                 super.hide()
             }
         }

@@ -13,7 +13,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.ReplaySubject
 import timber.log.Timber
 
 /**
@@ -31,16 +31,9 @@ class ProgressDialog(context: Context?) : Dialog(context) {
     private var totalFiles = 0
     private var currentFile = 0
     private val compositeDisposable = CompositeDisposable()
-    val progressUpdateSubject = BehaviorSubject.create<ProgressUpdate>()
+    val progressUpdateSubject = ReplaySubject.create<ProgressUpdate>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.dialog_progress)
-        unbinder = ButterKnife.bind(this)
-
-        this.currentPhotoText.text = String.format(context.getString(R.string.uploading_photo_num), currentFile, totalFiles)
-
+    init {
         compositeDisposable += progressUpdateSubject
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ event ->
@@ -50,43 +43,48 @@ class ProgressDialog(context: Context?) : Dialog(context) {
                 })
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContentView(R.layout.dialog_progress)
+        unbinder = ButterKnife.bind(this)
+
+        this.currentPhotoText.text = String.format(context.getString(R.string.uploading_photo_num), currentFile, totalFiles)
+    }
+
     override fun onStop() {
         super.onStop()
 
+        compositeDisposable.clear()
         unbinder?.unbind()
     }
 
     private fun handleEvent(event: ProgressUpdate) {
         when (event) {
             is ProgressUpdate.ProgressUpdateStart -> {
-                Timber.e("ProgressUpdateStart")
-                super.show()
-
                 this.totalFiles = event.filesCount
                 this.setCancelable(false)
                 this.setTitle(context.getString(com.kirakishou.fixmypc.fixmypcapp.R.string.uploading_in_progress))
+
+                this.show()
             }
 
             is ProgressUpdate.ProgressUpdateChunk -> {
-                Timber.e("ProgressUpdateChunk")
                 progressBar.progress = event.progress
             }
 
             is ProgressUpdate.ProgressUpdateFileUploaded -> {
-                Timber.e("ProgressUpdateFileUploaded")
                 ++currentFile
                 currentPhotoText.text = String.format(context.getString(R.string.uploading_photo_num), currentFile, totalFiles)
             }
 
             is ProgressUpdate.ProgressUpdateReset -> {
-                Timber.e("ProgressUpdateReset")
                 currentFile = 0
                 currentPhotoText.text = String.format(context.getString(R.string.uploading_photo_num), currentFile, totalFiles)
             }
 
             is ProgressUpdate.ProgressUpdateDone -> {
-                Timber.e("ProgressUpdateDone")
-                super.hide()
+                this.hide()
             }
         }
     }

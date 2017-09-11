@@ -1,5 +1,6 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output
 
+import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
 import io.reactivex.Observable
 
 /**
@@ -7,4 +8,5 @@ import io.reactivex.Observable
  */
 interface ClientNewMalfunctionActivityOutputs {
     fun onMalfunctionRequestSuccessfullyCreated(): Observable<Unit>
+    fun uploadProgressUpdateSubject(): Observable<ProgressUpdate>
 }

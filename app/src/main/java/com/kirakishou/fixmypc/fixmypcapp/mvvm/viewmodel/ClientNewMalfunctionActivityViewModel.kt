@@ -17,6 +17,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.ReplaySubject
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -35,7 +36,7 @@ class ClientNewMalfunctionActivityViewModel
     private val mCompositeDisposable = CompositeDisposable()
     private val malfunctionRequestInfo = DamageClaimInfo()
 
-    lateinit var mUploadProgressUpdateSubject: BehaviorSubject<ProgressUpdate>
+    private val mUploadProgressUpdateSubject = ReplaySubject.create<ProgressUpdate>()
     private val mSendMalfunctionRequestToServerSubject = BehaviorSubject.create<DamageClaimInfo>()
     private val mOnMalfunctionRequestSuccessfullyCreatedSubject = BehaviorSubject.create<Unit>()
     private val mOnFileSizeExceededSubject = BehaviorSubject.create<Unit>()
@@ -134,6 +135,7 @@ class ClientNewMalfunctionActivityViewModel
         mOnUnknownErrorSubject.onNext(error)
     }
 
+    override fun uploadProgressUpdateSubject(): Observable<ProgressUpdate> = mUploadProgressUpdateSubject
     override fun onMalfunctionRequestSuccessfullyCreated(): Observable<Unit> = mOnMalfunctionRequestSuccessfullyCreatedSubject
     override fun onFileSizeExceeded(): Observable<Unit> = mOnFileSizeExceededSubject
     override fun onAllFileServersAreNotWorking(): Observable<Unit> = mOnAllFileServersAreNotWorkingSubject

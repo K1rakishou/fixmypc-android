@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ApplicationModule
+import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiService
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
@@ -31,4 +32,5 @@ interface ApplicationComponent {
     fun exposeAppSettings(): AppSettings
     fun exposePermissionManager(): PermissionManager
     fun exposeRefWatcher(): RefWatcher
+    fun exposeImageLoader(): ImageLoader
 }

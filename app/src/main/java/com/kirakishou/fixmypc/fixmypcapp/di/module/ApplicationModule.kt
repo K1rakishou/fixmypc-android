@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClientImpl
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiService
@@ -145,6 +146,12 @@ class ApplicationModule(private val mApplication: Application,
     @Provides
     fun provideRefWatcher(application: Application): RefWatcher {
         return LeakCanary.install(application)
+    }
+
+    @Singleton
+    @Provides
+    fun provideImageLoader(context: Context): ImageLoader {
+        return ImageLoader(context)
     }
 }
 

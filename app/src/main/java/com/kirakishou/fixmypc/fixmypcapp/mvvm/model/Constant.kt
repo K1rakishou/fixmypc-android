@@ -34,6 +34,12 @@ object Constant {
         val ACTIVE_DAMAGE_CLAIMS_LIST = "${BASE_FRAGMENT_TAG}_ACTIVE_DAMAGE_CLAIMS_LIST"
     }
 
+    object ImageSize {
+        val LARGE = "large"
+        val MEDIUM = "medium"
+        val SMALL = "small"
+    }
+
     object Views {
         val PHOTO_ADAPTER_VIEW_WITH: Int = 128
         val DAMAGE_CLAIM_ADAPTER_VIEW_WITH = 288

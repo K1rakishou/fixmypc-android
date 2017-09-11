@@ -12,6 +12,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerSpecialistMainActivi
 import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainActivityViewModelFactory
+import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavigator
 import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
@@ -23,6 +24,9 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>() {
     @Inject
     lateinit var mViewModelFactory: SpecialistMainActivityViewModelFactory
 
+    @Inject
+    lateinit var mNavigator: SpecialistMainActivityNavigator
+
     override fun initViewModel(): SpecialistMainActivityViewModel? {
         return ViewModelProviders.of(this, mViewModelFactory).get(SpecialistMainActivityViewModel::class.java)
     }
@@ -31,22 +35,11 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>() {
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
-    /*override fun getFragmentFromTag(fragmentTag: String): Fragment {
-        return when (fragmentTag) {
-            Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST -> ActiveDamageClaimsListFragment.newInstance()
-            else -> throw IllegalArgumentException("Unknown fragmentTag: $fragmentTag")
-        }
-    }*/
-
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
-        //mViewModel.initPresenter()
-
-        //pushFragment(Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST)
+        mNavigator.navigateToActiveDamageClaimsListFragment()
     }
 
     override fun onActivityDestroy() {
-        //mPresenter.destroyPresenter()
-
         mRefWatcher.watch(this)
     }
 
@@ -59,7 +52,7 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>() {
     override fun resolveDaggerDependency() {
         DaggerSpecialistMainActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
-                .specialistMainActivityModule(SpecialistMainActivityModule())
+                .specialistMainActivityModule(SpecialistMainActivityModule(this))
                 .build()
                 .inject(this)
     }
@@ -69,5 +62,18 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>() {
     }
 
     fun onUnknownError(error: Throwable) {
+        if (error.message != null) {
+            showToast(error.message!!)
+        } else {
+            showToast("Неизвестная ошибка")
+        }
+
+        finish()
+    }
+
+    override fun onBackPressed() {
+        if (mNavigator.popFragment()) {
+            super.onBackPressed()
+        }
     }
 }

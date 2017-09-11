@@ -24,7 +24,7 @@ import io.reactivex.Single
 import io.reactivex.functions.Function
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.ReplaySubject
 import okhttp3.MultipartBody
 import timber.log.Timber
 import java.io.File
@@ -43,12 +43,12 @@ class ApiClientImpl
 
     override fun loginRequest(loginRequest: LoginRequest): Single<LoginResponse> {
         return mApiService.doLogin(loginRequest)
-                .lift(OnApiErrorSingle<LoginResponse>(mGson))
+                .lift(OnApiErrorSingle(mGson))
                 .subscribeOn(Schedulers.io())
     }
 
     override fun createMalfunctionRequest(damageClaimInfo: DamageClaimInfo,
-                                          uploadProgressUpdateSubject: BehaviorSubject<ProgressUpdate>): Single<MalfunctionResponse> {
+                                          uploadProgressUpdateSubject: ReplaySubject<ProgressUpdate>): Single<MalfunctionResponse> {
 
         //create MultipartFile bodies, check if user has selected the same file twice
         val progressBodyListObservable = Observable.fromIterable(damageClaimInfo.damageClaimPhotos)
@@ -82,7 +82,7 @@ class ApiClientImpl
         //if there were no errors - do nothing
         val firstAttemptOkObservable = responseObservable
                 .filter { it.errorCode == ErrorCode.Remote.REC_OK }
-                .doOnNext { _ -> uploadProgressUpdateSubject.onComplete() }
+                //.doOnNext { _ -> uploadProgressUpdateSubject.onComplete() }
 
         //if there were REC_SESSION_ID_EXPIRED error - try to re login
         val sessionIdObservable = responseObservable
@@ -94,13 +94,13 @@ class ApiClientImpl
         //if there were some other error - do nothing
         val firstAttemptErrorObservable = responseObservable
                 .filter { it.errorCode != ErrorCode.Remote.REC_OK && it.errorCode != ErrorCode.Remote.REC_SESSION_ID_EXPIRED }
-                .doOnNext { _ -> uploadProgressUpdateSubject.onComplete() }
+                //.doOnNext { _ -> uploadProgressUpdateSubject.onComplete() }
 
         //re send the request
         val secondAttemptObservable = Observables.zip(sessionIdObservable, progressBodyListObservable, requestObservable, { a, b, c -> Triple(a, b, c) })
                 .doOnNext { _ -> uploadProgressUpdateSubject.onNext(ProgressUpdate.ProgressUpdateReset()) }
                 .flatMap { resendRequest(it) }
-                .doOnNext { _ -> uploadProgressUpdateSubject.onComplete() }
+                //.doOnNext { _ -> uploadProgressUpdateSubject.onComplete() }
 
         //now we have three different outcomes:
         //either request was accepted by the server on the first try and returned REC_OK,
@@ -183,7 +183,7 @@ class ApiClientImpl
                 .toObservable()
     }
 
-    private fun prepareRequest(photoPath: String, uploadProgressUpdateSubject: BehaviorSubject<ProgressUpdate>): Pair<MultipartBody.Part, String> {
+    private fun prepareRequest(photoPath: String, uploadProgressUpdateSubject: ReplaySubject<ProgressUpdate>): Pair<MultipartBody.Part, String> {
         Timber.e("prepareRequest")
 
         val photoFile = File(photoPath)

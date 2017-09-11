@@ -1,7 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.helper.util.retrofit
 
 import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
-import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.ReplaySubject
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import okio.BufferedSink
@@ -18,15 +18,15 @@ class ProgressRequestBody : RequestBody {
     private val ignoreFirstNumberOfWriteToCalls: Int
     private var lastProgressPercentUpdate = 0f
     private var numWriteToCalls = 0
-    private lateinit var uploadProgressUpdateSubject: BehaviorSubject<ProgressUpdate>
+    private lateinit var uploadProgressUpdateSubject: ReplaySubject<ProgressUpdate>
 
-    constructor(file: File, uploadProgressUpdateSubject: BehaviorSubject<ProgressUpdate>) : super() {
+    constructor(file: File, uploadProgressUpdateSubject: ReplaySubject<ProgressUpdate>) : super() {
         this.mFile = file
         this.uploadProgressUpdateSubject = uploadProgressUpdateSubject
         ignoreFirstNumberOfWriteToCalls = 0
     }
 
-    constructor(file: File, ignoreFirstNumberOfWriteToCalls: Int, uploadProgressUpdateSubject: BehaviorSubject<ProgressUpdate>) : super() {
+    constructor(file: File, ignoreFirstNumberOfWriteToCalls: Int, uploadProgressUpdateSubject: ReplaySubject<ProgressUpdate>) : super() {
         this.mFile = file
         this.uploadProgressUpdateSubject = uploadProgressUpdateSubject
         this.ignoreFirstNumberOfWriteToCalls = ignoreFirstNumberOfWriteToCalls
@@ -76,7 +76,7 @@ class ProgressRequestBody : RequestBody {
             }
 
         } catch (e: Exception) {
-            uploadProgressUpdateSubject.onError(e)
+            uploadProgressUpdateSubject.onNext(ProgressUpdate.ProgressUpdateError(e))
         }
     }
 

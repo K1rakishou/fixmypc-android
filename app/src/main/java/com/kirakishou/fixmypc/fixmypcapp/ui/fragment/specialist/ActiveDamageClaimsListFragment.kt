@@ -15,6 +15,7 @@ import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerActiveDamageClaimsListFragmentComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ActiveDamageClaimsListFragmentModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.EndlessRecyclerOnScrollListener
+import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.MyCurrentLocationPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
@@ -49,6 +50,9 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
     @Inject
     lateinit var mViewModelFactory: ActiveMalfunctionsListFragmentViewModelFactory
 
+    @Inject
+    lateinit var mImageLoader: ImageLoader
+
     private val mLoadMoreSubject = BehaviorSubject.create<Long>()
     private val mLocationSubject = BehaviorSubject.create<LatLng>()
 
@@ -76,7 +80,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
     }
 
     override fun onFragmentReady() {
-        mAdapter = DamageClaimListAdapter(activity)
+        mAdapter = DamageClaimListAdapter(activity, mImageLoader)
         mAdapter.init()
 
         initRx()
@@ -128,7 +132,6 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
                 .delay(1, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ (page, latlon) ->
-                    Timber.e("Fetching next damage claims page: $page at (lat: ${latlon.latitude}, lon: ${latlon.longitude})")
                     saveCurrentLocation(latlon)
                     getDamageClaims(page, latlon)
                 }, { error ->
@@ -151,23 +154,6 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
 
     private fun getDamageClaims(page: Long, location: LatLng) {
         getViewModel().mInputs.getDamageClaimsWithinRadius(location, 75.0, page)
-
-        /*if (!currentLocationPref.exists()) {
-            SmartLocation.with(activity)
-                    .location()
-                    .oneFix()
-                    .start {
-                        val location = LatLng(it.latitude, it.longitude)
-                        saveCurrentLocation(location)
-
-                        //mPresenter.getDamageClaimsWithinRadius(location, 75.0, page)
-
-                        mLocationSubject.onNext(location)
-                    }
-        } else {
-            //val location = currentLocationPref.mLocation.get()
-            //mPresenter.getDamageClaimsWithinRadius(location, 75.0, page)
-        }*/
     }
 
     private fun onDamageClaimsPageReceived(damageClaimList: ArrayList<DamageClaimsWithDistanceDTO>) {

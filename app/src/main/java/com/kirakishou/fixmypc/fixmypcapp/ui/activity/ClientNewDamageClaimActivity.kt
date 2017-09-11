@@ -48,7 +48,8 @@ class ClientNewDamageClaimActivity : BaseActivity<ClientNewMalfunctionActivityVi
         mNavigator.navigateToDamageClaimCategoryFragment()
         progressDialog = ProgressDialog(this)
 
-        getViewModel().mUploadProgressUpdateSubject = progressDialog.progressUpdateSubject
+        getViewModel().mOutputs.uploadProgressUpdateSubject()
+                .subscribe(progressDialog.progressUpdateSubject)
     }
 
     override fun onActivityDestroy() {

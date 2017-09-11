@@ -8,5 +8,6 @@ interface ProgressUpdate {
     class ProgressUpdateChunk(val progress: Int) : ProgressUpdate
     class ProgressUpdateFileUploaded : ProgressUpdate
     class ProgressUpdateReset : ProgressUpdate
+    class ProgressUpdateError(val error: Throwable) : ProgressUpdate
     class ProgressUpdateDone : ProgressUpdate
 }

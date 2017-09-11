@@ -7,16 +7,19 @@ import android.widget.ImageView
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
+import com.bumptech.glide.Glide
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseAdapter
+import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.Utils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItemType
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.DamageClaimsWithDistanceDTO
 
 /**
  * Created by kirakishou on 9/3/2017.
  */
-class DamageClaimListAdapter<T : DamageClaimsWithDistanceDTO>(mContext: Context) : BaseAdapter<T>(mContext) {
+class DamageClaimListAdapter<T : DamageClaimsWithDistanceDTO>(val mContext: Context, mImageLoader: ImageLoader) : BaseAdapter<T>(mContext) {
 
     override fun getBaseAdapterInfo(): List<BaseAdapterInfo> {
         return listOf(BaseAdapterInfo(AdapterItemType.VIEW_ITEM, R.layout.adapter_item_damage_claim, DamageClaimItemHolder::class.java))
@@ -30,6 +33,12 @@ class DamageClaimListAdapter<T : DamageClaimsWithDistanceDTO>(mContext: Context)
 
                 holder.damageCategory.text = claim.damageClaim.description
                 holder.distanceToMe.text = "$distStr КМ"
+
+                if (claim.damageClaim.imageNamesList.isNotEmpty()) {
+                    Glide.with(mContext)
+                            .load("http://kez1911.asuscomm.com:8080/v1/api/image/${claim.damageClaim.imageNamesList[0]}/${Constant.ImageSize.SMALL}/")
+                            .into(holder.damagePhoto)
+                }
             }
         }
     }

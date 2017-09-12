@@ -52,6 +52,7 @@ object Constant {
     object Room {
         object TableName {
             const val DAMAGE_CLAIM_ENTITY_TABLE_NAME = "damage_claims"
+            const val DAMAGE_CLAIM_PHOTO_ENTITY_TABLE_NAME = "damage_claims_photos"
         }
 
         object ColumnName {

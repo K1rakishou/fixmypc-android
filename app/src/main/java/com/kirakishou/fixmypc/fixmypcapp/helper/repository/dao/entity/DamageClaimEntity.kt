@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.dao
+package com.kirakishou.fixmypc.fixmypcapp.helper.repository.dao.entity
 
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity

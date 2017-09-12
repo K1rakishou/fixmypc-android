@@ -7,7 +7,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.LoginPasswordDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.LoginResponseDataDTO
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.LoginRequest
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.LoginPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.LoginResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.LoadingActivityErrors
@@ -48,7 +48,7 @@ class LoadingActivityViewModel
     init {
         mCompositeDisposable += mLogInSubject
                 .subscribeOn(Schedulers.io())
-                .map { LoginRequest(it.login, it.password) }
+                .map { LoginPacket(it.login, it.password) }
                 .flatMap { Observables.zip(mApiClient.loginRequest(it).toObservable(), Observable.just(it)) }
                 .subscribe({ (loginResponse, loginRequest) ->
                     Timber.e("Login response received")

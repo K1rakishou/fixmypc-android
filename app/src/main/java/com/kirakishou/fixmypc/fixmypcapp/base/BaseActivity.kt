@@ -11,7 +11,7 @@ import android.widget.Toast
 import butterknife.ButterKnife
 import butterknife.Unbinder
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
-import com.kirakishou.fixmypc.fixmypcapp.helper.util.extension.myAddListener
+import com.kirakishou.fixmypc.fixmypcapp.helper.extension.myAddListener
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import io.reactivex.disposables.CompositeDisposable
 

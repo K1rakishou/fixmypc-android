@@ -25,6 +25,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimListAdapterGenericParam
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimsWithDistanceDTO
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ActiveMalfunctionsListFragmentViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ActiveMalfunctionsListFragmentViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.DamageClaimListAdapter
@@ -55,6 +56,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
 
     private val mLoadMoreSubject = BehaviorSubject.create<Long>()
     private val mLocationSubject = BehaviorSubject.create<LatLng>()
+    private val mAdapterItemClickSubject = BehaviorSubject.create<DamageClaim>()
 
     private val currentLocationPref by lazy { mAppSharedPreference.prepare<MyCurrentLocationPreference>() }
 
@@ -80,7 +82,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
     }
 
     override fun onFragmentReady() {
-        mAdapter = DamageClaimListAdapter(activity, mImageLoader)
+        mAdapter = DamageClaimListAdapter(activity, mAdapterItemClickSubject, mImageLoader)
 
         initRx()
         initRecycler()
@@ -153,6 +155,14 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
         mCompositeDisposable += getViewModel().mErrors.onUnknownError()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUnknownError(it) })
+
+        mCompositeDisposable += mAdapterItemClickSubject
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onAdapterItemClick(it) })
+    }
+
+    private fun onAdapterItemClick(damageClaim: DamageClaim) {
+
     }
 
     private fun saveCurrentLocation(location: LatLng) {
@@ -165,12 +175,12 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
     }
 
     private fun onDamageClaimsPageReceived(damageClaimList: ArrayList<DamageClaimsWithDistanceDTO>) {
-        mAdapter.removeProgressFooter()
-
         //first we need to tell out endless scroll listener to stop emit scroll events
         if (damageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
             mEndlessScrollListener.reachedEnd()
         }
+
+        mAdapter.removeProgressFooter()
 
         val adapterDamageClaims = damageClaimList.map { AdapterItem(it, AdapterItemType.VIEW_ITEM) }
         mAdapter.addAll(adapterDamageClaims as List<AdapterItem<DamageClaimListAdapterGenericParam>>)

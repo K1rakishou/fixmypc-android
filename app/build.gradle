@@ -53,7 +53,7 @@ android {
 
 ext {
     supportLibraryVersion = '26.0.2'
-    archLifecycle = '1.0.0-alpha9'
+    architectureComponentsVersion = '1.0.0-alpha9'
 }
 
 dependencies {
@@ -72,10 +72,14 @@ dependencies {
 
     provided 'org.glassfish:javax.annotation:10.0-b28'
 
-    compile "android.arch.lifecycle:runtime:${archLifecycle}"
-    compile "android.arch.lifecycle:extensions:${archLifecycle}"
-    compile "android.arch.lifecycle:reactivestreams:${archLifecycle}"
-    compile "android.arch.lifecycle:compiler:${archLifecycle}"
+    compile "android.arch.lifecycle:runtime:${architectureComponentsVersion}"
+    compile "android.arch.lifecycle:extensions:${architectureComponentsVersion}"
+    compile "android.arch.lifecycle:reactivestreams:${architectureComponentsVersion}"
+    kapt "android.arch.lifecycle:compiler:${architectureComponentsVersion}"
+
+    compile "android.arch.persistence.room:runtime:${architectureComponentsVersion}"
+    compile "android.arch.persistence.room:rxjava2:${architectureComponentsVersion}"
+    kapt "android.arch.persistence.room:compiler:${architectureComponentsVersion}"
 
     compile "com.android.support:mediarouter-v7:$supportLibraryVersion"
     compile "com.android.support:appcompat-v7:$supportLibraryVersion"

@@ -1,6 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.di.module
 
 import android.app.Application
+import android.arch.persistence.room.Room
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.android.gms.maps.model.LatLng
@@ -10,6 +11,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClientImpl
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiService
+import com.kirakishou.fixmypc.fixmypcapp.helper.database.MyDatabase
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.gson.AccountTypeTypeAdapter
@@ -37,7 +39,8 @@ import javax.inject.Singleton
 
 @Module
 class ApplicationModule(private val mApplication: Application,
-                        private val mBaseUrl: String) {
+                        private val mBaseUrl: String,
+                        private val databaseName: String) {
 
     @Singleton
     @Provides
@@ -49,6 +52,12 @@ class ApplicationModule(private val mApplication: Application,
     @Provides
     fun provideContext(): Context {
         return mApplication.applicationContext
+    }
+
+    @Singleton
+    @Provides
+    fun provideDatabase(context: Context): MyDatabase {
+        return Room.databaseBuilder(context, MyDatabase::class.java, databaseName).build()
     }
 
     @Singleton

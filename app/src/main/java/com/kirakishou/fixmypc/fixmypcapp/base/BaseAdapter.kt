@@ -16,7 +16,6 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItemType
 abstract class BaseAdapter<T>(mContext: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     protected lateinit var mHandler: Handler
-    private var mInited = false
     protected val mItems = mutableListOf<AdapterItem<T>>()
     private val mLayoutInflater = LayoutInflater.from(mContext)
 
@@ -24,7 +23,6 @@ abstract class BaseAdapter<T>(mContext: Context) : RecyclerView.Adapter<Recycler
 
     init {
         mBaseAdapterInfo = getBaseAdapterInfo()
-        mInited = true
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
@@ -44,16 +42,8 @@ abstract class BaseAdapter<T>(mContext: Context) : RecyclerView.Adapter<Recycler
     abstract fun remove(position: Int)
 
     open fun clear() {
-        checkIsInited()
-
         mItems.clear()
         notifyDataSetChanged()
-    }
-
-    protected fun checkIsInited() {
-        if (!mInited) {
-            throw IllegalStateException("You forgot to initialize base adapter with function init()")
-        }
     }
 
     override fun getItemViewType(position: Int) = mItems[position].getType()

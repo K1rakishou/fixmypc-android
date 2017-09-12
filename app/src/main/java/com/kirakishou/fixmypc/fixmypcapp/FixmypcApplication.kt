@@ -16,13 +16,14 @@ class FixmypcApplication : Application() {
     companion object {
         @JvmStatic lateinit var applicationComponent: ApplicationComponent
         private val mBaseUrl = "http://kez1911.asuscomm.com:8080/"
+        private val mDatabaseName = "fixmypc_db"
     }
 
     override fun onCreate() {
         super.onCreate()
 
         applicationComponent = DaggerApplicationComponent.builder()
-                .applicationModule(ApplicationModule(this, mBaseUrl))
+                .applicationModule(ApplicationModule(this, mBaseUrl, mDatabaseName))
                 .build()
 
         initTimber()

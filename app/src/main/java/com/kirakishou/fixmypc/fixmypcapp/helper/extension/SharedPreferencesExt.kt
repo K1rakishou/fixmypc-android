@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.helper.util.extension
+package com.kirakishou.fixmypc.fixmypcapp.helper.extension
 
 import android.content.SharedPreferences
 

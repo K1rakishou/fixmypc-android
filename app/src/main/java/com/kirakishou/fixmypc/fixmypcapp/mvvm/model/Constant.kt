@@ -48,4 +48,14 @@ object Constant {
     object PermissionCodes {
         val PERMISSION_CODE_WRITE_EXTERNAL_STORAGE = 0x1
     }
+
+    object Room {
+        object TableName {
+            const val DAMAGE_CLAIM_ENTITY_TABLE_NAME = "damage_claims"
+        }
+
+        object ColumnName {
+
+        }
+    }
 }

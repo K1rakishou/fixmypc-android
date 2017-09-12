@@ -1,7 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.helper.preference
 
 import android.content.SharedPreferences
-import com.kirakishou.fixmypc.fixmypcapp.helper.util.extension.edit
+import com.kirakishou.fixmypc.fixmypcapp.helper.extension.edit
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import timber.log.Timber

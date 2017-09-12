@@ -1,6 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.ui.adapter
 
 import android.content.Context
+import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
@@ -17,16 +18,17 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItemType
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimListAdapterGenericParam
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimsAdapterMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimsWithDistanceDTO
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
+import io.reactivex.subjects.BehaviorSubject
 
 /**
  * Created by kirakishou on 9/3/2017.
  */
 class DamageClaimListAdapter(mContext: Context,
+                             private val mAdapterItemClickSubject: BehaviorSubject<DamageClaim>,
                              private val mImageLoader: ImageLoader) : BaseAdapter<DamageClaimListAdapterGenericParam>(mContext) {
 
     override fun add(item: AdapterItem<DamageClaimListAdapterGenericParam>) {
-        checkIsInited()
-
         mHandler.post {
             mItems.add(item)
             notifyItemInserted(mItems.lastIndex)
@@ -34,16 +36,12 @@ class DamageClaimListAdapter(mContext: Context,
     }
 
     override fun addAll(items: List<AdapterItem<DamageClaimListAdapterGenericParam>>) {
-        checkIsInited()
-
         for (item in items) {
             add(item)
         }
     }
 
     override fun remove(position: Int) {
-        checkIsInited()
-
         mHandler.post {
             mItems.removeAt(position)
             notifyItemRemoved(position)
@@ -51,8 +49,8 @@ class DamageClaimListAdapter(mContext: Context,
     }
 
     fun addProgressFooter() {
-        if (mItems.isEmpty() || mItems.last().getType() != AdapterItemType.VIEW_PROGRESSBAR.ordinal) {
-            mHandler.post {
+        mHandler.post {
+            if (mItems.isEmpty() || mItems.last().getType() != AdapterItemType.VIEW_PROGRESSBAR.ordinal) {
                 mItems.add(AdapterItem(AdapterItemType.VIEW_PROGRESSBAR))
                 notifyItemInserted(mItems.lastIndex)
             }
@@ -60,8 +58,8 @@ class DamageClaimListAdapter(mContext: Context,
     }
 
     fun removeProgressFooter() {
-        if (mItems.isNotEmpty() || mItems.last().getType() == AdapterItemType.VIEW_PROGRESSBAR.ordinal) {
-            mHandler.post {
+        mHandler.post {
+            if (mItems.isNotEmpty() || mItems.last().getType() == AdapterItemType.VIEW_PROGRESSBAR.ordinal) {
                 mItems.removeAt(mItems.lastIndex)
                 notifyItemRemoved(mItems.lastIndex)
             }
@@ -69,8 +67,8 @@ class DamageClaimListAdapter(mContext: Context,
     }
 
     fun addMessageFooter(message: String) {
-        if (mItems.isEmpty() || mItems.last().getType() != AdapterItemType.VIEW_MESSAGE.ordinal) {
-            mHandler.post {
+        mHandler.post {
+            if (mItems.isEmpty() || mItems.last().getType() != AdapterItemType.VIEW_MESSAGE.ordinal) {
                 mItems.add(AdapterItem(DamageClaimsAdapterMessage(message), AdapterItemType.VIEW_MESSAGE))
                 notifyItemInserted(mItems.lastIndex)
             }
@@ -78,8 +76,8 @@ class DamageClaimListAdapter(mContext: Context,
     }
 
     fun removeMessageFooter() {
-        if (mItems.isNotEmpty() || mItems.last().getType() == AdapterItemType.VIEW_MESSAGE.ordinal) {
-            mHandler.post {
+        mHandler.post {
+            if (mItems.isNotEmpty() || mItems.last().getType() == AdapterItemType.VIEW_MESSAGE.ordinal) {
                 mItems.removeAt(mItems.lastIndex)
                 notifyItemRemoved(mItems.lastIndex)
             }
@@ -98,6 +96,10 @@ class DamageClaimListAdapter(mContext: Context,
             is DamageClaimItemHolder -> {
                 val claim = mItems[position].value.get() as DamageClaimsWithDistanceDTO
                 val distStr = Utils.distanceToString(claim.distance)
+
+                holder.clickView.setOnClickListener {
+                    mAdapterItemClickSubject.onNext(claim.damageClaim)
+                }
 
                 holder.damageCategory.text = claim.damageClaim.description
                 holder.distanceToMe.text = "$distStr КМ"
@@ -119,6 +121,9 @@ class DamageClaimListAdapter(mContext: Context,
     }
 
     class DamageClaimItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+        @BindView(R.id.click_view)
+        lateinit var clickView: ConstraintLayout
 
         @BindView(R.id.damage_photo)
         lateinit var damagePhoto: ImageView

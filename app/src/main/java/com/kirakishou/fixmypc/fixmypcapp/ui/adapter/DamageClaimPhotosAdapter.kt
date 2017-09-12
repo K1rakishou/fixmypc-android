@@ -34,24 +34,26 @@ class DamageClaimPhotosAdapter(context: Context,
     }
 
     override fun add(item: AdapterItem<DamagePhotoDTO>) {
-        if (item.getType() == -1) {
-            item.setType(AdapterItemType.VIEW_ADD_BUTTON)
-        }
+        mHandler.post {
+            if (item.getType() == -1) {
+                item.setType(AdapterItemType.VIEW_ADD_BUTTON)
+            }
 
-        if (item.getType() == AdapterItemType.VIEW_ADD_BUTTON.ordinal) {
-            mItems.add(item)
-            notifyItemInserted(mItems.lastIndex)
-        } else {
-            mItems.add(mItems.lastIndex, item)
-            notifyItemInserted(mItems.lastIndex - 1)
-        }
+            if (item.getType() == AdapterItemType.VIEW_ADD_BUTTON.ordinal) {
+                mItems.add(item)
+                notifyItemInserted(mItems.lastIndex)
+            } else {
+                mItems.add(mItems.lastIndex, item)
+                notifyItemInserted(mItems.lastIndex - 1)
+            }
 
-        if (mItems.size > (Constant.DAMAGE_CLAIM_PHOTO_ADAPTER_MAX_PHOTOS)) {
-            //if last element of list is button
-            if (mItems.last().getType() == AdapterItemType.VIEW_ADD_BUTTON.ordinal) {
-                //remove it
-                mItems.removeAt(mItems.lastIndex)
-                notifyItemRemoved(mItems.lastIndex)
+            if (mItems.size > (Constant.DAMAGE_CLAIM_PHOTO_ADAPTER_MAX_PHOTOS)) {
+                //if last element of list is button
+                if (mItems.last().getType() == AdapterItemType.VIEW_ADD_BUTTON.ordinal) {
+                    //remove it
+                    mItems.removeAt(mItems.lastIndex)
+                    notifyItemRemoved(mItems.lastIndex)
+                }
             }
         }
     }
@@ -64,20 +66,22 @@ class DamageClaimPhotosAdapter(context: Context,
             return
         }
 
-        mItems.removeAt(position)
-        //notifyItemRemoved(position)
+        mHandler.post {
+            mItems.removeAt(position)
+            //notifyItemRemoved(position)
 
-        //FIXME: for some reason recyclerview doesn't change it's size on element removing when using notifyItemRemoved.
-        //For now it works with notifyDataSetChanged but the items don't have animations
-        notifyDataSetChanged()
+            //FIXME: for some reason recyclerview doesn't change it's size on element removing when using notifyItemRemoved.
+            //For now it works with notifyDataSetChanged but the items don't have animations
+            notifyDataSetChanged()
 
-        //if we don't have a button yet
-        if (mItems.last().getType() != AdapterItemType.VIEW_ADD_BUTTON.ordinal) {
-            //if photosCount <= maxPhotos
-            if (mItems.size <= (Constant.DAMAGE_CLAIM_PHOTO_ADAPTER_MAX_PHOTOS)) {
-                //add button again
-                mItems.add(AdapterItem(AdapterItemType.VIEW_ADD_BUTTON))
-                notifyItemInserted(mItems.lastIndex)
+            //if we don't have a button yet
+            if (mItems.last().getType() != AdapterItemType.VIEW_ADD_BUTTON.ordinal) {
+                //if photosCount <= maxPhotos
+                if (mItems.size <= (Constant.DAMAGE_CLAIM_PHOTO_ADAPTER_MAX_PHOTOS)) {
+                    //add button again
+                    mItems.add(AdapterItem(AdapterItemType.VIEW_ADD_BUTTON))
+                    notifyItemInserted(mItems.lastIndex)
+                }
             }
         }
     }

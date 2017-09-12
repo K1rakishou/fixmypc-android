@@ -7,6 +7,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.module.ApplicationModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiService
+import com.kirakishou.fixmypc.fixmypcapp.helper.database.MyDatabase
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
@@ -23,6 +24,7 @@ import javax.inject.Singleton
 @Component(modules = arrayOf(ApplicationModule::class))
 interface ApplicationComponent {
     fun exposeContext(): Context
+    fun exposeDatabase(): MyDatabase
     fun exposeSharedPreferences(): SharedPreferences
     fun exposeGson(): Gson
     fun exposeRetrofit(): Retrofit

@@ -34,13 +34,14 @@
         <activity
             android:name=".ui.activity.ClientNewDamageClaimActivity"
             android:windowSoftInputMode="adjustResize" />
+
         <activity android:name=".ui.activity.ClientMainActivity" />
+        <activity android:name=".ui.activity.SpecialistMainActivity"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyB3rwPBjBAw6GLkC8rnCTIpb1BAkoBKnZw" />
 
-        <activity android:name=".ui.activity.SpecialistMainActivity"></activity>
     </application>
 
 </manifest>

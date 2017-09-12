@@ -13,7 +13,7 @@ class EndlessRecyclerOnScrollListener(
 
     private var previousTotal = 0
     private var loading = true
-    private val visibleThreshold = 1
+    private val visibleThreshold = 0
     private var firstVisibleItem = 0
     private var visibleItemCount = visibleThreshold * mGridLayoutManager.spanCount
     private var totalItemCount = 0

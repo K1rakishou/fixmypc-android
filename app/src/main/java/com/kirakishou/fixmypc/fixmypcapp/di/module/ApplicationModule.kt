@@ -15,6 +15,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.database.MyDatabase
 import com.kirakishou.fixmypc.fixmypcapp.helper.mapper.MapperManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
+import com.kirakishou.fixmypc.fixmypcapp.helper.repository.DamageClaimRepository
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.gson.AccountTypeTypeAdapter
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.gson.ErrorCodeRemoteTypeAdapter
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.gson.LatLngTypeAdapter
@@ -136,8 +137,20 @@ class ApplicationModule(private val mApplication: Application,
 
     @Singleton
     @Provides
-    fun provideFixmypcApiStore(mApiService: ApiService, mAppSettings: AppSettings, mGson: Gson, mDatabase: MyDatabase): ApiClient {
-        return ApiClientImpl(mApiService, mAppSettings, mGson, mDatabase)
+    fun provideMapperManager(): MapperManager {
+        return MapperManager()
+    }
+
+    @Singleton
+    @Provides
+    fun provideDamageClaimRepository(mDatabase: MyDatabase, mMapperManager: MapperManager): DamageClaimRepository {
+        return DamageClaimRepository(mDatabase.damageClaimDao(), mDatabase.damageClaimPhotoDao(), mMapperManager)
+    }
+
+    @Singleton
+    @Provides
+    fun provideFixmypcApiStore(mApiService: ApiService, mAppSettings: AppSettings, mGson: Gson, mDamageClaimRepository: DamageClaimRepository): ApiClient {
+        return ApiClientImpl(mApiService, mAppSettings, mGson, mDamageClaimRepository)
     }
 
     @Singleton
@@ -162,12 +175,6 @@ class ApplicationModule(private val mApplication: Application,
     @Provides
     fun provideImageLoader(context: Context): ImageLoader {
         return ImageLoader(context, mBaseUrl)
-    }
-
-    @Singleton
-    @Provides
-    fun provideMapperManager(): MapperManager {
-        return MapperManager()
     }
 }
 

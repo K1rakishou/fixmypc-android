@@ -13,7 +13,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ImageType
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.DamageClaimPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.LoginPacket
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.malfunction_request.FileSizeExceededException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.malfunction_request.PhotosAreNotSelectedException
@@ -25,7 +25,6 @@ import io.reactivex.rxkotlin.Observables
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.ReplaySubject
 import okhttp3.MultipartBody
-import timber.log.Timber
 import java.io.File
 import java.net.UnknownHostException
 import java.util.concurrent.TimeoutException
@@ -33,17 +32,17 @@ import java.util.concurrent.TimeoutException
 /**
  * Created by kirakishou on 9/12/2017.
  */
-class CreateDamageClaimRequest(protected val damageClaimInfo: DamageClaimInfo,
-                               protected val uploadProgressUpdateSubject: ReplaySubject<ProgressUpdate>,
+class CreateDamageClaimRequest(protected val mDamageClaimInfo: DamageClaimInfo,
+                               protected val mUploadProgressUpdateSubject: ReplaySubject<ProgressUpdate>,
                                protected val mApiService: ApiService,
                                protected val mAppSettings: AppSettings,
-                               protected val mGson: Gson) : AbstractRequest<Single<DamageClaimResponse>> {
+                               protected val mGson: Gson) : AbstractRequest<Single<StatusResponse>> {
 
-    override fun execute(): Single<DamageClaimResponse> {
+    override fun execute(): Single<StatusResponse> {
         //create MultipartFile bodies, check if user has selected the same file twice
-        val progressBodyListObservable = Observable.fromIterable(damageClaimInfo.damageClaimPhotos)
+        val progressBodyListObservable = Observable.fromIterable(mDamageClaimInfo.damageClaimPhotos)
                 .subscribeOn(Schedulers.io())
-                .map { prepareRequest(it, uploadProgressUpdateSubject) }
+                .map { prepareRequest(it, mUploadProgressUpdateSubject) }
                 //it.second is md5 string of the selected file
                 //FIXME: Fix ErrorOnDuplicate operator
                 //.lift(ErrorOnDuplicate<Pair<MultipartBody.Part, String>, String> { it.second })
@@ -54,14 +53,14 @@ class CreateDamageClaimRequest(protected val damageClaimInfo: DamageClaimInfo,
                 .publish()
                 .autoConnect(2)
 
-        val requestObservable = Observable.just(damageClaimInfo)
+        val requestObservable = Observable.just(mDamageClaimInfo)
 
         //send request
         val responseObservable = Observables.zip(progressBodyListObservable, requestObservable, { a, b -> Pair(a, b) })
                 .flatMap { sendRequest(it) }
                 .onErrorResumeNext(Function {
                     if (it is ApiException) {
-                        return@Function Observable.just(DamageClaimResponse(it.errorCode))
+                        return@Function Observable.just(StatusResponse(it.errorCode))
                     }
 
                     return@Function Observable.error(it)
@@ -72,7 +71,6 @@ class CreateDamageClaimRequest(protected val damageClaimInfo: DamageClaimInfo,
         //if there were no errors - do nothing
         val firstAttemptOkObservable = responseObservable
                 .filter { it.errorCode == ErrorCode.Remote.REC_OK }
-        //.doOnNext { _ -> uploadProgressUpdateSubject.onComplete() }
 
         //if there were REC_SESSION_ID_EXPIRED error - try to re login
         val sessionIdObservable = responseObservable
@@ -84,13 +82,11 @@ class CreateDamageClaimRequest(protected val damageClaimInfo: DamageClaimInfo,
         //if there were some other error - do nothing
         val firstAttemptErrorObservable = responseObservable
                 .filter { it.errorCode != ErrorCode.Remote.REC_OK && it.errorCode != ErrorCode.Remote.REC_SESSION_ID_EXPIRED }
-        //.doOnNext { _ -> uploadProgressUpdateSubject.onComplete() }
 
         //re send the request
         val secondAttemptObservable = Observables.zip(sessionIdObservable, progressBodyListObservable, requestObservable, { a, b, c -> Triple(a, b, c) })
-                .doOnNext { _ -> uploadProgressUpdateSubject.onNext(ProgressUpdate.ProgressUpdateReset()) }
+                .doOnNext { _ -> mUploadProgressUpdateSubject.onNext(ProgressUpdate.ProgressUpdateReset()) }
                 .flatMap { resendRequest(it) }
-        //.doOnNext { _ -> uploadProgressUpdateSubject.onComplete() }
 
         //now we have three different outcomes:
         //either request was accepted by the server on the first try and returned REC_OK,
@@ -98,29 +94,30 @@ class CreateDamageClaimRequest(protected val damageClaimInfo: DamageClaimInfo,
         //or request was not accepted by the server BECAUSE user's sessionId was removed.
         //We are merging all of these three possibilities and retrieving the first observable (and the only one, we should only have ONE observable at this point)
         return Observable.merge(firstAttemptOkObservable, firstAttemptErrorObservable, secondAttemptObservable)
-                .single(DamageClaimResponse(ErrorCode.Remote.REC_EMPTY_OBSERVABLE_ERROR))
+                .single(StatusResponse(ErrorCode.Remote.REC_EMPTY_OBSERVABLE_ERROR))
                 //we don't want to end the reactive stream if some known error has happened
-                .onErrorResumeNext { error ->
-                    val response = when (error) {
-                        is ApiException -> DamageClaimResponse(error.errorCode)
-                        is TimeoutException -> DamageClaimResponse(ErrorCode.Remote.REC_TIMEOUT)
-                        is UnknownHostException -> DamageClaimResponse(ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
-                        is FileSizeExceededException -> DamageClaimResponse(ErrorCode.Remote.REC_FILE_SIZE_EXCEEDED)
-                        is PhotosAreNotSelectedException -> DamageClaimResponse(ErrorCode.Remote.REC_NO_PHOTOS_WERE_SELECTED_TO_UPLOAD)
-                        is SelectedPhotoDoesNotExistsException -> DamageClaimResponse(ErrorCode.Remote.REC_SELECTED_PHOTO_DOES_NOT_EXISTS)
-                        is ResponseBodyIsEmpty -> DamageClaimResponse(ErrorCode.Remote.REC_RESPONSE_BODY_IS_EMPTY)
-                        is DuplicateEntryException -> DamageClaimResponse(ErrorCode.Remote.REC_DUPLICATE_ENTRY_EXCEPTION)
-                        is BadServerResponseException -> DamageClaimResponse(ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
-
-                        else -> throw RuntimeException("Unknown exception")
-                    }
-
-                    return@onErrorResumeNext Single.just(response)
-                }
+                .onErrorResumeNext { error -> exceptionToErrorCode(error) }
     }
 
-    private fun resendRequest(it: Triple<String, List<MultipartBody.Part>, DamageClaimInfo>): Observable<DamageClaimResponse> {
-        Timber.e("resendRequest")
+    private fun exceptionToErrorCode(error: Throwable): Single<StatusResponse> {
+        val response = when (error) {
+            is ApiException -> StatusResponse(error.errorCode)
+            is TimeoutException -> StatusResponse(ErrorCode.Remote.REC_TIMEOUT)
+            is UnknownHostException -> StatusResponse(ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
+            is FileSizeExceededException -> StatusResponse(ErrorCode.Remote.REC_FILE_SIZE_EXCEEDED)
+            is PhotosAreNotSelectedException -> StatusResponse(ErrorCode.Remote.REC_NO_PHOTOS_WERE_SELECTED_TO_UPLOAD)
+            is SelectedPhotoDoesNotExistsException -> StatusResponse(ErrorCode.Remote.REC_SELECTED_PHOTO_DOES_NOT_EXISTS)
+            is ResponseBodyIsEmpty -> StatusResponse(ErrorCode.Remote.REC_RESPONSE_BODY_IS_EMPTY)
+            is DuplicateEntryException -> StatusResponse(ErrorCode.Remote.REC_DUPLICATE_ENTRY_EXCEPTION)
+            is BadServerResponseException -> StatusResponse(ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
+
+            else -> throw RuntimeException("Unknown exception")
+        }
+
+        return Single.just(response)
+    }
+
+    private fun resendRequest(it: Triple<String, List<MultipartBody.Part>, DamageClaimInfo>): Observable<StatusResponse> {
         val request = DamageClaimPacket(it.third.damageClaimCategory.ordinal, it.third.damageClaimDescription,
                 it.third.damageClaimLocation.latitude, it.third.damageClaimLocation.longitude)
 
@@ -130,7 +127,6 @@ class CreateDamageClaimRequest(protected val damageClaimInfo: DamageClaimInfo,
     }
 
     private fun reLogin(): Observable<String> {
-        Timber.e("reLogin")
         val userInfoFickle = mAppSettings.userInfo
 
         if (!userInfoFickle.isPresent()) {
@@ -150,8 +146,7 @@ class CreateDamageClaimRequest(protected val damageClaimInfo: DamageClaimInfo,
                 }
     }
 
-    private fun sendRequest(it: Pair<List<MultipartBody.Part>, DamageClaimInfo>): Observable<DamageClaimResponse> {
-        Timber.e("sendRequest")
+    private fun sendRequest(it: Pair<List<MultipartBody.Part>, DamageClaimInfo>): Observable<StatusResponse> {
         val userInfoFickle = mAppSettings.userInfo
 
         if (!userInfoFickle.isPresent()) {
@@ -168,8 +163,6 @@ class CreateDamageClaimRequest(protected val damageClaimInfo: DamageClaimInfo,
     }
 
     private fun prepareRequest(photoPath: String, uploadProgressUpdateSubject: ReplaySubject<ProgressUpdate>): Pair<MultipartBody.Part, String> {
-        Timber.e("prepareRequest")
-
         val photoFile = File(photoPath)
         if (photoFile.length() > Constant.MAX_FILE_SIZE) {
             throw FileSizeExceededException()

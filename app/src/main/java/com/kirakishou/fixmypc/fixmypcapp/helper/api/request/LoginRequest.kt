@@ -11,13 +11,13 @@ import io.reactivex.schedulers.Schedulers
 /**
  * Created by kirakishou on 9/12/2017.
  */
-class LoginRequest(protected val loginPacket: LoginPacket,
-                   protected val apiService: ApiService,
-                   protected val gson: Gson) : AbstractRequest<Single<LoginResponse>> {
+class LoginRequest(protected val mLoginPacket: LoginPacket,
+                   protected val mApiService: ApiService,
+                   protected val mGson: Gson) : AbstractRequest<Single<LoginResponse>> {
 
     override fun execute(): Single<LoginResponse> {
-        return apiService.doLogin(loginPacket)
-                .lift(OnApiErrorSingle(gson))
+        return mApiService.doLogin(mLoginPacket)
+                .lift(OnApiErrorSingle(mGson))
                 .subscribeOn(Schedulers.io())
     }
 }

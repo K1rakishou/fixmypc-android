@@ -12,6 +12,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClientImpl
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiService
 import com.kirakishou.fixmypc.fixmypcapp.helper.database.MyDatabase
+import com.kirakishou.fixmypc.fixmypcapp.helper.mapper.MapperManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.gson.AccountTypeTypeAdapter
@@ -135,8 +136,8 @@ class ApplicationModule(private val mApplication: Application,
 
     @Singleton
     @Provides
-    fun provideFixmypcApiStore(mApiService: ApiService, mAppSettings: AppSettings, mGson: Gson): ApiClient {
-        return ApiClientImpl(mApiService, mAppSettings, mGson)
+    fun provideFixmypcApiStore(mApiService: ApiService, mAppSettings: AppSettings, mGson: Gson, mDatabase: MyDatabase): ApiClient {
+        return ApiClientImpl(mApiService, mAppSettings, mGson, mDatabase)
     }
 
     @Singleton
@@ -161,6 +162,12 @@ class ApplicationModule(private val mApplication: Application,
     @Provides
     fun provideImageLoader(context: Context): ImageLoader {
         return ImageLoader(context, mBaseUrl)
+    }
+
+    @Singleton
+    @Provides
+    fun provideMapperManager(): MapperManager {
+        return MapperManager()
     }
 }
 

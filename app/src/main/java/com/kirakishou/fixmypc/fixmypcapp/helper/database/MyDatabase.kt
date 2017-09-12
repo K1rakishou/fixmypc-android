@@ -2,6 +2,8 @@ package com.kirakishou.fixmypc.fixmypcapp.helper.database
 
 import android.arch.persistence.room.Database
 import android.arch.persistence.room.RoomDatabase
+import com.kirakishou.fixmypc.fixmypcapp.helper.repository.dao.DamageClaimDao
+import com.kirakishou.fixmypc.fixmypcapp.helper.repository.dao.DamageClaimPhotoDao
 import com.kirakishou.fixmypc.fixmypcapp.helper.repository.dao.entity.DamageClaimEntity
 import com.kirakishou.fixmypc.fixmypcapp.helper.repository.dao.entity.DamageClaimPhotoEntity
 
@@ -12,4 +14,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.repository.dao.entity.DamageClai
 @Database(entities = arrayOf(
         DamageClaimEntity::class,
         DamageClaimPhotoEntity::class), version = 1)
-abstract class MyDatabase : RoomDatabase()
+abstract class MyDatabase : RoomDatabase() {
+    abstract fun damageClaimDao(): DamageClaimDao
+    abstract fun damageClaimPhotoDao(): DamageClaimPhotoDao
+}

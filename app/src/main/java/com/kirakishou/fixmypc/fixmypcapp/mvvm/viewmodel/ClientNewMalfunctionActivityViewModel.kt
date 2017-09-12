@@ -7,7 +7,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.DamageClaimCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimInfo
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.ClientNewMalfunctionActivityErrors
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.ClientNewMalfunctionActivityInputs
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.ClientNewMalfunctionActivityOutputs
@@ -94,7 +94,7 @@ class ClientNewMalfunctionActivityViewModel
         mSendMalfunctionRequestToServerSubject.onNext(malfunctionRequestInfo)
     }
 
-    private fun handleResponse(response: DamageClaimResponse) {
+    private fun handleResponse(response: StatusResponse) {
         val errorCode = response.errorCode
 
         if (errorCode != ErrorCode.Remote.REC_OK) {

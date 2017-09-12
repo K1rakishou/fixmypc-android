@@ -4,7 +4,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.DamageClaimPa
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.LoginPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.LoginResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
 import io.reactivex.Single
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -22,7 +22,7 @@ interface ApiService {
     fun sendMalfunctionRequest(@Header("session_id") sessionId: String,
                                @Part photos: List<MultipartBody.Part>,
                                @Part("request") requestBody: DamageClaimPacket,
-                               @Part("images_type") imagesType: Int): Single<Response<DamageClaimResponse>>
+                               @Part("images_type") imagesType: Int): Single<Response<StatusResponse>>
 
     @GET("/v1/api/damage_claim_request/{lat}/{lon}/{radius}/{page}")
     fun getDamageClaims(@Path("lat") lat: Double,

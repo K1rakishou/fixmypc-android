@@ -15,7 +15,7 @@ import io.reactivex.Flowable
 interface DamageClaimDao {
 
     @Insert
-    fun saveAll(damageClaimList: List<DamageClaimDao>)
+    fun saveAll(damageClaimList: List<DamageClaimEntity>)
 
     @Query("SELECT * FROM ${Constant.Room.TableName.DAMAGE_CLAIM_ENTITY_TABLE_NAME} ORDER BY created_on ASC OFFSET :page LIMIT :count")
     fun findSome(page: Long, count: Long): Flowable<List<DamageClaimEntity>>

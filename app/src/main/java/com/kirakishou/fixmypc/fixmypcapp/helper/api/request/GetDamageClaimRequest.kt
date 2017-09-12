@@ -10,14 +10,14 @@ import io.reactivex.schedulers.Schedulers
 /**
  * Created by kirakishou on 9/12/2017.
  */
-class GetDamageClaimRequest(protected val lat: Double,
-                            protected val lon: Double,
-                            protected val radius: Double,
-                            protected val page: Long,
+class GetDamageClaimRequest(protected val mLat: Double,
+                            protected val mLon: Double,
+                            protected val mRadius: Double,
+                            protected val mPage: Long,
                             protected val mApiService: ApiService,
                             protected val mGson: Gson) : AbstractRequest<Single<DamageClaimsResponse>> {
     override fun execute(): Single<DamageClaimsResponse> {
-        return mApiService.getDamageClaims(lat, lon, radius, page)
+        return mApiService.getDamageClaims(mLat, mLon, mRadius, mPage)
                 .subscribeOn(Schedulers.io())
                 .lift(OnApiErrorSingle(mGson))
     }

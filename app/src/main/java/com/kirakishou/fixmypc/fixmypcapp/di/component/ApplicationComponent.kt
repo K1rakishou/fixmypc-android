@@ -8,6 +8,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiService
 import com.kirakishou.fixmypc.fixmypcapp.helper.database.MyDatabase
+import com.kirakishou.fixmypc.fixmypcapp.helper.mapper.MapperManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
@@ -35,4 +36,5 @@ interface ApplicationComponent {
     fun exposePermissionManager(): PermissionManager
     fun exposeRefWatcher(): RefWatcher
     fun exposeImageLoader(): ImageLoader
+    fun exposeMapperManager(): MapperManager
 }

@@ -1,6 +1,8 @@
 package com.kirakishou.fixmypc.fixmypcapp.base
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -11,40 +13,35 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItemType
 /**
  * Created by kirakishou on 9/7/2017.
  */
-abstract class BaseAdapter<T>(private val mContext: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+abstract class BaseAdapter<T>(mContext: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    protected lateinit var mHandler: Handler
     private var mInited = false
     protected val mItems = mutableListOf<AdapterItem<T>>()
     private val mLayoutInflater = LayoutInflater.from(mContext)
 
     private lateinit var mBaseAdapterInfo: List<BaseAdapterInfo>
 
-    fun init() {
+    init {
         mBaseAdapterInfo = getBaseAdapterInfo()
         mInited = true
     }
 
-    open fun add(item: AdapterItem<T>) {
-        checkIsInited()
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
+        super.onAttachedToRecyclerView(recyclerView)
 
-        mItems.add(item)
-        notifyItemInserted(mItems.size - 1)
+        mHandler = Handler(Looper.getMainLooper())
     }
 
-    open fun addAll(items: List<AdapterItem<T>>) {
-        checkIsInited()
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView?) {
+        super.onDetachedFromRecyclerView(recyclerView)
 
-        for (item in items) {
-            add(item)
-        }
+        mHandler.removeCallbacksAndMessages(null)
     }
 
-    open fun remove(position: Int) {
-        checkIsInited()
-
-        mItems.removeAt(position)
-        notifyItemRemoved(position)
-    }
+    abstract fun add(item: AdapterItem<T>)
+    abstract fun addAll(items: List<AdapterItem<T>>)
+    abstract fun remove(position: Int)
 
     open fun clear() {
         checkIsInited()
@@ -53,7 +50,7 @@ abstract class BaseAdapter<T>(private val mContext: Context) : RecyclerView.Adap
         notifyDataSetChanged()
     }
 
-    private fun checkIsInited() {
+    protected fun checkIsInited() {
         if (!mInited) {
             throw IllegalStateException("You forgot to initialize base adapter with function init()")
         }
@@ -83,4 +80,6 @@ abstract class BaseAdapter<T>(private val mContext: Context) : RecyclerView.Adap
     inner class BaseAdapterInfo(val viewType: AdapterItemType,
                                 val layoutId: Int,
                                 val viewHolderClazz: Class<*>)
+
+
 }

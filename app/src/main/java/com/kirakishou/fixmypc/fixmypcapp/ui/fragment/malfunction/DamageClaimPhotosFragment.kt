@@ -19,11 +19,12 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerChooseCategoryActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewDamageClaimActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItem
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItemType
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamagePhoto
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamagePhotoDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewMalfunctionActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
@@ -58,6 +59,9 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewMalfunctionActivityViewM
     @Inject
     lateinit var mNavigator: ClientNewDamageClaimActivityNavigator
 
+    @Inject
+    lateinit var mImageLoader: ImageLoader
+
     override fun initViewModel(): ClientNewMalfunctionActivityViewModel? {
         return ViewModelProviders.of(activity, mViewModelFactory).get(ClientNewMalfunctionActivityViewModel::class.java)
     }
@@ -71,8 +75,11 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewMalfunctionActivityViewM
         initRecyclerView()
     }
 
+    override fun onFragmentStop() {
+    }
+
     private fun initRecyclerView() {
-        mPhotoAdapter = DamageClaimPhotosAdapter(activity, this)
+        mPhotoAdapter = DamageClaimPhotosAdapter(activity, this, mImageLoader)
 
         //we need a button so we can add photos
         mPhotoAdapter.add(AdapterItem(AdapterItemType.VIEW_ADD_BUTTON))
@@ -132,6 +139,10 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewMalfunctionActivityViewM
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onFileAlreadySelected() })
 
+        mCompositeDisposable += getViewModel().mErrors.onBadOriginalFileNameSubject()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onBadOriginalFileName() })
+
         mCompositeDisposable += getViewModel().mErrors.onUnknownError()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUnknownError(it) })
@@ -178,7 +189,7 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewMalfunctionActivityViewM
 
                 override fun onImagesPicked(imageFiles: List<File>, source: EasyImage.ImageSource, type: Int) {
                     for (file in imageFiles) {
-                        mPhotoAdapter.add(AdapterItem(DamagePhoto(file.absolutePath), AdapterItemType.VIEW_PHOTO))
+                        mPhotoAdapter.add(AdapterItem(DamagePhotoDTO(file.absolutePath), AdapterItemType.VIEW_PHOTO))
                     }
 
                     if (mPhotoAdapter.getPhotosCount() > 0) {
@@ -198,9 +209,7 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewMalfunctionActivityViewM
         }
     }
 
-    override fun onFragmentStop() {
 
-    }
 
     private fun onMalfunctionRequestSuccessfullyCreated() {
         showToast("Заявка успешно создана", Toast.LENGTH_LONG)
@@ -241,6 +250,10 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewMalfunctionActivityViewM
 
     private fun onFileAlreadySelected() {
         showToast("Нельзя отправить два одинаковых файла", Toast.LENGTH_LONG)
+    }
+
+    private fun onBadOriginalFileName() {
+        showToast("Попытка отправить файл не являющийся изображением", Toast.LENGTH_LONG)
     }
 
     private fun onUnknownError(error: Throwable) {

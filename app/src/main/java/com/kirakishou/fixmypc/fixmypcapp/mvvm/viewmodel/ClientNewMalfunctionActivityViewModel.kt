@@ -49,6 +49,7 @@ class ClientNewMalfunctionActivityViewModel
     private val mOnResponseBodyIsEmptySubject = BehaviorSubject.create<Unit>()
     private val mOnFileAlreadySelectedSubject = BehaviorSubject.create<Unit>()
     private val mOnBadServerResponseSubject = BehaviorSubject.create<Unit>()
+    private val mOnBadOriginalFileNameSubject = BehaviorSubject.create<Unit>()
     private val mOnUnknownErrorSubject = BehaviorSubject.create<Throwable>()
 
     init {
@@ -125,6 +126,7 @@ class ClientNewMalfunctionActivityViewModel
             ErrorCode.Remote.REC_RESPONSE_BODY_IS_EMPTY -> mOnResponseBodyIsEmptySubject.onNext(Unit)
             ErrorCode.Remote.REC_DUPLICATE_ENTRY_EXCEPTION -> mOnFileAlreadySelectedSubject.onNext(Unit)
             ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION -> mOnBadServerResponseSubject.onNext(Unit)
+            ErrorCode.Remote.REC_BAD_ORIGINAL_FILE_NAME -> TODO()
 
             else -> throw RuntimeException("Unknown errorCode: $errorCode")
         }
@@ -146,5 +148,6 @@ class ClientNewMalfunctionActivityViewModel
     override fun onResponseBodyIsEmpty(): Observable<Unit> = mOnResponseBodyIsEmptySubject
     override fun onFileAlreadySelected(): Observable<Unit> = mOnFileAlreadySelectedSubject
     override fun onBadServerResponse(): Observable<Unit> = mOnBadServerResponseSubject
+    override fun onBadOriginalFileNameSubject(): Observable<Unit> = mOnBadOriginalFileNameSubject
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
 }

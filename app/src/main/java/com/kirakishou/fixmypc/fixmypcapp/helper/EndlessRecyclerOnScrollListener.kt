@@ -2,7 +2,6 @@ package com.kirakishou.fixmypc.fixmypcapp.helper
 
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import io.reactivex.subjects.BehaviorSubject
 
 /**
@@ -14,7 +13,7 @@ class EndlessRecyclerOnScrollListener(
 
     private var previousTotal = 0
     private var loading = true
-    private val visibleThreshold = Constant.MAX_DAMAGE_CLAIMS_PER_PAGE
+    private val visibleThreshold = 1
     private var firstVisibleItem = 0
     private var visibleItemCount = visibleThreshold * mGridLayoutManager.spanCount
     private var totalItemCount = 0

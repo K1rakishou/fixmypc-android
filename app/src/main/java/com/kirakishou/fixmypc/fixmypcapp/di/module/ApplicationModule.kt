@@ -151,7 +151,7 @@ class ApplicationModule(private val mApplication: Application,
     @Singleton
     @Provides
     fun provideImageLoader(context: Context): ImageLoader {
-        return ImageLoader(context)
+        return ImageLoader(context, mBaseUrl)
     }
 }
 

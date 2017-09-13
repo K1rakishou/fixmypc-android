@@ -17,4 +17,15 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.repository.dao.entity.DamageClai
 abstract class MyDatabase : RoomDatabase() {
     abstract fun damageClaimDao(): DamageClaimDao
     abstract fun damageClaimPhotoDao(): DamageClaimPhotoDao
+
+    fun runInTransaction(func: () -> Unit) {
+        this.beginTransaction()
+
+        try {
+            func()
+            this.setTransactionSuccessful()
+        } finally {
+            this.endTransaction()
+        }
+    }
 }

@@ -209,7 +209,13 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewMalfunctionActivityViewM
         }
     }
 
+    private fun runActivity(activityClass: Class<*>, finishCurrentActivity: Boolean = false) {
+        if (activity !is ClientNewMalfunctionActivityFragmentCallback) {
+            throw IllegalStateException("Activity should implement BaseActivityFragmentCallback!")
+        }
 
+        (activity as ClientNewMalfunctionActivityFragmentCallback).startActivity(activityClass, finishCurrentActivity)
+    }
 
     private fun onMalfunctionRequestSuccessfullyCreated() {
         showToast("Заявка успешно создана", Toast.LENGTH_LONG)

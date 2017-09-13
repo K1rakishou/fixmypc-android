@@ -97,8 +97,8 @@ class DamageClaimPhotosAdapter(context: Context,
                 .map { it.value.get().path })
     }
 
-    override fun getBaseAdapterInfo(): List<BaseAdapterInfo> {
-        return listOf(
+    override fun getBaseAdapterInfo(): MutableList<BaseAdapterInfo> {
+        return mutableListOf(
                 BaseAdapterInfo(AdapterItemType.VIEW_ADD_BUTTON, R.layout.adapter_photo_add_button, AddPhotoButtonViewHolder::class.java),
                 BaseAdapterInfo(AdapterItemType.VIEW_PHOTO, R.layout.adapter_photo_image, PhotoViewHolder::class.java))
     }

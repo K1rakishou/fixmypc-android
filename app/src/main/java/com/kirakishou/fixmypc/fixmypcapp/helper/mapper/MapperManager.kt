@@ -13,7 +13,7 @@ class MapperManager {
     @Suppress("UNCHECKED_CAST")
     @PublishedApi
     internal fun <T : Mapper> getMapper(mapperClass: Class<*>): T {
-        if (mapperClass.superclass != Mapper::class.java) {
+        if (mapperClass.isAssignableFrom(Mapper::class.java)) {
             throw IllegalArgumentException("mapperClass's superclass is not Mapper (${mapperClass::class.java})")
         }
 

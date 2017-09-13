@@ -43,8 +43,11 @@ class ActiveMalfunctionsListFragmentViewModel
                 .flatMap { (latlon, radius, page) ->
                     Timber.d("Fetching damage claims from  the server with coordinates [lat:${latlon.latitude}, lon:${latlon.longitude}]")
 
-                    Observables.zip(Observable.just(latlon), mApiClient.getDamageClaims(latlon.latitude, latlon.longitude, radius, page)
-                            .toObservable())
+                    val responseObservable = mApiClient.getDamageClaims(latlon.latitude, latlon.longitude, radius, page)
+                            .toObservable()
+                            //.switchIfEmpty { DamageClaimsResponse(emptyList(), ErrorCode.Remote.REC_EMPTY_REPOSITORY) }
+
+                    return@flatMap Observables.zip(Observable.just(latlon), responseObservable)
                 }
                 .map { (latlon, response) -> calcDistances(latlon.latitude, latlon.longitude, response) }
                 .subscribe({

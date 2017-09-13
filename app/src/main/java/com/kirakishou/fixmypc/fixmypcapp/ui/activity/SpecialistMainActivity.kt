@@ -8,6 +8,7 @@ import android.widget.Toast
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
+import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivityFragmentCallback
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerSpecialistMainActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityViewModel
@@ -16,7 +17,7 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavi
 import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
-class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>() {
+class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), BaseActivityFragmentCallback {
 
     @Inject
     lateinit var mRefWatcher: RefWatcher
@@ -57,11 +58,15 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>() {
                 .inject(this)
     }
 
+    override fun onShowToast(message: String, duration: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     fun onShowToast(message: String) {
         showToast(message, Toast.LENGTH_LONG)
     }
 
-    fun onUnknownError(error: Throwable) {
+    override fun onUnknownError(error: Throwable) {
         if (error.message != null) {
             showToast(error.message!!)
         } else {

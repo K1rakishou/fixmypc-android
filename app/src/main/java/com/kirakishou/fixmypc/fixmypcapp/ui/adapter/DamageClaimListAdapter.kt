@@ -84,8 +84,8 @@ class DamageClaimListAdapter(mContext: Context,
         }
     }
 
-    override fun getBaseAdapterInfo(): List<BaseAdapterInfo> {
-        return listOf(
+    override fun getBaseAdapterInfo(): MutableList<BaseAdapterInfo> {
+        return mutableListOf(
                 BaseAdapterInfo(AdapterItemType.VIEW_ITEM, R.layout.adapter_item_damage_claim, DamageClaimItemHolder::class.java),
                 BaseAdapterInfo(AdapterItemType.VIEW_PROGRESSBAR, R.layout.item_progressbar, ProgressBarItemHolder::class.java),
                 BaseAdapterInfo(AdapterItemType.VIEW_MESSAGE, R.layout.item_message, MessageItemHolder::class.java))

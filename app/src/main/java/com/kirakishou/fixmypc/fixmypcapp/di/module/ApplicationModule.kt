@@ -145,7 +145,7 @@ class ApplicationModule(private val mApplication: Application,
     @Singleton
     @Provides
     fun provideDamageClaimRepository(mDatabase: MyDatabase, mMapperManager: MapperManager): DamageClaimRepository {
-        return DamageClaimRepository(mDatabase.damageClaimDao(), mDatabase.damageClaimPhotoDao(), mMapperManager)
+        return DamageClaimRepository(mDatabase, mMapperManager)
     }
 
     @Singleton

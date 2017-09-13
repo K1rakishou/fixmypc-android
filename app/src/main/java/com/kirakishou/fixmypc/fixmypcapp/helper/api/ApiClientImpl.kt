@@ -15,6 +15,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaims
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.LoginResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.ReplaySubject
 import timber.log.Timber
 import javax.inject.Inject
@@ -32,31 +33,36 @@ class ApiClientImpl
 
     override fun loginRequest(loginPacket: LoginPacket): Single<LoginResponse> {
         //loginRequest is a light-weight request so we can always do it over network
-        return LoginRequest(loginPacket, mApiService, mGson).execute()
+        return LoginRequest(loginPacket, mApiService, mGson)
+                .execute()
     }
 
     override fun createMalfunctionRequest(damageClaimInfo: DamageClaimInfo,
                                           uploadProgressUpdateSubject: ReplaySubject<ProgressUpdate>): Single<StatusResponse> {
-        return if (!mWifiUtils.isWifiConnected()) {
+        if (mWifiUtils.isWifiConnected()) {
             Timber.d("createMalfunctionRequest() Making a request to the server")
-            CreateDamageClaimRequest(damageClaimInfo, uploadProgressUpdateSubject, mApiService, mAppSettings, mGson).execute()
+            return CreateDamageClaimRequest(damageClaimInfo, uploadProgressUpdateSubject, mApiService, mAppSettings, mGson)
+                    .execute()
         } else {
             Timber.d("createMalfunctionRequest() Returning a warning")
-            Single.just(StatusResponse(ErrorCode.Remote.REC_ACTIVE_NETWORK_IS_METERED))
+            return Single.just(StatusResponse(ErrorCode.Remote.REC_WIFI_IS_NOT_CONNECTED))
         }
     }
 
     override fun getDamageClaims(lat: Double, lon: Double, radius: Double, page: Long): Single<DamageClaimsResponse> {
-        return if (!mWifiUtils.isWifiConnected()) {
+        if (mWifiUtils.isWifiConnected()) {
             Timber.d("getDamageClaims() Fetching data from the server")
-            GetDamageClaimRequest(lat, lon, radius, page, mApiService, mGson).execute()
+            return GetDamageClaimRequest(lat, lon, radius, page, mApiService, mGson)
+                    .execute()
                     .doOnSuccess { response -> mDamageClaimRepo.saveAll(response.damageClaims) }
         } else {
             //TODO: Load from repository
             Timber.d("getDamageClaims() Retrieving data from the repository")
-            mDamageClaimRepo.getSomeWithinBBox(lat, lon, radius, page)
+            return mDamageClaimRepo.getSomeWithinBBox(lat, lon, radius, page)
+                    .subscribeOn(Schedulers.io())
                     .map { DamageClaimsResponse(it, ErrorCode.Remote.REC_OK) }
-                    .single(DamageClaimsResponse(emptyList(), ErrorCode.Remote.REC_EMPTY_REPOSITORY))
+                    .first(DamageClaimsResponse(emptyList(), ErrorCode.Remote.REC_EMPTY_REPOSITORY))
+                    //.single(DamageClaimsResponse(emptyList(), ErrorCode.Remote.REC_EMPTY_REPOSITORY))
         }
     }
 }

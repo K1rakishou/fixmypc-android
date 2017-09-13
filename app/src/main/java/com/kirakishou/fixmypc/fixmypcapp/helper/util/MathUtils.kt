@@ -33,7 +33,7 @@ object MathUtils {
 
         val minLatLon = LatLng(
                 location.latitude - Math.toDegrees(radius / r),
-                location.longitude + Math.toDegrees(Math.asin(radius / r) / Math.cos(Math.toRadians(location.latitude))))
+                location.longitude - Math.toDegrees(Math.asin(radius / r) / Math.cos(Math.toRadians(location.latitude))))
 
         return maxLatLon to minLatLon
     }

@@ -14,8 +14,11 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 interface DamageClaimPhotoDao {
 
     @Insert
-    fun saveAll(damageClaimPhotoList: List<DamageClaimPhotoEntity>)
+    fun saveAll(damageClaimPhotoList: List<DamageClaimPhotoEntity>): List<Long>
 
     @Query("SELECT * FROM ${Constant.Room.TableName.DAMAGE_CLAIM_PHOTO_ENTITY_TABLE_NAME} WHERE id IN (:arg0)")
     fun findManyByIds(ids: List<Long>): List<DamageClaimPhotoEntity>
+
+    @Query("SELECT * FROM ${Constant.Room.TableName.DAMAGE_CLAIM_PHOTO_ENTITY_TABLE_NAME}")
+    fun findAll(): List<DamageClaimPhotoEntity>
 }

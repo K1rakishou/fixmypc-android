@@ -18,22 +18,19 @@ abstract class BaseAdapter<T>(mContext: Context) : RecyclerView.Adapter<Recycler
     protected lateinit var mHandler: Handler
     protected val mItems = mutableListOf<AdapterItem<T>>()
     private val mLayoutInflater = LayoutInflater.from(mContext)
-
-    private lateinit var mBaseAdapterInfo: List<BaseAdapterInfo>
-
-    init {
-        mBaseAdapterInfo = getBaseAdapterInfo()
-    }
+    private var mBaseAdapterInfo = mutableListOf<BaseAdapterInfo>()
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
         super.onAttachedToRecyclerView(recyclerView)
 
         mHandler = Handler(Looper.getMainLooper())
+        mBaseAdapterInfo = getBaseAdapterInfo()
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView?) {
         super.onDetachedFromRecyclerView(recyclerView)
 
+        mBaseAdapterInfo.clear()
         mHandler.removeCallbacksAndMessages(null)
     }
 
@@ -64,7 +61,7 @@ abstract class BaseAdapter<T>(mContext: Context) : RecyclerView.Adapter<Recycler
         onViewHolderBound(holder, position)
     }
 
-    abstract fun getBaseAdapterInfo(): List<BaseAdapterInfo>
+    abstract fun getBaseAdapterInfo(): MutableList<BaseAdapterInfo>
     abstract fun onViewHolderBound(holder: RecyclerView.ViewHolder, position: Int)
 
     inner class BaseAdapterInfo(val viewType: AdapterItemType,

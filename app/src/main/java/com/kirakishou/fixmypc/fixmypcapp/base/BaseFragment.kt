@@ -11,8 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import butterknife.ButterKnife
 import butterknife.Unbinder
-import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.helper.extension.myAddListener
+import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import io.reactivex.disposables.CompositeDisposable
 
@@ -84,14 +84,6 @@ abstract class BaseFragment<T : ViewModel> : Fragment(), LifecycleRegistryOwner 
         }
 
         (activity as BaseActivityFragmentCallback).onUnknownError(throwable)
-    }
-
-    protected fun runActivity(activityClass: Class<*>, finishCurrentActivity: Boolean = false) {
-        if (activity !is BaseActivityFragmentCallback) {
-            throw IllegalStateException("Activity should implement BaseActivityFragmentCallback!")
-        }
-
-        (activity as BaseActivityFragmentCallback).startActivity(activityClass, finishCurrentActivity)
     }
 
     protected fun runCallbackAfterAnimation(set: AnimatorSet, onExitAnimationCallback: () -> Unit) {

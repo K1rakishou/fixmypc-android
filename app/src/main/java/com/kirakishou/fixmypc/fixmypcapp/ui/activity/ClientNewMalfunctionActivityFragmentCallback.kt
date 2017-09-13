@@ -7,4 +7,5 @@ import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivityFragmentCallback
  */
 interface ClientNewMalfunctionActivityFragmentCallback : BaseActivityFragmentCallback {
     fun requestPermission(permission: String, requestCode: Int)
+    fun startActivity(activityClass: Class<*>, finishCurrentActivity: Boolean)
 }

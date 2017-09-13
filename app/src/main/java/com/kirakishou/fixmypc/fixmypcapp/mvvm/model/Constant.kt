@@ -8,7 +8,7 @@ object Constant {
     val SHARED_PREFS_PREFIX = "${APPLICATION_ID}_SHARED_PREF"
     val DAMAGE_CLAIM_PHOTO_ADAPTER_MAX_PHOTOS = 4
     val RECYCLER_VIEW_MAX_COLUMNS_COUNT = 10
-    val MAX_DAMAGE_CLAIMS_PER_PAGE = 5
+    val MAX_DAMAGE_CLAIMS_PER_PAGE = 5L
     val MAX_FILE_SIZE = 5242880
 
     object SerializedNames {
@@ -53,10 +53,6 @@ object Constant {
         object TableName {
             const val DAMAGE_CLAIM_ENTITY_TABLE_NAME = "damage_claims"
             const val DAMAGE_CLAIM_PHOTO_ENTITY_TABLE_NAME = "damage_claims_photos"
-        }
-
-        object ColumnName {
-
         }
     }
 }

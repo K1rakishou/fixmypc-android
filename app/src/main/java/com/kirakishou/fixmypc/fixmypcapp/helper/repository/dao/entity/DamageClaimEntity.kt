@@ -34,6 +34,5 @@ data class DamageClaimEntity(@PrimaryKey
 
                              @ColumnInfo(name = "saved_on")
                              var savedOn: Long) {
-
     constructor() : this(0L, false, 0, "", 0.0, 0.0, 0L, 0L)
 }

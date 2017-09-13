@@ -8,14 +8,15 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
+import com.kirakishou.fixmypc.fixmypcapp.helper.WifiUtils
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClientImpl
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiService
-import com.kirakishou.fixmypc.fixmypcapp.helper.database.MyDatabase
 import com.kirakishou.fixmypc.fixmypcapp.helper.mapper.MapperManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.repository.DamageClaimRepository
+import com.kirakishou.fixmypc.fixmypcapp.helper.repository.database.MyDatabase
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.gson.AccountTypeTypeAdapter
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.gson.ErrorCodeRemoteTypeAdapter
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.gson.LatLngTypeAdapter
@@ -149,8 +150,14 @@ class ApplicationModule(private val mApplication: Application,
 
     @Singleton
     @Provides
-    fun provideFixmypcApiStore(mApiService: ApiService, mAppSettings: AppSettings, mGson: Gson, mDamageClaimRepository: DamageClaimRepository): ApiClient {
-        return ApiClientImpl(mApiService, mAppSettings, mGson, mDamageClaimRepository)
+    fun provideNetworkManager(mContext: Context): WifiUtils {
+        return WifiUtils(mContext)
+    }
+
+    @Singleton
+    @Provides
+    fun provideFixmypcApiStore(mWifiUtils: WifiUtils, mApiService: ApiService, mAppSettings: AppSettings, mGson: Gson, mDamageClaimRepository: DamageClaimRepository): ApiClient {
+        return ApiClientImpl(mWifiUtils, mApiService, mAppSettings, mGson, mDamageClaimRepository)
     }
 
     @Singleton

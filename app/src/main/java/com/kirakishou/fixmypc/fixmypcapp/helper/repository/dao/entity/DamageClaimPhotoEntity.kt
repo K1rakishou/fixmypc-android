@@ -21,6 +21,5 @@ data class DamageClaimPhotoEntity(@PrimaryKey(autoGenerate = true)
 
                                   @ColumnInfo(name = "photo_name")
                                   var photoName: String) {
-
     constructor() : this(0L, 0L, "")
 }

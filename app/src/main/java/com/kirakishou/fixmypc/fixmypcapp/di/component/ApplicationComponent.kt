@@ -7,7 +7,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.module.ApplicationModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiService
-import com.kirakishou.fixmypc.fixmypcapp.helper.database.MyDatabase
+import com.kirakishou.fixmypc.fixmypcapp.helper.repository.database.MyDatabase
 import com.kirakishou.fixmypc.fixmypcapp.helper.mapper.MapperManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference

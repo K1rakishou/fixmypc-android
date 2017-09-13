@@ -139,7 +139,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { mAdapter.addProgressFooter() }
                 .observeOn(Schedulers.io())
-                .delay(2, TimeUnit.SECONDS)
+                .delay(1, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ (page, latlon) ->
                     saveCurrentLocation(latlon)

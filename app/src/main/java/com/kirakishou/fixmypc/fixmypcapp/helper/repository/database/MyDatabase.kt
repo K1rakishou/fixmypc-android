@@ -15,6 +15,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.repository.dao.entity.DamageClai
         DamageClaimEntity::class,
         DamageClaimPhotoEntity::class), version = 1)
 abstract class MyDatabase : RoomDatabase() {
+
     abstract fun damageClaimDao(): DamageClaimDao
     abstract fun damageClaimPhotoDao(): DamageClaimPhotoDao
 

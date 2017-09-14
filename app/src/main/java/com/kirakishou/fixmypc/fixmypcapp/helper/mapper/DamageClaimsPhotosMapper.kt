@@ -17,13 +17,24 @@ class DamageClaimsPhotosMapper : Mapper {
         return damageClaimList.flatMap { mapToEntity(it) }
     }
 
-    fun mapFromEntity(damageClaimPhotoEntity: DamageClaimPhotoEntity): Pair<Long?, String> {
-        return damageClaimPhotoEntity.id to damageClaimPhotoEntity.photoName
+    fun mapFromEntity(damageClaimPhotoEntity: DamageClaimPhotoEntity): Pair<Long, String> {
+        return damageClaimPhotoEntity.damageClaimId to damageClaimPhotoEntity.photoName
     }
 
-    fun mapFromEntities(damageClaimPhotoEntityList: List<DamageClaimPhotoEntity>): Map<Long?, String> {
-        return damageClaimPhotoEntityList
+    fun mapFromEntities(damageClaimPhotoEntityList: List<DamageClaimPhotoEntity>): Map<Long, List<String>> {
+        val photosById = damageClaimPhotoEntityList
                 .map { mapFromEntity(it) }
-                .toMap()
+
+        val photoMap = hashMapOf<Long, ArrayList<String>>()
+
+        for ((id, name) in photosById) {
+            if (!photoMap.containsKey(id)) {
+                photoMap.put(id, ArrayList())
+            }
+
+            photoMap[id]!!.add(name)
+        }
+
+        return photoMap
     }
 }

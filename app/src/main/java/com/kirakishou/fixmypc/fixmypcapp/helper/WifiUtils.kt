@@ -5,6 +5,8 @@ import android.net.ConnectivityManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.extension.connectivityManager
 
 
+
+
 /**
  * Created by kirakishou on 9/13/2017.
  */

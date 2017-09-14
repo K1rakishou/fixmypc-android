@@ -106,6 +106,8 @@ class DamageClaimListAdapter(mContext: Context,
 
                 if (claim.damageClaim.imageNamesList.isNotEmpty()) {
                     mImageLoader.loadImageFromNetInto(claim.damageClaim.imageNamesList.first(), holder.damagePhoto)
+                } else {
+                    //TODO: load image with an error message
                 }
             }
 

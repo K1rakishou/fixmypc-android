@@ -180,8 +180,8 @@ class ApplicationModule(private val mApplication: Application,
 
     @Singleton
     @Provides
-    fun provideImageLoader(context: Context): ImageLoader {
-        return ImageLoader(context, mBaseUrl)
+    fun provideImageLoader(context: Context, mWifiUtils: WifiUtils): ImageLoader {
+        return ImageLoader(context, mWifiUtils, mBaseUrl)
     }
 }
 

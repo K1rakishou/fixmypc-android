@@ -58,11 +58,10 @@ class ApiClientImpl
         } else {
             //TODO: Load from repository
             Timber.d("getDamageClaims() Retrieving data from the repository")
-            return mDamageClaimRepo.getSomeWithinBBox(lat, lon, radius, page)
+            return mDamageClaimRepo.findWithinBBox(lat, lon, radius, page)
                     .subscribeOn(Schedulers.io())
                     .map { DamageClaimsResponse(it, ErrorCode.Remote.REC_OK) }
                     .first(DamageClaimsResponse(emptyList(), ErrorCode.Remote.REC_EMPTY_REPOSITORY))
-                    //.single(DamageClaimsResponse(emptyList(), ErrorCode.Remote.REC_EMPTY_REPOSITORY))
         }
     }
 }

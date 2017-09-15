@@ -60,8 +60,10 @@ class DamageClaimListAdapter(mContext: Context,
     fun removeProgressFooter() {
         mHandler.post {
             if (mItems.isNotEmpty() || mItems.last().getType() == AdapterItemType.VIEW_PROGRESSBAR.ordinal) {
-                mItems.removeAt(mItems.lastIndex)
-                notifyItemRemoved(mItems.lastIndex)
+                val index = mItems.lastIndex
+
+                mItems.removeAt(index)
+                notifyItemRemoved(index)
             }
         }
     }
@@ -78,14 +80,12 @@ class DamageClaimListAdapter(mContext: Context,
     fun removeMessageFooter() {
         mHandler.post {
             if (mItems.isNotEmpty() || mItems.last().getType() == AdapterItemType.VIEW_MESSAGE.ordinal) {
-                mItems.removeAt(mItems.lastIndex)
-                notifyItemRemoved(mItems.lastIndex)
+                val index = mItems.lastIndex
+
+                mItems.removeAt(index)
+                notifyItemRemoved(index)
             }
         }
-    }
-
-    fun hasFooter(): Boolean {
-        return mItems.last().getType() != AdapterItemType.VIEW_ITEM.ordinal
     }
 
     override fun getBaseAdapterInfo(): MutableList<BaseAdapterInfo> {

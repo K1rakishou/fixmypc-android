@@ -82,7 +82,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
         currentLocationPref.save()
     }
 
-    override fun onFragmentReady() {
+    override fun onFragmentReady(savedInstanceState: Bundle?) {
         mAdapter = DamageClaimListAdapter(activity, mAdapterItemClickSubject, mImageLoader)
 
         initRx()

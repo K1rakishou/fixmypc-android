@@ -3,6 +3,7 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.main
 
 import android.animation.AnimatorSet
 import android.arch.lifecycle.ViewModelProviders
+import android.os.Bundle
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
@@ -25,7 +26,7 @@ class MyDamageClaimsFragment  : BaseFragment<MyDamageClaimsFragmentViewModel>() 
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
-    override fun onFragmentReady() {
+    override fun onFragmentReady(savedInstanceState: Bundle?) {
 
     }
 

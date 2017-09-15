@@ -19,7 +19,11 @@ class SpecialistMainActivityNavigator(activity: AppCompatActivity) {
     }
 
     fun navigateToActiveDamageClaimsListFragment() {
-        val fragment = ActiveDamageClaimsListFragment.newInstance()
+        var fragment = fragmentManager.findFragmentByTag(Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST)
+        if (fragment == null) {
+            fragment = ActiveDamageClaimsListFragment.newInstance()
+        }
+
         fragmentManager
                 .beginTransaction()
                 .replace(R.id.fragment_frame, fragment, Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST)

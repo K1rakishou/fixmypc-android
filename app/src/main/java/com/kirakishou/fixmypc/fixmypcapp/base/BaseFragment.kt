@@ -51,7 +51,7 @@ abstract class BaseFragment<T : ViewModel> : Fragment(), LifecycleRegistryOwner 
         super.onViewCreated(view, savedInstanceState)
 
         runCallbackAfterAnimation(loadStartAnimations()) {
-            onFragmentReady()
+            onFragmentReady(savedInstanceState)
         }
     }
 
@@ -100,7 +100,7 @@ abstract class BaseFragment<T : ViewModel> : Fragment(), LifecycleRegistryOwner 
     protected abstract fun getContentView(): Int
     protected abstract fun loadStartAnimations(): AnimatorSet
     protected abstract fun loadExitAnimations(): AnimatorSet
-    protected abstract fun onFragmentReady()
+    protected abstract fun onFragmentReady(savedInstanceState: Bundle?)
     protected abstract fun onFragmentStop()
     protected abstract fun resolveDaggerDependency()
 }

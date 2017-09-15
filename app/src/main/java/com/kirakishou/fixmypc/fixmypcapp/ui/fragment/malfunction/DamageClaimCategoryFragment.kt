@@ -47,7 +47,7 @@ class DamageClaimCategoryFragment : BaseFragment<ClientNewMalfunctionActivityVie
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
-    override fun onFragmentReady() {
+    override fun onFragmentReady(savedInstanceState: Bundle?) {
         initRx()
     }
 

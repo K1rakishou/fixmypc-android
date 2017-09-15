@@ -15,6 +15,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityVi
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavigator
 import com.squareup.leakcanary.RefWatcher
+import timber.log.Timber
 import javax.inject.Inject
 
 class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), BaseActivityFragmentCallback {

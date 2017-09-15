@@ -64,7 +64,7 @@ class DamageClaimLocationFragment : BaseFragment<ClientNewMalfunctionActivityVie
 
     private var mLocation: LatLng? = null
 
-    override fun onFragmentReady() {
+    override fun onFragmentReady(savedInstanceState: Bundle?) {
         val mapFrag = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFrag.getMapAsync(this)
 

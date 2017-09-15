@@ -2,13 +2,14 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.navigator
 
 import android.support.v7.app.AppCompatActivity
 import com.kirakishou.fixmypc.fixmypcapp.R
+import com.kirakishou.fixmypc.fixmypcapp.base.BaseNavigator
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.ActiveDamageClaimsListFragment
 
 /**
  * Created by kirakishou on 9/11/2017.
  */
-class SpecialistMainActivityNavigator(activity: AppCompatActivity) {
+class SpecialistMainActivityNavigator(activity: AppCompatActivity) : BaseNavigator() {
     private val fragmentManager = activity.supportFragmentManager
 
     fun popFragment(): Boolean {
@@ -19,10 +20,8 @@ class SpecialistMainActivityNavigator(activity: AppCompatActivity) {
     }
 
     fun navigateToActiveDamageClaimsListFragment() {
-        var fragment = fragmentManager.findFragmentByTag(Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST)
-        if (fragment == null) {
-            fragment = ActiveDamageClaimsListFragment.newInstance()
-        }
+        val fragment = createNewFragmentIfNotInStack<ActiveDamageClaimsListFragment>(fragmentManager,
+                Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST, ActiveDamageClaimsListFragment::class.java)
 
         fragmentManager
                 .beginTransaction()

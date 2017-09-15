@@ -55,7 +55,7 @@ class ClientNewMalfunctionActivityViewModel
     private val mOnWifiNotConnected = BehaviorSubject.create<Unit>()
     private val mOnUnknownErrorSubject = BehaviorSubject.create<Throwable>()
 
-    init {
+    fun init() {
         //if wifi connected - send request to server
         mCompositeDisposable += mSendMalfunctionRequestToServerSubject
                 .filter { _ -> mWifiUtils.isWifiConnected() }

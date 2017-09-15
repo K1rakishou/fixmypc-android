@@ -12,7 +12,6 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 import io.reactivex.Flowable
 import io.reactivex.rxkotlin.Flowables
-import timber.log.Timber
 
 /**
  * Created by kirakishou on 9/12/2017.
@@ -29,33 +28,22 @@ open class DamageClaimRepository(protected val mDatabase: MyDatabase,
         }
 
         mDatabase.runInTransaction {
-            Timber.d("saveAll() saving ${damageClaimList.size} damageClaims")
-
             val damageClaimEntities = mMapperManager.get<DamageClaimsMapper>().mapToEntities(damageClaimList)
             damageClaimDao.saveAll(damageClaimEntities)
 
             val damageClaimPhotoEntities = mMapperManager.get<DamageClaimsPhotosMapper>().mapToEntities(damageClaimList)
             damageClaimPhotoDao.saveAll(damageClaimPhotoEntities)
-
-            Timber.d("saveAll() ok")
         }
     }
 
     fun findWithinBBox(lat: Double, lon: Double, radius: Double, page: Long): Flowable<List<DamageClaim>> {
         val (maxLatLon, minLatLon) = MathUtils.createBoundingBoxFromPoint(LatLng(lat, lon), radius)
 
-        Timber.d("findWithinBBox() lat: $lat, lon: $lon, radius: $radius, page: $page")
-        Timber.d("findWithinBBox() minLatLon.lon: ${minLatLon.longitude}, maxLatLon.lon: ${maxLatLon.longitude}, " +
-                "minLatLon.lat: ${minLatLon.latitude}, maxLatLon.lat: ${maxLatLon.latitude}")
-
         return damageClaimDao.findSomeWithinBBox(minLatLon.longitude, maxLatLon.longitude,
                 minLatLon.latitude, maxLatLon.latitude, Constant.MAX_DAMAGE_CLAIMS_PER_PAGE, page * Constant.MAX_DAMAGE_CLAIMS_PER_PAGE)
                 .map { damageClaimEntityList ->
                     val photoIds = damageClaimEntityList.map { it.id }
                     val damageClaimPhotoEntityList = damageClaimPhotoDao.findManyByIds(photoIds)
-
-                    damageClaimDao.findAll().blockingFirst().forEach { println(it) }
-                    damageClaimEntityList.forEach { println("description = ${it.description}") }
 
                     val damageClaimList = mMapperManager.get<DamageClaimsMapper>().mapFromEntities(damageClaimEntityList)
                     val photosMap = mMapperManager.get<DamageClaimsPhotosMapper>().mapFromEntities(damageClaimPhotoEntityList)

@@ -2,6 +2,7 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.navigator
 
 import android.support.v7.app.AppCompatActivity
 import com.kirakishou.fixmypc.fixmypcapp.R
+import com.kirakishou.fixmypc.fixmypcapp.base.BaseNavigator
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction.DamageClaimCategoryFragment
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction.DamageClaimDescriptionFragment
@@ -11,7 +12,7 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction.DamageClaimPhot
 /**
  * Created by kirakishou on 9/10/2017.
  */
-class ClientNewDamageClaimActivityNavigator(activity: AppCompatActivity) {
+class ClientNewDamageClaimActivityNavigator(activity: AppCompatActivity) : BaseNavigator() {
     private val fragmentManager = activity.supportFragmentManager
 
     fun popFragment(): Boolean {
@@ -20,7 +21,9 @@ class ClientNewDamageClaimActivityNavigator(activity: AppCompatActivity) {
     }
 
     fun navigateToDamageClaimCategoryFragment() {
-        val fragment = DamageClaimCategoryFragment.newInstance()
+        val fragment = createNewFragmentIfNotInStack<DamageClaimCategoryFragment>(fragmentManager,
+                Constant.FragmentTags.DAMAGE_CATEGORY, DamageClaimCategoryFragment::class.java)
+
         fragmentManager
                 .beginTransaction()
                 .replace(R.id.fragment_frame, fragment, Constant.FragmentTags.DAMAGE_CATEGORY)
@@ -29,7 +32,9 @@ class ClientNewDamageClaimActivityNavigator(activity: AppCompatActivity) {
     }
 
     fun navigateToDamageClaimDescriptionFragment() {
-        val fragment = DamageClaimDescriptionFragment.newInstance()
+        val fragment = createNewFragmentIfNotInStack<DamageClaimDescriptionFragment>(fragmentManager,
+                Constant.FragmentTags.DAMAGE_DESCRIPTION, DamageClaimDescriptionFragment::class.java)
+
         fragmentManager
                 .beginTransaction()
                 .replace(R.id.fragment_frame, fragment, Constant.FragmentTags.DAMAGE_DESCRIPTION)
@@ -38,7 +43,9 @@ class ClientNewDamageClaimActivityNavigator(activity: AppCompatActivity) {
     }
 
     fun navigateToDamageClaimPhotosFragment() {
-        val fragment = DamageClaimPhotosFragment.newInstance()
+        val fragment = createNewFragmentIfNotInStack<DamageClaimPhotosFragment>(fragmentManager,
+                Constant.FragmentTags.DAMAGE_PHOTOS, DamageClaimPhotosFragment::class.java)
+
         fragmentManager
                 .beginTransaction()
                 .replace(R.id.fragment_frame, fragment, Constant.FragmentTags.DAMAGE_PHOTOS)
@@ -47,7 +54,9 @@ class ClientNewDamageClaimActivityNavigator(activity: AppCompatActivity) {
     }
 
     fun navigateToDamageClaimLocationFragment() {
-        val fragment = DamageClaimLocationFragment.newInstance()
+        val fragment = createNewFragmentIfNotInStack<DamageClaimLocationFragment>(fragmentManager,
+                Constant.FragmentTags.DAMAGE_LOCATION, DamageClaimLocationFragment::class.java)
+
         fragmentManager
                 .beginTransaction()
                 .replace(R.id.fragment_frame, fragment, Constant.FragmentTags.DAMAGE_LOCATION)

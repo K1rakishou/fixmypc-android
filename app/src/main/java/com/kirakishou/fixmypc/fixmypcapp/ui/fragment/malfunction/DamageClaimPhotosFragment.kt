@@ -71,6 +71,7 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewMalfunctionActivityViewM
     override fun loadExitAnimations() = AnimatorSet()
 
     override fun onFragmentReady(savedInstanceState: Bundle?) {
+        getViewModel().init()
         initRx()
         initRecyclerView()
     }

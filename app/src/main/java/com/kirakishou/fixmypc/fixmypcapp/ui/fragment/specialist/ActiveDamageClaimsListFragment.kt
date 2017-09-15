@@ -38,7 +38,6 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragmentViewModel>() {
@@ -85,7 +84,8 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
     override fun onFragmentReady(savedInstanceState: Bundle?) {
         mAdapter = DamageClaimListAdapter(activity, mAdapterItemClickSubject, mImageLoader)
 
-        initRx()
+        getViewModel().init()
+        initRx(savedInstanceState)
         initRecycler()
         getCurrentLocationGps()
         recyclerStartLoadingItems()
@@ -134,13 +134,14 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
         mDamageClaimList.setHasFixedSize(true)
     }
 
-    private fun initRx() {
+    private fun initRx(savedInstanceState: Bundle?) {
+        getViewModel().mInputs.isFirstFragmentStartSubject().onNext(savedInstanceState == null)
+
         mCompositeDisposable += Observables.combineLatest(mLoadMoreSubject, mLocationSubject, { loadMore, location -> Pair(loadMore, location)})
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { mAdapter.addProgressFooter() }
                 .observeOn(Schedulers.io())
-                .delay(1, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ (page, latlon) ->
                     saveCurrentLocation(latlon)

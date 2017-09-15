@@ -19,6 +19,7 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 /**
@@ -37,18 +38,38 @@ class ActiveMalfunctionsListFragmentViewModel
     val mErrors: ActiveMalfunctionsListFragmentErrors = this
 
     private val mCompositeDisposable = CompositeDisposable()
-    private val mLocationSubject = BehaviorSubject.create<GetDamageClaimsRequestParamsDTO>()
-    private val mOnDamageClaimsPageReceivedSubject = BehaviorSubject.create<ArrayList<DamageClaimsWithDistanceDTO>>()
-    private val mOnNothingFoundSubject = BehaviorSubject.create<Unit>()
-    private val mOnUnknownErrorSubject = BehaviorSubject.create<Throwable>()
 
-    init {
-        mCompositeDisposable += mLocationSubject
+    private lateinit var mIsFirstFragmentStartSubject: BehaviorSubject<Boolean>
+    private lateinit var mRequestParamsSubject: BehaviorSubject<GetDamageClaimsRequestParamsDTO>
+    private lateinit var mOnDamageClaimsPageReceivedSubject: BehaviorSubject<ArrayList<DamageClaimsWithDistanceDTO>>
+    private lateinit var mOnNothingFoundSubject: BehaviorSubject<Unit>
+    private lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
+
+    fun init() {
+        mCompositeDisposable.clear()
+
+        mIsFirstFragmentStartSubject = BehaviorSubject.create<Boolean>()
+        mRequestParamsSubject = BehaviorSubject.create<GetDamageClaimsRequestParamsDTO>()
+        mOnDamageClaimsPageReceivedSubject = BehaviorSubject.create<ArrayList<DamageClaimsWithDistanceDTO>>()
+        mOnNothingFoundSubject = BehaviorSubject.create<Unit>()
+        mOnUnknownErrorSubject = BehaviorSubject.create<Throwable>()
+
+        //multicast params and rotation state to three different observables
+        val locationAndIsFirstStartObservable = Observables.combineLatest(mRequestParamsSubject, mIsFirstFragmentStartSubject)
                 .subscribeOn(Schedulers.io())
-                .filter { _ -> mWifiUtils.isWifiConnected() }
-                .flatMap { (latlon, radius, page) ->
-                    Timber.d("Fetching damage claims from  the server with coordinates [lat:${latlon.latitude}, lon:${latlon.longitude}]")
+                .publish()
+                .autoConnect(3)
 
+        //1. has wifi and device was not rotated since fragment start
+        mCompositeDisposable += locationAndIsFirstStartObservable
+                .filter { (_, isFirstFragmentStart) -> isFirstFragmentStart }
+                .filter { _ -> mWifiUtils.isWifiConnected() }
+                .map { it.first }
+                .doOnNext {
+                    Timber.e("Fetching damage claims from  the server with coordinates " +
+                            "[lat:${it.latlon.latitude}, lon:${it.latlon.longitude}], page: ${it.page}")
+                }
+                .flatMap { (latlon, radius, page) ->
                     val responseObservable = mApiClient.getDamageClaims(latlon.latitude, latlon.longitude, radius, page)
                             .doOnSuccess { response -> mDamageClaimRepo.saveAll(response.damageClaims) }
                             .toObservable()
@@ -56,15 +77,32 @@ class ActiveMalfunctionsListFragmentViewModel
                     return@flatMap Observables.zip(Observable.just(latlon), responseObservable)
                 }
                 .map { (latlon, response) -> calcDistances(latlon.latitude, latlon.longitude, response) }
+                .delay(1, TimeUnit.SECONDS)
                 .subscribe({
                     handleResponse(it)
                 }, {
                     handleError(it)
                 })
 
-        mCompositeDisposable += mLocationSubject
+        //2. has wifi but device was rotated since fragment start
+        val rotatedAndWifiObservable = locationAndIsFirstStartObservable
                 .subscribeOn(Schedulers.io())
+                .filter { (_, isFirstFragmentStart) -> !isFirstFragmentStart }
+                .filter { _ -> mWifiUtils.isWifiConnected() }
+                .map { it.first }
+                .doOnNext { Timber.e("has wifi but device was rotated since fragment start. page: ${it.page}") }
+
+        //3. device was not rotated after fragment start but no wifi
+        val notRotatedAndNoWifiObservable = locationAndIsFirstStartObservable
+                .subscribeOn(Schedulers.io())
+                .filter { (_, isFirstFragmentStart) -> isFirstFragmentStart }
                 .filter { _ -> !mWifiUtils.isWifiConnected() }
+                .map { it.first }
+                .doOnNext { Timber.e("device was not rotated after fragment start but no wifi. page: ${it.page}") }
+
+        //2 and 3 are mutually exclusive so we can merge them into one.
+        //if device has been rotated OR we don't have wifi connection - get data from repository
+        mCompositeDisposable += Observable.merge(rotatedAndWifiObservable, notRotatedAndNoWifiObservable)
                 .flatMap { (latlon, radius, page) ->
                     val repoResultObservable = mDamageClaimRepo.findWithinBBox(latlon.latitude, latlon.longitude, radius, page)
                             .map { DamageClaimsResponse(it, ErrorCode.Remote.REC_OK) }
@@ -88,7 +126,7 @@ class ActiveMalfunctionsListFragmentViewModel
     }
 
     override fun getDamageClaimsWithinRadius(latLng: LatLng, radius: Double, page: Long) {
-        mLocationSubject.onNext(GetDamageClaimsRequestParamsDTO(latLng, radius, page))
+        mRequestParamsSubject.onNext(GetDamageClaimsRequestParamsDTO(latLng, radius, page))
     }
 
     private fun handleResponse(response: DamageClaimResponseWithDistanceDTO) {
@@ -128,6 +166,7 @@ class ActiveMalfunctionsListFragmentViewModel
         return retVal
     }
 
+    override fun isFirstFragmentStartSubject(): BehaviorSubject<Boolean> = mIsFirstFragmentStartSubject
 
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
     override fun onDamageClaimsPageReceived(): Observable<ArrayList<DamageClaimsWithDistanceDTO>> = mOnDamageClaimsPageReceivedSubject

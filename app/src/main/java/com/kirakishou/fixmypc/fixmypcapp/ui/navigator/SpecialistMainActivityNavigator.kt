@@ -12,8 +12,10 @@ class SpecialistMainActivityNavigator(activity: AppCompatActivity) {
     private val fragmentManager = activity.supportFragmentManager
 
     fun popFragment(): Boolean {
+        val backStackSize = fragmentManager.backStackEntryCount
+
         fragmentManager.popBackStack()
-        return fragmentManager.backStackEntryCount <= 0
+        return backStackSize <= 1
     }
 
     fun navigateToActiveDamageClaimsListFragment() {

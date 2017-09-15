@@ -15,6 +15,10 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
  */
 object AndroidUtils {
 
+    fun isAtleastLollipop(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+    }
+
     fun pixelsToSp(context: Context, px: Float): Float {
         val scaledDensity = context.resources.displayMetrics.scaledDensity
         return px / scaledDensity

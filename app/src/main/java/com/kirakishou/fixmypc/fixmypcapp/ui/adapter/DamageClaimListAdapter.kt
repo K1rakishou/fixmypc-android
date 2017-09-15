@@ -1,7 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.ui.adapter
 
 import android.content.Context
-import android.support.constraint.ConstraintLayout
+import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
@@ -12,19 +12,22 @@ import butterknife.ButterKnife
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseAdapter
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
+import com.kirakishou.fixmypc.fixmypcapp.helper.extension.myGetDrawable
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.Utils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItem
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItemType
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.DamageClaimCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimListAdapterGenericParam
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimsAdapterMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimsWithDistanceDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 import io.reactivex.subjects.BehaviorSubject
+import timber.log.Timber
 
 /**
  * Created by kirakishou on 9/3/2017.
  */
-class DamageClaimListAdapter(mContext: Context,
+class DamageClaimListAdapter(private val mContext: Context,
                              private val mAdapterItemClickSubject: BehaviorSubject<DamageClaim>,
                              private val mImageLoader: ImageLoader) : BaseAdapter<DamageClaimListAdapterGenericParam>(mContext) {
 
@@ -105,8 +108,15 @@ class DamageClaimListAdapter(mContext: Context,
                     mAdapterItemClickSubject.onNext(claim.damageClaim)
                 }
 
-                holder.damageCategory.text = claim.damageClaim.description
                 holder.distanceToMe.text = "$distStr КМ"
+
+                Timber.e("category: ${claim.damageClaim.category}")
+
+                when (claim.damageClaim.category) {
+                    DamageClaimCategory.Computer.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_computer))
+                    DamageClaimCategory.Notebook.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_laptop))
+                    DamageClaimCategory.Phone.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_smartphone))
+                }
 
                 if (claim.damageClaim.imageNamesList.isNotEmpty()) {
                     mImageLoader.loadImageFromNetInto(claim.damageClaim.imageNamesList.first(), holder.damagePhoto)
@@ -129,16 +139,16 @@ class DamageClaimListAdapter(mContext: Context,
     class DamageClaimItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         @BindView(R.id.click_view)
-        lateinit var clickView: ConstraintLayout
+        lateinit var clickView: CardView
 
         @BindView(R.id.damage_photo)
         lateinit var damagePhoto: ImageView
 
-        @BindView(R.id.damage_category)
-        lateinit var damageCategory: TextView
-
         @BindView(R.id.distance_to_me)
         lateinit var distanceToMe: TextView
+
+        @BindView(R.id.damage_type)
+        lateinit var damageTypeIcon: ImageView
 
         init {
             ButterKnife.bind(this, itemView)

@@ -18,7 +18,7 @@ import timber.log.Timber
  * Created by kirakishou on 9/12/2017.
  */
 open class DamageClaimRepository(protected val mDatabase: MyDatabase,
-                            protected val mMapperManager: MapperManager) {
+                                 protected val mMapperManager: MapperManager) {
 
     private val damageClaimDao: DamageClaimDao by lazy { mDatabase.damageClaimDao() }
     private val damageClaimPhotoDao: DamageClaimPhotoDao by lazy { mDatabase.damageClaimPhotoDao() }

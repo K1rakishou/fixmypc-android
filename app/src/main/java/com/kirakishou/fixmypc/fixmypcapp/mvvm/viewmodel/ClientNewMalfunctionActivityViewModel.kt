@@ -3,6 +3,7 @@ package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel
 import com.google.android.gms.maps.model.LatLng
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseViewModel
 import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
+import com.kirakishou.fixmypc.fixmypcapp.helper.WifiUtils
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.DamageClaimCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
@@ -25,7 +26,8 @@ import javax.inject.Inject
  * Created by kirakishou on 7/27/2017.
  */
 class ClientNewMalfunctionActivityViewModel
-@Inject constructor(protected val mApiClient: ApiClient) : BaseViewModel(),
+@Inject constructor(protected val mApiClient: ApiClient,
+                    protected val mWifiUtils: WifiUtils) : BaseViewModel(),
         ClientNewMalfunctionActivityInputs, ClientNewMalfunctionActivityOutputs,
         ClientNewMalfunctionActivityErrors {
 
@@ -50,10 +52,13 @@ class ClientNewMalfunctionActivityViewModel
     private val mOnFileAlreadySelectedSubject = BehaviorSubject.create<Unit>()
     private val mOnBadServerResponseSubject = BehaviorSubject.create<Unit>()
     private val mOnBadOriginalFileNameSubject = BehaviorSubject.create<Unit>()
+    private val mOnWifiNotConnected = BehaviorSubject.create<Unit>()
     private val mOnUnknownErrorSubject = BehaviorSubject.create<Throwable>()
 
     init {
+        //if wifi connected - send request to server
         mCompositeDisposable += mSendMalfunctionRequestToServerSubject
+                .filter { _ -> mWifiUtils.isWifiConnected() }
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { mUploadProgressUpdateSubject.onNext(ProgressUpdate.ProgressUpdateStart(it.damageClaimPhotos.size)) }
                 .observeOn(Schedulers.io())
@@ -62,6 +67,16 @@ class ClientNewMalfunctionActivityViewModel
                 .doOnNext { mUploadProgressUpdateSubject.onNext(ProgressUpdate.ProgressUpdateDone()) }
                 .subscribe({
                     handleResponse(it)
+                }, {
+                    handleError(it)
+                })
+
+        //if wifi not connected - notify user about that
+        mCompositeDisposable += mSendMalfunctionRequestToServerSubject
+                .filter { _ -> mWifiUtils.isWifiConnected() }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    handleResponse(StatusResponse(ErrorCode.Remote.REC_WIFI_IS_NOT_CONNECTED))
                 }, {
                     handleError(it)
                 })
@@ -90,7 +105,7 @@ class ClientNewMalfunctionActivityViewModel
         malfunctionRequestInfo.damageClaimLocation = location
     }
 
-    override fun sendMalfunctionRequestToServer() {
+    override fun sendMalfunctionRequestToServer(checkWifiStatus: Boolean) {
         mSendMalfunctionRequestToServerSubject.onNext(malfunctionRequestInfo)
     }
 
@@ -112,6 +127,7 @@ class ClientNewMalfunctionActivityViewModel
                 throw IllegalStateException("This should never happen")
             }
 
+            ErrorCode.Remote.REC_WIFI_IS_NOT_CONNECTED -> mOnWifiNotConnected.onNext(Unit)
             ErrorCode.Remote.REC_FILE_SIZE_EXCEEDED -> mOnFileSizeExceededSubject.onNext(Unit)
             ErrorCode.Remote.REC_REQUEST_SIZE_EXCEEDED -> mOnRequestSizeExceededSubject.onNext(Unit)
             ErrorCode.Remote.REC_ALL_FILE_SERVERS_ARE_NOT_WORKING -> mOnAllFileServersAreNotWorkingSubject.onNext(Unit)
@@ -149,5 +165,6 @@ class ClientNewMalfunctionActivityViewModel
     override fun onFileAlreadySelected(): Observable<Unit> = mOnFileAlreadySelectedSubject
     override fun onBadServerResponse(): Observable<Unit> = mOnBadServerResponseSubject
     override fun onBadOriginalFileNameSubject(): Observable<Unit> = mOnBadOriginalFileNameSubject
+    override fun onWifiNotConnected(): Observable<Unit> = mOnWifiNotConnected
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
 }

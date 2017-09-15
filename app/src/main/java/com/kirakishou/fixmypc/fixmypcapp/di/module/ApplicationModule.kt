@@ -156,8 +156,8 @@ class ApplicationModule(private val mApplication: Application,
 
     @Singleton
     @Provides
-    fun provideFixmypcApiStore(mWifiUtils: WifiUtils, mApiService: ApiService, mAppSettings: AppSettings, mGson: Gson, mDamageClaimRepository: DamageClaimRepository): ApiClient {
-        return ApiClientImpl(mWifiUtils, mApiService, mAppSettings, mGson, mDamageClaimRepository)
+    fun provideFixmypcApiStore(mApiService: ApiService, mAppSettings: AppSettings, mGson: Gson): ApiClient {
+        return ApiClientImpl(mApiService, mAppSettings, mGson)
     }
 
     @Singleton

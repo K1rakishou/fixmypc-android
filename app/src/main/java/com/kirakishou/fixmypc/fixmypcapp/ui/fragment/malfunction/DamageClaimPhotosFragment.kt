@@ -107,6 +107,10 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewMalfunctionActivityViewM
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onMalfunctionRequestSuccessfullyCreated() })
 
+        mCompositeDisposable += getViewModel().mErrors.onWifiNotConnected()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onWifiNotConnected() })
+
         mCompositeDisposable += getViewModel().mErrors.onFileSizeExceeded()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onFileSizeExceeded() })
@@ -149,7 +153,8 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewMalfunctionActivityViewM
     }
 
     private fun sendApplicationToServer() {
-        getViewModel().mInputs.sendMalfunctionRequestToServer()
+        val checkWifiStatus = true //TODO get this from shared prefs
+        getViewModel().mInputs.sendMalfunctionRequestToServer(checkWifiStatus)
     }
 
     private fun setMalfunctionPhotos(photos: ArrayList<String>) {
@@ -220,6 +225,11 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewMalfunctionActivityViewM
     private fun onMalfunctionRequestSuccessfullyCreated() {
         showToast("Заявка успешно создана", Toast.LENGTH_LONG)
         runActivity(ClientMainActivity::class.java, true)
+    }
+
+    private fun onWifiNotConnected() {
+        showToast("Отсутствует подключение WiFi. Если Вы хотите хотите отправлять заявки даже при отключенном WiFi - " +
+                "отключите в настройках опцию \"Запретить отправлять заявки при отключенном WiFi\"", Toast.LENGTH_LONG)
     }
 
     private fun onFileSizeExceeded() {

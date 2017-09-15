@@ -14,5 +14,6 @@ interface ClientNewMalfunctionActivityErrors : ClientNewMalfunctionActivityError
     fun onSelectedPhotoDoesNotExists(): Observable<Unit>
     fun onResponseBodyIsEmpty(): Observable<Unit>
     fun onFileAlreadySelected(): Observable<Unit>
+    fun onWifiNotConnected(): Observable<Unit>
     fun onBadOriginalFileNameSubject(): Observable<Unit>
 }

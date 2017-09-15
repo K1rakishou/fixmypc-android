@@ -1,6 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.di.module
 
 import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerActivity
+import com.kirakishou.fixmypc.fixmypcapp.helper.WifiUtils
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewDamageClaimActivity
@@ -23,7 +24,7 @@ class ClientNewDamageClaimActivityModule(val activity: ClientNewDamageClaimActiv
 
     @PerActivity
     @Provides
-    fun provideViewModelFactory(mApiClient: ApiClient): ClientNewMalfunctionActivityViewModelFactory {
-        return ClientNewMalfunctionActivityViewModelFactory(mApiClient)
+    fun provideViewModelFactory(mApiClient: ApiClient, mWifiUtils: WifiUtils): ClientNewMalfunctionActivityViewModelFactory {
+        return ClientNewMalfunctionActivityViewModelFactory(mApiClient, mWifiUtils)
     }
 }

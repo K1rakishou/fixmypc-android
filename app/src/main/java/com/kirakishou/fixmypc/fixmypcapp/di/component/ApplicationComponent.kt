@@ -7,10 +7,11 @@ import com.kirakishou.fixmypc.fixmypcapp.di.module.ApplicationModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiService
-import com.kirakishou.fixmypc.fixmypcapp.helper.repository.database.MyDatabase
 import com.kirakishou.fixmypc.fixmypcapp.helper.mapper.MapperManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
+import com.kirakishou.fixmypc.fixmypcapp.helper.repository.DamageClaimRepository
+import com.kirakishou.fixmypc.fixmypcapp.helper.repository.database.MyDatabase
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.squareup.leakcanary.RefWatcher
 import dagger.Component
@@ -37,4 +38,5 @@ interface ApplicationComponent {
     fun exposeRefWatcher(): RefWatcher
     fun exposeImageLoader(): ImageLoader
     fun exposeMapperManager(): MapperManager
+    fun exposeDamageClaimRepository(): DamageClaimRepository
 }

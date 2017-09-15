@@ -186,7 +186,6 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
     private fun onDamageClaimsPageReceived(damageClaimList: ArrayList<DamageClaimsWithDistanceDTO>) {
         mEndlessScrollListener.pageLoaded()
 
-        //first we need to tell out endless scroll listener to stop emit scroll events
         if (damageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
             mEndlessScrollListener.reachedEnd()
         }
@@ -196,7 +195,6 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
         val adapterDamageClaims = damageClaimList.map { AdapterItem(it, AdapterItemType.VIEW_ITEM) }
         mAdapter.addAll(adapterDamageClaims as List<AdapterItem<DamageClaimListAdapterGenericParam>>)
 
-        //then we add footer with a message
         if (damageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
             mAdapter.addMessageFooter("Последнее объявление")
         }

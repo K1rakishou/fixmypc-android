@@ -2,7 +2,9 @@ package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel
 
 import com.google.android.gms.maps.model.LatLng
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseViewModel
+import com.kirakishou.fixmypc.fixmypcapp.helper.WifiUtils
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
+import com.kirakishou.fixmypc.fixmypcapp.helper.repository.DamageClaimRepository
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.MathUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimsWithDistanceDTO
@@ -23,7 +25,9 @@ import javax.inject.Inject
  * Created by kirakishou on 9/3/2017.
  */
 class ActiveMalfunctionsListFragmentViewModel
-@Inject constructor(protected val mApiClient: ApiClient) : BaseViewModel(),
+@Inject constructor(protected val mApiClient: ApiClient,
+                    protected val mWifiUtils: WifiUtils,
+                    protected val mDamageClaimRepo: DamageClaimRepository) : BaseViewModel(),
         ActiveMalfunctionsListFragmentInputs,
         ActiveMalfunctionsListFragmentOutputs,
         ActiveMalfunctionsListFragmentErrors {
@@ -41,13 +45,32 @@ class ActiveMalfunctionsListFragmentViewModel
     init {
         mCompositeDisposable += mLocationSubject
                 .subscribeOn(Schedulers.io())
+                .filter { _ -> mWifiUtils.isWifiConnected() }
                 .flatMap { (latlon, radius, page) ->
                     Timber.d("Fetching damage claims from  the server with coordinates [lat:${latlon.latitude}, lon:${latlon.longitude}]")
 
                     val responseObservable = mApiClient.getDamageClaims(latlon.latitude, latlon.longitude, radius, page)
+                            .doOnSuccess { response -> mDamageClaimRepo.saveAll(response.damageClaims) }
                             .toObservable()
 
                     return@flatMap Observables.zip(Observable.just(latlon), responseObservable)
+                }
+                .map { (latlon, response) -> calcDistances(latlon.latitude, latlon.longitude, response) }
+                .subscribe({
+                    handleResponse(it)
+                }, {
+                    handleError(it)
+                })
+
+        mCompositeDisposable += mLocationSubject
+                .subscribeOn(Schedulers.io())
+                .filter { _ -> !mWifiUtils.isWifiConnected() }
+                .flatMap { (latlon, radius, page) ->
+                    val repoResultObservable = mDamageClaimRepo.findWithinBBox(latlon.latitude, latlon.longitude, radius, page)
+                            .map { DamageClaimsResponse(it, ErrorCode.Remote.REC_OK) }
+                            .toObservable()
+
+                    return@flatMap Observables.zip(Observable.just(latlon), repoResultObservable)
                 }
                 .map { (latlon, response) -> calcDistances(latlon.latitude, latlon.longitude, response) }
                 .subscribe({
@@ -68,18 +91,27 @@ class ActiveMalfunctionsListFragmentViewModel
         mLocationSubject.onNext(GetDamageClaimsRequestParamsDTO(latLng, radius, page))
     }
 
-    private fun handleResponse(responseDTO: DamageClaimResponseWithDistanceDTO) {
-        when (responseDTO.errorCode) {
-            ErrorCode.Remote.REC_OK -> mOnDamageClaimsPageReceivedSubject.onNext(responseDTO.damageClaims)
+    private fun handleResponse(response: DamageClaimResponseWithDistanceDTO) {
+        val errorCode = response.errorCode
+
+        if (errorCode != ErrorCode.Remote.REC_OK) {
+            handleBadResponse(response.errorCode)
+            return
+        }
+
+        mOnDamageClaimsPageReceivedSubject.onNext(response.damageClaims)
+    }
+
+    private fun handleBadResponse(errorCode: ErrorCode.Remote) {
+        when (errorCode) {
             ErrorCode.Remote.REC_NOTHING_FOUND -> mOnNothingFoundSubject.onNext(Unit)
 
-            else -> throw RuntimeException("Unknown errorCode: ${responseDTO.errorCode}")
+            else -> throw RuntimeException("Unknown errorCode: $errorCode")
         }
     }
 
     private fun handleError(error: Throwable) {
         Timber.e(error)
-
         mOnUnknownErrorSubject.onNext(error)
     }
 

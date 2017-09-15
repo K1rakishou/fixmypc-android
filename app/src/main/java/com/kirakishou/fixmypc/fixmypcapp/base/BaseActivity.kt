@@ -10,8 +10,8 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import butterknife.ButterKnife
 import butterknife.Unbinder
-import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.helper.extension.myAddListener
+import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import io.reactivex.disposables.CompositeDisposable
 
@@ -49,8 +49,8 @@ abstract class BaseActivity<out T: ViewModel> : AppCompatActivity(), LifecycleRe
     }
 
     override fun finish() {
-        super.finish()
         overridePendingTransitionExit()
+        super.finish()
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -114,7 +114,19 @@ abstract class BaseActivity<out T: ViewModel> : AppCompatActivity(), LifecycleRe
     }
 
     protected fun showToast(message: String, duration: Int = Toast.LENGTH_LONG) {
-        Toast.makeText(this, message, duration).show()
+        runOnUiThread {
+            Toast.makeText(this, message, duration).show()
+        }
+    }
+
+    protected open fun onUnknownError(error: Throwable) {
+        if (error.message != null) {
+            showToast(error.message!!)
+        } else {
+            showToast("Неизвестная ошибка")
+        }
+
+        finish()
     }
 
     protected fun runActivity(clazz: Class<*>, finishCurrentActivity: Boolean = false) {

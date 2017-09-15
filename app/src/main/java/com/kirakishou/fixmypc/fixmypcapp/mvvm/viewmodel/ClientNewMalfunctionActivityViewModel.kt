@@ -126,7 +126,7 @@ class ClientNewMalfunctionActivityViewModel
             ErrorCode.Remote.REC_RESPONSE_BODY_IS_EMPTY -> mOnResponseBodyIsEmptySubject.onNext(Unit)
             ErrorCode.Remote.REC_DUPLICATE_ENTRY_EXCEPTION -> mOnFileAlreadySelectedSubject.onNext(Unit)
             ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION -> mOnBadServerResponseSubject.onNext(Unit)
-            ErrorCode.Remote.REC_BAD_ORIGINAL_FILE_NAME -> TODO()
+            ErrorCode.Remote.REC_BAD_ORIGINAL_FILE_NAME -> mOnBadOriginalFileNameSubject.onNext(Unit)
 
             else -> throw RuntimeException("Unknown errorCode: $errorCode")
         }

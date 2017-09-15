@@ -14,6 +14,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.LoginPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.LoginResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
+import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.ReplaySubject
@@ -52,17 +53,27 @@ class ApiClientImpl
     override fun getDamageClaims(lat: Double, lon: Double, radius: Double, page: Long): Single<DamageClaimsResponse> {
         if (mWifiUtils.isWifiConnected()) {
             Timber.d("getDamageClaims() Fetching data from the server")
-            return GetDamageClaimRequest(lat, lon, radius, page, mApiService, mGson)
-                    .execute()
-                    .doOnSuccess { response -> mDamageClaimRepo.saveAll(response.damageClaims) }
+            return getDamageClaimsFromServer(lat, lon, radius, page)
+
         } else {
-            //TODO: Load from repository
             Timber.d("getDamageClaims() Retrieving data from the repository")
-            return mDamageClaimRepo.findWithinBBox(lat, lon, radius, page)
-                    .subscribeOn(Schedulers.io())
-                    .map { DamageClaimsResponse(it, ErrorCode.Remote.REC_OK) }
-                    .first(DamageClaimsResponse(emptyList(), ErrorCode.Remote.REC_EMPTY_REPOSITORY))
+            return getDamageClaimsFromRepository(lat, lon, radius, page)
+                    .switchIfEmpty(getDamageClaimsFromServer(lat, lon, radius, page)
+                            .toFlowable())
+                    .first(DamageClaimsResponse(emptyList(), ErrorCode.Remote.REC_NOTHING_FOUND))
         }
+    }
+
+    private fun getDamageClaimsFromServer(lat: Double, lon: Double, radius: Double, page: Long): Single<DamageClaimsResponse> {
+        return GetDamageClaimRequest(lat, lon, radius, page, mApiService, mGson)
+                .execute()
+                .doOnSuccess { response -> mDamageClaimRepo.saveAll(response.damageClaims) }
+    }
+
+    private fun getDamageClaimsFromRepository(lat: Double, lon: Double, radius: Double, page: Long): Flowable<DamageClaimsResponse> {
+        return mDamageClaimRepo.findWithinBBox(lat, lon, radius, page)
+                .subscribeOn(Schedulers.io())
+                .map { DamageClaimsResponse(it, ErrorCode.Remote.REC_OK) }
     }
 }
 

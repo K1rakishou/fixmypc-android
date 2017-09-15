@@ -102,13 +102,7 @@ class ClientNewDamageClaimActivity : BaseActivity<ClientNewMalfunctionActivityVi
     }
 
     override fun onUnknownError(error: Throwable) {
-        if (error.message != null) {
-            showToast(error.message!!)
-        } else {
-            showToast("Неизвестная ошибка")
-        }
-
-        finish()
+        super.onUnknownError(error)
     }
 
     override fun onBackPressed() {

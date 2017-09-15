@@ -125,9 +125,8 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
         //TODO: show reconnection button
     }
 
-    private fun onUnknownError(error: Throwable) {
-        showToast(error.message!!)
-        finish()
+    override fun onUnknownError(error: Throwable) {
+        super.onUnknownError(error)
     }
 
     private fun onShowToast(message: String) {

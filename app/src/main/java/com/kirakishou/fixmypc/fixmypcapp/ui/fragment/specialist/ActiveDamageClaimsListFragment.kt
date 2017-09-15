@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.widget.Toast
 import butterknife.BindView
 import com.google.android.gms.maps.model.LatLng
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
@@ -152,6 +153,10 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onDamageClaimsPageReceived(it) })
 
+        mCompositeDisposable += getViewModel().mErrors.onNothingFoundSubject()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onNothingFound() })
+
         mCompositeDisposable += getViewModel().mErrors.onUnknownError()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUnknownError(it) })
@@ -159,6 +164,10 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
         mCompositeDisposable += mAdapterItemClickSubject
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onAdapterItemClick(it) })
+    }
+
+    private fun onNothingFound() {
+        showToast("Ничего не найдено по данному запросу", Toast.LENGTH_LONG)
     }
 
     private fun onAdapterItemClick(damageClaim: DamageClaim) {

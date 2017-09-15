@@ -67,13 +67,7 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), 
     }
 
     override fun onUnknownError(error: Throwable) {
-        if (error.message != null) {
-            showToast(error.message!!)
-        } else {
-            showToast("Неизвестная ошибка")
-        }
-
-        finish()
+        super.onUnknownError(error)
     }
 
     override fun onBackPressed() {

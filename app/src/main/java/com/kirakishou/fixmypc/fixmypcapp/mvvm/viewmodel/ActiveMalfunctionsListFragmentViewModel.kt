@@ -35,6 +35,7 @@ class ActiveMalfunctionsListFragmentViewModel
     private val mCompositeDisposable = CompositeDisposable()
     private val mLocationSubject = BehaviorSubject.create<GetDamageClaimsRequestParamsDTO>()
     private val mOnDamageClaimsPageReceivedSubject = BehaviorSubject.create<ArrayList<DamageClaimsWithDistanceDTO>>()
+    private val mOnNothingFoundSubject = BehaviorSubject.create<Unit>()
     private val mOnUnknownErrorSubject = BehaviorSubject.create<Throwable>()
 
     init {
@@ -45,7 +46,6 @@ class ActiveMalfunctionsListFragmentViewModel
 
                     val responseObservable = mApiClient.getDamageClaims(latlon.latitude, latlon.longitude, radius, page)
                             .toObservable()
-                            //.switchIfEmpty { DamageClaimsResponse(emptyList(), ErrorCode.Remote.REC_EMPTY_REPOSITORY) }
 
                     return@flatMap Observables.zip(Observable.just(latlon), responseObservable)
                 }
@@ -65,8 +65,22 @@ class ActiveMalfunctionsListFragmentViewModel
     }
 
     override fun getDamageClaimsWithinRadius(latLng: LatLng, radius: Double, page: Long) {
-        Timber.e("getDamageClaimsWithinRadius page: $page")
         mLocationSubject.onNext(GetDamageClaimsRequestParamsDTO(latLng, radius, page))
+    }
+
+    private fun handleResponse(responseDTO: DamageClaimResponseWithDistanceDTO) {
+        when (responseDTO.errorCode) {
+            ErrorCode.Remote.REC_OK -> mOnDamageClaimsPageReceivedSubject.onNext(responseDTO.damageClaims)
+            ErrorCode.Remote.REC_NOTHING_FOUND -> mOnNothingFoundSubject.onNext(Unit)
+
+            else -> throw RuntimeException("Unknown errorCode: ${responseDTO.errorCode}")
+        }
+    }
+
+    private fun handleError(error: Throwable) {
+        Timber.e(error)
+
+        mOnUnknownErrorSubject.onNext(error)
     }
 
     private fun calcDistances(lat: Double, lon: Double, response: DamageClaimsResponse): DamageClaimResponseWithDistanceDTO {
@@ -82,19 +96,10 @@ class ActiveMalfunctionsListFragmentViewModel
         return retVal
     }
 
-    private fun handleResponse(responseDTO: DamageClaimResponseWithDistanceDTO) {
-        Timber.d("items size = ${responseDTO.damageClaims.size}")
-        mOnDamageClaimsPageReceivedSubject.onNext(responseDTO.damageClaims)
-    }
-
-    private fun handleError(error: Throwable) {
-        Timber.e(error)
-
-        mOnUnknownErrorSubject.onNext(error)
-    }
 
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
     override fun onDamageClaimsPageReceived(): Observable<ArrayList<DamageClaimsWithDistanceDTO>> = mOnDamageClaimsPageReceivedSubject
+    override fun onNothingFoundSubject(): Observable<Unit> = mOnNothingFoundSubject
 
     inner class GetDamageClaimsRequestParamsDTO(val latlon: LatLng,
                                                 val radius: Double,

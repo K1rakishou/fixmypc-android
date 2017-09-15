@@ -36,12 +36,9 @@ class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>() {
     override fun loadExitAnimations() = AnimatorSet()
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
-        //mViewModel.initPresenter()
     }
 
     override fun onActivityDestroy() {
-        //mActivityPresenter.destroyPresenter()
-
         mRefWatcher.watch(this)
     }
 
@@ -65,13 +62,7 @@ class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>() {
         showToast(message, duration)
     }
 
-    fun onUnknownError(error: Throwable) {
-        if (error.message != null) {
-            showToast(error.message!!)
-        } else {
-            showToast("Неизвестная ошибка")
-        }
-
-        finish()
+    override fun onUnknownError(error: Throwable) {
+        super.onUnknownError(error)
     }
 }

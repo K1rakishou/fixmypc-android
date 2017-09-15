@@ -10,7 +10,7 @@ class DamageClaimsPhotosMapper : Mapper {
 
     fun mapToEntity(damageClaim: DamageClaim): List<DamageClaimPhotoEntity> {
         return (0 until damageClaim.imageNamesList.size)
-                .map { DamageClaimPhotoEntity(null, damageClaim.id,  damageClaim.imageNamesList[it]) }
+                .map { DamageClaimPhotoEntity(damageClaim.imageNamesList[it], damageClaim.id) }
     }
 
     fun mapToEntities(damageClaimList: List<DamageClaim>): List<DamageClaimPhotoEntity> {

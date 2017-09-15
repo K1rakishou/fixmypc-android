@@ -9,13 +9,11 @@ import io.reactivex.subjects.BehaviorSubject
  */
 class EndlessRecyclerOnScrollListener(
         private val mGridLayoutManager: GridLayoutManager,
-        private val mLoadMoreSubject: BehaviorSubject<Long>) : RecyclerView.OnScrollListener() {
+        private val mLoadMoreSubject: BehaviorSubject<Long>): RecyclerView.OnScrollListener() {
 
-    private var previousTotal = 0
-    private var loading = true
-    private val visibleThreshold = 0
-    private var firstVisibleItem = 0
-    private var visibleItemCount = visibleThreshold * mGridLayoutManager.spanCount
+    private var loading = false
+    private val visibleThreshold = 1 * mGridLayoutManager.spanCount
+    private var lastVisibleItem = 0
     private var totalItemCount = 0
     private var currentPage = 0L
     private var isEndReached = false
@@ -27,31 +25,19 @@ class EndlessRecyclerOnScrollListener(
             return
         }
 
-        visibleItemCount = recyclerView.childCount
         totalItemCount = mGridLayoutManager.itemCount
-        firstVisibleItem = mGridLayoutManager.findFirstVisibleItemPosition()
+        lastVisibleItem = mGridLayoutManager.findLastVisibleItemPosition()
 
-        if (loading) {
-            if (totalItemCount > previousTotal) {
-                loading = false
-                previousTotal = totalItemCount
-            }
-        }
-
-        if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
-            mLoadMoreSubject.onNext(currentPage)
-
-            currentPage++
+        if (!loading && (totalItemCount <= (lastVisibleItem + visibleThreshold))) {
             loading = true
+
+            mLoadMoreSubject.onNext(currentPage)
+            currentPage++
         }
     }
 
-    fun resetState() {
-        firstVisibleItem = 0
-        totalItemCount = 0
-        currentPage = 0L
-        previousTotal = 0
-        isEndReached = false
+    fun pageLoaded() {
+        loading = false
     }
 
     fun reachedEnd() {

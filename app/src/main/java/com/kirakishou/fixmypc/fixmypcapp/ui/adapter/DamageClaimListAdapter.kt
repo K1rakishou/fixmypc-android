@@ -84,6 +84,10 @@ class DamageClaimListAdapter(mContext: Context,
         }
     }
 
+    fun hasFooter(): Boolean {
+        return mItems.last().getType() != AdapterItemType.VIEW_ITEM.ordinal
+    }
+
     override fun getBaseAdapterInfo(): MutableList<BaseAdapterInfo> {
         return mutableListOf(
                 BaseAdapterInfo(AdapterItemType.VIEW_ITEM, R.layout.adapter_item_damage_claim, DamageClaimItemHolder::class.java),

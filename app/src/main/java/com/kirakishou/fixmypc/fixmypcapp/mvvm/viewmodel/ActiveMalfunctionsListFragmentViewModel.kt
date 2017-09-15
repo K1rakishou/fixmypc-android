@@ -65,6 +65,7 @@ class ActiveMalfunctionsListFragmentViewModel
     }
 
     override fun getDamageClaimsWithinRadius(latLng: LatLng, radius: Double, page: Long) {
+        Timber.e("getDamageClaimsWithinRadius page: $page")
         mLocationSubject.onNext(GetDamageClaimsRequestParamsDTO(latLng, radius, page))
     }
 

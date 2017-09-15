@@ -54,9 +54,8 @@ open class DamageClaimRepository(protected val mDatabase: MyDatabase,
                     val photoIds = damageClaimEntityList.map { it.id }
                     val damageClaimPhotoEntityList = damageClaimPhotoDao.findManyByIds(photoIds)
 
-                    damageClaimPhotoDao.findAll()
-                            .blockingFirst()
-                            .forEach { println("id: ${it.id}, damageClaimId: ${it.damageClaimId}, photoName: ${it.photoName}") }
+                    damageClaimDao.findAll().blockingFirst().forEach { println(it) }
+                    damageClaimEntityList.forEach { println("description = ${it.description}") }
 
                     val damageClaimList = mMapperManager.get<DamageClaimsMapper>().mapFromEntities(damageClaimEntityList)
                     val photosMap = mMapperManager.get<DamageClaimsPhotosMapper>().mapFromEntities(damageClaimPhotoEntityList)

@@ -9,16 +9,12 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
  * Created by kirakishou on 9/12/2017.
  */
 
-@Entity(tableName = Constant.Room.TableName.DAMAGE_CLAIM_PHOTO_ENTITY_TABLE_NAME/*,
-        indices = arrayOf(Index(name = "id_index", value = "damage_claim_id"))*/)
-data class DamageClaimPhotoEntity(@PrimaryKey(autoGenerate = true)
-                                  @ColumnInfo(name = "id")
-                                  var id: Long?,
+@Entity(tableName = Constant.Room.TableName.DAMAGE_CLAIM_PHOTO_ENTITY_TABLE_NAME)
+data class DamageClaimPhotoEntity(@PrimaryKey(autoGenerate = false)
+                                  @ColumnInfo(name = "photo_name")
+                                  var photoName: String,
 
                                   @ColumnInfo(name = "damage_claim_id")
-                                  var damageClaimId: Long,
-
-                                  @ColumnInfo(name = "photo_name")
-                                  var photoName: String) {
-    constructor() : this(null, 0L, "")
+                                  var damageClaimId: Long) {
+    constructor() : this("", 0L)
 }

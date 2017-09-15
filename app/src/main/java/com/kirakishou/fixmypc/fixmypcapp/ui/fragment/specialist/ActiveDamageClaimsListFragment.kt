@@ -175,6 +175,8 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
     }
 
     private fun onDamageClaimsPageReceived(damageClaimList: ArrayList<DamageClaimsWithDistanceDTO>) {
+        mEndlessScrollListener.pageLoaded()
+
         //first we need to tell out endless scroll listener to stop emit scroll events
         if (damageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
             mEndlessScrollListener.reachedEnd()

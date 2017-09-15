@@ -21,10 +21,10 @@ interface DamageClaimDao {
     @Query("SELECT * FROM ${Constant.Room.TableName.DAMAGE_CLAIM_ENTITY_TABLE_NAME} WHERE " +
             "lon BETWEEN :arg0 AND :arg1 AND " +
             "lat BETWEEN :arg2 AND :arg3 " +
-            "ORDER BY created_on ASC " +
+            "ORDER BY saved_on ASC " +
             "LIMIT :arg4 OFFSET :arg5")
     fun findSomeWithinBBox(left: Double, right: Double, bottom: Double, top: Double, count: Long, page: Long): Flowable<List<DamageClaimEntity>>
 
-    @Query("SELECT * FROM ${Constant.Room.TableName.DAMAGE_CLAIM_ENTITY_TABLE_NAME}")
+    @Query("SELECT * FROM ${Constant.Room.TableName.DAMAGE_CLAIM_ENTITY_TABLE_NAME} ORDER BY saved_on ASC ")
     fun findAll(): Flowable<List<DamageClaimEntity>>
 }

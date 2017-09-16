@@ -167,10 +167,6 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
                 .subscribe({ onAdapterItemClick(it) })
     }
 
-    private fun onNothingFound() {
-        showToast("Ничего не найдено по данному запросу", Toast.LENGTH_LONG)
-    }
-
     private fun onAdapterItemClick(damageClaim: DamageClaim) {
 
     }
@@ -199,6 +195,10 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
         if (damageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
             mAdapter.addMessageFooter("Последнее объявление")
         }
+    }
+
+    private fun onNothingFound() {
+        showToast("Ничего не найдено по данному запросу", Toast.LENGTH_LONG)
     }
 
     override fun resolveDaggerDependency() {

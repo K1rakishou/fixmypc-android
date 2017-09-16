@@ -19,7 +19,6 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 /**
@@ -45,6 +44,9 @@ class ActiveMalfunctionsListFragmentViewModel
     private lateinit var mOnNothingFoundSubject: BehaviorSubject<Unit>
     private lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
 
+    private lateinit var mSendRequestSubject: BehaviorSubject<GetDamageClaimsRequestParamsDTO>
+    private lateinit var mEitherFromRepoOrServerSubject: BehaviorSubject<Pair<LatLng, DamageClaimsResponse>>
+
     fun init() {
         mCompositeDisposable.clear()
 
@@ -54,21 +56,12 @@ class ActiveMalfunctionsListFragmentViewModel
         mOnNothingFoundSubject = BehaviorSubject.create<Unit>()
         mOnUnknownErrorSubject = BehaviorSubject.create<Throwable>()
 
-        //multicast params and rotation state to three different observables
-        val locationAndIsFirstStartObservable = Observables.combineLatest(mRequestParamsSubject, mIsFirstFragmentStartSubject)
-                .subscribeOn(Schedulers.io())
-                .publish()
-                .autoConnect(3)
+        mSendRequestSubject = BehaviorSubject.create<GetDamageClaimsRequestParamsDTO>()
+        mEitherFromRepoOrServerSubject = BehaviorSubject.create<Pair<LatLng, DamageClaimsResponse>>()
 
-        //1. has wifi and device was not rotated since fragment start
-        mCompositeDisposable += locationAndIsFirstStartObservable
-                .filter { (_, isFirstFragmentStart) -> isFirstFragmentStart }
-                .filter { _ -> mWifiUtils.isWifiConnected() }
-                .map { it.first }
-                .doOnNext {
-                    Timber.e("Fetching damage claims from  the server with coordinates " +
-                            "[lat:${it.latlon.latitude}, lon:${it.latlon.longitude}], page: ${it.page}")
-                }
+        //TODO: write tests for this shit ASAP
+        mCompositeDisposable += mSendRequestSubject
+                .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() Fetching damage claims from the server") }
                 .flatMap { (latlon, radius, page) ->
                     val responseObservable = mApiClient.getDamageClaims(latlon.latitude, latlon.longitude, radius, page)
                             .doOnSuccess { response -> mDamageClaimRepo.saveAll(response.damageClaims) }
@@ -77,45 +70,84 @@ class ActiveMalfunctionsListFragmentViewModel
                     return@flatMap Observables.zip(Observable.just(latlon), responseObservable)
                 }
                 .map { (latlon, response) -> calcDistances(latlon.latitude, latlon.longitude, response) }
-                .delay(1, TimeUnit.SECONDS)
                 .subscribe({
                     handleResponse(it)
                 }, {
                     handleError(it)
                 })
 
-        //2. has wifi but device was rotated since fragment start
-        val rotatedAndWifiObservable = locationAndIsFirstStartObservable
-                .subscribeOn(Schedulers.io())
-                .filter { (_, isFirstFragmentStart) -> !isFirstFragmentStart }
-                .filter { _ -> mWifiUtils.isWifiConnected() }
-                .map { it.first }
-                .doOnNext { Timber.e("has wifi but device was rotated since fragment start. page: ${it.page}") }
-
-        //3. device was not rotated after fragment start but no wifi
-        val notRotatedAndNoWifiObservable = locationAndIsFirstStartObservable
-                .subscribeOn(Schedulers.io())
-                .filter { (_, isFirstFragmentStart) -> isFirstFragmentStart }
-                .filter { _ -> !mWifiUtils.isWifiConnected() }
-                .map { it.first }
-                .doOnNext { Timber.e("device was not rotated after fragment start but no wifi. page: ${it.page}") }
-
-        //2 and 3 are mutually exclusive so we can merge them into one.
-        //if device has been rotated OR we don't have wifi connection - get data from repository
-        mCompositeDisposable += Observable.merge(rotatedAndWifiObservable, notRotatedAndNoWifiObservable)
-                .flatMap { (latlon, radius, page) ->
-                    val repoResultObservable = mDamageClaimRepo.findWithinBBox(latlon.latitude, latlon.longitude, radius, page)
-                            .map { DamageClaimsResponse(it, ErrorCode.Remote.REC_OK) }
-                            .toObservable()
-
-                    return@flatMap Observables.zip(Observable.just(latlon), repoResultObservable)
-                }
+        mCompositeDisposable += mEitherFromRepoOrServerSubject
                 .map { (latlon, response) -> calcDistances(latlon.latitude, latlon.longitude, response) }
                 .subscribe({
                     handleResponse(it)
                 }, {
                     handleError(it)
                 })
+
+        //multicast params and rotation state to three different observables
+        val locationAndIsFirstStartObservable = Observables.combineLatest(mRequestParamsSubject, mIsFirstFragmentStartSubject)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() Start multicasting") }
+                .publish()
+                .autoConnect(4)
+
+        locationAndIsFirstStartObservable
+                .filter { (_, isFirstFragmentStart) -> isFirstFragmentStart }
+                .filter { _ -> mWifiUtils.isWifiConnected() }
+                .map { it.first }
+                .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() has wifi and was not rotated. page: ${it.page}") }
+                .subscribe(mSendRequestSubject)
+
+        val rotatedHasWifi = locationAndIsFirstStartObservable
+                .filter { (_, isFirstFragmentStart) -> !isFirstFragmentStart }
+                .filter { _ -> mWifiUtils.isWifiConnected() }
+                .map { it.first }
+                .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() has wifi but device was rotated since fragment start. page: ${it.page}") }
+
+        val notRotatedNoWifi = locationAndIsFirstStartObservable
+                .filter { (_, isFirstFragmentStart) -> isFirstFragmentStart }
+                .filter { _ -> !mWifiUtils.isWifiConnected() }
+                .map { it.first }
+                .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() device was not rotated after fragment start but no wifi. page: ${it.page}") }
+
+        val rotatedNoWifi = locationAndIsFirstStartObservable
+                .filter { (_, isFirstFragmentStart) -> !isFirstFragmentStart }
+                .filter { _ -> !mWifiUtils.isWifiConnected() }
+                .map { it.first }
+                .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() device was rotated after fragment start and no wifi. page: ${it.page}") }
+
+        val isRepoEmptyObservable = Observable.merge(rotatedHasWifi, notRotatedNoWifi, rotatedNoWifi)
+                .flatMap { (latlon, radius, page) ->
+                    val repoResultObservable = mDamageClaimRepo.findWithinBBox(latlon.latitude, latlon.longitude, radius, page)
+                            .map { DamageClaimsResponse(it, ErrorCode.Remote.REC_OK) }
+                            .toObservable()
+
+                    return@flatMap Observables.zip(Observable.just(latlon), Observable.just(radius),
+                            Observable.just(page), repoResultObservable, {o1, o2, o3, o4 -> IsRepoEmptyDTO(o1, o2, o3, o4)})
+                }
+                .publish()
+                .autoConnect(2)
+
+        val repoIsNotEmptyObservable = isRepoEmptyObservable
+                .filter { it.response.damageClaims.isNotEmpty() }
+                .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() Repo is NOT empty") }
+                .flatMap { (latlon, _, _, response) -> Observables.zip(Observable.just(latlon), Observable.just(response)) }
+
+        val repoIsEmptyObservable = isRepoEmptyObservable
+                .filter { it.response.damageClaims.isEmpty() }
+                .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() Repo IS empty") }
+                .flatMap { (latlon, radius, page, _) ->
+                    val serverResponseObservable = mApiClient.getDamageClaims(latlon.latitude, latlon.longitude, radius, page)
+                            .doOnSuccess { response -> mDamageClaimRepo.saveAll(response.damageClaims) }
+                            .toObservable()
+
+                    return@flatMap Observables.zip(Observable.just(latlon), serverResponseObservable)
+                }
+
+        Observable.merge(repoIsNotEmptyObservable, repoIsEmptyObservable)
+                .flatMap { (latlon, response) -> Observables.zip(Observable.just(latlon), Observable.just(response)) }
+                .subscribe(mEitherFromRepoOrServerSubject)
     }
 
     override fun onCleared() {
@@ -167,10 +199,14 @@ class ActiveMalfunctionsListFragmentViewModel
     }
 
     override fun isFirstFragmentStartSubject(): BehaviorSubject<Boolean> = mIsFirstFragmentStartSubject
-
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
     override fun onDamageClaimsPageReceived(): Observable<ArrayList<DamageClaimsWithDistanceDTO>> = mOnDamageClaimsPageReceivedSubject
     override fun onNothingFoundSubject(): Observable<Unit> = mOnNothingFoundSubject
+
+    data class IsRepoEmptyDTO(val latlon: LatLng,
+                              val radius: Double,
+                              val page: Long,
+                              val response: DamageClaimsResponse)
 
     inner class GetDamageClaimsRequestParamsDTO(val latlon: LatLng,
                                                 val radius: Double,

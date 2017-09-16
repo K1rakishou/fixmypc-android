@@ -13,6 +13,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.LoginRespons
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
 import io.reactivex.Single
 import io.reactivex.subjects.ReplaySubject
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 /**
@@ -38,6 +39,7 @@ class ApiClientImpl
     override fun getDamageClaims(lat: Double, lon: Double, radius: Double, page: Long): Single<DamageClaimsResponse> {
         return GetDamageClaimRequest(lat, lon, radius, page, mApiService, mGson)
                 .execute()
+                .delay(1, TimeUnit.SECONDS)
     }
 }
 

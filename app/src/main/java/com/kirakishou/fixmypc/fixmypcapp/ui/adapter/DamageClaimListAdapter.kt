@@ -22,7 +22,6 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimsAdap
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimsWithDistanceDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 import io.reactivex.subjects.BehaviorSubject
-import timber.log.Timber
 
 /**
  * Created by kirakishou on 9/3/2017.
@@ -109,8 +108,6 @@ class DamageClaimListAdapter(private val mContext: Context,
                 }
 
                 holder.distanceToMe.text = "$distStr КМ"
-
-                Timber.e("category: ${claim.damageClaim.category}")
 
                 when (claim.damageClaim.category) {
                     DamageClaimCategory.Computer.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_computer))

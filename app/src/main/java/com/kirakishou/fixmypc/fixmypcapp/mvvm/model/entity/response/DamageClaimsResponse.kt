@@ -10,6 +10,6 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
  */
 class DamageClaimsResponse(@Expose
                            @SerializedName("test")
-                           val damageClaims: List<DamageClaim>,
+                           val damageClaims: MutableList<DamageClaim>,
 
                            errorCode: ErrorCode.Remote) : StatusResponse(errorCode)

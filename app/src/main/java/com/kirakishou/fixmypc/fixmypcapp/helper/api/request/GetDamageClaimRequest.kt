@@ -14,10 +14,11 @@ class GetDamageClaimRequest(protected val mLat: Double,
                             protected val mLon: Double,
                             protected val mRadius: Double,
                             protected val mPage: Long,
+                            protected val mCount: Long,
                             protected val mApiService: ApiService,
                             protected val mGson: Gson) : AbstractRequest<Single<DamageClaimsResponse>> {
     override fun execute(): Single<DamageClaimsResponse> {
-        return mApiService.getDamageClaims(mLat, mLon, mRadius, mPage)
+        return mApiService.getDamageClaims(mLat, mLon, mRadius, mPage, mCount)
                 .subscribeOn(Schedulers.io())
                 .lift(OnApiErrorSingle(mGson))
     }

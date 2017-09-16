@@ -24,9 +24,10 @@ interface ApiService {
                                @Part("request") requestBody: DamageClaimPacket,
                                @Part("images_type") imagesType: Int): Single<Response<StatusResponse>>
 
-    @GET("/v1/api/damage_claim_request/{lat}/{lon}/{radius}/{page}")
+    @GET("/v1/api/damage_claim_request/{lat}/{lon}/{radius}/{page}/{count}")
     fun getDamageClaims(@Path("lat") lat: Double,
                         @Path("lon") lon: Double,
                         @Path("radius") radius: Double,
-                        @Path("page") page: Long): Single<Response<DamageClaimsResponse>>
+                        @Path("page") page: Long,
+                        @Path("count") count: Long): Single<Response<DamageClaimsResponse>>
 }

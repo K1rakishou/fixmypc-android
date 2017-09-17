@@ -36,8 +36,8 @@ class ApiClientImpl
                 .execute()
     }
 
-    override fun getDamageClaims(lat: Double, lon: Double, radius: Double, page: Long, count: Long): Single<DamageClaimsResponse> {
-        return GetDamageClaimRequest(lat, lon, radius, page, count, mApiService, mGson)
+    override fun getDamageClaims(lat: Double, lon: Double, radius: Double, skip: Long, count: Long): Single<DamageClaimsResponse> {
+        return GetDamageClaimRequest(lat, lon, radius, skip, count, mApiService, mGson)
                 .execute()
                 .delay(1, TimeUnit.SECONDS)
     }

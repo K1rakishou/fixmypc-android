@@ -102,55 +102,52 @@ class ActiveMalfunctionsListFragmentViewModel
                 .filter { _ -> mWifiUtils.isWifiConnected() }
                 .map { it.first }
                 .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() has wifi " +
-                        "and was not rotated. page: ${it.page}") }
+                        "and was not rotated. skip: ${it.skip}") }
                 .subscribe(mSendRequestSubject)
 
         val rotatedHasWifi = locationAndIsFirstStartObservable
                 .filter { (_, isFirstFragmentStart) -> !isFirstFragmentStart }
                 .filter { _ -> mWifiUtils.isWifiConnected() }
                 .map { it.first }
-                .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() has wifi " +
-                        "but device was rotated since fragment start. page: ${it.page}") }
+                .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() was rotated. skip: ${it.skip}") }
 
         val notRotatedNoWifi = locationAndIsFirstStartObservable
                 .filter { (_, isFirstFragmentStart) -> isFirstFragmentStart }
                 .filter { _ -> !mWifiUtils.isWifiConnected() }
                 .map { it.first }
-                .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() device " +
-                        "was not rotated after fragment start but no wifi. page: ${it.page}") }
+                .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() no wifi. skip: ${it.skip}") }
 
         val rotatedNoWifi = locationAndIsFirstStartObservable
                 .filter { (_, isFirstFragmentStart) -> !isFirstFragmentStart }
                 .filter { _ -> !mWifiUtils.isWifiConnected() }
                 .map { it.first }
                 .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() " +
-                        "device was rotated after fragment start and no wifi. page: ${it.page}") }
+                        "was rotated and no wifi. skip: ${it.skip}") }
 
         Observable.merge(rotatedHasWifi, notRotatedNoWifi, rotatedNoWifi)
-                .flatMap { (latlon, radius, page) ->
-                    val repoResultObservable = mDamageClaimRepo.findWithinBBox(latlon.latitude, latlon.longitude, radius, page)
+                .flatMap { (latlon, radius, skip) ->
+                    val repoResultObservable = mDamageClaimRepo.findWithinBBox(latlon.latitude, latlon.longitude, radius, skip)
                             .map { DamageClaimsResponse(it.toMutableList(), ErrorCode.Remote.REC_OK) }
                             .toObservable()
 
                     return@flatMap Observables.zip(Observable.just(latlon), Observable.just(radius),
-                            Observable.just(page), repoResultObservable, { o1, o2, o3, o4 -> IsRepoEmptyDTO(o1, o2, o3, o4) })
+                            Observable.just(skip), repoResultObservable, { o1, o2, o3, o4 -> IsRepoEmptyDTO(o1, o2, o3, o4) })
                 }
-                .flatMap { (latlon, radius, page, response) ->
+                .flatMap { (latlon, radius, skip, response) ->
+                    Timber.e("Got from the repo ${response.damageClaims.size} items")
+
                     if (response.damageClaims.size >= itemsPerPage) {
                         return@flatMap Observables.zip(Observable.just(latlon), Observable.just(response))
                     }
 
                     val remainder = itemsPerPage - response.damageClaims.size
-                    val serverResponseObservable = mApiClient.getDamageClaims(latlon.latitude, latlon.longitude, radius, page, remainder)
+                    Timber.e("Remainder is $remainder, skip is $skip")
+
+                    val serverResponseObservable = mApiClient.getDamageClaims(latlon.latitude, latlon.longitude, radius, skip, remainder)
                             .doOnSuccess { serverResponse -> mDamageClaimRepo.saveAll(serverResponse.damageClaims) }
                             .toObservable()
 
-                    return@flatMap Observables.zip(Observable.just(latlon), Observable.just(response),
-                            serverResponseObservable, { _latlon, repoResponse, serverResponse ->
-                        serverResponse.damageClaims.addAll(repoResponse.damageClaims)
-
-                        return@zip Pair(_latlon, serverResponse)
-                    })
+                    return@flatMap Observables.zip(Observable.just(latlon), serverResponseObservable)
                 }
                 .subscribe(mEitherFromRepoOrServerSubject)
     }
@@ -163,7 +160,7 @@ class ActiveMalfunctionsListFragmentViewModel
     }
 
     override fun getDamageClaimsWithinRadius(latLng: LatLng, radius: Double, page: Long) {
-        mRequestParamsSubject.onNext(GetDamageClaimsRequestParamsDTO(latLng, radius, page))
+        mRequestParamsSubject.onNext(GetDamageClaimsRequestParamsDTO(latLng, radius, page * itemsPerPage))
     }
 
     private fun handleResponse(response: DamageClaimResponseWithDistanceDTO) {
@@ -215,11 +212,11 @@ class ActiveMalfunctionsListFragmentViewModel
 
     inner class GetDamageClaimsRequestParamsDTO(val latlon: LatLng,
                                                 val radius: Double,
-                                                val page: Long) {
+                                                val skip: Long) {
 
         operator fun component1() = latlon
         operator fun component2() = radius
-        operator fun component3() = page
+        operator fun component3() = skip
     }
 
     inner class DamageClaimResponseWithDistanceDTO(var damageClaims: ArrayList<DamageClaimsWithDistanceDTO>,

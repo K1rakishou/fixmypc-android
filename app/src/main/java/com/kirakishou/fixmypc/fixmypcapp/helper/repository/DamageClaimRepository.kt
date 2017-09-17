@@ -36,11 +36,11 @@ open class DamageClaimRepository(protected val mDatabase: MyDatabase,
         }
     }
 
-    fun findWithinBBox(lat: Double, lon: Double, radius: Double, page: Long): Flowable<List<DamageClaim>> {
+    fun findWithinBBox(lat: Double, lon: Double, radius: Double, skip: Long): Flowable<List<DamageClaim>> {
         val (maxLatLon, minLatLon) = MathUtils.createBoundingBoxFromPoint(LatLng(lat, lon), radius)
 
         return damageClaimDao.findSomeWithinBBox(minLatLon.longitude, maxLatLon.longitude,
-                minLatLon.latitude, maxLatLon.latitude, Constant.MAX_DAMAGE_CLAIMS_PER_PAGE, page * Constant.MAX_DAMAGE_CLAIMS_PER_PAGE)
+                minLatLon.latitude, maxLatLon.latitude, Constant.MAX_DAMAGE_CLAIMS_PER_PAGE, skip)
                 .map { damageClaimEntityList ->
                     val photoIds = damageClaimEntityList.map { it.id }
                     val damageClaimPhotoEntityList = damageClaimPhotoDao.findManyByIds(photoIds)

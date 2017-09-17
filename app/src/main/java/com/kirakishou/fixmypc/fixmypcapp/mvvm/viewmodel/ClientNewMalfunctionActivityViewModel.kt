@@ -3,8 +3,8 @@ package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel
 import com.google.android.gms.maps.model.LatLng
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseViewModel
 import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
-import com.kirakishou.fixmypc.fixmypcapp.helper.WifiUtils
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
+import com.kirakishou.fixmypc.fixmypcapp.helper.wifi.WifiUtilsImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.DamageClaimCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimInfo
@@ -27,7 +27,7 @@ import javax.inject.Inject
  */
 class ClientNewMalfunctionActivityViewModel
 @Inject constructor(protected val mApiClient: ApiClient,
-                    protected val mWifiUtils: WifiUtils) : BaseViewModel(),
+                    protected val mWifiUtils: WifiUtilsImpl) : BaseViewModel(),
         ClientNewMalfunctionActivityInputs, ClientNewMalfunctionActivityOutputs,
         ClientNewMalfunctionActivityErrors {
 

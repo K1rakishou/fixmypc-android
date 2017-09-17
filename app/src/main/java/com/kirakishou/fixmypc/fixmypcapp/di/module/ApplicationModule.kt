@@ -8,7 +8,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
-import com.kirakishou.fixmypc.fixmypcapp.helper.WifiUtils
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClientImpl
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiService
@@ -16,10 +15,15 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.mapper.MapperManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.repository.DamageClaimRepository
+import com.kirakishou.fixmypc.fixmypcapp.helper.repository.DamageClaimRepositoryImpl
 import com.kirakishou.fixmypc.fixmypcapp.helper.repository.database.MyDatabase
+import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.NormalSchedulers
+import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.gson.AccountTypeTypeAdapter
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.gson.ErrorCodeRemoteTypeAdapter
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.gson.LatLngTypeAdapter
+import com.kirakishou.fixmypc.fixmypcapp.helper.wifi.WifiUtils
+import com.kirakishou.fixmypc.fixmypcapp.helper.wifi.WifiUtilsImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AccountType
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
@@ -144,14 +148,20 @@ class ApplicationModule(private val mApplication: Application,
 
     @Singleton
     @Provides
-    fun provideDamageClaimRepository(mDatabase: MyDatabase, mMapperManager: MapperManager): DamageClaimRepository {
-        return DamageClaimRepository(mDatabase, mMapperManager)
+    fun provideSchedulers(): SchedulerProvider {
+        return NormalSchedulers()
+    }
+
+    @Singleton
+    @Provides
+    fun provideDamageClaimRepository(mDatabase: MyDatabase, mMapperManager: MapperManager, mSchedulers: SchedulerProvider): DamageClaimRepository {
+        return DamageClaimRepositoryImpl(mDatabase, mMapperManager, mSchedulers)
     }
 
     @Singleton
     @Provides
     fun provideNetworkManager(mContext: Context): WifiUtils {
-        return WifiUtils(mContext)
+        return WifiUtilsImpl(mContext)
     }
 
     @Singleton
@@ -180,7 +190,7 @@ class ApplicationModule(private val mApplication: Application,
 
     @Singleton
     @Provides
-    fun provideImageLoader(context: Context, mWifiUtils: WifiUtils): ImageLoader {
+    fun provideImageLoader(context: Context, mWifiUtils: WifiUtilsImpl): ImageLoader {
         return ImageLoader(context, mWifiUtils, mBaseUrl)
     }
 }

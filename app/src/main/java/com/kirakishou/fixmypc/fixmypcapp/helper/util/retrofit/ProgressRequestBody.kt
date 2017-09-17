@@ -64,14 +64,12 @@ class ProgressRequestBody : RequestBody {
                         val progress = (uploaded.toFloat() / fileLength.toFloat()) * 100f
 
                         if (progress - lastProgressPercentUpdate > 5 || progress == 100f) {
-                            //callback.get()?.onChunkWrite(progress.toInt())
                             uploadProgressUpdateSubject.onNext(ProgressUpdate.ProgressUpdateChunk(progress.toInt()))
                             lastProgressPercentUpdate = progress
                         }
                     }
                 }
 
-                //callback.get()?.onFileUploaded()
                 uploadProgressUpdateSubject.onNext(ProgressUpdate.ProgressUpdateFileUploaded())
             }
 

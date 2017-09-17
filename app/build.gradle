@@ -70,6 +70,8 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-android:2.8.47'
+    testCompile "org.robolectric:robolectric:3.4.2"
+
     androidTestCompile "com.android.support:support-annotations:${supportLibraryVersion}"
     androidTestCompile 'com.android.support.test:runner:1.0.1'
     androidTestCompile 'com.android.support.test:rules:1.0.1'

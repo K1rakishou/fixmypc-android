@@ -5,6 +5,7 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.kirakishou.fixmypc.fixmypcapp.R
+import com.kirakishou.fixmypc.fixmypcapp.helper.wifi.WifiUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import java.io.File
 

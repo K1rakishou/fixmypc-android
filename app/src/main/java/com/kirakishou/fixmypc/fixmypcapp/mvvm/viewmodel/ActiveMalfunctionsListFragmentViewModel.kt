@@ -2,10 +2,11 @@ package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel
 
 import com.google.android.gms.maps.model.LatLng
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseViewModel
-import com.kirakishou.fixmypc.fixmypcapp.helper.WifiUtils
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.repository.DamageClaimRepository
+import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.MathUtils
+import com.kirakishou.fixmypc.fixmypcapp.helper.wifi.WifiUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimsWithDistanceDTO
@@ -17,18 +18,19 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 import javax.inject.Inject
 
 /**
- * Created by kirakishou on 9/3/2017.
+ * Created by kirakishou on 9/17/2017.
  */
 class ActiveMalfunctionsListFragmentViewModel
 @Inject constructor(protected val mApiClient: ApiClient,
                     protected val mWifiUtils: WifiUtils,
-                    protected val mDamageClaimRepo: DamageClaimRepository) : BaseViewModel(),
+                    protected val mDamageClaimRepo: DamageClaimRepository,
+                    protected val mSchedulers: SchedulerProvider)
+    : BaseViewModel(),
         ActiveMalfunctionsListFragmentInputs,
         ActiveMalfunctionsListFragmentOutputs,
         ActiveMalfunctionsListFragmentErrors {
@@ -45,7 +47,6 @@ class ActiveMalfunctionsListFragmentViewModel
     private lateinit var mOnDamageClaimsPageReceivedSubject: BehaviorSubject<ArrayList<DamageClaimsWithDistanceDTO>>
     private lateinit var mOnNothingFoundSubject: BehaviorSubject<Unit>
     private lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
-
     private lateinit var mSendRequestSubject: BehaviorSubject<GetDamageClaimsRequestParamsDTO>
     private lateinit var mEitherFromRepoOrServerSubject: BehaviorSubject<Pair<LatLng, DamageClaimsResponse>>
 
@@ -63,8 +64,10 @@ class ActiveMalfunctionsListFragmentViewModel
 
         //TODO: write tests for this shit ASAP
         mCompositeDisposable += mSendRequestSubject
-                .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() " +
-                        "Fetching damage claims from the server") }
+                .doOnNext {
+                    Timber.d("ActiveMalfunctionsListFragmentViewModel.init() " +
+                            "Fetching damage claims from the server")
+                }
                 .flatMap { (latlon, radius, page) ->
                     val responseObservable = mApiClient.getDamageClaims(latlon.latitude,
                             latlon.longitude, radius, page, itemsPerPage)
@@ -91,8 +94,8 @@ class ActiveMalfunctionsListFragmentViewModel
         //multicast params and rotation state to three different observables
         val locationAndIsFirstStartObservable = Observables.combineLatest(mRequestParamsSubject,
                 mIsFirstFragmentStartSubject)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
+                .subscribeOn(mSchedulers.provideIo())
+                .observeOn(mSchedulers.provideIo())
                 .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() Start multicasting") }
                 .publish()
                 .autoConnect(4)
@@ -101,8 +104,10 @@ class ActiveMalfunctionsListFragmentViewModel
                 .filter { (_, isFirstFragmentStart) -> isFirstFragmentStart }
                 .filter { _ -> mWifiUtils.isWifiConnected() }
                 .map { it.first }
-                .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() has wifi " +
-                        "and was not rotated. skip: ${it.skip}") }
+                .doOnNext {
+                    Timber.d("ActiveMalfunctionsListFragmentViewModel.init() has wifi " +
+                            "and was not rotated. skip: ${it.skip}")
+                }
                 .subscribe(mSendRequestSubject)
 
         val rotatedHasWifi = locationAndIsFirstStartObservable
@@ -121,8 +126,10 @@ class ActiveMalfunctionsListFragmentViewModel
                 .filter { (_, isFirstFragmentStart) -> !isFirstFragmentStart }
                 .filter { _ -> !mWifiUtils.isWifiConnected() }
                 .map { it.first }
-                .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() " +
-                        "was rotated and no wifi. skip: ${it.skip}") }
+                .doOnNext {
+                    Timber.d("ActiveMalfunctionsListFragmentViewModel.init() " +
+                            "was rotated and no wifi. skip: ${it.skip}")
+                }
 
         Observable.merge(rotatedHasWifi, notRotatedNoWifi, rotatedNoWifi)
                 .flatMap { (latlon, radius, skip) ->

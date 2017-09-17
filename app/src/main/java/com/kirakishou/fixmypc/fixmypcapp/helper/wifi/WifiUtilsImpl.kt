@@ -1,26 +1,25 @@
-package com.kirakishou.fixmypc.fixmypcapp.helper
+package com.kirakishou.fixmypc.fixmypcapp.helper.wifi
 
 import android.content.Context
 import android.net.ConnectivityManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.extension.connectivityManager
-import io.reactivex.Observable
 import javax.inject.Inject
 
 
 /**
  * Created by kirakishou on 9/13/2017.
  */
-class WifiUtils
-@Inject constructor(protected val mContext: Context) {
+class WifiUtilsImpl
+@Inject constructor(protected val mContext: Context) : WifiUtils {
 
-    fun isWifiConnected(): Boolean {
+    override fun isWifiConnected(): Boolean {
         val connManager = mContext.connectivityManager
         val wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
 
         return wifi.isConnected
     }
 
-    fun isWifiConnectedObservable(): Observable<Boolean> {
+    /*fun isWifiConnectedObservable(): Observable<Boolean> {
         return Observable.just(isWifiConnected())
-    }
+    }*/
 }

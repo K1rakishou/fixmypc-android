@@ -5,6 +5,7 @@ import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import com.kirakishou.fixmypc.fixmypcapp.helper.mapper.MapperManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.repository.database.MyDatabase
+import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.TestSchedulers
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.TimeUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
@@ -23,6 +24,8 @@ class DamageClaimRepositoryTest {
     private lateinit var mDatabase: MyDatabase
     private lateinit var mMapperManager: MapperManager
     private lateinit var mRepository: DamageClaimRepository
+
+    private val mSchedulers = TestSchedulers()
 
     private val damageClaimList = listOf(
             DamageClaim(0L, 0L, true, 0, "test1", 55.1, 36.1, TimeUtils.getTimeFast(), emptyList()),
@@ -47,12 +50,12 @@ class DamageClaimRepositoryTest {
     fun init() {
         mDatabase =  Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getContext(), MyDatabase::class.java).build()
         mMapperManager = MapperManager()
-        mRepository = DamageClaimRepository(mDatabase, mMapperManager)
+        mRepository = DamageClaimRepositoryImpl(mDatabase, mMapperManager, mSchedulers)
     }
 
     @After
     fun tearDown() {
-        mDatabase.close()
+        //mDatabase.close()
     }
 
     @Test
@@ -95,13 +98,13 @@ class DamageClaimRepositoryTest {
         assertEquals("test1", firstPage[0].description)
         assertEquals("test5", firstPage[4].description)
 
-        val secondPage = mRepository.findWithinBBox(55.5, 36.5, 1000.0, 1).blockingFirst()
+        val secondPage = mRepository.findWithinBBox(55.5, 36.5, 1000.0, 5).blockingFirst()
 
         assertEquals(Constant.MAX_DAMAGE_CLAIMS_PER_PAGE, firstPage.size.toLong())
         assertEquals("test6", secondPage[0].description)
         assertEquals("test10", secondPage[4].description)
 
-        val thirdPage = mRepository.findWithinBBox(55.5, 36.5, 1000.0, 2).blockingFirst()
+        val thirdPage = mRepository.findWithinBBox(55.5, 36.5, 1000.0, 10).blockingFirst()
 
         assertEquals(Constant.MAX_DAMAGE_CLAIMS_PER_PAGE, firstPage.size.toLong())
         assertEquals("test11", thirdPage[0].description)

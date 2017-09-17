@@ -3,7 +3,8 @@ package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
-import com.kirakishou.fixmypc.fixmypcapp.helper.wifi.WifiUtilsImpl
+import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
+import com.kirakishou.fixmypc.fixmypcapp.helper.wifi.WifiUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewMalfunctionActivityViewModel
 import javax.inject.Inject
 
@@ -12,10 +13,11 @@ import javax.inject.Inject
  */
 class ClientNewMalfunctionActivityViewModelFactory
     @Inject constructor(val apiClient: ApiClient,
-                        val wifiUtils: WifiUtilsImpl): ViewModelProvider.Factory {
+                        val wifiUtils: WifiUtils,
+                        val schedulers: SchedulerProvider): ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return ClientNewMalfunctionActivityViewModel(apiClient, wifiUtils) as T
+        return ClientNewMalfunctionActivityViewModel(apiClient, wifiUtils, schedulers) as T
     }
 }

@@ -16,4 +16,5 @@ interface ClientNewMalfunctionActivityErrors : ClientNewMalfunctionActivityError
     fun onFileAlreadySelected(): Observable<Unit>
     fun onWifiNotConnected(): Observable<Unit>
     fun onBadOriginalFileNameSubject(): Observable<Unit>
+    fun onRequestSizeExceeded(): Observable<Unit>
 }

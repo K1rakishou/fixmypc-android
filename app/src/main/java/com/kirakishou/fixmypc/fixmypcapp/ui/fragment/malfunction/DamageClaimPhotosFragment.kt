@@ -151,6 +151,10 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewMalfunctionActivityViewM
         mCompositeDisposable += getViewModel().mErrors.onUnknownError()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUnknownError(it) })
+
+        mCompositeDisposable += getViewModel().mErrors.onRequestSizeExceeded()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onRequestSizeExceeded() })
     }
 
     private fun sendApplicationToServer() {

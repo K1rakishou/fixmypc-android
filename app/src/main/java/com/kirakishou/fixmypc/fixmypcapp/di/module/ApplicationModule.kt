@@ -160,7 +160,7 @@ class ApplicationModule(private val mApplication: Application,
 
     @Singleton
     @Provides
-    fun provideNetworkManager(mContext: Context): WifiUtils {
+    fun provideWifiUtils(mContext: Context): WifiUtils {
         return WifiUtilsImpl(mContext)
     }
 

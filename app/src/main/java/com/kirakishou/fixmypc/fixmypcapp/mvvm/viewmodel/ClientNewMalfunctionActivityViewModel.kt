@@ -4,7 +4,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseViewModel
 import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
-import com.kirakishou.fixmypc.fixmypcapp.helper.wifi.WifiUtilsImpl
+import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
+import com.kirakishou.fixmypc.fixmypcapp.helper.wifi.WifiUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.DamageClaimCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimInfo
@@ -13,10 +14,8 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.ClientNewMalfuncti
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.ClientNewMalfunctionActivityInputs
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.ClientNewMalfunctionActivityOutputs
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.ReplaySubject
 import timber.log.Timber
@@ -27,7 +26,8 @@ import javax.inject.Inject
  */
 class ClientNewMalfunctionActivityViewModel
 @Inject constructor(protected val mApiClient: ApiClient,
-                    protected val mWifiUtils: WifiUtilsImpl) : BaseViewModel(),
+                    protected val mWifiUtils: WifiUtils,
+                    protected val mSchedulers: SchedulerProvider) : BaseViewModel(),
         ClientNewMalfunctionActivityInputs, ClientNewMalfunctionActivityOutputs,
         ClientNewMalfunctionActivityErrors {
 
@@ -59,11 +59,11 @@ class ClientNewMalfunctionActivityViewModel
         //if wifi connected - send request to server
         mCompositeDisposable += mSendMalfunctionRequestToServerSubject
                 .filter { _ -> mWifiUtils.isWifiConnected() }
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(mSchedulers.provideMain())
                 .doOnNext { mUploadProgressUpdateSubject.onNext(ProgressUpdate.ProgressUpdateStart(it.damageClaimPhotos.size)) }
-                .observeOn(Schedulers.io())
+                .observeOn(mSchedulers.provideIo())
                 .flatMap { mApiClient.createMalfunctionRequest(it, mUploadProgressUpdateSubject).toObservable() }
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(mSchedulers.provideMain())
                 .doOnNext { mUploadProgressUpdateSubject.onNext(ProgressUpdate.ProgressUpdateDone()) }
                 .subscribe({
                     handleResponse(it)
@@ -73,8 +73,8 @@ class ClientNewMalfunctionActivityViewModel
 
         //if wifi not connected - notify user about that
         mCompositeDisposable += mSendMalfunctionRequestToServerSubject
-                .filter { _ -> mWifiUtils.isWifiConnected() }
-                .observeOn(AndroidSchedulers.mainThread())
+                .filter { _ -> !mWifiUtils.isWifiConnected() }
+                .observeOn(mSchedulers.provideMain())
                 .subscribe({
                     handleResponse(StatusResponse(ErrorCode.Remote.REC_WIFI_IS_NOT_CONNECTED))
                 }, {
@@ -166,5 +166,6 @@ class ClientNewMalfunctionActivityViewModel
     override fun onBadServerResponse(): Observable<Unit> = mOnBadServerResponseSubject
     override fun onBadOriginalFileNameSubject(): Observable<Unit> = mOnBadOriginalFileNameSubject
     override fun onWifiNotConnected(): Observable<Unit> = mOnWifiNotConnected
+    override fun onRequestSizeExceeded(): Observable<Unit> = mOnRequestSizeExceededSubject
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
 }

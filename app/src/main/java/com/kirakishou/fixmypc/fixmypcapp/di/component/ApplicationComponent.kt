@@ -13,6 +13,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.repository.DamageClaimRepository
 import com.kirakishou.fixmypc.fixmypcapp.helper.repository.database.MyDatabase
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
+import com.kirakishou.fixmypc.fixmypcapp.helper.wifi.WifiUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.squareup.leakcanary.RefWatcher
 import dagger.Component
@@ -41,4 +42,5 @@ interface ApplicationComponent {
     fun exposeMapperManager(): MapperManager
     fun exposeDamageClaimRepository(): DamageClaimRepository
     fun exposeSchedulerProvider(): SchedulerProvider
+    fun exposeWifiUtils(): WifiUtils
 }

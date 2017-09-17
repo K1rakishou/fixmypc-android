@@ -3,7 +3,6 @@ package com.kirakishou.fixmypc.fixmypcapp
 import android.arch.persistence.room.Room
 import android.content.Context
 import android.content.SharedPreferences
-import android.support.test.InstrumentationRegistry
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -67,9 +66,9 @@ open class BaseRobolectricTestCase {
 
     fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
-                .connectTimeout(15000, TimeUnit.SECONDS) //TODO: Don't forget to change this on release build
-                .writeTimeout(15000, TimeUnit.SECONDS)  //TODO: Don't forget to change this on release build
-                .readTimeout(15000, TimeUnit.SECONDS)    //TODO: Don't forget to change this on release build
+                .connectTimeout(15000, TimeUnit.SECONDS)
+                .writeTimeout(15000, TimeUnit.SECONDS)
+                .readTimeout(15000, TimeUnit.SECONDS)
                 .build()
     }
 
@@ -103,7 +102,7 @@ open class BaseRobolectricTestCase {
     }
 
     fun provideDatabase(): MyDatabase {
-        return Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getContext(), MyDatabase::class.java).build()
+        return Room.inMemoryDatabaseBuilder(provideContext(), MyDatabase::class.java).build()
     }
 
     fun provideDamageClaimRepository(): DamageClaimRepository {

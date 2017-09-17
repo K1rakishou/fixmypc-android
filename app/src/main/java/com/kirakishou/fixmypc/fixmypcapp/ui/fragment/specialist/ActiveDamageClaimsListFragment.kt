@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.widget.Toast
 import butterknife.BindView
 import com.google.android.gms.maps.model.LatLng
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
@@ -135,7 +134,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
     }
 
     private fun initRx(savedInstanceState: Bundle?) {
-        getViewModel().mInputs.isFirstFragmentStartSubject().onNext(savedInstanceState == null)
+        getViewModel().setIsFirstFragmentStart(savedInstanceState == null)
 
         mCompositeDisposable += Observables.combineLatest(mLoadMoreSubject, mLocationSubject, { loadMore, location -> Pair(loadMore, location)})
                 .subscribeOn(Schedulers.io())
@@ -153,10 +152,6 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
         mCompositeDisposable += getViewModel().mOutputs.onDamageClaimsPageReceived()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onDamageClaimsPageReceived(it) })
-
-        mCompositeDisposable += getViewModel().mErrors.onNothingFoundSubject()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onNothingFound() })
 
         mCompositeDisposable += getViewModel().mErrors.onUnknownError()
                 .subscribeOn(AndroidSchedulers.mainThread())
@@ -195,10 +190,6 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
         if (damageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
             mAdapter.addMessageFooter("Последнее объявление")
         }
-    }
-
-    private fun onNothingFound() {
-        showToast("Ничего не найдено по данному запросу", Toast.LENGTH_LONG)
     }
 
     override fun resolveDaggerDependency() {

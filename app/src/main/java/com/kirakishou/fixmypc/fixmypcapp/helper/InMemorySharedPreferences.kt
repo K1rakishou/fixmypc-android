@@ -69,7 +69,7 @@ class InMemorySharedPreferences : SharedPreferences {
         listeners.remove(WeakReference(listener))
     }
 
-    inner class InMemorySharedPreferencesEditor(val sharedPreferences: SharedPreferences) : SharedPreferences.Editor {
+    inner class InMemorySharedPreferencesEditor(private val sharedPreferences: SharedPreferences) : SharedPreferences.Editor {
         private val operationsList = Collections.synchronizedList(mutableListOf<Operation>())
 
         override fun clear(): SharedPreferences.Editor {
@@ -137,6 +137,7 @@ class InMemorySharedPreferences : SharedPreferences {
                             listeners.forEach { it.get()?.onSharedPreferenceChanged(sharedPreferences, key) }
                         }
 
+                        operationsList.clear()
                         return
                     }
 

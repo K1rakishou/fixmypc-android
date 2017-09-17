@@ -44,7 +44,6 @@ import java.util.concurrent.TimeUnit
 @Config(constants = BuildConfig::class, minSdk = 19, maxSdk = 26)
 open class BaseRobolectricTestCase {
     private val mBaseUrl = "http://kez1911.asuscomm.com:8080/"
-    private val mDatabaseName = "fixmypc_db"
 
     fun provideContext(): Context {
         return RuntimeEnvironment.application
@@ -66,9 +65,9 @@ open class BaseRobolectricTestCase {
 
     fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
-                .connectTimeout(15000, TimeUnit.SECONDS)
-                .writeTimeout(15000, TimeUnit.SECONDS)
-                .readTimeout(15000, TimeUnit.SECONDS)
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .writeTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(15, TimeUnit.SECONDS)
                 .build()
     }
 
@@ -109,11 +108,11 @@ open class BaseRobolectricTestCase {
         return DamageClaimRepositoryImpl(provideDatabase(), provideMapperManager(), provideSchedulers())
     }
 
-    fun provideNetworkManager(): WifiUtils {
+    fun provideWifiUtils(): WifiUtils {
         return WifiUtilsImpl(provideContext())
     }
 
-    fun provideFixmypcApiStore(): ApiClient {
+    fun provideApiClient(): ApiClient {
         return ApiClientImpl(provideApiService(), provideAppSettings(), provideGson())
     }
 
@@ -126,7 +125,7 @@ open class BaseRobolectricTestCase {
     }
 
     fun provideImageLoader(): ImageLoader {
-        return ImageLoader(provideContext(), provideNetworkManager(), mBaseUrl)
+        return ImageLoader(provideContext(), provideWifiUtils(), mBaseUrl)
     }
 }
 

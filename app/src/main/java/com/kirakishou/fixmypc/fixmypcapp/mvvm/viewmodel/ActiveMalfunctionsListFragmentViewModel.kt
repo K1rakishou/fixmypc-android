@@ -29,8 +29,7 @@ class ActiveMalfunctionsListFragmentViewModel
 @Inject constructor(protected val mApiClient: ApiClient,
                     protected val mWifiUtils: WifiUtils,
                     protected val mDamageClaimRepo: DamageClaimRepository,
-                    protected val mSchedulers: SchedulerProvider)
-    : BaseViewModel(),
+                    protected val mSchedulers: SchedulerProvider) : BaseViewModel(),
         ActiveMalfunctionsListFragmentInputs,
         ActiveMalfunctionsListFragmentOutputs,
         ActiveMalfunctionsListFragmentErrors {
@@ -42,13 +41,13 @@ class ActiveMalfunctionsListFragmentViewModel
     private val itemsPerPage = Constant.MAX_DAMAGE_CLAIMS_PER_PAGE
     private val mCompositeDisposable = CompositeDisposable()
 
-    private lateinit var mIsFirstFragmentStartSubject: BehaviorSubject<Boolean>
-    private lateinit var mRequestParamsSubject: BehaviorSubject<GetDamageClaimsRequestParamsDTO>
-    private lateinit var mOnDamageClaimsPageReceivedSubject: BehaviorSubject<ArrayList<DamageClaimsWithDistanceDTO>>
-    private lateinit var mOnNothingFoundSubject: BehaviorSubject<Unit>
-    private lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
-    private lateinit var mSendRequestSubject: BehaviorSubject<GetDamageClaimsRequestParamsDTO>
-    private lateinit var mEitherFromRepoOrServerSubject: BehaviorSubject<Pair<LatLng, DamageClaimsResponse>>
+    lateinit var mIsFirstFragmentStartSubject: BehaviorSubject<Boolean>
+    lateinit var mRequestParamsSubject: BehaviorSubject<GetDamageClaimsRequestParamsDTO>
+    lateinit var mOnDamageClaimsPageReceivedSubject: BehaviorSubject<ArrayList<DamageClaimsWithDistanceDTO>>
+    //lateinit var mOnNothingFoundSubject: BehaviorSubject<Unit>
+    lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
+    lateinit var mSendRequestSubject: BehaviorSubject<GetDamageClaimsRequestParamsDTO>
+    lateinit var mEitherFromRepoOrServerSubject: BehaviorSubject<Pair<LatLng, DamageClaimsResponse>>
 
     fun init() {
         mCompositeDisposable.clear()
@@ -56,13 +55,12 @@ class ActiveMalfunctionsListFragmentViewModel
         mIsFirstFragmentStartSubject = BehaviorSubject.create<Boolean>()
         mRequestParamsSubject = BehaviorSubject.create<GetDamageClaimsRequestParamsDTO>()
         mOnDamageClaimsPageReceivedSubject = BehaviorSubject.create<ArrayList<DamageClaimsWithDistanceDTO>>()
-        mOnNothingFoundSubject = BehaviorSubject.create<Unit>()
+        //mOnNothingFoundSubject = BehaviorSubject.create<Unit>()
         mOnUnknownErrorSubject = BehaviorSubject.create<Throwable>()
 
         mSendRequestSubject = BehaviorSubject.create<GetDamageClaimsRequestParamsDTO>()
         mEitherFromRepoOrServerSubject = BehaviorSubject.create<Pair<LatLng, DamageClaimsResponse>>()
 
-        //TODO: write tests for this shit ASAP
         mCompositeDisposable += mSendRequestSubject
                 .doOnNext {
                     Timber.d("ActiveMalfunctionsListFragmentViewModel.init() " +
@@ -166,6 +164,10 @@ class ActiveMalfunctionsListFragmentViewModel
         mCompositeDisposable.clear()
     }
 
+    fun setIsFirstFragmentStart(isFirstStart: Boolean) {
+        mIsFirstFragmentStartSubject.onNext(isFirstStart)
+    }
+
     override fun getDamageClaimsWithinRadius(latLng: LatLng, radius: Double, page: Long) {
         mRequestParamsSubject.onNext(GetDamageClaimsRequestParamsDTO(latLng, radius, page * itemsPerPage))
     }
@@ -183,7 +185,7 @@ class ActiveMalfunctionsListFragmentViewModel
 
     private fun handleBadResponse(errorCode: ErrorCode.Remote) {
         when (errorCode) {
-            ErrorCode.Remote.REC_NOTHING_FOUND -> mOnNothingFoundSubject.onNext(Unit)
+            //ErrorCode.Remote.REC_NOTHING_FOUND -> mOnNothingFoundSubject.onNext(Unit)
 
             else -> throw RuntimeException("Unknown errorCode: $errorCode")
         }
@@ -210,7 +212,7 @@ class ActiveMalfunctionsListFragmentViewModel
     override fun isFirstFragmentStartSubject(): BehaviorSubject<Boolean> = mIsFirstFragmentStartSubject
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
     override fun onDamageClaimsPageReceived(): Observable<ArrayList<DamageClaimsWithDistanceDTO>> = mOnDamageClaimsPageReceivedSubject
-    override fun onNothingFoundSubject(): Observable<Unit> = mOnNothingFoundSubject
+    //override fun onNothingFoundSubject(): Observable<Unit> = mOnNothingFoundSubject
 
     data class IsRepoEmptyDTO(val latlon: LatLng,
                               val radius: Double,

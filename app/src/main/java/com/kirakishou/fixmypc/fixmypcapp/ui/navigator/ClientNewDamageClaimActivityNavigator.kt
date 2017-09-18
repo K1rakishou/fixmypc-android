@@ -16,13 +16,13 @@ class ClientNewDamageClaimActivityNavigator(activity: AppCompatActivity) : BaseN
     private val fragmentManager = activity.supportFragmentManager
 
     fun popFragment(): Boolean {
-        fragmentManager.popBackStack()
-        return fragmentManager.backStackEntryCount <= 0
+        fragmentManager.popBackStackImmediate()
+        return fragmentManager.backStackEntryCount <= 1
     }
 
     fun navigateToDamageClaimCategoryFragment() {
         val fragment = createNewFragmentIfNotInStack<DamageClaimCategoryFragment>(fragmentManager,
-                Constant.FragmentTags.DAMAGE_CATEGORY, DamageClaimCategoryFragment::class.java)
+                Constant.FragmentTags.DAMAGE_CATEGORY)
 
         fragmentManager
                 .beginTransaction()
@@ -33,7 +33,7 @@ class ClientNewDamageClaimActivityNavigator(activity: AppCompatActivity) : BaseN
 
     fun navigateToDamageClaimDescriptionFragment() {
         val fragment = createNewFragmentIfNotInStack<DamageClaimDescriptionFragment>(fragmentManager,
-                Constant.FragmentTags.DAMAGE_DESCRIPTION, DamageClaimDescriptionFragment::class.java)
+                Constant.FragmentTags.DAMAGE_DESCRIPTION)
 
         fragmentManager
                 .beginTransaction()
@@ -44,7 +44,7 @@ class ClientNewDamageClaimActivityNavigator(activity: AppCompatActivity) : BaseN
 
     fun navigateToDamageClaimPhotosFragment() {
         val fragment = createNewFragmentIfNotInStack<DamageClaimPhotosFragment>(fragmentManager,
-                Constant.FragmentTags.DAMAGE_PHOTOS, DamageClaimPhotosFragment::class.java)
+                Constant.FragmentTags.DAMAGE_PHOTOS)
 
         fragmentManager
                 .beginTransaction()
@@ -55,7 +55,7 @@ class ClientNewDamageClaimActivityNavigator(activity: AppCompatActivity) : BaseN
 
     fun navigateToDamageClaimLocationFragment() {
         val fragment = createNewFragmentIfNotInStack<DamageClaimLocationFragment>(fragmentManager,
-                Constant.FragmentTags.DAMAGE_LOCATION, DamageClaimLocationFragment::class.java)
+                Constant.FragmentTags.DAMAGE_LOCATION)
 
         fragmentManager
                 .beginTransaction()

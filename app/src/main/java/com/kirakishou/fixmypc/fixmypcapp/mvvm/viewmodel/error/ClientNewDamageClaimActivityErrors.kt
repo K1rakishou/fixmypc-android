@@ -5,7 +5,7 @@ import io.reactivex.Observable
 /**
  * Created by kirakishou on 9/9/2017.
  */
-interface ClientNewMalfunctionActivityErrors : ClientNewMalfunctionActivityErrorBase{
+interface ClientNewDamageClaimActivityErrors : ClientNewMalfunctionActivityErrorBase{
     fun onFileSizeExceeded(): Observable<Unit>
     fun onAllFileServersAreNotWorking(): Observable<Unit>
     fun onServerDatabaseError(): Observable<Unit>

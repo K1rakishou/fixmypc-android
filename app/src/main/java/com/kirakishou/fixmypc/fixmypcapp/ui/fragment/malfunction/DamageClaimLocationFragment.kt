@@ -5,7 +5,6 @@ import android.animation.AnimatorSet
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
-import android.support.v4.app.Fragment
 import android.support.v7.widget.AppCompatButton
 import android.widget.Toast
 import butterknife.BindView
@@ -19,9 +18,9 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
-import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerChooseCategoryActivityComponent
+import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerClientNewDamageClaimActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewDamageClaimActivityModule
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewMalfunctionActivityViewModel
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewDamageClaimActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewDamageClaimActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewMalfunctionActivityFragmentCallback
@@ -34,7 +33,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 
-class DamageClaimLocationFragment : BaseFragment<ClientNewMalfunctionActivityViewModel>(),
+class DamageClaimLocationFragment : BaseFragment<ClientNewDamageClaimActivityViewModel>(),
         OnMapReadyCallback {
 
     @BindView(R.id.button_done)
@@ -52,17 +51,17 @@ class DamageClaimLocationFragment : BaseFragment<ClientNewMalfunctionActivityVie
     @Inject
     lateinit var mNavigator: ClientNewDamageClaimActivityNavigator
 
+    private val MAP_ZOOM = 14f
     private lateinit var googleMap: GoogleMap
+    private var mLocation: LatLng? = null
 
-    override fun initViewModel(): ClientNewMalfunctionActivityViewModel? {
-        return ViewModelProviders.of(activity, mViewModelFactory).get(ClientNewMalfunctionActivityViewModel::class.java)
+    override fun initViewModel(): ClientNewDamageClaimActivityViewModel? {
+        return ViewModelProviders.of(activity, mViewModelFactory).get(ClientNewDamageClaimActivityViewModel::class.java)
     }
 
     override fun getContentView() = R.layout.fragment_damage_claim_coordinates
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
-
-    private var mLocation: LatLng? = null
 
     override fun onFragmentReady(savedInstanceState: Bundle?) {
         val mapFrag = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -132,24 +131,15 @@ class DamageClaimLocationFragment : BaseFragment<ClientNewMalfunctionActivityVie
                 .config(LocationParams.BEST_EFFORT)
                 .oneFix()
                 .start {
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(it.latitude, it.longitude), 14f))
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(it.latitude, it.longitude), MAP_ZOOM))
                 }
     }
 
     override fun resolveDaggerDependency() {
-        DaggerChooseCategoryActivityComponent.builder()
+        DaggerClientNewDamageClaimActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
                 .clientNewDamageClaimActivityModule(ClientNewDamageClaimActivityModule(activity as ClientNewDamageClaimActivity))
                 .build()
                 .inject(this)
-    }
-
-    companion object {
-        fun newInstance(): Fragment {
-            val fragment = DamageClaimLocationFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            return fragment
-        }
     }
 }

@@ -1,6 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp
 
 import android.app.Application
+import com.google.android.gms.maps.MapsInitializer
 import com.kirakishou.fixmypc.fixmypcapp.di.component.ApplicationComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerApplicationComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ApplicationModule
@@ -21,6 +22,8 @@ class FixmypcApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        MapsInitializer.initialize(this);
 
         applicationComponent = DaggerApplicationComponent.builder()
                 .applicationModule(ApplicationModule(this, mBaseUrl, mDatabaseName))

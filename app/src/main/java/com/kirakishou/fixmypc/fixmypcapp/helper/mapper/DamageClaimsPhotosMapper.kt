@@ -9,8 +9,8 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 class DamageClaimsPhotosMapper : Mapper {
 
     fun mapToEntity(damageClaim: DamageClaim): List<DamageClaimPhotoEntity> {
-        return (0 until damageClaim.imageNamesList.size)
-                .map { DamageClaimPhotoEntity(damageClaim.imageNamesList[it], damageClaim.id) }
+        return (0 until damageClaim.photoNames.size)
+                .map { DamageClaimPhotoEntity(damageClaim.photoNames[it], damageClaim.id) }
     }
 
     fun mapToEntities(damageClaimList: List<DamageClaim>): List<DamageClaimPhotoEntity> {

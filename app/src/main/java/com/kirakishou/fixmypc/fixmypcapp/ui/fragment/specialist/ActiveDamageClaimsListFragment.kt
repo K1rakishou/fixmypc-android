@@ -4,7 +4,6 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist
 import android.animation.AnimatorSet
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import butterknife.BindView
@@ -25,9 +24,11 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimListAdapterGenericParam
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimsWithDistanceDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ActiveMalfunctionsListFragmentViewModel
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ActiveMalfunctionsListFragmentViewModelFactory
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ActiveDamageClaimListFragmentViewModel
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ActiveDamageClaimListFragmentViewModelFactory
+import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.DamageClaimListAdapter
+import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavigator
 import com.kirakishou.fixmypc.fixmypcapp.ui.widget.EndlessRecyclerOnScrollListener
 import io.nlopez.smartlocation.SmartLocation
 import io.nlopez.smartlocation.location.config.LocationParams
@@ -39,7 +40,7 @@ import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 import javax.inject.Inject
 
-class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragmentViewModel>() {
+class ActiveDamageClaimsListFragment : BaseFragment<ActiveDamageClaimListFragmentViewModel>() {
 
     @BindView(R.id.damage_claim_list)
     lateinit var mDamageClaimList: RecyclerView
@@ -48,10 +49,13 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
     lateinit var mAppSharedPreference: AppSharedPreference
 
     @Inject
-    lateinit var mViewModelFactory: ActiveMalfunctionsListFragmentViewModelFactory
+    lateinit var mViewModelFactory: ActiveDamageClaimListFragmentViewModelFactory
 
     @Inject
     lateinit var mImageLoader: ImageLoader
+
+    @Inject
+    lateinit var mNavigator: SpecialistMainActivityNavigator
 
     private val mLoadMoreSubject = BehaviorSubject.create<Long>()
     private val mLocationSubject = BehaviorSubject.create<LatLng>()
@@ -62,8 +66,8 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
     private lateinit var mAdapter: DamageClaimListAdapter
     private lateinit var mEndlessScrollListener: EndlessRecyclerOnScrollListener
 
-    override fun initViewModel(): ActiveMalfunctionsListFragmentViewModel? {
-        return ViewModelProviders.of(this, mViewModelFactory).get(ActiveMalfunctionsListFragmentViewModel::class.java)
+    override fun initViewModel(): ActiveDamageClaimListFragmentViewModel? {
+        return ViewModelProviders.of(this, mViewModelFactory).get(ActiveDamageClaimListFragmentViewModel::class.java)
     }
 
     override fun getContentView() = R.layout.fragment_active_malfunctions_list
@@ -81,10 +85,14 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
     }
 
     override fun onFragmentReady(savedInstanceState: Bundle?) {
-        mAdapter = DamageClaimListAdapter(activity, mAdapterItemClickSubject, mImageLoader)
+        Timber.e("savedInstanceState == $savedInstanceState")
 
         getViewModel().init()
-        initRx(savedInstanceState)
+        initRx()
+
+        getViewModel().setIsFirstFragmentStart(savedInstanceState == null)
+        mAdapter = DamageClaimListAdapter(activity, mAdapterItemClickSubject, mImageLoader)
+
         initRecycler()
         getCurrentLocationGps()
         recyclerStartLoadingItems()
@@ -133,9 +141,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
         mDamageClaimList.setHasFixedSize(true)
     }
 
-    private fun initRx(savedInstanceState: Bundle?) {
-        getViewModel().setIsFirstFragmentStart(savedInstanceState == null)
-
+    private fun initRx() {
         mCompositeDisposable += Observables.combineLatest(mLoadMoreSubject, mLocationSubject, { loadMore, location -> Pair(loadMore, location)})
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -163,7 +169,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
     }
 
     private fun onAdapterItemClick(damageClaim: DamageClaim) {
-
+        mNavigator.navigateToDamageClaimFullInfoFragment(damageClaim)
     }
 
     private fun saveCurrentLocation(location: LatLng) {
@@ -175,6 +181,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
         getViewModel().mInputs.getDamageClaimsWithinRadius(location, 75.0, page)
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun onDamageClaimsPageReceived(damageClaimList: ArrayList<DamageClaimsWithDistanceDTO>) {
         mEndlessScrollListener.pageLoaded()
 
@@ -195,7 +202,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
     override fun resolveDaggerDependency() {
         DaggerActiveDamageClaimsListFragmentComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
-                .activeDamageClaimsListFragmentModule(ActiveDamageClaimsListFragmentModule())
+                .activeDamageClaimsListFragmentModule(ActiveDamageClaimsListFragmentModule(activity as SpecialistMainActivity))
                 .build()
                 .inject(this)
     }
@@ -206,14 +213,5 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveMalfunctionsListFragme
 
     fun onUnknownError(throwable: Throwable) {
         unknownError(throwable)
-    }
-
-    companion object {
-        fun newInstance(): Fragment {
-            val fragment = ActiveDamageClaimsListFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            return fragment
-        }
     }
 }

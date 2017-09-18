@@ -5,7 +5,7 @@ import android.arch.lifecycle.ViewModelProvider
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.helper.wifi.WifiUtils
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewMalfunctionActivityViewModel
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewDamageClaimActivityViewModel
 import javax.inject.Inject
 
 /**
@@ -18,6 +18,6 @@ class ClientNewMalfunctionActivityViewModelFactory
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return ClientNewMalfunctionActivityViewModel(apiClient, wifiUtils, schedulers) as T
+        return ClientNewDamageClaimActivityViewModel(apiClient, wifiUtils, schedulers) as T
     }
 }

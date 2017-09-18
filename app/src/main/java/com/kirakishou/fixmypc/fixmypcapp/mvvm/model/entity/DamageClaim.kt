@@ -27,7 +27,7 @@ data class DamageClaim(@Expose
                        @SerializedName("lon") var lon: Double = 0.0,
 
                        @Expose
-                       @SerializedName("created_on") var createdOn: Long = 0L,//var createdOn: Timestamp? = null,
+                       @SerializedName("created_on") var createdOn: Long = 0L,
 
                        @Expose
-                       @SerializedName("photos") var imageNamesList: List<String> = mutableListOf())
+                       @SerializedName("photos") var photoNames: List<String> = mutableListOf())

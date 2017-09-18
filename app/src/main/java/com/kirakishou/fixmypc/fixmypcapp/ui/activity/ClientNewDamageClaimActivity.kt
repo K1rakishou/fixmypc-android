@@ -8,10 +8,10 @@ import android.widget.Toast
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
-import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerChooseCategoryActivityComponent
+import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerClientNewDamageClaimActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewDamageClaimActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewMalfunctionActivityViewModel
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewDamageClaimActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.dialog.ProgressDialog
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction.DamageClaimPhotosFragmentCallbacks
@@ -19,7 +19,7 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientNewDamageClaimActivi
 import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
-class ClientNewDamageClaimActivity : BaseActivity<ClientNewMalfunctionActivityViewModel>(),
+class ClientNewDamageClaimActivity : BaseActivity<ClientNewDamageClaimActivityViewModel>(),
         ClientNewMalfunctionActivityFragmentCallback {
 
     @Inject
@@ -36,8 +36,8 @@ class ClientNewDamageClaimActivity : BaseActivity<ClientNewMalfunctionActivityVi
 
     private lateinit var progressDialog: ProgressDialog
 
-    override fun initViewModel(): ClientNewMalfunctionActivityViewModel? {
-        return ViewModelProviders.of(this, mViewModelFactory).get(ClientNewMalfunctionActivityViewModel::class.java)
+    override fun initViewModel(): ClientNewDamageClaimActivityViewModel? {
+        return ViewModelProviders.of(this, mViewModelFactory).get(ClientNewDamageClaimActivityViewModel::class.java)
     }
 
     override fun getContentView() = R.layout.activity_client_new_malfunction
@@ -86,7 +86,7 @@ class ClientNewDamageClaimActivity : BaseActivity<ClientNewMalfunctionActivityVi
     }
 
     override fun resolveDaggerDependency() {
-        DaggerChooseCategoryActivityComponent.builder()
+        DaggerClientNewDamageClaimActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
                 .clientNewDamageClaimActivityModule(ClientNewDamageClaimActivityModule(this))
                 .build()

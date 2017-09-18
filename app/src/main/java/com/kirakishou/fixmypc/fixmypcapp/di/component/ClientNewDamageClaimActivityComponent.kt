@@ -15,7 +15,7 @@ import dagger.Component
 
 @PerActivity
 @Component(modules = arrayOf(ClientNewDamageClaimActivityModule::class), dependencies = arrayOf(ApplicationComponent::class))
-interface ChooseCategoryActivityComponent {
+interface ClientNewDamageClaimActivityComponent {
     fun inject(activity: ClientNewDamageClaimActivity)
     fun inject(fragment: DamageClaimCategoryFragment)
     fun inject(fragment: DamageClaimDescriptionFragment)

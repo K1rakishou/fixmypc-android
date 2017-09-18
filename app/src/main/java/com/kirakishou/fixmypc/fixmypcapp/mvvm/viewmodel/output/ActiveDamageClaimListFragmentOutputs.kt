@@ -6,6 +6,6 @@ import io.reactivex.Observable
 /**
  * Created by kirakishou on 9/9/2017.
  */
-interface ActiveMalfunctionsListFragmentOutputs {
+interface ActiveDamageClaimListFragmentOutputs {
     fun onDamageClaimsPageReceived(): Observable<ArrayList<DamageClaimsWithDistanceDTO>>
 }

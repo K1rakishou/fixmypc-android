@@ -10,9 +10,9 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.DamageClaimCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.ClientNewMalfunctionActivityErrors
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.ClientNewMalfunctionActivityInputs
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.ClientNewMalfunctionActivityOutputs
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.ClientNewDamageClaimActivityErrors
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.ClientNewDamageClaimActivityInputs
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.ClientNewDamageClaimActivityOutputs
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -24,16 +24,16 @@ import javax.inject.Inject
 /**
  * Created by kirakishou on 7/27/2017.
  */
-class ClientNewMalfunctionActivityViewModel
+class ClientNewDamageClaimActivityViewModel
 @Inject constructor(protected val mApiClient: ApiClient,
                     protected val mWifiUtils: WifiUtils,
                     protected val mSchedulers: SchedulerProvider) : BaseViewModel(),
-        ClientNewMalfunctionActivityInputs, ClientNewMalfunctionActivityOutputs,
-        ClientNewMalfunctionActivityErrors {
+        ClientNewDamageClaimActivityInputs, ClientNewDamageClaimActivityOutputs,
+        ClientNewDamageClaimActivityErrors {
 
-    val mInputs: ClientNewMalfunctionActivityInputs = this
-    val mOutputs: ClientNewMalfunctionActivityOutputs = this
-    val mErrors: ClientNewMalfunctionActivityErrors = this
+    val mInputs: ClientNewDamageClaimActivityInputs = this
+    val mOutputs: ClientNewDamageClaimActivityOutputs = this
+    val mErrors: ClientNewDamageClaimActivityErrors = this
 
     private val mCompositeDisposable = CompositeDisposable()
     private val malfunctionRequestInfo = DamageClaimInfo()

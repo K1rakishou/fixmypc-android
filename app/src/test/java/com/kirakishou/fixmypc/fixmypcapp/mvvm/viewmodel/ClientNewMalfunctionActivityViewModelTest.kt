@@ -30,7 +30,7 @@ class ClientNewMalfunctionActivityViewModelTest {
     @Mock
     lateinit var wifiUtils: WifiUtils
 
-    lateinit var mViewModel: ClientNewMalfunctionActivityViewModel
+    lateinit var mViewModel: ClientNewDamageClaimActivityViewModel
 
     fun <T> anyObject(): T {
         return Mockito.anyObject<T>()
@@ -40,7 +40,7 @@ class ClientNewMalfunctionActivityViewModelTest {
     fun init() {
         MockitoAnnotations.initMocks(this)
 
-        mViewModel = ClientNewMalfunctionActivityViewModel(apiClient, wifiUtils, TestSchedulers())
+        mViewModel = ClientNewDamageClaimActivityViewModel(apiClient, wifiUtils, TestSchedulers())
         mViewModel.init()
     }
 

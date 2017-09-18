@@ -6,7 +6,7 @@ import io.reactivex.Observable
 /**
  * Created by kirakishou on 9/9/2017.
  */
-interface ClientNewMalfunctionActivityOutputs {
+interface ClientNewDamageClaimActivityOutputs {
     fun onMalfunctionRequestSuccessfullyCreated(): Observable<Unit>
     fun uploadProgressUpdateSubject(): Observable<ProgressUpdate>
 }

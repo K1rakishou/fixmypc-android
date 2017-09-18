@@ -11,9 +11,9 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimsWithDistanceDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.ActiveMalfunctionsListFragmentErrors
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.ActiveMalfunctionsListFragmentInputs
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.ActiveMalfunctionsListFragmentOutputs
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.ActiveDamageClaimListFragmentErrors
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.ActiveDamageClaimListFragmentInputs
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.ActiveDamageClaimListFragmentOutputs
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.Observables
@@ -25,18 +25,18 @@ import javax.inject.Inject
 /**
  * Created by kirakishou on 9/17/2017.
  */
-class ActiveMalfunctionsListFragmentViewModel
+class ActiveDamageClaimListFragmentViewModel
 @Inject constructor(protected val mApiClient: ApiClient,
                     protected val mWifiUtils: WifiUtils,
                     protected val mDamageClaimRepo: DamageClaimRepository,
                     protected val mSchedulers: SchedulerProvider) : BaseViewModel(),
-        ActiveMalfunctionsListFragmentInputs,
-        ActiveMalfunctionsListFragmentOutputs,
-        ActiveMalfunctionsListFragmentErrors {
+        ActiveDamageClaimListFragmentInputs,
+        ActiveDamageClaimListFragmentOutputs,
+        ActiveDamageClaimListFragmentErrors {
 
-    val mInputs: ActiveMalfunctionsListFragmentInputs = this
-    val mOutputs: ActiveMalfunctionsListFragmentOutputs = this
-    val mErrors: ActiveMalfunctionsListFragmentErrors = this
+    val mInputs: ActiveDamageClaimListFragmentInputs = this
+    val mOutputs: ActiveDamageClaimListFragmentOutputs = this
+    val mErrors: ActiveDamageClaimListFragmentErrors = this
 
     private val itemsPerPage = Constant.MAX_DAMAGE_CLAIMS_PER_PAGE
     private val mCompositeDisposable = CompositeDisposable()

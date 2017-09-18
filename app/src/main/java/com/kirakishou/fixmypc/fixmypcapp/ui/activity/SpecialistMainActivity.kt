@@ -4,7 +4,7 @@ import android.animation.AnimatorSet
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
+import android.support.v4.app.FragmentManager
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
@@ -15,10 +15,10 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityVi
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavigator
 import com.squareup.leakcanary.RefWatcher
-import timber.log.Timber
 import javax.inject.Inject
 
-class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), BaseActivityFragmentCallback {
+class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), BaseActivityFragmentCallback,
+        FragmentManager.OnBackStackChangedListener{
 
     @Inject
     lateinit var mRefWatcher: RefWatcher
@@ -38,14 +38,17 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), 
     override fun loadExitAnimations() = AnimatorSet()
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
+        supportFragmentManager.addOnBackStackChangedListener(this)
         mNavigator.navigateToActiveDamageClaimsListFragment()
     }
 
     override fun onActivityDestroy() {
         mRefWatcher.watch(this)
+        supportFragmentManager.removeOnBackStackChangedListener(this)
     }
 
     override fun onViewReady() {
+
     }
 
     override fun onViewStop() {
@@ -60,20 +63,20 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), 
     }
 
     override fun onShowToast(message: String, duration: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    fun onShowToast(message: String) {
-        showToast(message, Toast.LENGTH_LONG)
+        showToast(message, duration)
     }
 
     override fun onUnknownError(error: Throwable) {
         super.onUnknownError(error)
     }
 
-    override fun onBackPressed() {
-        if (mNavigator.popFragment()) {
-            super.onBackPressed()
+    override fun onBackStackChanged() {
+        if (supportFragmentManager.backStackEntryCount == 0) {
+            finish()
         }
+    }
+
+    override fun onBackPressed() {
+        mNavigator.popFragment()
     }
 }

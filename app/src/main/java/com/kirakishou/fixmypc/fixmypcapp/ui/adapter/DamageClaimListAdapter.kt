@@ -115,8 +115,8 @@ class DamageClaimListAdapter(private val mContext: Context,
                     DamageClaimCategory.Phone.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_smartphone))
                 }
 
-                if (claim.damageClaim.imageNamesList.isNotEmpty()) {
-                    mImageLoader.loadImageFromNetInto(claim.damageClaim.imageNamesList.first(), holder.damagePhoto)
+                if (claim.damageClaim.photoNames.isNotEmpty()) {
+                    mImageLoader.loadImageFromNetInto(claim.damageClaim.photoNames.first(), holder.damagePhoto)
                 } else {
                     //TODO: load image with an error message
                 }

@@ -34,7 +34,7 @@ class ActiveMalfunctionsListFragmentViewModelTest {
     @Mock
     lateinit var wifiUtils: WifiUtils
 
-    lateinit var mViewModel: ActiveMalfunctionsListFragmentViewModel
+    lateinit var mViewModel: ActiveDamageClaimListFragmentViewModel
 
     val damageClaimList1 = mutableListOf(
             DamageClaim(0L, 0L),
@@ -70,7 +70,7 @@ class ActiveMalfunctionsListFragmentViewModelTest {
     fun init() {
         MockitoAnnotations.initMocks(this)
 
-        mViewModel = ActiveMalfunctionsListFragmentViewModel(apiClient, wifiUtils, repository, TestSchedulers())
+        mViewModel = ActiveDamageClaimListFragmentViewModel(apiClient, wifiUtils, repository, TestSchedulers())
         mViewModel.init()
     }
 

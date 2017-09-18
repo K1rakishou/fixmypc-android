@@ -5,7 +5,7 @@ import io.reactivex.Observable
 /**
  * Created by kirakishou on 9/9/2017.
  */
-interface ActiveMalfunctionsListFragmentErrors {
+interface ActiveDamageClaimListFragmentErrors {
     //fun onNothingFoundSubject(): Observable<Unit>
     fun onUnknownError(): Observable<Throwable>
 }

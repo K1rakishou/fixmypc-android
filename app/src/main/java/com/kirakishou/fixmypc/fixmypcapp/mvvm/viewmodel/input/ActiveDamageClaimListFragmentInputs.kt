@@ -6,7 +6,7 @@ import io.reactivex.subjects.BehaviorSubject
 /**
  * Created by kirakishou on 9/9/2017.
  */
-interface ActiveMalfunctionsListFragmentInputs {
+interface ActiveDamageClaimListFragmentInputs {
     fun getDamageClaimsWithinRadius(latLng: LatLng, radius: Double, page: Long)
     fun isFirstFragmentStartSubject(): BehaviorSubject<Boolean>
 }

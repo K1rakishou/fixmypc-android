@@ -3,17 +3,16 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction
 import android.animation.AnimatorSet
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.widget.AppCompatButton
 import butterknife.BindView
 import com.jakewharton.rxbinding2.view.RxView
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
-import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerChooseCategoryActivityComponent
+import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerClientNewDamageClaimActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewDamageClaimActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.DamageClaimCategory
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewMalfunctionActivityViewModel
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewDamageClaimActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewDamageClaimActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientNewDamageClaimActivityNavigator
@@ -22,7 +21,7 @@ import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
 import javax.inject.Inject
 
-class DamageClaimCategoryFragment : BaseFragment<ClientNewMalfunctionActivityViewModel>() {
+class DamageClaimCategoryFragment : BaseFragment<ClientNewDamageClaimActivityViewModel>() {
 
     @BindView(R.id.computer_category_button)
     lateinit var mComputerCategoryButton: AppCompatButton
@@ -39,8 +38,8 @@ class DamageClaimCategoryFragment : BaseFragment<ClientNewMalfunctionActivityVie
     @Inject
     lateinit var mNavigator: ClientNewDamageClaimActivityNavigator
 
-    override fun initViewModel(): ClientNewMalfunctionActivityViewModel {
-        return ViewModelProviders.of(activity, mViewModelFactory).get(ClientNewMalfunctionActivityViewModel::class.java)
+    override fun initViewModel(): ClientNewDamageClaimActivityViewModel {
+        return ViewModelProviders.of(activity, mViewModelFactory).get(ClientNewDamageClaimActivityViewModel::class.java)
     }
 
     override fun getContentView(): Int = R.layout.fragment_damage_claim_category
@@ -93,19 +92,10 @@ class DamageClaimCategoryFragment : BaseFragment<ClientNewMalfunctionActivityVie
     }
 
     override fun resolveDaggerDependency() {
-        DaggerChooseCategoryActivityComponent.builder()
+        DaggerClientNewDamageClaimActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
                 .clientNewDamageClaimActivityModule(ClientNewDamageClaimActivityModule(activity as ClientNewDamageClaimActivity))
                 .build()
                 .inject(this)
-    }
-
-    companion object {
-        fun newInstance(): Fragment {
-            val fragment = DamageClaimCategoryFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            return fragment
-        }
     }
 }

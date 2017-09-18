@@ -17,7 +17,7 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
-import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerChooseCategoryActivityComponent
+import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerClientNewDamageClaimActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewDamageClaimActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
@@ -25,7 +25,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItem
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItemType
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamagePhotoDTO
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewMalfunctionActivityViewModel
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewDamageClaimActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewDamageClaimActivity
@@ -41,7 +41,7 @@ import java.io.File
 import javax.inject.Inject
 
 
-class DamageClaimPhotosFragment : BaseFragment<ClientNewMalfunctionActivityViewModel>(),
+class DamageClaimPhotosFragment : BaseFragment<ClientNewDamageClaimActivityViewModel>(),
         DamageClaimPhotosFragmentCallbacks,
         DamageClaimPhotosAdapter.PhotoClickCallback {
 
@@ -62,8 +62,8 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewMalfunctionActivityViewM
     @Inject
     lateinit var mImageLoader: ImageLoader
 
-    override fun initViewModel(): ClientNewMalfunctionActivityViewModel? {
-        return ViewModelProviders.of(activity, mViewModelFactory).get(ClientNewMalfunctionActivityViewModel::class.java)
+    override fun initViewModel(): ClientNewDamageClaimActivityViewModel? {
+        return ViewModelProviders.of(activity, mViewModelFactory).get(ClientNewDamageClaimActivityViewModel::class.java)
     }
 
     override fun getContentView() = R.layout.fragment_damage_claim_photos
@@ -282,7 +282,7 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewMalfunctionActivityViewM
     }
 
     override fun resolveDaggerDependency() {
-        DaggerChooseCategoryActivityComponent.builder()
+        DaggerClientNewDamageClaimActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
                 .clientNewDamageClaimActivityModule(ClientNewDamageClaimActivityModule(activity as ClientNewDamageClaimActivity))
                 .build()

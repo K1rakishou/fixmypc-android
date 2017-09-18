@@ -56,7 +56,7 @@ class DamageClaimRepositoryImpl(protected val mDatabase: MyDatabase,
                     }
 
                     for (damageClaim in damageClaimList) {
-                        damageClaim.imageNamesList += photosMap[damageClaim.id]!!
+                        damageClaim.photoNames += photosMap[damageClaim.id]!!
                     }
 
                     return@map damageClaimList
@@ -77,7 +77,7 @@ class DamageClaimRepositoryImpl(protected val mDatabase: MyDatabase,
         return Flowables.zip(damageClaimFlowable, damageClaimPhotoFlowable, { dcf, dcpf ->
             dcf.forEach {
                 if (dcpf.containsKey(it.id)) {
-                    it.imageNamesList += dcpf[it.id]!!
+                    it.photoNames += dcpf[it.id]!!
                 }
             }
 

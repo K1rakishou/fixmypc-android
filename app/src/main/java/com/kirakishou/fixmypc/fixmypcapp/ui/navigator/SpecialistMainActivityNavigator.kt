@@ -1,7 +1,6 @@
 package com.kirakishou.fixmypc.fixmypcapp.ui.navigator
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseNavigator
@@ -13,46 +12,30 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.DamageClaimFullI
 /**
  * Created by kirakishou on 9/11/2017.
  */
-class SpecialistMainActivityNavigator(activity: AppCompatActivity) : BaseNavigator() {
-    private val fragmentManager = activity.supportFragmentManager
-
-    fun popFragment() {
-        fragmentManager.popBackStack()
-    }
-
-    fun getVisibleFragment(): Fragment? {
-        val fragments = fragmentManager.fragments
-        if (fragments != null) {
-            for (fragment in fragments) {
-                if (fragment != null && fragment.isVisible)
-                    return fragment
-            }
-        }
-
-        return null
-    }
+class SpecialistMainActivityNavigator(activity: AppCompatActivity) : BaseNavigator(activity) {
 
     fun navigateToActiveDamageClaimsListFragment() {
-        val fragment = createNewFragmentIfNotInStack<ActiveDamageClaimsListFragment>(fragmentManager,
-                Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST)
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        val visibleFragment = getVisibleFragment()
 
-        val isFragmentInStack = fragmentManager.findFragmentByTag(Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST)
-
-        if (isFragmentInStack == null) {
-            fragmentManager
-                    .beginTransaction()
-                    .add(R.id.fragment_frame, fragment, Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST)
-                    .addToBackStack(Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST)
-                    .commit()
-        } else {
-            val visibleFragment = getVisibleFragment()
-
-            fragmentManager.beginTransaction()
-                    .hide(visibleFragment)
-                    .show(fragment)
-                    .addToBackStack(Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST)
-                    .commit()
+        if (visibleFragment != null) {
+            fragmentTransaction.hide(visibleFragment)
         }
+
+        val fragmentInStack = fragmentManager.findFragmentByTag(Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST)
+        if (fragmentInStack == null) {
+            val newFragment = ActiveDamageClaimsListFragment()
+
+            fragmentTransaction
+                    .add(R.id.fragment_frame, newFragment, Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST)
+                    .addToBackStack(null)
+        } else {
+            fragmentTransaction
+                    .show(fragmentInStack)
+                    .addToBackStack(null)
+        }
+
+        fragmentTransaction.commit()
     }
 
     fun navigateToDamageClaimFullInfoFragment(damageClaim: DamageClaim) {
@@ -66,25 +49,61 @@ class SpecialistMainActivityNavigator(activity: AppCompatActivity) : BaseNavigat
         bundle.putLong("damage_claim_created_on", damageClaim.createdOn)
         bundle.putStringArrayList("damage_claim_photo_names", ArrayList(damageClaim.photoNames))
 
-        val fragment = createNewFragmentIfNotInStackWithParams<DamageClaimFullInfoFragment>(fragmentManager,
-                Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO, bundle)
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        val visibleFragment = getVisibleFragment()
 
-        val isFragmentInStack = fragmentManager.findFragmentByTag(Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO)
-
-        if (isFragmentInStack == null) {
-            fragmentManager
-                    .beginTransaction()
-                    .replace(R.id.fragment_frame, fragment, Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO)
-                    .addToBackStack(Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO)
-                    .commit()
-        } else {
-            val visibleFragment = getVisibleFragment()
-
-            fragmentManager.beginTransaction()
-                    .hide(visibleFragment)
-                    .show(fragment)
-                    .addToBackStack(Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO)
-                    .commit()
+        if (visibleFragment != null) {
+            fragmentTransaction.hide(visibleFragment)
         }
+
+        val fragmentInStack = fragmentManager.findFragmentByTag(Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO)
+        if (fragmentInStack == null) {
+            val newFragment = DamageClaimFullInfoFragment()
+            newFragment.arguments = bundle
+
+            fragmentTransaction
+                    .add(R.id.fragment_frame, newFragment, Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO)
+                    .addToBackStack(null)
+        } else {
+            fragmentTransaction
+                    .show(fragmentInStack)
+                    .addToBackStack(null)
+        }
+
+        fragmentTransaction.commit()
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

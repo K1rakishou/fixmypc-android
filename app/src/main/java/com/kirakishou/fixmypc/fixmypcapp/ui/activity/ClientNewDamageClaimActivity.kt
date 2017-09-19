@@ -4,6 +4,7 @@ import android.animation.AnimatorSet
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.FragmentManager
 import android.widget.Toast
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
@@ -20,7 +21,7 @@ import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
 class ClientNewDamageClaimActivity : BaseActivity<ClientNewDamageClaimActivityViewModel>(),
-        ClientNewMalfunctionActivityFragmentCallback {
+        ClientNewMalfunctionActivityFragmentCallback, FragmentManager.OnBackStackChangedListener {
 
     @Inject
     lateinit var mPermissionManager: PermissionManager
@@ -45,6 +46,7 @@ class ClientNewDamageClaimActivity : BaseActivity<ClientNewDamageClaimActivityVi
     override fun loadExitAnimations() = AnimatorSet()
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
+        supportFragmentManager.addOnBackStackChangedListener(this)
         mNavigator.navigateToDamageClaimCategoryFragment()
         progressDialog = ProgressDialog(this)
 
@@ -55,6 +57,7 @@ class ClientNewDamageClaimActivity : BaseActivity<ClientNewDamageClaimActivityVi
     override fun onActivityDestroy() {
         progressDialog.dismiss()
         mRefWatcher.watch(this)
+        supportFragmentManager.removeOnBackStackChangedListener(this)
     }
 
     override fun requestPermission(permission: String, requestCode: Int) {
@@ -77,11 +80,11 @@ class ClientNewDamageClaimActivity : BaseActivity<ClientNewDamageClaimActivityVi
         mPermissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    override fun onViewReady() {
+    override fun onActivityStart() {
 
     }
 
-    override fun onViewStop() {
+    override fun onActivityStop() {
 
     }
 
@@ -105,9 +108,13 @@ class ClientNewDamageClaimActivity : BaseActivity<ClientNewDamageClaimActivityVi
         super.onUnknownError(error)
     }
 
-    override fun onBackPressed() {
-        if (mNavigator.popFragment()) {
-            super.onBackPressed()
+    override fun onBackStackChanged() {
+        if (supportFragmentManager.backStackEntryCount == 0) {
+            finish()
         }
+    }
+
+    override fun onBackPressed() {
+        mNavigator.popFragment()
     }
 }

@@ -84,7 +84,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveDamageClaimListFragmen
         currentLocationPref.save()
     }
 
-    override fun onFragmentReady(savedInstanceState: Bundle?) {
+    override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
         Timber.e("savedInstanceState == $savedInstanceState")
 
         getViewModel().init()
@@ -98,7 +98,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveDamageClaimListFragmen
         recyclerStartLoadingItems()
     }
 
-    override fun onFragmentStop() {
+    override fun onFragmentViewDestroy() {
         SmartLocation.with(context)
                 .location()
                 .stop()

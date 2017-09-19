@@ -2,7 +2,6 @@ package com.kirakishou.fixmypc.fixmypcapp.base
 
 import android.animation.AnimatorSet
 import android.arch.lifecycle.LifecycleRegistry
-import android.arch.lifecycle.LifecycleRegistryOwner
 import android.arch.lifecycle.ViewModel
 import android.content.Intent
 import android.os.Bundle
@@ -19,7 +18,7 @@ import io.reactivex.disposables.CompositeDisposable
 /**
  * Created by kirakishou on 7/20/2017.
  */
-abstract class BaseActivity<out T: ViewModel> : AppCompatActivity(), LifecycleRegistryOwner {
+abstract class BaseActivity<out T: ViewModel> : AppCompatActivity() {
 
     private val mRegistry by lazy {
         LifecycleRegistry(this)
@@ -93,13 +92,13 @@ abstract class BaseActivity<out T: ViewModel> : AppCompatActivity(), LifecycleRe
 
     private fun animateActivityStop() {
         runCallbackAfterAnimation(loadExitAnimations()) {
-            onViewStop()
+            onActivityStop()
         }
     }
 
     private fun animateActivityStart() {
         runCallbackAfterAnimation(loadStartAnimations()) {
-            onViewReady()
+            onActivityStart()
         }
     }
 
@@ -144,7 +143,7 @@ abstract class BaseActivity<out T: ViewModel> : AppCompatActivity(), LifecycleRe
     protected abstract fun loadExitAnimations(): AnimatorSet
     protected abstract fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent)
     protected abstract fun onActivityDestroy()
-    protected abstract fun onViewReady()
-    protected abstract fun onViewStop()
+    protected abstract fun onActivityStart()
+    protected abstract fun onActivityStop()
     protected abstract fun resolveDaggerDependency()
 }

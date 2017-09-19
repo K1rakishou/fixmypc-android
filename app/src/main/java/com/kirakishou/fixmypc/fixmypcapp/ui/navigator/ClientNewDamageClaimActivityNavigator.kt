@@ -12,13 +12,7 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction.DamageClaimPhot
 /**
  * Created by kirakishou on 9/10/2017.
  */
-class ClientNewDamageClaimActivityNavigator(activity: AppCompatActivity) : BaseNavigator() {
-    private val fragmentManager = activity.supportFragmentManager
-
-    fun popFragment(): Boolean {
-        fragmentManager.popBackStackImmediate()
-        return fragmentManager.backStackEntryCount <= 1
-    }
+class ClientNewDamageClaimActivityNavigator(activity: AppCompatActivity) : BaseNavigator(activity) {
 
     fun navigateToDamageClaimCategoryFragment() {
         val fragment = createNewFragmentIfNotInStack<DamageClaimCategoryFragment>(fragmentManager,

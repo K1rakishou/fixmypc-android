@@ -2,7 +2,6 @@ package com.kirakishou.fixmypc.fixmypcapp.base
 
 import android.animation.AnimatorSet
 import android.arch.lifecycle.LifecycleRegistry
-import android.arch.lifecycle.LifecycleRegistryOwner
 import android.arch.lifecycle.ViewModel
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -20,7 +19,7 @@ import timber.log.Timber
 /**
  * Created by kirakishou on 7/30/2017.
  */
-abstract class BaseFragment<T : ViewModel> : Fragment(), LifecycleRegistryOwner {
+abstract class BaseFragment<T : ViewModel> : Fragment() {
 
     private val mRegistry by lazy {
         LifecycleRegistry(this)
@@ -55,7 +54,7 @@ abstract class BaseFragment<T : ViewModel> : Fragment(), LifecycleRegistryOwner 
         super.onViewCreated(view, savedInstanceState)
 
         runCallbackAfterAnimation(loadStartAnimations()) {
-            onFragmentReady(savedInstanceState)
+            onFragmentViewCreated(savedInstanceState)
         }
     }
 
@@ -90,7 +89,7 @@ abstract class BaseFragment<T : ViewModel> : Fragment(), LifecycleRegistryOwner 
         mCompositeDisposable.clear()
 
         runCallbackAfterAnimation(loadExitAnimations()) {
-            onFragmentStop()
+            onFragmentViewDestroy()
         }
 
         mUnBinder.ifPresent {
@@ -130,16 +129,7 @@ abstract class BaseFragment<T : ViewModel> : Fragment(), LifecycleRegistryOwner 
     protected abstract fun getContentView(): Int
     protected abstract fun loadStartAnimations(): AnimatorSet
     protected abstract fun loadExitAnimations(): AnimatorSet
-    protected abstract fun onFragmentReady(savedInstanceState: Bundle?)
-    protected abstract fun onFragmentStop()
+    protected abstract fun onFragmentViewCreated(savedInstanceState: Bundle?)
+    protected abstract fun onFragmentViewDestroy()
     protected abstract fun resolveDaggerDependency()
-
-    enum class FragmentEvent {
-        ON_CREATE,
-        ON_START,
-        ON_RESUME,
-        ON_PAUSE,
-        ON_STOP,
-        ON_DESTROY
-    }
 }

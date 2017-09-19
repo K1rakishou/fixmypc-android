@@ -107,7 +107,6 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile 'com.google.maps.android:android-maps-utils:0.5'
-
     compile 'com.github.jkwiecien:EasyImage:2.0.2'
     compile 'net.danlew:android.joda:2.9.9'
     compile 'io.nlopez.smartlocation:library:3.3.2'
@@ -119,12 +118,12 @@ dependencies {
         exclude group: 'com.android.support'
     }
 
-    kapt 'com.jakewharton:butterknife-compiler:8.6.0'
     compile 'com.jakewharton:butterknife:8.6.0'
+    kapt 'com.jakewharton:butterknife-compiler:8.6.0'
 
-    kapt 'com.google.dagger:dagger-compiler:2.11'
     compile 'com.google.dagger:dagger:2.11'
+    kapt 'com.google.dagger:dagger-compiler:2.11'
 
-    kapt 'com.github.bumptech.glide:compiler:4.1.1'
     compile 'com.github.bumptech.glide:glide:4.1.1'
+    kapt 'com.github.bumptech.glide:compiler:4.1.1'
 }

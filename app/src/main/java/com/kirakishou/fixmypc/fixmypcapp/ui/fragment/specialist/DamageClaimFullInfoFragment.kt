@@ -43,11 +43,15 @@ class DamageClaimFullInfoFragment : BaseFragment<ActiveDamageClaimListFragmentVi
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
-    override fun onFragmentReady(savedInstanceState: Bundle?) {
+    override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
         val mapFrag = childFragmentManager.findFragmentById(R.id.damage_claim_client_location_map) as SupportMapFragment
         mapFrag.getMapAsync(this)
 
         damageClaimFickle = Fickle.of(getDamageClaimFromBundle(arguments))
+    }
+
+    override fun onFragmentViewDestroy() {
+
     }
 
     private fun getDamageClaimFromBundle(arguments: Bundle): DamageClaim {
@@ -85,10 +89,6 @@ class DamageClaimFullInfoFragment : BaseFragment<ActiveDamageClaimListFragmentVi
                 .strokeColor(STROKE_COLOR)
                 .fillColor(FILL_COLOR)
                 .strokeWidth(3f))
-
-    }
-
-    override fun onFragmentStop() {
 
     }
 

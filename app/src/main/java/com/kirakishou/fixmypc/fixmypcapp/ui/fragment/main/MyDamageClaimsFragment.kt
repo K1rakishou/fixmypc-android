@@ -26,11 +26,11 @@ class MyDamageClaimsFragment  : BaseFragment<MyDamageClaimsFragmentViewModel>() 
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
-    override fun onFragmentReady(savedInstanceState: Bundle?) {
+    override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
 
     }
 
-    override fun onFragmentStop() {
+    override fun onFragmentViewDestroy() {
 
     }
 

@@ -63,7 +63,7 @@ class DamageClaimLocationFragment : BaseFragment<ClientNewDamageClaimActivityVie
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
-    override fun onFragmentReady(savedInstanceState: Bundle?) {
+    override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
         val mapFrag = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFrag.getMapAsync(this)
 
@@ -111,7 +111,7 @@ class DamageClaimLocationFragment : BaseFragment<ClientNewDamageClaimActivityVie
         }
     }
 
-    override fun onFragmentStop() {
+    override fun onFragmentViewDestroy() {
         SmartLocation.with(activity)
                 .location()
                 .stop()

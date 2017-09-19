@@ -18,7 +18,7 @@ import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
 class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), BaseActivityFragmentCallback,
-        FragmentManager.OnBackStackChangedListener{
+        FragmentManager.OnBackStackChangedListener {
 
     @Inject
     lateinit var mRefWatcher: RefWatcher
@@ -39,7 +39,10 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), 
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
         supportFragmentManager.addOnBackStackChangedListener(this)
-        mNavigator.navigateToActiveDamageClaimsListFragment()
+
+        if (savedInstanceState == null) {
+            mNavigator.navigateToActiveDamageClaimsListFragment()
+        }
     }
 
     override fun onActivityDestroy() {
@@ -47,11 +50,12 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), 
         supportFragmentManager.removeOnBackStackChangedListener(this)
     }
 
-    override fun onViewReady() {
+    override fun onActivityStart() {
 
     }
 
-    override fun onViewStop() {
+    override fun onActivityStop() {
+
     }
 
     override fun resolveDaggerDependency() {

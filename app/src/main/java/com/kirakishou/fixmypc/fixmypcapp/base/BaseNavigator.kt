@@ -3,11 +3,30 @@ package com.kirakishou.fixmypc.fixmypcapp.base
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
+import android.support.v7.app.AppCompatActivity
 
 /**
  * Created by kirakishou on 9/15/2017.
  */
-open class BaseNavigator {
+open class BaseNavigator(activity: AppCompatActivity) {
+
+    protected val fragmentManager = activity.supportFragmentManager
+
+    protected fun getVisibleFragment(): Fragment? {
+        val fragments = fragmentManager.fragments
+        if (fragments != null) {
+            for (fragment in fragments) {
+                if (fragment != null && fragment.isVisible)
+                    return fragment
+            }
+        }
+
+        return null
+    }
+
+    fun popFragment() {
+        fragmentManager.popBackStack()
+    }
 
     @Suppress("UNCHECKED_CAST")
     inline fun <reified T : Fragment> createNewFragmentIfNotInStack(fragmentManager: FragmentManager, fragmentTag: String): T {

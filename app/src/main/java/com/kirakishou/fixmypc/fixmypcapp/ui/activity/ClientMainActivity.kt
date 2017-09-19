@@ -42,11 +42,11 @@ class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>() {
         mRefWatcher.watch(this)
     }
 
-    override fun onViewReady() {
+    override fun onActivityStart() {
 
     }
 
-    override fun onViewStop() {
+    override fun onActivityStop() {
 
     }
 

@@ -80,7 +80,7 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
         accountInfoPrefs.save()
     }
 
-    override fun onViewReady() {
+    override fun onActivityStart() {
         //FIXME: accountInfoPrefs should be loaded from preferences via accountInfoPrefs.load()
         //don't forger to delete the following:
         accountInfoPrefs.login = Fickle.of("test2@gmail.com")
@@ -97,7 +97,7 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
         }
     }
 
-    override fun onViewStop() {
+    override fun onActivityStop() {
 
     }
 

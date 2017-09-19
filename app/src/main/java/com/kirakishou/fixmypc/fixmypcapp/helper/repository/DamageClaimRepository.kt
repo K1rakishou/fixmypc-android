@@ -10,4 +10,5 @@ interface DamageClaimRepository {
     fun saveAll(damageClaimList: List<DamageClaim>)
     fun findWithinBBox(lat: Double, lon: Double, radius: Double, skip: Long): Flowable<List<DamageClaim>>
     fun findAll(): Flowable<List<DamageClaim>>
+    fun clear()
 }

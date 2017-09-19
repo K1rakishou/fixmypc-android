@@ -90,7 +90,6 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveDamageClaimListFragmen
         getViewModel().init()
         initRx()
 
-        getViewModel().setIsFirstFragmentStart(savedInstanceState == null)
         mAdapter = DamageClaimListAdapter(activity, mAdapterItemClickSubject, mImageLoader)
 
         initRecycler()
@@ -114,7 +113,10 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveDamageClaimListFragmen
                 .config(LocationParams.BEST_EFFORT)
                 .oneFix()
                 .start {
-                    mLocationSubject.onNext(LatLng(it.latitude, it.longitude))
+                    val latlon = LatLng(it.latitude, it.longitude)
+
+                    saveCurrentLocation(latlon)
+                    mLocationSubject.onNext(latlon)
                 }
     }
 
@@ -142,14 +144,10 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveDamageClaimListFragmen
     }
 
     private fun initRx() {
-        mCompositeDisposable += Observables.combineLatest(mLoadMoreSubject, mLocationSubject, { loadMore, location -> Pair(loadMore, location)})
+        mCompositeDisposable += Observables.combineLatest(mLoadMoreSubject, mLocationSubject, { loadMore, location -> Pair(loadMore, location) })
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext { mAdapter.addProgressFooter() }
-                .observeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ (page, latlon) ->
-                    saveCurrentLocation(latlon)
+                    mAdapter.addProgressFooter()
                     getDamageClaims(page, latlon)
                 }, { error ->
                     Timber.e(error)

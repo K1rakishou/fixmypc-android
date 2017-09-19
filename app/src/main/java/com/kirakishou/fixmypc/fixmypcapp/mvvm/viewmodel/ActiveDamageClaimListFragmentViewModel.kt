@@ -41,25 +41,18 @@ class ActiveDamageClaimListFragmentViewModel
     private val itemsPerPage = Constant.MAX_DAMAGE_CLAIMS_PER_PAGE
     private val mCompositeDisposable = CompositeDisposable()
 
-    lateinit var mIsFirstFragmentStartSubject: BehaviorSubject<Boolean>
-    lateinit var mRequestParamsSubject: BehaviorSubject<GetDamageClaimsRequestParamsDTO>
+    lateinit var mGetDamageClaimsWithinRadiusSubject: BehaviorSubject<GetDamageClaimsRequestParamsDTO>
     lateinit var mOnDamageClaimsPageReceivedSubject: BehaviorSubject<ArrayList<DamageClaimsWithDistanceDTO>>
-    //lateinit var mOnNothingFoundSubject: BehaviorSubject<Unit>
     lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
-    lateinit var mSendRequestSubject: BehaviorSubject<GetDamageClaimsRequestParamsDTO>
     lateinit var mEitherFromRepoOrServerSubject: BehaviorSubject<Pair<LatLng, DamageClaimsResponse>>
 
     fun init() {
         mCompositeDisposable.clear()
 
-        mIsFirstFragmentStartSubject = BehaviorSubject.create<Boolean>()
-        mRequestParamsSubject = BehaviorSubject.create<GetDamageClaimsRequestParamsDTO>()
-        mOnDamageClaimsPageReceivedSubject = BehaviorSubject.create<ArrayList<DamageClaimsWithDistanceDTO>>()
-        //mOnNothingFoundSubject = BehaviorSubject.create<Unit>()
-        mOnUnknownErrorSubject = BehaviorSubject.create<Throwable>()
-
-        mSendRequestSubject = BehaviorSubject.create<GetDamageClaimsRequestParamsDTO>()
-        mEitherFromRepoOrServerSubject = BehaviorSubject.create<Pair<LatLng, DamageClaimsResponse>>()
+        mGetDamageClaimsWithinRadiusSubject = BehaviorSubject.create()
+        mOnDamageClaimsPageReceivedSubject = BehaviorSubject.create()
+        mOnUnknownErrorSubject = BehaviorSubject.create()
+        mEitherFromRepoOrServerSubject = BehaviorSubject.create()
 
         mCompositeDisposable += mEitherFromRepoOrServerSubject
                 .map { (latlon, response) -> calcDistances(latlon.latitude, latlon.longitude, response) }
@@ -69,7 +62,7 @@ class ActiveDamageClaimListFragmentViewModel
                     handleError(it)
                 })
 
-        val repositoryItemsObservable = mRequestParamsSubject
+        val repositoryItemsObservable = mGetDamageClaimsWithinRadiusSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .observeOn(mSchedulers.provideIo())
                 .flatMap { (latlon, radius, skip) ->
@@ -111,12 +104,8 @@ class ActiveDamageClaimListFragmentViewModel
         mCompositeDisposable.clear()
     }
 
-    fun setIsFirstFragmentStart(isFirstStart: Boolean) {
-        mIsFirstFragmentStartSubject.onNext(isFirstStart)
-    }
-
     override fun getDamageClaimsWithinRadius(latLng: LatLng, radius: Double, page: Long) {
-        mRequestParamsSubject.onNext(GetDamageClaimsRequestParamsDTO(latLng, radius, page * itemsPerPage))
+        mGetDamageClaimsWithinRadiusSubject.onNext(GetDamageClaimsRequestParamsDTO(latLng, radius, page * itemsPerPage))
     }
 
     private fun handleResponse(response: DamageClaimResponseWithDistanceDTO) {
@@ -156,10 +145,8 @@ class ActiveDamageClaimListFragmentViewModel
         return retVal
     }
 
-    override fun isFirstFragmentStartSubject(): BehaviorSubject<Boolean> = mIsFirstFragmentStartSubject
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
     override fun onDamageClaimsPageReceived(): Observable<ArrayList<DamageClaimsWithDistanceDTO>> = mOnDamageClaimsPageReceivedSubject
-    //override fun onNothingFoundSubject(): Observable<Unit> = mOnNothingFoundSubject
 
     data class IsRepoEmptyDTO(val latlon: LatLng,
                               val radius: Double,

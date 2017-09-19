@@ -104,4 +104,9 @@ class DamageClaimRepositoryImpl(protected val mDatabase: MyDatabase,
             return@zip dcf
         }).subscribeOn(mSchedulers.provideIo())
     }
+
+    override fun clear() {
+        damageClaimDao.clear()
+        damageClaimPhotoDao.clear()
+    }
 }

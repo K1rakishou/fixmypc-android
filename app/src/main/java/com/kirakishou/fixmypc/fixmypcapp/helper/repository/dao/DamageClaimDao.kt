@@ -27,4 +27,7 @@ interface DamageClaimDao {
 
     @Query("SELECT * FROM ${Constant.Room.TableName.DAMAGE_CLAIM_ENTITY_TABLE_NAME} ORDER BY saved_on ASC ")
     fun findAll(): Flowable<List<DamageClaimEntity>>
+
+    @Query("DELETE FROM ${Constant.Room.TableName.DAMAGE_CLAIM_ENTITY_TABLE_NAME}")
+    fun clear()
 }

@@ -23,4 +23,7 @@ interface DamageClaimPhotoDao {
 
     @Query("SELECT * FROM ${Constant.Room.TableName.DAMAGE_CLAIM_PHOTO_ENTITY_TABLE_NAME}")
     fun findAll(): Flowable<List<DamageClaimPhotoEntity>>
+
+    @Query("DELETE FROM ${Constant.Room.TableName.DAMAGE_CLAIM_PHOTO_ENTITY_TABLE_NAME}")
+    fun clear()
 }

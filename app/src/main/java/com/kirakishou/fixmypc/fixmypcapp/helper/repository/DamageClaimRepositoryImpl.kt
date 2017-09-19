@@ -6,9 +6,11 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.mapper.DamageClaimsPhotosMapper
 import com.kirakishou.fixmypc.fixmypcapp.helper.mapper.MapperManager
 import com.kirakishou.fixmypc.fixmypcapp.helper.repository.dao.DamageClaimDao
 import com.kirakishou.fixmypc.fixmypcapp.helper.repository.dao.DamageClaimPhotoDao
+import com.kirakishou.fixmypc.fixmypcapp.helper.repository.dao.entity.DamageClaimEntity
 import com.kirakishou.fixmypc.fixmypcapp.helper.repository.database.MyDatabase
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.MathUtils
+import com.kirakishou.fixmypc.fixmypcapp.helper.util.TimeUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 import io.reactivex.Flowable
@@ -44,7 +46,25 @@ class DamageClaimRepositoryImpl(protected val mDatabase: MyDatabase,
         return damageClaimDao.findSomeWithinBBox(minLatLon.longitude, maxLatLon.longitude,
                 minLatLon.latitude, maxLatLon.latitude, Constant.MAX_DAMAGE_CLAIMS_PER_PAGE, skip)
                 .subscribeOn(mSchedulers.provideIo())
+                .map { repoItems ->
+                    if (repoItems.isEmpty()) {
+                        return@map repoItems
+                    }
+
+                    val savedOn = repoItems[0].savedOn
+                    val now = TimeUtils.getTimeFast()
+
+                    if (now - savedOn > Constant.MAX_REPO_STORE_ITEMS_TIME) {
+                        return@map emptyList<DamageClaimEntity>()
+                    }
+
+                    return@map repoItems
+                }
                 .map { damageClaimEntityList ->
+                    if (damageClaimEntityList.isEmpty()) {
+                        return@map emptyList<DamageClaim>()
+                    }
+
                     val photoIds = damageClaimEntityList.map { it.id }
                     val damageClaimPhotoEntityList = damageClaimPhotoDao.findManyByIds(photoIds)
 

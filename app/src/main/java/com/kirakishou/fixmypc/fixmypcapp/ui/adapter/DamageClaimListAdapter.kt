@@ -108,6 +108,7 @@ class DamageClaimListAdapter(private val mContext: Context,
                 }
 
                 holder.distanceToMe.text = "$distStr КМ"
+                holder.position.text = position.toString()
 
                 when (claim.damageClaim.category) {
                     DamageClaimCategory.Computer.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_computer))
@@ -146,6 +147,9 @@ class DamageClaimListAdapter(private val mContext: Context,
 
         @BindView(R.id.damage_type)
         lateinit var damageTypeIcon: ImageView
+
+        @BindView(R.id.position)
+        lateinit var position: TextView
 
         init {
             ButterKnife.bind(this, itemView)

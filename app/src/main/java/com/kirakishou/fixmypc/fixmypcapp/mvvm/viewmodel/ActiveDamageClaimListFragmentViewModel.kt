@@ -61,26 +61,6 @@ class ActiveDamageClaimListFragmentViewModel
         mSendRequestSubject = BehaviorSubject.create<GetDamageClaimsRequestParamsDTO>()
         mEitherFromRepoOrServerSubject = BehaviorSubject.create<Pair<LatLng, DamageClaimsResponse>>()
 
-        mCompositeDisposable += mSendRequestSubject
-                .doOnNext {
-                    Timber.d("ActiveMalfunctionsListFragmentViewModel.init() " +
-                            "Fetching damage claims from the server")
-                }
-                .flatMap { (latlon, radius, page) ->
-                    val responseObservable = mApiClient.getDamageClaims(latlon.latitude,
-                            latlon.longitude, radius, page, itemsPerPage)
-                            .doOnSuccess { response -> mDamageClaimRepo.saveAll(response.damageClaims) }
-                            .toObservable()
-
-                    return@flatMap Observables.zip(Observable.just(latlon), responseObservable)
-                }
-                .map { (latlon, response) -> calcDistances(latlon.latitude, latlon.longitude, response) }
-                .subscribe({
-                    handleResponse(it)
-                }, {
-                    handleError(it)
-                })
-
         mCompositeDisposable += mEitherFromRepoOrServerSubject
                 .map { (latlon, response) -> calcDistances(latlon.latitude, latlon.longitude, response) }
                 .subscribe({
@@ -89,47 +69,9 @@ class ActiveDamageClaimListFragmentViewModel
                     handleError(it)
                 })
 
-        //multicast params and rotation state to three different observables
-        val locationAndIsFirstStartObservable = Observables.combineLatest(mRequestParamsSubject,
-                mIsFirstFragmentStartSubject)
+        val repositoryItemsObservable = mRequestParamsSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .observeOn(mSchedulers.provideIo())
-                .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() Start multicasting") }
-                .publish()
-                .autoConnect(4)
-
-        locationAndIsFirstStartObservable
-                .filter { (_, isFirstFragmentStart) -> isFirstFragmentStart }
-                .filter { _ -> mWifiUtils.isWifiConnected() }
-                .map { it.first }
-                .doOnNext {
-                    Timber.d("ActiveMalfunctionsListFragmentViewModel.init() has wifi " +
-                            "and was not rotated. skip: ${it.skip}")
-                }
-                .subscribe(mSendRequestSubject)
-
-        val rotatedHasWifi = locationAndIsFirstStartObservable
-                .filter { (_, isFirstFragmentStart) -> !isFirstFragmentStart }
-                .filter { _ -> mWifiUtils.isWifiConnected() }
-                .map { it.first }
-                .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() was rotated. skip: ${it.skip}") }
-
-        val notRotatedNoWifi = locationAndIsFirstStartObservable
-                .filter { (_, isFirstFragmentStart) -> isFirstFragmentStart }
-                .filter { _ -> !mWifiUtils.isWifiConnected() }
-                .map { it.first }
-                .doOnNext { Timber.d("ActiveMalfunctionsListFragmentViewModel.init() no wifi. skip: ${it.skip}") }
-
-        val rotatedNoWifi = locationAndIsFirstStartObservable
-                .filter { (_, isFirstFragmentStart) -> !isFirstFragmentStart }
-                .filter { _ -> !mWifiUtils.isWifiConnected() }
-                .map { it.first }
-                .doOnNext {
-                    Timber.d("ActiveMalfunctionsListFragmentViewModel.init() " +
-                            "was rotated and no wifi. skip: ${it.skip}")
-                }
-
-        Observable.merge(rotatedHasWifi, notRotatedNoWifi, rotatedNoWifi)
                 .flatMap { (latlon, radius, skip) ->
                     val repoResultObservable = mDamageClaimRepo.findWithinBBox(latlon.latitude, latlon.longitude, radius, skip)
                             .map { DamageClaimsResponse(it.toMutableList(), ErrorCode.Remote.REC_OK) }
@@ -138,22 +80,27 @@ class ActiveDamageClaimListFragmentViewModel
                     return@flatMap Observables.zip(Observable.just(latlon), Observable.just(radius),
                             Observable.just(skip), repoResultObservable, { o1, o2, o3, o4 -> IsRepoEmptyDTO(o1, o2, o3, o4) })
                 }
-                .flatMap { (latlon, radius, skip, response) ->
-                    Timber.e("Got from the repo ${response.damageClaims.size} items")
+                .publish()
+                .autoConnect(2)
 
-                    if (response.damageClaims.size >= itemsPerPage) {
-                        return@flatMap Observables.zip(Observable.just(latlon), Observable.just(response))
-                    }
+        repositoryItemsObservable
+                .filter { it.response.damageClaims.size >= itemsPerPage }
+                .doOnNext { Timber.e("Retrieving items from repo") }
+                .flatMap { Observables.zip(Observable.just(it.latlon), Observable.just(it.response)) }
+                .subscribe(mEitherFromRepoOrServerSubject)
 
-                    val remainder = itemsPerPage - response.damageClaims.size
-                    Timber.e("Remainder is $remainder, skip is $skip")
-
-                    val serverResponseObservable = mApiClient.getDamageClaims(latlon.latitude, latlon.longitude, radius, skip, remainder)
+        repositoryItemsObservable
+                .filter { it.response.damageClaims.size < itemsPerPage }
+                .doOnNext { Timber.e("Fetching items from server") }
+                .flatMap { (latlon, radius, skip) ->
+                    val repoResultObservable = mApiClient.getDamageClaims(latlon.latitude, latlon.longitude, radius, skip, itemsPerPage)
                             .doOnSuccess { serverResponse -> mDamageClaimRepo.saveAll(serverResponse.damageClaims) }
                             .toObservable()
 
-                    return@flatMap Observables.zip(Observable.just(latlon), serverResponseObservable)
+                    return@flatMap Observables.zip(Observable.just(latlon), Observable.just(radius),
+                            Observable.just(skip), repoResultObservable, { o1, o2, o3, o4 -> IsRepoEmptyDTO(o1, o2, o3, o4) })
                 }
+                .flatMap { Observables.zip(Observable.just(it.latlon), Observable.just(it.response)) }
                 .subscribe(mEitherFromRepoOrServerSubject)
     }
 
@@ -185,7 +132,7 @@ class ActiveDamageClaimListFragmentViewModel
 
     private fun handleBadResponse(errorCode: ErrorCode.Remote) {
         when (errorCode) {
-            //ErrorCode.Remote.REC_NOTHING_FOUND -> mOnNothingFoundSubject.onNext(Unit)
+        //ErrorCode.Remote.REC_NOTHING_FOUND -> mOnNothingFoundSubject.onNext(Unit)
 
             else -> throw RuntimeException("Unknown errorCode: $errorCode")
         }

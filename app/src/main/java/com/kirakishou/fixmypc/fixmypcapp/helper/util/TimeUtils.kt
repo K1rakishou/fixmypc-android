@@ -5,5 +5,6 @@ package com.kirakishou.fixmypc.fixmypcapp.helper.util
  */
 object TimeUtils {
 
+    @Synchronized
     fun getTimeFast(): Long = System.currentTimeMillis()
 }

@@ -32,7 +32,6 @@ class DamageClaimFullInfoFragment : BaseFragment<ActiveDamageClaimListFragmentVi
 
     private val STROKE_COLOR = 0xC000A2E8.toInt()
     private val FILL_COLOR = 0x4000A2E8.toInt()
-    private val MAP_ZOOM = 5f
     private var damageClaimFickle = Fickle.empty<DamageClaim>()
 
     override fun initViewModel(): ActiveDamageClaimListFragmentViewModel? {

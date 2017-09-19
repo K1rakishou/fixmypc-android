@@ -10,6 +10,7 @@ object Constant {
     val RECYCLER_VIEW_MAX_COLUMNS_COUNT = 10
     val MAX_DAMAGE_CLAIMS_PER_PAGE = 5L
     val MAX_FILE_SIZE = 5242880
+    val MAX_REPO_STORE_ITEMS_TIME = 1000L * 60L * 60L // one hour
 
     object SerializedNames {
         const val LOGIN = "login"

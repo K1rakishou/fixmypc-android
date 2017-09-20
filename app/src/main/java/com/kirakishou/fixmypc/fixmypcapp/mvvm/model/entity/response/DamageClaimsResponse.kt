@@ -9,7 +9,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
  * Created by kirakishou on 9/4/2017.
  */
 class DamageClaimsResponse(@Expose
-                           @SerializedName("test")
+                           @SerializedName("damage_claim_list")
                            val damageClaims: MutableList<DamageClaim>,
 
                            errorCode: ErrorCode.Remote) : StatusResponse(errorCode)

@@ -2,6 +2,7 @@ package com.kirakishou.fixmypc.fixmypcapp.helper.api
 
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.DamageClaimPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.LoginPacket
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.ClientProfileResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.LoginResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
@@ -30,4 +31,7 @@ interface ApiService {
                         @Path("radius") radius: Double,
                         @Path("skip") skip: Long,
                         @Path("count") count: Long): Single<Response<DamageClaimsResponse>>
+
+    @GET("/v1/api/profile/{user_id}")
+    fun getClientProfile(@Path("user_id") userId: Long): Single<Response<ClientProfileResponse>>
 }

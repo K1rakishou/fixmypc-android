@@ -17,7 +17,7 @@ class LoginRequest(protected val mLoginPacket: LoginPacket,
 
     override fun execute(): Single<LoginResponse> {
         return mApiService.doLogin(mLoginPacket)
-                .lift(OnApiErrorSingle(mGson))
                 .subscribeOn(Schedulers.io())
+                .lift(OnApiErrorSingle(mGson))
     }
 }

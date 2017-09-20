@@ -15,27 +15,35 @@ import com.google.maps.android.SphericalUtil
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
-import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerActiveDamageClaimsListFragmentComponent
-import com.kirakishou.fixmypc.fixmypcapp.di.module.ActiveDamageClaimsListFragmentModule
+import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerSpecialistMainActivityComponent
+import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ActiveDamageClaimListFragmentViewModel
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ActiveDamageClaimListFragmentViewModelFactory
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.ClientProfileResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityViewModel
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
+import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavigator
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.plusAssign
+import timber.log.Timber
 import javax.inject.Inject
 
 
-class DamageClaimFullInfoFragment : BaseFragment<ActiveDamageClaimListFragmentViewModel>(), OnMapReadyCallback {
+class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel>(), OnMapReadyCallback {
 
     @Inject
-    lateinit var mViewModelFactory: ActiveDamageClaimListFragmentViewModelFactory
+    lateinit var mViewModelFactory: SpecialistMainActivityViewModelFactory
+
+    @Inject
+    lateinit var mNavigator: SpecialistMainActivityNavigator
 
     private val STROKE_COLOR = 0xC000A2E8.toInt()
     private val FILL_COLOR = 0x4000A2E8.toInt()
     private var damageClaimFickle = Fickle.empty<DamageClaim>()
 
-    override fun initViewModel(): ActiveDamageClaimListFragmentViewModel? {
-        return ViewModelProviders.of(this, mViewModelFactory).get(ActiveDamageClaimListFragmentViewModel::class.java)
+    override fun initViewModel(): SpecialistMainActivityViewModel? {
+        return ViewModelProviders.of(this, mViewModelFactory).get(SpecialistMainActivityViewModel::class.java)
     }
 
     override fun getContentView() = R.layout.fragment_damage_claim_full_info
@@ -47,10 +55,31 @@ class DamageClaimFullInfoFragment : BaseFragment<ActiveDamageClaimListFragmentVi
         mapFrag.getMapAsync(this)
 
         damageClaimFickle = Fickle.of(getDamageClaimFromBundle(arguments))
+
+        initRx()
+
+        if (damageClaimFickle.isPresent()) {
+            getViewModel().getClientProfile(damageClaimFickle.get().ownerId)
+            mNavigator.showLoadingIndicatorFragment()
+        } else {
+            //TODO: returned back to previous fragment
+        }
     }
 
     override fun onFragmentViewDestroy() {
 
+    }
+
+    private fun initRx() {
+        mCompositeDisposable += getViewModel().mOutputs.onClientProfileReceived()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onClientProfileReceived(it) })
+    }
+
+    private fun onClientProfileReceived(response: ClientProfileResponse) {
+        mNavigator.hideLoadingIndicatorFragment()
+
+        Timber.e(response.clientProfile.phone)
     }
 
     private fun getDamageClaimFromBundle(arguments: Bundle): DamageClaim {
@@ -92,9 +121,9 @@ class DamageClaimFullInfoFragment : BaseFragment<ActiveDamageClaimListFragmentVi
     }
 
     override fun resolveDaggerDependency() {
-        DaggerActiveDamageClaimsListFragmentComponent.builder()
+        DaggerSpecialistMainActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
-                .activeDamageClaimsListFragmentModule(ActiveDamageClaimsListFragmentModule(activity as SpecialistMainActivity))
+                .specialistMainActivityModule(SpecialistMainActivityModule(activity as SpecialistMainActivity))
                 .build()
                 .inject(this)
     }

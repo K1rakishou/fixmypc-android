@@ -9,7 +9,8 @@ import com.google.gson.annotations.SerializedName
 data class DamageClaim(@Expose
                        @SerializedName("id") var id: Long = 0L,
 
-                       var ownerId: Long = 0L,
+                       @Expose
+                       @SerializedName("owner_id") var ownerId: Long = 0L,
 
                        @Expose
                        @SerializedName("is_active") var isActive: Boolean = false,

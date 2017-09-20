@@ -3,6 +3,8 @@ package com.kirakishou.fixmypc.fixmypcapp.di.component
 import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
+import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.ActiveDamageClaimsListFragment
+import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.DamageClaimFullInfoFragment
 import dagger.Component
 
 /**
@@ -13,4 +15,6 @@ import dagger.Component
 @Component(modules = arrayOf(SpecialistMainActivityModule::class), dependencies = arrayOf(ApplicationComponent::class))
 interface SpecialistMainActivityComponent {
     fun inject(activity: SpecialistMainActivity)
+    fun inject(fragment: ActiveDamageClaimsListFragment)
+    fun inject(fragment: DamageClaimFullInfoFragment)
 }

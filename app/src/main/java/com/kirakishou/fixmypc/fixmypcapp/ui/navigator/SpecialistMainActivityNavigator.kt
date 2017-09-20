@@ -6,6 +6,7 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseNavigator
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
+import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.LoadingIndicatorFragment
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.ActiveDamageClaimsListFragment
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.DamageClaimFullInfoFragment
 
@@ -71,6 +72,34 @@ class SpecialistMainActivityNavigator(activity: AppCompatActivity) : BaseNavigat
         }
 
         fragmentTransaction.commit()
+    }
+
+    fun showLoadingIndicatorFragment() {
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        val visibleFragment = getVisibleFragment()
+
+        if (visibleFragment != null) {
+            fragmentTransaction.hide(visibleFragment)
+        }
+
+        val newFragment = LoadingIndicatorFragment()
+        fragmentTransaction
+                .add(R.id.fragment_frame, newFragment, Constant.FragmentTags.LOADING_INDICATOR_FRAGMENT)
+                .addToBackStack(null)
+
+        fragmentTransaction.commit()
+    }
+
+    fun hideLoadingIndicatorFragment() {
+        val visibleFragment = getVisibleFragment()
+
+        if (visibleFragment != null) {
+            if (visibleFragment is LoadingIndicatorFragment) {
+                val fragmentTransaction = fragmentManager.beginTransaction()
+                fragmentTransaction.hide(visibleFragment)
+                fragmentTransaction.commit()
+            }
+        }
     }
 }
 

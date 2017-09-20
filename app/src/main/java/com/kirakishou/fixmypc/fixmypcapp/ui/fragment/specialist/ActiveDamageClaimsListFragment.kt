@@ -11,8 +11,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
-import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerActiveDamageClaimsListFragmentComponent
-import com.kirakishou.fixmypc.fixmypcapp.di.module.ActiveDamageClaimsListFragmentModule
+import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerSpecialistMainActivityComponent
+import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.MyCurrentLocationPreference
@@ -24,8 +24,8 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimListAdapterGenericParam
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimsWithDistanceDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ActiveDamageClaimListFragmentViewModel
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ActiveDamageClaimListFragmentViewModelFactory
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityViewModel
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.DamageClaimListAdapter
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavigator
@@ -40,7 +40,7 @@ import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 import javax.inject.Inject
 
-class ActiveDamageClaimsListFragment : BaseFragment<ActiveDamageClaimListFragmentViewModel>() {
+class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewModel>() {
 
     @BindView(R.id.damage_claim_list)
     lateinit var mDamageClaimList: RecyclerView
@@ -49,7 +49,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveDamageClaimListFragmen
     lateinit var mAppSharedPreference: AppSharedPreference
 
     @Inject
-    lateinit var mViewModelFactory: ActiveDamageClaimListFragmentViewModelFactory
+    lateinit var mViewModelFactory: SpecialistMainActivityViewModelFactory
 
     @Inject
     lateinit var mImageLoader: ImageLoader
@@ -66,8 +66,8 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveDamageClaimListFragmen
     private lateinit var mAdapter: DamageClaimListAdapter
     private lateinit var mEndlessScrollListener: EndlessRecyclerOnScrollListener
 
-    override fun initViewModel(): ActiveDamageClaimListFragmentViewModel? {
-        return ViewModelProviders.of(this, mViewModelFactory).get(ActiveDamageClaimListFragmentViewModel::class.java)
+    override fun initViewModel(): SpecialistMainActivityViewModel? {
+        return ViewModelProviders.of(this, mViewModelFactory).get(SpecialistMainActivityViewModel::class.java)
     }
 
     override fun getContentView() = R.layout.fragment_active_malfunctions_list
@@ -198,9 +198,9 @@ class ActiveDamageClaimsListFragment : BaseFragment<ActiveDamageClaimListFragmen
     }
 
     override fun resolveDaggerDependency() {
-        DaggerActiveDamageClaimsListFragmentComponent.builder()
+        DaggerSpecialistMainActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
-                .activeDamageClaimsListFragmentModule(ActiveDamageClaimsListFragmentModule(activity as SpecialistMainActivity))
+                .specialistMainActivityModule(SpecialistMainActivityModule(activity as SpecialistMainActivity))
                 .build()
                 .inject(this)
     }

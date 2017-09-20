@@ -3,11 +3,13 @@ package com.kirakishou.fixmypc.fixmypcapp.helper.api
 import com.google.gson.Gson
 import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.request.CreateDamageClaimRequest
+import com.kirakishou.fixmypc.fixmypcapp.helper.api.request.GetClientProfileRequest
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.request.GetDamageClaimRequest
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.request.LoginRequest
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.LoginPacket
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.ClientProfileResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.LoginResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
@@ -40,6 +42,11 @@ class ApiClientImpl
         return GetDamageClaimRequest(lat, lon, radius, skip, count, mApiService, mGson)
                 .execute()
                 .delay(1, TimeUnit.SECONDS)
+    }
+
+    override fun getClientProfile(userId: Long): Single<ClientProfileResponse> {
+        return GetClientProfileRequest(userId, mApiService, mGson)
+                .execute()
     }
 }
 

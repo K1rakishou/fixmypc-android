@@ -3,6 +3,7 @@ package com.kirakishou.fixmypc.fixmypcapp.helper.api
 import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.LoginPacket
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.ClientProfileResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.LoginResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
@@ -19,4 +20,6 @@ interface ApiClient {
                                  uploadProgressUpdateSubject: ReplaySubject<ProgressUpdate>): Single<StatusResponse>
 
     fun getDamageClaims(lat: Double, lon: Double, radius: Double, skip: Long, count: Long): Single<DamageClaimsResponse>
+
+    fun getClientProfile(userId: Long): Single<ClientProfileResponse>
 }

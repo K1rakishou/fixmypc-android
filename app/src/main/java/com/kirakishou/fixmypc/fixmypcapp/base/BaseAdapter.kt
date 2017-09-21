@@ -19,12 +19,13 @@ abstract class BaseAdapter<T>(mContext: Context) : RecyclerView.Adapter<Recycler
     protected val mItems = mutableListOf<AdapterItem<T>>()
     private val mLayoutInflater = LayoutInflater.from(mContext)
     private var mBaseAdapterInfo = mutableListOf<BaseAdapterInfo>()
+    private var mIsInited = false
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
-        super.onAttachedToRecyclerView(recyclerView)
-
+    fun init() {
         mHandler = Handler(Looper.getMainLooper())
         mBaseAdapterInfo = getBaseAdapterInfo()
+
+        mIsInited = true
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView?) {
@@ -34,11 +35,19 @@ abstract class BaseAdapter<T>(mContext: Context) : RecyclerView.Adapter<Recycler
         mHandler.removeCallbacksAndMessages(null)
     }
 
+    protected fun checkInited() {
+        if (!mIsInited) {
+            throw IllegalStateException("Must call BaseAdapter.init() first!")
+        }
+    }
+
     abstract fun add(item: AdapterItem<T>)
     abstract fun addAll(items: List<AdapterItem<T>>)
     abstract fun remove(position: Int)
 
     open fun clear() {
+        checkInited()
+
         mItems.clear()
         notifyDataSetChanged()
     }

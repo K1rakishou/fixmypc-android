@@ -30,7 +30,8 @@ class SpecialistMainActivityViewModel
 @Inject constructor(protected val mApiClient: ApiClient,
                     protected val mWifiUtils: WifiUtils,
                     protected val mDamageClaimRepo: DamageClaimRepository,
-                    protected val mSchedulers: SchedulerProvider) : BaseViewModel(),
+                    protected val mSchedulers: SchedulerProvider) :
+        BaseViewModel(),
         ActiveDamageClaimListFragmentInputs,
         ActiveDamageClaimListFragmentOutputs,
         ActiveDamageClaimListFragmentErrors {
@@ -50,6 +51,7 @@ class SpecialistMainActivityViewModel
     lateinit var mEitherFromRepoOrServerSubject: BehaviorSubject<Pair<LatLng, DamageClaimsResponse>>
 
     fun init() {
+        Timber.e("SpecialistMainActivityViewModel init()")
         mCompositeDisposable.clear()
 
         mOnClientProfileReceived = BehaviorSubject.create()
@@ -138,6 +140,10 @@ class SpecialistMainActivityViewModel
 
     private fun handleClientProfileBadResponse(errorCode: ErrorCode.Remote) {
         when (errorCode) {
+            ErrorCode.Remote.REC_TIMEOUT -> TODO()
+            ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER -> TODO()
+            ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION -> TODO()
+
             else -> throw RuntimeException("Unknown errorCode: $errorCode")
         }
     }
@@ -159,7 +165,9 @@ class SpecialistMainActivityViewModel
 
     private fun handleDamageClaimBadResponse(errorCode: ErrorCode.Remote) {
         when (errorCode) {
-        //ErrorCode.Remote.REC_NOTHING_FOUND -> mOnNothingFoundSubject.onNext(Unit)
+            ErrorCode.Remote.REC_TIMEOUT -> TODO()
+            ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER -> TODO()
+            ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION -> TODO()
 
             else -> throw RuntimeException("Unknown errorCode: $errorCode")
         }

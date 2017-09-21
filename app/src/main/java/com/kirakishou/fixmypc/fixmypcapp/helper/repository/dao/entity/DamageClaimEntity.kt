@@ -14,6 +14,9 @@ data class DamageClaimEntity(@PrimaryKey
                              @ColumnInfo(name = "id")
                              var id: Long,
 
+                             @ColumnInfo(name = "owner_id")
+                             var ownerId: Long,
+
                              @ColumnInfo(name = "is_active")
                              var isActive: Boolean,
 
@@ -34,5 +37,6 @@ data class DamageClaimEntity(@PrimaryKey
 
                              @ColumnInfo(name = "saved_on")
                              var savedOn: Long) {
-    constructor() : this(0L, false, 0, "", 0.0, 0.0, 0L, 0L)
+
+    constructor() : this(0L, 0L, false, 0, "", 0.0, 0.0, 0L, 0L)
 }

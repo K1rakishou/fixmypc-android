@@ -14,7 +14,6 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.extension.myAddListener
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import io.reactivex.disposables.CompositeDisposable
-import timber.log.Timber
 
 /**
  * Created by kirakishou on 7/30/2017.
@@ -38,7 +37,6 @@ abstract class BaseFragment<T : ViewModel> : Fragment() {
     @Suppress("UNCHECKED_CAST")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         super.onCreateView(inflater, container, savedInstanceState)
-        Timber.d("onCreateView ${this::class.java.simpleName}")
 
         resolveDaggerDependency()
         mViewModel = Fickle.of(initViewModel())
@@ -58,33 +56,7 @@ abstract class BaseFragment<T : ViewModel> : Fragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-
-        Timber.d("onStart ${this::class.java.simpleName}")
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        Timber.d("onResume ${this::class.java.simpleName}")
-    }
-
-    override fun onPause() {
-        Timber.d("onPause ${this::class.java.simpleName}")
-
-        super.onPause()
-    }
-
-    override fun onStop() {
-        Timber.d("onStop ${this::class.java.simpleName}")
-
-        super.onStop()
-    }
-
     override fun onDestroyView() {
-        Timber.d("onDestroyView ${this::class.java.simpleName}")
-
         AndroidUtils.hideSoftKeyboard(activity)
         mCompositeDisposable.clear()
 

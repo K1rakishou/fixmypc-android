@@ -28,7 +28,8 @@ class ClientNewDamageClaimActivityViewModel
 @Inject constructor(protected val mApiClient: ApiClient,
                     protected val mWifiUtils: WifiUtils,
                     protected val mSchedulers: SchedulerProvider) : BaseViewModel(),
-        ClientNewDamageClaimActivityInputs, ClientNewDamageClaimActivityOutputs,
+        ClientNewDamageClaimActivityInputs,
+        ClientNewDamageClaimActivityOutputs,
         ClientNewDamageClaimActivityErrors {
 
     val mInputs: ClientNewDamageClaimActivityInputs = this
@@ -56,6 +57,7 @@ class ClientNewDamageClaimActivityViewModel
     private val mOnUnknownErrorSubject = BehaviorSubject.create<Throwable>()
 
     fun init() {
+
         //if wifi connected - send request to server
         mCompositeDisposable += mSendMalfunctionRequestToServerSubject
                 .filter { _ -> mWifiUtils.isWifiConnected() }

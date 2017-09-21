@@ -42,6 +42,7 @@ class SpecialistMainActivityNavigator(activity: AppCompatActivity) : BaseNavigat
     fun navigateToDamageClaimFullInfoFragment(damageClaim: DamageClaim) {
         val bundle = Bundle()
         bundle.putLong("damage_claim_id", damageClaim.id)
+        bundle.putLong("damage_claim_owner_id", damageClaim.ownerId)
         bundle.putBoolean("damage_claim_is_active", damageClaim.isActive)
         bundle.putInt("damage_claim_category", damageClaim.category)
         bundle.putString("damage_claim_description", damageClaim.description)
@@ -95,9 +96,7 @@ class SpecialistMainActivityNavigator(activity: AppCompatActivity) : BaseNavigat
 
         if (visibleFragment != null) {
             if (visibleFragment is LoadingIndicatorFragment) {
-                val fragmentTransaction = fragmentManager.beginTransaction()
-                fragmentTransaction.hide(visibleFragment)
-                fragmentTransaction.commit()
+                popFragment()
             }
         }
     }

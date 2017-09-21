@@ -71,7 +71,7 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewDamageClaimActivityViewM
     override fun loadExitAnimations() = AnimatorSet()
 
     override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
-        getViewModel().init()
+        //getViewModel().init()
         initRx()
         initRecyclerView()
     }
@@ -81,6 +81,7 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewDamageClaimActivityViewM
 
     private fun initRecyclerView() {
         mPhotoAdapter = DamageClaimPhotosAdapter(activity, this, mImageLoader)
+        mPhotoAdapter.init()
 
         //we need a button so we can add photos
         mPhotoAdapter.add(AdapterItem(AdapterItemType.VIEW_ADD_BUTTON))

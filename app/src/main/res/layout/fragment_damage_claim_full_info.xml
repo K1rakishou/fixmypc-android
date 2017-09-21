@@ -41,25 +41,6 @@
                     android:layout_height="wrap_content"
                     android:padding="4dp">
 
-                    <TextView
-                        android:id="@+id/client_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-condensed"
-                        android:text="Василий"
-                        android:textColor="#000"
-                        android:textSize="24sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/damage_category"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Компьютер"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/client_name" />
-
                     <fragment
                         android:id="@+id/damage_claim_client_location_map"
                         class="com.google.android.gms.maps.SupportMapFragment"
@@ -69,7 +50,44 @@
                         android:layout_marginTop="8dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/damage_category" />
+                        app:layout_constraintTop_toBottomOf="parent" />
+
+                    <TextView
+                        android:id="@+id/damage_claim_description_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Описание поломки"
+                        android:textColor="#000"
+                        android:textSize="22sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/damage_claim_client_location_map" />
+
+                    <TextView
+                        android:id="@+id/damage_claim_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="Типа длинное описание  вар вар вар варвар\nfhfghfghfgjfgj dfh dfh dfh dfhdfh dfh dfh dfh df\nfgdfhdfjdfjdhdfghdsrtdrhdjtjfjftjftjftj\nydufdturutydtghdrgdrjdj"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/damage_claim_description_tv" />
+
+                    <android.support.v7.widget.AppCompatButton
+                        android:id="@+id/respond_button"
+                        android:layout_width="192dp"
+                        android:layout_height="36dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="24dp"
+                        android:background="@color/colorAccent"
+                        android:text="Откликнуться"
+                        android:textColor="#fff"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/damage_claim_description" />
 
                 </android.support.constraint.ConstraintLayout>
 

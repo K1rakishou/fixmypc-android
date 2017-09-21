@@ -12,6 +12,7 @@ class DamageClaimsMapper : Mapper {
     fun mapToEntity(damageClaim: DamageClaim): DamageClaimEntity {
         return DamageClaimEntity(
                 damageClaim.id,
+                damageClaim.ownerId,
                 damageClaim.isActive,
                 damageClaim.category,
                 damageClaim.description,
@@ -28,7 +29,7 @@ class DamageClaimsMapper : Mapper {
     fun mapFromEntity(damageClaimEntity: DamageClaimEntity): DamageClaim {
         return DamageClaim(
                 damageClaimEntity.id,
-                -1L,
+                damageClaimEntity.ownerId,
                 damageClaimEntity.isActive,
                 damageClaimEntity.category,
                 damageClaimEntity.description,

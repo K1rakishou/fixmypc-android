@@ -67,7 +67,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
     private lateinit var mEndlessScrollListener: EndlessRecyclerOnScrollListener
 
     override fun initViewModel(): SpecialistMainActivityViewModel? {
-        return ViewModelProviders.of(this, mViewModelFactory).get(SpecialistMainActivityViewModel::class.java)
+        return ViewModelProviders.of(activity, mViewModelFactory).get(SpecialistMainActivityViewModel::class.java)
     }
 
     override fun getContentView() = R.layout.fragment_active_malfunctions_list
@@ -87,10 +87,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
     override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
         Timber.e("savedInstanceState == $savedInstanceState")
 
-        getViewModel().init()
         initRx()
-
-        mAdapter = DamageClaimListAdapter(activity, mAdapterItemClickSubject, mImageLoader)
 
         initRecycler()
         getCurrentLocationGps()
@@ -134,6 +131,9 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
                 }
             }
         }
+
+        mAdapter = DamageClaimListAdapter(activity, mAdapterItemClickSubject, mImageLoader)
+        mAdapter.init()
 
         mEndlessScrollListener = EndlessRecyclerOnScrollListener(layoutManager, mLoadMoreSubject)
 

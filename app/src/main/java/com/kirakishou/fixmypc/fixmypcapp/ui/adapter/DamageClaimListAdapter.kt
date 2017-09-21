@@ -31,6 +31,8 @@ class DamageClaimListAdapter(private val mContext: Context,
                              private val mImageLoader: ImageLoader) : BaseAdapter<DamageClaimListAdapterGenericParam>(mContext) {
 
     override fun add(item: AdapterItem<DamageClaimListAdapterGenericParam>) {
+        checkInited()
+
         mHandler.post {
             mItems.add(item)
             notifyItemInserted(mItems.lastIndex)
@@ -38,12 +40,16 @@ class DamageClaimListAdapter(private val mContext: Context,
     }
 
     override fun addAll(items: List<AdapterItem<DamageClaimListAdapterGenericParam>>) {
+        checkInited()
+
         for (item in items) {
             add(item)
         }
     }
 
     override fun remove(position: Int) {
+        checkInited()
+
         mHandler.post {
             mItems.removeAt(position)
             notifyItemRemoved(position)
@@ -51,6 +57,8 @@ class DamageClaimListAdapter(private val mContext: Context,
     }
 
     fun addProgressFooter() {
+        checkInited()
+
         mHandler.post {
             if (mItems.isEmpty() || mItems.last().getType() != AdapterItemType.VIEW_PROGRESSBAR.ordinal) {
                 mItems.add(AdapterItem(AdapterItemType.VIEW_PROGRESSBAR))
@@ -60,6 +68,8 @@ class DamageClaimListAdapter(private val mContext: Context,
     }
 
     fun removeProgressFooter() {
+        checkInited()
+
         mHandler.post {
             if (mItems.isNotEmpty() || mItems.last().getType() == AdapterItemType.VIEW_PROGRESSBAR.ordinal) {
                 val index = mItems.lastIndex
@@ -71,6 +81,8 @@ class DamageClaimListAdapter(private val mContext: Context,
     }
 
     fun addMessageFooter(message: String) {
+        checkInited()
+
         mHandler.post {
             if (mItems.isEmpty() || mItems.last().getType() != AdapterItemType.VIEW_MESSAGE.ordinal) {
                 mItems.add(AdapterItem(DamageClaimsAdapterMessage(message), AdapterItemType.VIEW_MESSAGE))
@@ -80,6 +92,8 @@ class DamageClaimListAdapter(private val mContext: Context,
     }
 
     fun removeMessageFooter() {
+        checkInited()
+
         mHandler.post {
             if (mItems.isNotEmpty() || mItems.last().getType() == AdapterItemType.VIEW_MESSAGE.ordinal) {
                 val index = mItems.lastIndex

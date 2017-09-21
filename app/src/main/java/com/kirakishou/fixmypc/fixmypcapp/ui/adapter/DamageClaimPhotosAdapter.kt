@@ -34,6 +34,8 @@ class DamageClaimPhotosAdapter(context: Context,
     }
 
     override fun add(item: AdapterItem<DamagePhotoDTO>) {
+        checkInited()
+
         mHandler.post {
             if (item.getType() == -1) {
                 item.setType(AdapterItemType.VIEW_ADD_BUTTON)
@@ -41,7 +43,8 @@ class DamageClaimPhotosAdapter(context: Context,
 
             if (item.getType() == AdapterItemType.VIEW_ADD_BUTTON.ordinal) {
                 mItems.add(item)
-                notifyItemInserted(mItems.lastIndex)
+                //notifyItemInserted(mItems.lastIndex)
+                notifyDataSetChanged()
             } else {
                 mItems.add(mItems.lastIndex, item)
                 notifyItemInserted(mItems.lastIndex - 1)
@@ -59,19 +62,26 @@ class DamageClaimPhotosAdapter(context: Context,
     }
 
     override fun addAll(items: List<AdapterItem<DamagePhotoDTO>>) {
+        checkInited()
+
+        for (item in items) {
+            add(item)
+        }
     }
 
     override fun remove(position: Int) {
+        checkInited()
+
         if (position < 0 || position > mItems.size) {
             return
         }
 
         mHandler.post {
             mItems.removeAt(position)
-            //notifyItemRemoved(position)
 
             //FIXME: for some reason recyclerview doesn't change it's size on element removing when using notifyItemRemoved.
             //For now it works with notifyDataSetChanged but the items don't have animations
+            //notifyItemRemoved(position)
             notifyDataSetChanged()
 
             //if we don't have a button yet
@@ -87,12 +97,16 @@ class DamageClaimPhotosAdapter(context: Context,
     }
 
     fun getPhotosCount(): Int {
+        checkInited()
+
         return mItems
                 .filter { it.getType() == AdapterItemType.VIEW_PHOTO.ordinal }
                 .count()
     }
 
     fun getPhotos(): ArrayList<String> {
+        checkInited()
+
         return ArrayList(mItems.filter { it.getType() == AdapterItemType.VIEW_PHOTO.ordinal }
                 .map { it.value.get().path })
     }

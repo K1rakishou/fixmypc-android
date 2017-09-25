@@ -2,17 +2,12 @@ package com.kirakishou.fixmypc.fixmypcapp.helper.api
 
 import com.google.gson.Gson
 import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
-import com.kirakishou.fixmypc.fixmypcapp.helper.api.request.CreateDamageClaimRequest
-import com.kirakishou.fixmypc.fixmypcapp.helper.api.request.GetClientProfileRequest
-import com.kirakishou.fixmypc.fixmypcapp.helper.api.request.GetDamageClaimRequest
-import com.kirakishou.fixmypc.fixmypcapp.helper.api.request.LoginRequest
+import com.kirakishou.fixmypc.fixmypcapp.helper.api.request.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.LoginPacket
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.ClientProfileResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.LoginResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.RespondToDamageClaimPacket
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.*
 import io.reactivex.Single
 import io.reactivex.subjects.ReplaySubject
 import java.util.concurrent.TimeUnit
@@ -27,8 +22,8 @@ class ApiClientImpl
                     protected val mAppSettings: AppSettings,
                     protected val mGson: Gson) : ApiClient {
 
-    override fun loginRequest(loginPacket: LoginPacket): Single<LoginResponse> {
-        return LoginRequest(loginPacket, mApiService, mGson)
+    override fun loginRequest(packet: LoginPacket): Single<LoginResponse> {
+        return LoginRequest(packet, mApiService, mGson)
                 .execute()
     }
 
@@ -46,6 +41,11 @@ class ApiClientImpl
 
     override fun getClientProfile(userId: Long): Single<ClientProfileResponse> {
         return GetClientProfileRequest(userId, mApiService, mGson)
+                .execute()
+    }
+
+    override fun respondToDamageClaim(packet: RespondToDamageClaimPacket): Single<RespondToDamageClaimResponse> {
+        return RespondToDamageClaimRequest(packet, mApiService, mAppSettings, mGson)
                 .execute()
     }
 }

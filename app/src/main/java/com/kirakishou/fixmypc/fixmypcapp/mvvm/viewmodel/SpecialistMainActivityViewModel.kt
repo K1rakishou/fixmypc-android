@@ -10,8 +10,10 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.wifi.WifiUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimsWithDistanceDTO
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.RespondToDamageClaimPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.ClientProfileResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.RespondToDamageClaimResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.ActiveDamageClaimListFragmentErrors
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.ActiveDamageClaimListFragmentInputs
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.ActiveDamageClaimListFragmentOutputs
@@ -43,7 +45,9 @@ class SpecialistMainActivityViewModel
     private val itemsPerPage = Constant.MAX_DAMAGE_CLAIMS_PER_PAGE
     private val mCompositeDisposable = CompositeDisposable()
 
+    lateinit var mOnRespondToDamageClaimSuccessSubject: BehaviorSubject<RespondToDamageClaimResponse>
     lateinit var mOnClientProfileReceived: BehaviorSubject<ClientProfileResponse>
+    lateinit var mRespondToDamageClaimSubject: BehaviorSubject<Long>
     lateinit var mGetClientProfileSubject: BehaviorSubject<Long>
     lateinit var mGetDamageClaimsWithinRadiusSubject: BehaviorSubject<GetDamageClaimsRequestParamsDTO>
     lateinit var mOnDamageClaimsPageReceivedSubject: BehaviorSubject<ArrayList<DamageClaimsWithDistanceDTO>>
@@ -54,6 +58,8 @@ class SpecialistMainActivityViewModel
         Timber.e("SpecialistMainActivityViewModel init()")
         mCompositeDisposable.clear()
 
+        mOnRespondToDamageClaimSuccessSubject = BehaviorSubject.create()
+        mRespondToDamageClaimSubject = BehaviorSubject.create()
         mOnClientProfileReceived = BehaviorSubject.create()
         mGetClientProfileSubject = BehaviorSubject.create()
         mGetDamageClaimsWithinRadiusSubject = BehaviorSubject.create()
@@ -75,6 +81,14 @@ class SpecialistMainActivityViewModel
                     handleDamageClaimResponse(it)
                 }, {
                     handleDamageClaimError(it)
+                })
+
+        mCompositeDisposable += mRespondToDamageClaimSubject
+                .flatMap { mApiClient.respondToDamageClaim(RespondToDamageClaimPacket(it)).toObservable() }
+                .subscribe({
+                    handleRespondToDamageClaimResponse(it)
+                }, {
+                    handleRespondToDamageClaimError(it)
                 })
 
         val repositoryItemsObservable = mGetDamageClaimsWithinRadiusSubject
@@ -125,6 +139,35 @@ class SpecialistMainActivityViewModel
 
     override fun getDamageClaimsWithinRadius(latLng: LatLng, radius: Double, page: Long) {
         mGetDamageClaimsWithinRadiusSubject.onNext(GetDamageClaimsRequestParamsDTO(latLng, radius, page * itemsPerPage))
+    }
+
+    override fun respondToDamageClaim(damageClaimId: Long) {
+        mRespondToDamageClaimSubject.onNext(damageClaimId)
+    }
+
+    private fun handleRespondToDamageClaimResponse(response: RespondToDamageClaimResponse) {
+        val errorCode = response.errorCode
+
+        if (errorCode != ErrorCode.Remote.REC_OK) {
+            handleClientProfileBadResponse(response.errorCode)
+            return
+        }
+
+        mOnRespondToDamageClaimSuccessSubject.onNext(response)
+    }
+
+    private fun handleRespondToDamageClaimBadResponse(errorCode: ErrorCode.Remote) {
+        when (errorCode) {
+            ErrorCode.Remote.REC_TIMEOUT -> TODO()
+            ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER -> TODO()
+            ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION -> TODO()
+
+            else -> throw RuntimeException("Unknown errorCode: $errorCode")
+        }
+    }
+
+    private fun handleRespondToDamageClaimError(error: Throwable) {
+        mOnUnknownErrorSubject.onNext(error)
     }
 
     private fun handleClientProfileResponse(response: ClientProfileResponse) {
@@ -193,9 +236,8 @@ class SpecialistMainActivityViewModel
 
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
     override fun onDamageClaimsPageReceived(): Observable<ArrayList<DamageClaimsWithDistanceDTO>> = mOnDamageClaimsPageReceivedSubject
-    override fun onClientProfileReceived(): Observable<ClientProfileResponse> {
-        return mOnClientProfileReceived
-    }
+    override fun onClientProfileReceived(): Observable<ClientProfileResponse> = mOnClientProfileReceived
+    override fun onRespondToDamageClaimSuccessSubject(): Observable<RespondToDamageClaimResponse> = mOnRespondToDamageClaimSuccessSubject
 
     data class IsRepoEmptyDTO(val latlon: LatLng,
                               val radius: Double,

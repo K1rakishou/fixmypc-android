@@ -6,17 +6,14 @@ package com.kirakishou.fixmypc.fixmypcapp.mvvm.model
 class ErrorCode {
 
     enum class Remote(val value: Int) {
-        //Remote Error Code
         REC_OK(0),
 
-        //login errors
         REC_WRONG_LOGIN_OR_PASSWORD(1),
         REC_LOGIN_ALREADY_EXISTS(2),
         REC_LOGIN_IS_INCORRECT(3),
         REC_PASSWORD_IS_INCORRECT(4),
         REC_ACCOUNT_TYPE_IS_INCORRECT(5),
 
-        //malfunction request errors
         REC_NO_PHOTOS_WERE_SELECTED_TO_UPLOAD(6),
         REC_IMAGES_COUNT_EXCEEDED(7),
         REC_FILE_SIZE_EXCEEDED(8),
@@ -38,7 +35,10 @@ class ErrorCode {
         REC_BAD_ORIGINAL_FILE_NAME(22),
         REC_WIFI_IS_NOT_CONNECTED(23),
 
-        //REC_NOTHING_FOUND(24),
+        REC_COULD_NOT_RESPOND_TO_DAMAGE_CLAIM(24),
+        REC_DAMAGE_CLAIM_DOES_NOT_EXIST(25),
+        REC_BAD_ACCOUNT_TYPE(26),
+        REC_DAMAGE_CLAIM_IS_NOT_ACTIVE(27),
 
         REC_UNKNOWN_SERVER_ERROR(-1),
         REC_EMPTY_OBSERVABLE_ERROR(-2);
@@ -59,7 +59,6 @@ class ErrorCode {
     enum class Local(val value: Int) {
         LEC_OK(0),
 
-        //malfunction application info
         LEC_MAI_PHOTOS_ARE_NOT_SET(1),
         LEC_MAI_DESCRIPTION_IS_NOT_SET(2),
         LEC_MAI_CATEGORY_IS_NOT_SET(3),

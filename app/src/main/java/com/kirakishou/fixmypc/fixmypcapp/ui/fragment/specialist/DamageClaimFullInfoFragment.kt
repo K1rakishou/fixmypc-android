@@ -22,6 +22,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.ClientProfileResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.RespondToDamageClaimResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
@@ -85,10 +86,22 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
         mCompositeDisposable += RxView.clicks(respondButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onRespondButtonClick() })
+
+        mCompositeDisposable += getViewModel().mOutputs.onRespondToDamageClaimSuccessSubject()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    onRespondToDamageClaimSuccessSubject(it)
+                }, { error ->
+                    Timber.e(error)
+                })
     }
 
     private fun onRespondButtonClick() {
-        Timber.e("Respond")
+
+    }
+
+    private fun onRespondToDamageClaimSuccessSubject(response: RespondToDamageClaimResponse) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private fun onClientProfileReceived(response: ClientProfileResponse) {

@@ -11,5 +11,6 @@ import io.reactivex.Observable
 interface ActiveDamageClaimListFragmentOutputs {
     fun onDamageClaimsPageReceived(): Observable<ArrayList<DamageClaimsWithDistanceDTO>>
     fun onClientProfileReceived(): Observable<ClientProfileResponse>
-    fun onRespondToDamageClaimSuccessSubject(): Observable<RespondToDamageClaimResponse>
+    fun onRespondToDamageClaimSuccessSubject(): Observable<Unit>
+    fun onHasAlreadyRespondedResponse(): Observable<Boolean>
 }

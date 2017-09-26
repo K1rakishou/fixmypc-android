@@ -8,5 +8,6 @@ import com.google.android.gms.maps.model.LatLng
 interface ActiveDamageClaimListFragmentInputs {
     fun getDamageClaimsWithinRadius(latLng: LatLng, radius: Double, page: Long)
     fun getClientProfile(userId: Long)
+    fun checkHasAlreadyRespondedToDamageClaim(damageClaimId: Long)
     fun respondToDamageClaim(damageClaimId: Long)
 }

@@ -11,9 +11,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimsWithDistanceDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.RespondToDamageClaimPacket
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.ClientProfileResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.RespondToDamageClaimResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.ActiveDamageClaimListFragmentErrors
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.ActiveDamageClaimListFragmentInputs
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.ActiveDamageClaimListFragmentOutputs
@@ -45,7 +43,9 @@ class SpecialistMainActivityViewModel
     private val itemsPerPage = Constant.MAX_DAMAGE_CLAIMS_PER_PAGE
     private val mCompositeDisposable = CompositeDisposable()
 
-    lateinit var mOnRespondToDamageClaimSuccessSubject: BehaviorSubject<RespondToDamageClaimResponse>
+    lateinit var mOnHasAlreadyRespondedResponse: BehaviorSubject<Boolean>
+    lateinit var mCheckHasAlreadyRespondedSubject: BehaviorSubject<Long>
+    lateinit var mOnRespondToDamageClaimSuccessSubject: BehaviorSubject<Unit>
     lateinit var mOnClientProfileReceived: BehaviorSubject<ClientProfileResponse>
     lateinit var mRespondToDamageClaimSubject: BehaviorSubject<Long>
     lateinit var mGetClientProfileSubject: BehaviorSubject<Long>
@@ -58,6 +58,8 @@ class SpecialistMainActivityViewModel
         Timber.e("SpecialistMainActivityViewModel init()")
         mCompositeDisposable.clear()
 
+        mOnHasAlreadyRespondedResponse = BehaviorSubject.create()
+        mCheckHasAlreadyRespondedSubject = BehaviorSubject.create()
         mOnRespondToDamageClaimSuccessSubject = BehaviorSubject.create()
         mRespondToDamageClaimSubject = BehaviorSubject.create()
         mOnClientProfileReceived = BehaviorSubject.create()
@@ -70,25 +72,33 @@ class SpecialistMainActivityViewModel
         mCompositeDisposable += mGetClientProfileSubject
                 .flatMap { mApiClient.getClientProfile(it).toObservable() }
                 .subscribe({
-                    handleClientProfileResponse(it)
+                    handleResponse(it)
                 }, {
-                    handleClientProfileError(it)
+                    handleError(it)
                 })
 
         mCompositeDisposable += mEitherFromRepoOrServerSubject
                 .map { (latlon, response) -> calcDistances(latlon.latitude, latlon.longitude, response) }
                 .subscribe({
-                    handleDamageClaimResponse(it)
+                    handleResponse(it)
                 }, {
-                    handleDamageClaimError(it)
+                    handleError(it)
                 })
 
         mCompositeDisposable += mRespondToDamageClaimSubject
                 .flatMap { mApiClient.respondToDamageClaim(RespondToDamageClaimPacket(it)).toObservable() }
                 .subscribe({
-                    handleRespondToDamageClaimResponse(it)
+                    handleResponse(it)
                 }, {
-                    handleRespondToDamageClaimError(it)
+                    handleError(it)
+                })
+
+        mCompositeDisposable += mCheckHasAlreadyRespondedSubject
+                .flatMap { mApiClient.checkAlreadyRespondedToDamageClaim(it).toObservable() }
+                .subscribe({
+                    handleResponse(it)
+                }, {
+                    handleError(it)
                 })
 
         val repositoryItemsObservable = mGetDamageClaimsWithinRadiusSubject
@@ -145,84 +155,72 @@ class SpecialistMainActivityViewModel
         mRespondToDamageClaimSubject.onNext(damageClaimId)
     }
 
-    private fun handleRespondToDamageClaimResponse(response: RespondToDamageClaimResponse) {
+    override fun checkHasAlreadyRespondedToDamageClaim(damageClaimId: Long) {
+        mCheckHasAlreadyRespondedSubject.onNext(damageClaimId)
+    }
+
+    private fun handleResponse(response: StatusResponse) {
         val errorCode = response.errorCode
 
-        if (errorCode != ErrorCode.Remote.REC_OK) {
-            handleClientProfileBadResponse(response.errorCode)
-            return
-        }
+        if (errorCode == ErrorCode.Remote.REC_OK) {
+            when (response) {
+                is RespondToDamageClaimResponse -> {
+                    mOnRespondToDamageClaimSuccessSubject.onNext(Unit)
+                }
 
-        mOnRespondToDamageClaimSuccessSubject.onNext(response)
+                is ClientProfileResponse -> {
+                    mOnClientProfileReceived.onNext(response)
+                }
+
+                is DistanceWithDamageClaimResponse -> {
+                    mOnDamageClaimsPageReceivedSubject.onNext(response.damageClaims)
+                }
+
+                is HasAlreadyRespondedResponse -> {
+                    mOnHasAlreadyRespondedResponse.onNext(response.hasAlreadyResponded)
+                }
+            }
+        } else {
+            when (response) {
+                is RespondToDamageClaimResponse -> {
+                    when (errorCode) {
+                        ErrorCode.Remote.REC_TIMEOUT -> TODO()
+                        ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER -> TODO()
+                        ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION -> TODO()
+
+                        else -> throw RuntimeException("Unknown errorCode: $errorCode")
+                    }
+                }
+
+                is ClientProfileResponse -> {
+                    when (errorCode) {
+                        ErrorCode.Remote.REC_TIMEOUT -> TODO()
+                        ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER -> TODO()
+                        ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION -> TODO()
+
+                        else -> throw RuntimeException("Unknown errorCode: $errorCode")
+                    }
+                }
+
+                is DistanceWithDamageClaimResponse -> {
+                    when (errorCode) {
+                        ErrorCode.Remote.REC_TIMEOUT -> TODO()
+                        ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER -> TODO()
+                        ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION -> TODO()
+
+                        else -> throw RuntimeException("Unknown errorCode: $errorCode")
+                    }
+                }
+            }
+        }
     }
 
-    private fun handleRespondToDamageClaimBadResponse(errorCode: ErrorCode.Remote) {
-        when (errorCode) {
-            ErrorCode.Remote.REC_TIMEOUT -> TODO()
-            ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER -> TODO()
-            ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION -> TODO()
-
-            else -> throw RuntimeException("Unknown errorCode: $errorCode")
-        }
-    }
-
-    private fun handleRespondToDamageClaimError(error: Throwable) {
+    private fun handleError(error: Throwable) {
         mOnUnknownErrorSubject.onNext(error)
     }
 
-    private fun handleClientProfileResponse(response: ClientProfileResponse) {
-        val errorCode = response.errorCode
-
-        if (errorCode != ErrorCode.Remote.REC_OK) {
-            handleClientProfileBadResponse(response.errorCode)
-            return
-        }
-
-        mOnClientProfileReceived.onNext(response)
-    }
-
-    private fun handleClientProfileBadResponse(errorCode: ErrorCode.Remote) {
-        when (errorCode) {
-            ErrorCode.Remote.REC_TIMEOUT -> TODO()
-            ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER -> TODO()
-            ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION -> TODO()
-
-            else -> throw RuntimeException("Unknown errorCode: $errorCode")
-        }
-    }
-
-    private fun handleClientProfileError(error: Throwable) {
-        mOnUnknownErrorSubject.onNext(error)
-    }
-
-    private fun handleDamageClaimResponse(response: DamageClaimResponseWithDistanceDTO) {
-        val errorCode = response.errorCode
-
-        if (errorCode != ErrorCode.Remote.REC_OK) {
-            handleDamageClaimBadResponse(response.errorCode)
-            return
-        }
-
-        mOnDamageClaimsPageReceivedSubject.onNext(response.damageClaims)
-    }
-
-    private fun handleDamageClaimBadResponse(errorCode: ErrorCode.Remote) {
-        when (errorCode) {
-            ErrorCode.Remote.REC_TIMEOUT -> TODO()
-            ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER -> TODO()
-            ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION -> TODO()
-
-            else -> throw RuntimeException("Unknown errorCode: $errorCode")
-        }
-    }
-
-    private fun handleDamageClaimError(error: Throwable) {
-        Timber.e(error)
-        mOnUnknownErrorSubject.onNext(error)
-    }
-
-    private fun calcDistances(lat: Double, lon: Double, response: DamageClaimsResponse): DamageClaimResponseWithDistanceDTO {
-        val retVal = DamageClaimResponseWithDistanceDTO(arrayListOf(), response.errorCode)
+    private fun calcDistances(lat: Double, lon: Double, response: DamageClaimsResponse): DistanceWithDamageClaimResponse {
+        val retVal = DistanceWithDamageClaimResponse(arrayListOf(), response.errorCode)
 
         for (damageClaim in response.damageClaims) {
             val dist = MathUtils.distance(lat, lon, damageClaim.lat, damageClaim.lon)
@@ -237,7 +235,8 @@ class SpecialistMainActivityViewModel
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
     override fun onDamageClaimsPageReceived(): Observable<ArrayList<DamageClaimsWithDistanceDTO>> = mOnDamageClaimsPageReceivedSubject
     override fun onClientProfileReceived(): Observable<ClientProfileResponse> = mOnClientProfileReceived
-    override fun onRespondToDamageClaimSuccessSubject(): Observable<RespondToDamageClaimResponse> = mOnRespondToDamageClaimSuccessSubject
+    override fun onRespondToDamageClaimSuccessSubject(): Observable<Unit> = mOnRespondToDamageClaimSuccessSubject
+    override fun onHasAlreadyRespondedResponse(): Observable<Boolean> = mOnHasAlreadyRespondedResponse
 
     data class IsRepoEmptyDTO(val latlon: LatLng,
                               val radius: Double,
@@ -253,8 +252,8 @@ class SpecialistMainActivityViewModel
         operator fun component3() = skip
     }
 
-    inner class DamageClaimResponseWithDistanceDTO(var damageClaims: ArrayList<DamageClaimsWithDistanceDTO>,
-                                                   val errorCode: ErrorCode.Remote)
+    inner class DistanceWithDamageClaimResponse(var damageClaims: ArrayList<DamageClaimsWithDistanceDTO>,
+                                                errorCode: ErrorCode.Remote) : StatusResponse(errorCode)
 
     inner class DistanceComparator : Comparator<DamageClaimsWithDistanceDTO> {
 

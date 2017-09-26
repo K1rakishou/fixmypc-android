@@ -22,12 +22,12 @@ import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.ClientProfileResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.RespondToDamageClaimResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavigator
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
 import javax.inject.Inject
@@ -67,6 +67,7 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
 
         if (damageClaimFickle.isPresent()) {
             getViewModel().getClientProfile(damageClaimFickle.get().ownerId)
+            getViewModel().checkHasAlreadyRespondedToDamageClaim(damageClaimFickle.get().id)
             mNavigator.showLoadingIndicatorFragment()
         } else {
             showToast("Не удалось получить данные об объявлении", Toast.LENGTH_LONG)
@@ -79,34 +80,55 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
     }
 
     private fun initRx() {
-        mCompositeDisposable += getViewModel().mOutputs.onClientProfileReceived()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onClientProfileReceived(it) })
-
         mCompositeDisposable += RxView.clicks(respondButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onRespondButtonClick() })
 
         mCompositeDisposable += getViewModel().mOutputs.onRespondToDamageClaimSuccessSubject()
                 .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    onRespondToDamageClaimSuccessSubject(it)
+                    onRespondToDamageClaimSuccessSubject()
+                }, { error ->
+                    Timber.e(error)
+                })
+
+        mCompositeDisposable += Observables.zip(getViewModel().mOutputs.onClientProfileReceived(),
+                getViewModel().mOutputs.onHasAlreadyRespondedResponse())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    onHasAlreadyRespondedResponse(it.second)
+                    onClientProfileReceived(it.first)
+                    mNavigator.hideLoadingIndicatorFragment()
                 }, { error ->
                     Timber.e(error)
                 })
     }
 
     private fun onRespondButtonClick() {
-
+        damageClaimFickle.ifPresent {
+            getViewModel().respondToDamageClaim(it.id)
+        }
     }
 
-    private fun onRespondToDamageClaimSuccessSubject(response: RespondToDamageClaimResponse) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    private fun onHasAlreadyRespondedResponse(responded: Boolean) {
+        if (responded) {
+            respondButton.isEnabled = false
+            respondButton.text = "Заявка отправлена"
+        } else {
+            respondButton.isEnabled = true
+            respondButton.text = "Отправить заявку"
+        }
+    }
+
+    private fun onRespondToDamageClaimSuccessSubject() {
+        respondButton.isEnabled = false
+        respondButton.text = "Заявка отправлена"
     }
 
     private fun onClientProfileReceived(response: ClientProfileResponse) {
-        mNavigator.hideLoadingIndicatorFragment()
-        Timber.e(response.clientProfile.phone)
     }
 
     private fun getDamageClaimFromBundle(arguments: Bundle): DamageClaim {

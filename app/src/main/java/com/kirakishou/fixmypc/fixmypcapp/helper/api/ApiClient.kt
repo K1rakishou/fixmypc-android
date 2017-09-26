@@ -22,4 +22,6 @@ interface ApiClient {
     fun getClientProfile(userId: Long): Single<ClientProfileResponse>
 
     fun respondToDamageClaim(packet: RespondToDamageClaimPacket): Single<RespondToDamageClaimResponse>
+
+    fun checkAlreadyRespondedToDamageClaim(damageClaimId: Long): Single<HasAlreadyRespondedResponse>
 }

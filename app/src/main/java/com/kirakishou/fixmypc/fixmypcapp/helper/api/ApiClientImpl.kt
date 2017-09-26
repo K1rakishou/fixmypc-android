@@ -48,6 +48,11 @@ class ApiClientImpl
         return RespondToDamageClaimRequest(packet, mApiService, mAppSettings, mGson)
                 .execute()
     }
+
+    override fun checkAlreadyRespondedToDamageClaim(damageClaimId: Long): Single<HasAlreadyRespondedResponse> {
+        return CheckAlreadyRespondedToDamageClaimRequest(damageClaimId, mApiService, mAppSettings, mGson)
+                .execute()
+    }
 }
 
 

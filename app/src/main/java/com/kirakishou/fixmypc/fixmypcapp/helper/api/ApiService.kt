@@ -36,4 +36,8 @@ interface ApiService {
     @POST("/v1/api/damage_claim_request/respond")
     fun respondToDamageClaim(@Header("session_id") sessionId: String,
                              @Body packet: RespondToDamageClaimPacket): Single<Response<RespondToDamageClaimResponse>>
+
+    @GET("/v1/api/damage_claim_request/respond/{damage_claim_id}")
+    fun checkAlreadyRespondedToDamageClaim(@Header("session_id") sessionId: String,
+                                           @Path("damage_claim_id") damageClaimId: Long): Single<Response<HasAlreadyRespondedResponse>>
 }

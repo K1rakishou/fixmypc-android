@@ -127,13 +127,11 @@ class CreateDamageClaimRequest(protected val mDamageClaimInfo: DamageClaimInfo,
     }
 
     private fun reLogin(): Observable<String> {
-        val userInfoFickle = mAppSettings.userInfo
-
-        if (!userInfoFickle.isPresent()) {
+        if (!mAppSettings.isUserInfoExists()) {
             throw UserInfoIsEmpty()
         }
 
-        val userInfo = userInfoFickle.get()
+        val userInfo = mAppSettings.loadUserInfo()
         return mApiService.doLogin(LoginPacket(userInfo.login, userInfo.password))
                 .lift(OnApiErrorSingle(mGson))
                 .toObservable()
@@ -147,13 +145,11 @@ class CreateDamageClaimRequest(protected val mDamageClaimInfo: DamageClaimInfo,
     }
 
     private fun sendRequest(it: Pair<List<MultipartBody.Part>, DamageClaimInfo>): Observable<StatusResponse> {
-        val userInfoFickle = mAppSettings.userInfo
-
-        if (!userInfoFickle.isPresent()) {
+        if (!mAppSettings.isUserInfoExists()) {
             throw UserInfoIsEmpty()
         }
 
-        val sessionId = userInfoFickle.get().sessionId
+        val sessionId = mAppSettings.loadUserInfo().sessionId
         val request = DamageClaimPacket(it.second.damageClaimCategory.ordinal, it.second.damageClaimDescription,
                 it.second.damageClaimLocation.latitude, it.second.damageClaimLocation.longitude)
 

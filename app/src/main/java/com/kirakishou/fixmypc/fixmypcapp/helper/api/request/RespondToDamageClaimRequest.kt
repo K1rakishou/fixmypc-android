@@ -10,6 +10,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.RespondToDam
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.BadServerResponseException
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UserInfoIsEmpty
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import java.net.UnknownHostException
@@ -24,7 +25,11 @@ class RespondToDamageClaimRequest(protected val packet: RespondToDamageClaimPack
                                   protected val mGson: Gson) : AbstractRequest<Single<RespondToDamageClaimResponse>> {
 
     override fun execute(): Single<RespondToDamageClaimResponse> {
-        return mApiService.respondToDamageClaim(mAppSettings.userInfo.get().sessionId, packet)
+        if (!mAppSettings.isUserInfoExists()) {
+            throw UserInfoIsEmpty()
+        }
+
+        return mApiService.respondToDamageClaim(mAppSettings.loadUserInfo().sessionId, packet)
                 .subscribeOn(Schedulers.io())
                 .lift(OnApiErrorSingle(mGson))
                 .onErrorResumeNext { error -> exceptionToErrorCode(error) }

@@ -25,6 +25,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunc
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewDamageClaimActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewMalfunctionActivityFragmentCallback
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientNewDamageClaimActivityNavigator
+import com.squareup.leakcanary.RefWatcher
 import io.nlopez.smartlocation.SmartLocation
 import io.nlopez.smartlocation.location.config.LocationParams
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -50,6 +51,9 @@ class DamageClaimLocationFragment : BaseFragment<ClientNewDamageClaimActivityVie
 
     @Inject
     lateinit var mNavigator: ClientNewDamageClaimActivityNavigator
+
+    @Inject
+    lateinit var mRefWatcher: RefWatcher
 
     private val MAP_ZOOM = 14f
     private lateinit var googleMap: GoogleMap
@@ -115,6 +119,8 @@ class DamageClaimLocationFragment : BaseFragment<ClientNewDamageClaimActivityVie
         SmartLocation.with(activity)
                 .location()
                 .stop()
+
+        mRefWatcher.watch(this)
     }
 
     override fun onMapReady(map: GoogleMap) {

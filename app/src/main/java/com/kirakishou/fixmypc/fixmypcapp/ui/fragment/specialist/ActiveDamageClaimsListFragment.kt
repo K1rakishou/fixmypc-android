@@ -30,6 +30,7 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.DamageClaimListAdapter
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavigator
 import com.kirakishou.fixmypc.fixmypcapp.ui.widget.EndlessRecyclerOnScrollListener
+import com.squareup.leakcanary.RefWatcher
 import io.nlopez.smartlocation.SmartLocation
 import io.nlopez.smartlocation.location.config.LocationParams
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -56,6 +57,9 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
 
     @Inject
     lateinit var mNavigator: SpecialistMainActivityNavigator
+
+    @Inject
+    lateinit var mRefWatcher: RefWatcher
 
     private val mLoadMoreSubject = BehaviorSubject.create<Long>()
     private val mLocationSubject = BehaviorSubject.create<LatLng>()
@@ -98,6 +102,8 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
         SmartLocation.with(context)
                 .location()
                 .stop()
+
+        mRefWatcher.watch(this)
     }
 
     private fun recyclerStartLoadingItems() {

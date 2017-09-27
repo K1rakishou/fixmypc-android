@@ -27,6 +27,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityVi
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavigator
+import com.squareup.leakcanary.RefWatcher
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
@@ -43,6 +44,9 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
 
     @Inject
     lateinit var mNavigator: SpecialistMainActivityNavigator
+
+    @Inject
+    lateinit var mRefWatcher: RefWatcher
 
     private val MAP_ZOOM = 13.5f
     private var damageClaimFickle = Fickle.empty<DamageClaim>()
@@ -91,7 +95,7 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
     }
 
     override fun onFragmentViewDestroy() {
-
+        mRefWatcher.watch(this)
     }
 
     private fun initRx() {

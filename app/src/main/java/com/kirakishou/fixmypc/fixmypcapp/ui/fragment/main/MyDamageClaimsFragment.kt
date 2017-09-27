@@ -11,12 +11,16 @@ import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerMyDamageClaimsFragme
 import com.kirakishou.fixmypc.fixmypcapp.di.module.MyDamageClaimsFragmentModule
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.MyDamageClaimsFragmentViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.MyDamageClaimsFragmentViewModelFactory
+import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
 class MyDamageClaimsFragment  : BaseFragment<MyDamageClaimsFragmentViewModel>() {
 
     @Inject
     lateinit var mViewModelFactory: MyDamageClaimsFragmentViewModelFactory
+
+    @Inject
+    lateinit var mRefWatcher: RefWatcher
 
     override fun initViewModel(): MyDamageClaimsFragmentViewModel? {
         return ViewModelProviders.of(this, mViewModelFactory).get(MyDamageClaimsFragmentViewModel::class.java)
@@ -31,7 +35,7 @@ class MyDamageClaimsFragment  : BaseFragment<MyDamageClaimsFragmentViewModel>() 
     }
 
     override fun onFragmentViewDestroy() {
-
+        mRefWatcher.watch(this)
     }
 
     fun onShowToast(message: String, duration: Int) {

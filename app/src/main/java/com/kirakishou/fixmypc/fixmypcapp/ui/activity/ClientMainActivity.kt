@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
+import android.support.v4.app.FragmentManager
 import android.widget.ImageView
 import butterknife.BindView
 import com.jakewharton.rxbinding2.view.RxView
@@ -15,12 +16,13 @@ import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerClientMainActivityCo
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientMainActivityViewModelFactory
+import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientMainActivityNavigator
 import com.squareup.leakcanary.RefWatcher
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import javax.inject.Inject
 
-class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>() {
+class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>(), FragmentManager.OnBackStackChangedListener {
 
     @BindView(R.id.my_profile_button)
     lateinit var myProfileButton: ImageView
@@ -34,6 +36,9 @@ class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>() {
     @Inject
     lateinit var mViewModelFactory: ClientMainActivityViewModelFactory
 
+    @Inject
+    lateinit var mNavigator: ClientMainActivityNavigator
+
     override fun initViewModel(): ClientMainActivityViewModel? {
         return ViewModelProviders.of(this, mViewModelFactory).get(ClientMainActivityViewModel::class.java)
     }
@@ -43,6 +48,12 @@ class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>() {
     override fun loadExitAnimations() = AnimatorSet()
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
+        supportFragmentManager.addOnBackStackChangedListener(this)
+
+        initRx()
+    }
+
+    private fun initRx() {
         mCompositeDisposable += RxView.clicks(newDamageClaimButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -51,6 +62,7 @@ class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>() {
 
     override fun onActivityDestroy() {
         mRefWatcher.watch(this)
+        supportFragmentManager.removeOnBackStackChangedListener(this)
     }
 
     override fun onActivityStart() {
@@ -66,7 +78,7 @@ class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>() {
     override fun resolveDaggerDependency() {
         DaggerClientMainActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
-                .clientMainActivityModule(ClientMainActivityModule())
+                .clientMainActivityModule(ClientMainActivityModule(this))
                 .build()
                 .inject(this)
     }
@@ -77,5 +89,15 @@ class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>() {
 
     override fun onUnknownError(error: Throwable) {
         super.onUnknownError(error)
+    }
+
+    override fun onBackStackChanged() {
+        if (supportFragmentManager.backStackEntryCount == 0) {
+            finish()
+        }
+    }
+
+    override fun onBackPressed() {
+        mNavigator.popFragment()
     }
 }

@@ -16,6 +16,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewDamageClaimActi
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewDamageClaimActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientNewDamageClaimActivityNavigator
+import com.squareup.leakcanary.RefWatcher
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
@@ -37,6 +38,9 @@ class DamageClaimCategoryFragment : BaseFragment<ClientNewDamageClaimActivityVie
 
     @Inject
     lateinit var mNavigator: ClientNewDamageClaimActivityNavigator
+
+    @Inject
+    lateinit var mRefWatcher: RefWatcher
 
     override fun initViewModel(): ClientNewDamageClaimActivityViewModel {
         return ViewModelProviders.of(activity, mViewModelFactory).get(ClientNewDamageClaimActivityViewModel::class.java)
@@ -88,7 +92,7 @@ class DamageClaimCategoryFragment : BaseFragment<ClientNewDamageClaimActivityVie
     }
 
     override fun onFragmentViewDestroy() {
-
+        mRefWatcher.watch(this)
     }
 
     override fun resolveDaggerDependency() {

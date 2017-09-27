@@ -30,6 +30,7 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewDamageClaimActivit
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewMalfunctionActivityFragmentCallback
 import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.DamageClaimPhotosAdapter
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientNewDamageClaimActivityNavigator
+import com.squareup.leakcanary.RefWatcher
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import pl.aprilapps.easyphotopicker.DefaultCallback
@@ -60,6 +61,9 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewDamageClaimActivityViewM
     @Inject
     lateinit var mImageLoader: ImageLoader
 
+    @Inject
+    lateinit var mRefWatcher: RefWatcher
+
     override fun initViewModel(): ClientNewDamageClaimActivityViewModel? {
         return ViewModelProviders.of(activity, mViewModelFactory).get(ClientNewDamageClaimActivityViewModel::class.java)
     }
@@ -69,12 +73,12 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewDamageClaimActivityViewM
     override fun loadExitAnimations() = AnimatorSet()
 
     override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
-        //getViewModel().init()
         initRx()
         initRecyclerView()
     }
 
     override fun onFragmentViewDestroy() {
+        mRefWatcher.watch(this)
     }
 
     private fun initRecyclerView() {

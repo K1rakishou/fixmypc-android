@@ -21,9 +21,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerClientNewDamageClaim
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewDamageClaimActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItem
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItemType
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamagePhotoDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewDamageClaimActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
@@ -109,53 +107,13 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewDamageClaimActivityViewM
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onMalfunctionRequestSuccessfullyCreated() })
 
-        mCompositeDisposable += getViewModel().mErrors.onWifiNotConnected()
+        mCompositeDisposable += getViewModel().mErrors.onBadResponse()
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onWifiNotConnected() })
-
-        mCompositeDisposable += getViewModel().mErrors.onFileSizeExceeded()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onFileSizeExceeded() })
-
-        mCompositeDisposable += getViewModel().mErrors.onAllFileServersAreNotWorking()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onAllFileServersAreNotWorking() })
-
-        mCompositeDisposable += getViewModel().mErrors.onServerDatabaseError()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onServerDatabaseError() })
-
-        mCompositeDisposable += getViewModel().mErrors.onCouldNotConnectToServer()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onCouldNotConnectToServer() })
-
-        mCompositeDisposable += getViewModel().mErrors.onPhotosAreNotSelected()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onPhotosAreNotSelected() })
-
-        mCompositeDisposable += getViewModel().mErrors.onSelectedPhotoDoesNotExists()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onSelectedPhotoDoesNotExists() })
-
-        mCompositeDisposable += getViewModel().mErrors.onResponseBodyIsEmpty()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onResponseBodyIsEmpty() })
-
-        mCompositeDisposable += getViewModel().mErrors.onFileAlreadySelected()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onFileAlreadySelected() })
-
-        mCompositeDisposable += getViewModel().mErrors.onBadOriginalFileNameSubject()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onBadOriginalFileName() })
+                .subscribe({ onBadResponse(it) })
 
         mCompositeDisposable += getViewModel().mErrors.onUnknownError()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUnknownError(it) })
-
-        mCompositeDisposable += getViewModel().mErrors.onRequestSizeExceeded()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onRequestSizeExceeded() })
     }
 
     private fun sendApplicationToServer() {
@@ -233,49 +191,9 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewDamageClaimActivityViewM
         runActivity(ClientMainActivity::class.java, true)
     }
 
-    private fun onWifiNotConnected() {
-        showToast("Отсутствует подключение WiFi. Если Вы хотите хотите отправлять заявки даже при отключенном WiFi - " +
-                "отключите в настройках опцию \"Запретить отправлять заявки при отключенном WiFi\"", Toast.LENGTH_LONG)
-    }
-
-    private fun onFileSizeExceeded() {
-        showToast("Размер одного из выбранных изображений превышает лимит", Toast.LENGTH_LONG)
-    }
-
-    private fun onRequestSizeExceeded() {
-        showToast("Размер двух и более изображений превышает лимит", Toast.LENGTH_LONG)
-    }
-
-    private fun onAllFileServersAreNotWorking() {
-        showToast("Не удалось обработать запрос. Сервера не работают. Попробуйте повторить запрос позже.", Toast.LENGTH_LONG)
-    }
-
-    private fun onServerDatabaseError() {
-        showToast("Ошибка БД на сервере. Попробуйте повторить запрос позже.", Toast.LENGTH_LONG)
-    }
-
-    private fun onCouldNotConnectToServer() {
-        showToast("Не удалось подключиться к серверу", Toast.LENGTH_LONG)
-    }
-
-    private fun onPhotosAreNotSelected() {
-        showToast("Не выбраны фото поломки", Toast.LENGTH_LONG)
-    }
-
-    private fun onSelectedPhotoDoesNotExists() {
-        showToast("Не удалось прочитать фото с диска (оно было удалено или перемещено)", Toast.LENGTH_LONG)
-    }
-
-    private fun onResponseBodyIsEmpty() {
-        showToast("Response body is empty!", Toast.LENGTH_LONG)
-    }
-
-    private fun onFileAlreadySelected() {
-        showToast("Нельзя отправить два одинаковых файла", Toast.LENGTH_LONG)
-    }
-
-    private fun onBadOriginalFileName() {
-        showToast("Попытка отправить файл не являющийся изображением", Toast.LENGTH_LONG)
+    private fun onBadResponse(errorCode: ErrorCode.Remote) {
+        val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
+        showToast(message, Toast.LENGTH_LONG)
     }
 
     private fun onUnknownError(error: Throwable) {

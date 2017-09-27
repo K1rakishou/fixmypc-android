@@ -29,6 +29,18 @@ object ErrorMessage {
             ErrorCode.Remote.REC_COULD_NOT_RESPOND_TO_DAMAGE_CLAIM -> return "Не удалось добавить запрос к данному обхявлению. Попробуйте повторить запрос позже"
             ErrorCode.Remote.REC_DAMAGE_CLAIM_DOES_NOT_EXIST -> return "Объявление не существует"
             ErrorCode.Remote.REC_DAMAGE_CLAIM_IS_NOT_ACTIVE -> return "Объявление закрыто"
+            ErrorCode.Remote.REC_NO_PHOTOS_WERE_SELECTED_TO_UPLOAD -> return "Не выбраны фото поломки"
+            ErrorCode.Remote.REC_IMAGES_COUNT_EXCEEDED -> return "Нельзя отправить больше 4х фото"
+            ErrorCode.Remote.REC_WIFI_IS_NOT_CONNECTED -> return "Отсутствует подключение WiFi. Если Вы хотите хотите отправлять заявки даже при отключенном WiFi - " +
+                    "отключите в настройках опцию \"Запретить отправлять заявки при отключенном WiFi\""
+            ErrorCode.Remote.REC_FILE_SIZE_EXCEEDED -> return "Размер одного из выбранных изображений превышает лимит"
+            ErrorCode.Remote.REC_REQUEST_SIZE_EXCEEDED -> return "Размер изображений превышает лимит"
+            ErrorCode.Remote.REC_ALL_FILE_SERVERS_ARE_NOT_WORKING -> return "Не удалось обработать запрос. Сервера не работают. Попробуйте повторить запрос позже"
+            ErrorCode.Remote.REC_DATABASE_ERROR -> return "Ошибка БД на сервере. Попробуйте повторить запрос позже"
+            ErrorCode.Remote.REC_SELECTED_PHOTO_DOES_NOT_EXISTS -> return "Не удалось прочитать фото с диска (оно было удалено или перемещено)"
+            ErrorCode.Remote.REC_RESPONSE_BODY_IS_EMPTY -> return "Response body is empty!"
+            ErrorCode.Remote.REC_DUPLICATE_ENTRY_EXCEPTION -> return "Нельзя отправить два одинаковых файла"
+            ErrorCode.Remote.REC_BAD_ORIGINAL_FILE_NAME -> return "Попытка отправить файл не являющийся изображением"
             else -> throw IllegalArgumentException("Unknown statusCode: $errorCode")
         }
     }

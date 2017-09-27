@@ -46,9 +46,9 @@ class SpecialistMainActivityViewModel
     lateinit var mOnHasAlreadyRespondedResponse: BehaviorSubject<Boolean>
     lateinit var mCheckHasAlreadyRespondedSubject: BehaviorSubject<Long>
     lateinit var mOnRespondToDamageClaimSuccessSubject: BehaviorSubject<Unit>
-    lateinit var mOnClientProfileReceived: BehaviorSubject<ClientProfileResponse>
+    //lateinit var mOnClientProfileReceived: BehaviorSubject<ClientProfileResponse>
     lateinit var mRespondToDamageClaimSubject: BehaviorSubject<Long>
-    lateinit var mGetClientProfileSubject: BehaviorSubject<Long>
+    //lateinit var mGetClientProfileSubject: BehaviorSubject<Long>
     lateinit var mGetDamageClaimsWithinRadiusSubject: BehaviorSubject<GetDamageClaimsRequestParamsDTO>
     lateinit var mOnDamageClaimsPageReceivedSubject: BehaviorSubject<ArrayList<DamageClaimsWithDistanceDTO>>
     lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
@@ -62,20 +62,20 @@ class SpecialistMainActivityViewModel
         mCheckHasAlreadyRespondedSubject = BehaviorSubject.create()
         mOnRespondToDamageClaimSuccessSubject = BehaviorSubject.create()
         mRespondToDamageClaimSubject = BehaviorSubject.create()
-        mOnClientProfileReceived = BehaviorSubject.create()
-        mGetClientProfileSubject = BehaviorSubject.create()
+        //mOnClientProfileReceived = BehaviorSubject.create()
+        //mGetClientProfileSubject = BehaviorSubject.create()
         mGetDamageClaimsWithinRadiusSubject = BehaviorSubject.create()
         mOnDamageClaimsPageReceivedSubject = BehaviorSubject.create()
         mOnUnknownErrorSubject = BehaviorSubject.create()
         mEitherFromRepoOrServerSubject = BehaviorSubject.create()
 
-        mCompositeDisposable += mGetClientProfileSubject
+        /*mCompositeDisposable += mGetClientProfileSubject
                 .flatMap { mApiClient.getClientProfile(it).toObservable() }
                 .subscribe({
                     handleResponse(it)
                 }, {
                     handleError(it)
-                })
+                })*/
 
         mCompositeDisposable += mEitherFromRepoOrServerSubject
                 .map { (latlon, response) -> calcDistances(latlon.latitude, latlon.longitude, response) }
@@ -143,9 +143,9 @@ class SpecialistMainActivityViewModel
         mCompositeDisposable.clear()
     }
 
-    override fun getClientProfile(userId: Long) {
+   /*override fun getClientProfile(userId: Long) {
         mGetClientProfileSubject.onNext(userId)
-    }
+    }*/
 
     override fun getDamageClaimsWithinRadius(latLng: LatLng, radius: Double, page: Long) {
         mGetDamageClaimsWithinRadiusSubject.onNext(GetDamageClaimsRequestParamsDTO(latLng, radius, page * itemsPerPage))
@@ -168,9 +168,9 @@ class SpecialistMainActivityViewModel
                     mOnRespondToDamageClaimSuccessSubject.onNext(Unit)
                 }
 
-                is ClientProfileResponse -> {
+                /*is ClientProfileResponse -> {
                     mOnClientProfileReceived.onNext(response)
-                }
+                }*/
 
                 is DistanceWithDamageClaimResponse -> {
                     mOnDamageClaimsPageReceivedSubject.onNext(response.damageClaims)
@@ -192,7 +192,7 @@ class SpecialistMainActivityViewModel
                     }
                 }
 
-                is ClientProfileResponse -> {
+                /*is ClientProfileResponse -> {
                     when (errorCode) {
                         ErrorCode.Remote.REC_TIMEOUT -> TODO()
                         ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER -> TODO()
@@ -200,7 +200,7 @@ class SpecialistMainActivityViewModel
 
                         else -> throw RuntimeException("Unknown errorCode: $errorCode")
                     }
-                }
+                }*/
 
                 is DistanceWithDamageClaimResponse -> {
                     when (errorCode) {
@@ -234,7 +234,7 @@ class SpecialistMainActivityViewModel
 
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
     override fun onDamageClaimsPageReceived(): Observable<ArrayList<DamageClaimsWithDistanceDTO>> = mOnDamageClaimsPageReceivedSubject
-    override fun onClientProfileReceived(): Observable<ClientProfileResponse> = mOnClientProfileReceived
+    //override fun onClientProfileReceived(): Observable<ClientProfileResponse> = mOnClientProfileReceived
     override fun onRespondToDamageClaimSuccessSubject(): Observable<Unit> = mOnRespondToDamageClaimSuccessSubject
     override fun onHasAlreadyRespondedResponse(): Observable<Boolean> = mOnHasAlreadyRespondedResponse
 

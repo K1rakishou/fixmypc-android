@@ -5,7 +5,6 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiService
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.operator.OnApiErrorSingle
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.BadServerResponseException
 import io.reactivex.Single
@@ -33,14 +32,14 @@ class GetDamageClaimRequest(protected val mLat: Double,
 
     private fun exceptionToErrorCode(error: Throwable): Single<DamageClaimsResponse> {
         val response = when (error) {
-            is ApiException -> StatusResponse(error.errorCode)
-            is TimeoutException -> StatusResponse(ErrorCode.Remote.REC_TIMEOUT)
-            is UnknownHostException -> StatusResponse(ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
-            is BadServerResponseException -> StatusResponse(ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
+            is ApiException -> DamageClaimsResponse(mutableListOf(), error.errorCode)
+            is TimeoutException -> DamageClaimsResponse(mutableListOf(), ErrorCode.Remote.REC_TIMEOUT)
+            is UnknownHostException -> DamageClaimsResponse(mutableListOf(), ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
+            is BadServerResponseException -> DamageClaimsResponse(mutableListOf(), ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
 
             else -> throw RuntimeException("Unknown exception")
         }
 
-        return Single.just(response as DamageClaimsResponse)
+        return Single.just(response)
     }
 }

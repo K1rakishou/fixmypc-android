@@ -7,7 +7,6 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.RespondToDamageClaimPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.RespondToDamageClaimResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.BadServerResponseException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UserInfoIsEmpty
@@ -37,14 +36,14 @@ class RespondToDamageClaimRequest(protected val packet: RespondToDamageClaimPack
 
     private fun exceptionToErrorCode(error: Throwable): Single<RespondToDamageClaimResponse> {
         val response = when (error) {
-            is ApiException -> StatusResponse(error.errorCode)
-            is TimeoutException -> StatusResponse(ErrorCode.Remote.REC_TIMEOUT)
-            is UnknownHostException -> StatusResponse(ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
-            is BadServerResponseException -> StatusResponse(ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
+            is ApiException -> RespondToDamageClaimResponse(error.errorCode)
+            is TimeoutException -> RespondToDamageClaimResponse(ErrorCode.Remote.REC_TIMEOUT)
+            is UnknownHostException -> RespondToDamageClaimResponse(ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
+            is BadServerResponseException -> RespondToDamageClaimResponse(ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
 
             else -> throw RuntimeException("Unknown exception")
         }
 
-        return Single.just(response as RespondToDamageClaimResponse)
+        return Single.just(response)
     }
 }

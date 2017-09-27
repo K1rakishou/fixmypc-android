@@ -75,14 +75,14 @@ class CheckAlreadyRespondedToDamageClaimRequest(protected val damageClaimId: Lon
 
     private fun exceptionToErrorCode(error: Throwable): Single<HasAlreadyRespondedResponse> {
         val response = when (error) {
-            is ApiException -> StatusResponse(error.errorCode)
-            is TimeoutException -> StatusResponse(ErrorCode.Remote.REC_TIMEOUT)
-            is UnknownHostException -> StatusResponse(ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
-            is BadServerResponseException -> StatusResponse(ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
+            is ApiException -> HasAlreadyRespondedResponse(false, error.errorCode)
+            is TimeoutException -> HasAlreadyRespondedResponse(false, ErrorCode.Remote.REC_TIMEOUT)
+            is UnknownHostException -> HasAlreadyRespondedResponse(false, ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
+            is BadServerResponseException -> HasAlreadyRespondedResponse(false, ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
 
             else -> throw RuntimeException("Unknown exception")
         }
 
-        return Single.just(response as HasAlreadyRespondedResponse)
+        return Single.just(response)
     }
 }

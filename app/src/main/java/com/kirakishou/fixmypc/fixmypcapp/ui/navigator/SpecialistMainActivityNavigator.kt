@@ -15,6 +15,15 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.DamageClaimFullI
  */
 class SpecialistMainActivityNavigator(activity: AppCompatActivity) : BaseNavigator(activity) {
 
+    fun popFragment() {
+        val currentFragment = getVisibleFragment()
+        if (currentFragment != null) {
+            if (currentFragment !is LoadingIndicatorFragment) {
+                fragmentManager.popBackStack()
+            }
+        }
+    }
+
     fun navigateToActiveDamageClaimsListFragment() {
         val fragmentTransaction = fragmentManager.beginTransaction()
         val visibleFragment = getVisibleFragment()
@@ -76,12 +85,13 @@ class SpecialistMainActivityNavigator(activity: AppCompatActivity) : BaseNavigat
     }
 
     fun showLoadingIndicatorFragment() {
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        val visibleFragment = getVisibleFragment()
-
-        if (visibleFragment != null) {
-            fragmentTransaction.hide(visibleFragment)
+        val visibleFragment = getVisibleFragment() ?: return
+        if (visibleFragment is LoadingIndicatorFragment) {
+            return
         }
+
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        fragmentTransaction.hide(visibleFragment)
 
         val newFragment = LoadingIndicatorFragment()
         fragmentTransaction
@@ -96,7 +106,7 @@ class SpecialistMainActivityNavigator(activity: AppCompatActivity) : BaseNavigat
 
         if (visibleFragment != null) {
             if (visibleFragment is LoadingIndicatorFragment) {
-                popFragment()
+                fragmentManager.popBackStack()
             }
         }
     }

@@ -21,13 +21,11 @@ import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerSpecialistMainActivi
 import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.ClientProfileResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavigator
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
 import javax.inject.Inject
@@ -44,8 +42,6 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
     @Inject
     lateinit var mNavigator: SpecialistMainActivityNavigator
 
-    private val STROKE_COLOR = 0xC000A2E8.toInt()
-    private val FILL_COLOR = 0x4000A2E8.toInt()
     private val MAP_ZOOM = 13.5f
     private var damageClaimFickle = Fickle.empty<DamageClaim>()
 
@@ -66,9 +62,13 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
         initRx()
 
         if (damageClaimFickle.isPresent()) {
-            getViewModel().getClientProfile(damageClaimFickle.get().ownerId)
-            getViewModel().checkHasAlreadyRespondedToDamageClaim(damageClaimFickle.get().id)
             mNavigator.showLoadingIndicatorFragment()
+            val damageClaim = damageClaimFickle.get()
+
+            Timber.e("damage_claim_id: ${damageClaim.id}, user_id: ${damageClaim.ownerId}")
+
+            //getViewModel().getClientProfile(damageClaim.ownerId)
+            getViewModel().checkHasAlreadyRespondedToDamageClaim(damageClaim.id)
         } else {
             showToast("Не удалось получить данные об объявлении", Toast.LENGTH_LONG)
             mNavigator.popFragment()
@@ -85,6 +85,15 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onRespondButtonClick() })
 
+        mCompositeDisposable += getViewModel().mErrors.onUnknownError()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    onUnknownError(it)
+                }, { error ->
+                    Timber.e(error)
+                })
+
         mCompositeDisposable += getViewModel().mOutputs.onRespondToDamageClaimSuccessSubject()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -94,13 +103,12 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
                     Timber.e(error)
                 })
 
-        mCompositeDisposable += Observables.zip(getViewModel().mOutputs.onClientProfileReceived(),
-                getViewModel().mOutputs.onHasAlreadyRespondedResponse())
+        mCompositeDisposable += getViewModel().mOutputs.onHasAlreadyRespondedResponse()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    onHasAlreadyRespondedResponse(it.second)
-                    onClientProfileReceived(it.first)
+                    onHasAlreadyRespondedResponse(it)
+                    //onClientProfileReceived(it.first)
                     mNavigator.hideLoadingIndicatorFragment()
                 }, { error ->
                     Timber.e(error)
@@ -109,6 +117,7 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
 
     private fun onRespondButtonClick() {
         damageClaimFickle.ifPresent {
+            mNavigator.showLoadingIndicatorFragment()
             getViewModel().respondToDamageClaim(it.id)
         }
     }
@@ -124,12 +133,14 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
     }
 
     private fun onRespondToDamageClaimSuccessSubject() {
+        mNavigator.hideLoadingIndicatorFragment()
         respondButton.isEnabled = false
         respondButton.text = "Заявка отправлена"
     }
 
-    private fun onClientProfileReceived(response: ClientProfileResponse) {
-    }
+    /*private fun onClientProfileReceived(response: ClientProfileResponse) {
+
+    }*/
 
     private fun getDamageClaimFromBundle(arguments: Bundle): DamageClaim {
         val damageClaim = DamageClaim()
@@ -154,6 +165,11 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
 
         map.addMarker(MarkerOptions().position(center))
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(center, MAP_ZOOM))
+    }
+
+    private fun onUnknownError(error: Throwable) {
+        mNavigator.hideLoadingIndicatorFragment()
+        super.unknownError(error)
     }
 
     override fun resolveDaggerDependency() {

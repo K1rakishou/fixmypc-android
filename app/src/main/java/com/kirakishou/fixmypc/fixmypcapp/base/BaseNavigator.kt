@@ -24,10 +24,6 @@ open class BaseNavigator(activity: AppCompatActivity) {
         return null
     }
 
-    fun popFragment() {
-        fragmentManager.popBackStack()
-    }
-
     @Suppress("UNCHECKED_CAST")
     inline fun <reified T : Fragment> createNewFragmentIfNotInStack(fragmentManager: FragmentManager, fragmentTag: String): T {
         var fragment = fragmentManager.findFragmentByTag(fragmentTag)

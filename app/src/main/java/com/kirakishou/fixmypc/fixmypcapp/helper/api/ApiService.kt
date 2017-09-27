@@ -24,7 +24,8 @@ interface ApiService {
                                @Part("images_type") imagesType: Int): Single<Response<StatusResponse>>
 
     @GET("/v1/api/damage_claim_request/get_within/{lat}/{lon}/{radius}/{skip}/{count}")
-    fun getDamageClaims(@Path("lat") lat: Double,
+    fun getDamageClaims(@Header("session_id") sessionId: String,
+                        @Path("lat") lat: Double,
                         @Path("lon") lon: Double,
                         @Path("radius") radius: Double,
                         @Path("skip") skip: Long,

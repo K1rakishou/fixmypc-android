@@ -29,6 +29,10 @@ class CheckAlreadyRespondedToDamageClaimRequest(protected val damageClaimId: Lon
 
 
     override fun execute(): Single<HasAlreadyRespondedResponse> {
+        if (!mAppSettings.isUserInfoExists()) {
+            throw UserInfoIsEmpty()
+        }
+
         return mApiService.checkAlreadyRespondedToDamageClaim(mAppSettings.loadUserInfo().sessionId, damageClaimId)
                 .subscribeOn(Schedulers.io())
                 .lift(OnApiErrorSingle(mGson))

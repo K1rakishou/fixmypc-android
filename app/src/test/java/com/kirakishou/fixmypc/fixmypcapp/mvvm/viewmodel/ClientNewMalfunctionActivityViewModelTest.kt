@@ -58,7 +58,7 @@ class ClientNewMalfunctionActivityViewModelTest {
 
         mViewModel.sendMalfunctionRequestToServer(false)
 
-        mViewModel.mErrors.onWifiNotConnected().test().assertValueCount(1)
+        mViewModel.mErrors.onBadResponse().test().assertValue(ErrorCode.Remote.REC_WIFI_IS_NOT_CONNECTED)
     }
 
     @Test
@@ -70,7 +70,7 @@ class ClientNewMalfunctionActivityViewModelTest {
 
         mViewModel.sendMalfunctionRequestToServer(false)
 
-        mViewModel.mErrors.onFileSizeExceeded().test().assertValueCount(1)
+        mViewModel.mErrors.onBadResponse().test().assertValue(ErrorCode.Remote.REC_FILE_SIZE_EXCEEDED)
     }
 
     @Test
@@ -82,7 +82,7 @@ class ClientNewMalfunctionActivityViewModelTest {
 
         mViewModel.sendMalfunctionRequestToServer(false)
 
-        mViewModel.mErrors.onRequestSizeExceeded().test().assertValueCount(1)
+        mViewModel.mErrors.onBadResponse().test().assertValue(ErrorCode.Remote.REC_REQUEST_SIZE_EXCEEDED)
     }
 
     @Test
@@ -94,7 +94,7 @@ class ClientNewMalfunctionActivityViewModelTest {
 
         mViewModel.sendMalfunctionRequestToServer(false)
 
-        mViewModel.mErrors.onAllFileServersAreNotWorking().test().assertValueCount(1)
+        mViewModel.mErrors.onBadResponse().test().assertValue(ErrorCode.Remote.REC_ALL_FILE_SERVERS_ARE_NOT_WORKING)
     }
 
     @Test
@@ -106,7 +106,7 @@ class ClientNewMalfunctionActivityViewModelTest {
 
         mViewModel.sendMalfunctionRequestToServer(false)
 
-        mViewModel.mErrors.onServerDatabaseError().test().assertValueCount(1)
+        mViewModel.mErrors.onBadResponse().test().assertValue(ErrorCode.Remote.REC_DATABASE_ERROR)
     }
 
     @Test
@@ -118,7 +118,7 @@ class ClientNewMalfunctionActivityViewModelTest {
 
         mViewModel.sendMalfunctionRequestToServer(false)
 
-        mViewModel.mErrors.onCouldNotConnectToServer().test().assertValueCount(1)
+        mViewModel.mErrors.onBadResponse().test().assertValue(ErrorCode.Remote.REC_TIMEOUT)
     }
 
     @Test
@@ -130,7 +130,7 @@ class ClientNewMalfunctionActivityViewModelTest {
 
         mViewModel.sendMalfunctionRequestToServer(false)
 
-        mViewModel.mErrors.onCouldNotConnectToServer().test().assertValueCount(1)
+        mViewModel.mErrors.onBadResponse().test().assertValue(ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
     }
 
     @Test
@@ -142,7 +142,7 @@ class ClientNewMalfunctionActivityViewModelTest {
 
         mViewModel.sendMalfunctionRequestToServer(false)
 
-        mViewModel.mErrors.onSelectedPhotoDoesNotExists().test().assertValueCount(1)
+        mViewModel.mErrors.onBadResponse().test().assertValue(ErrorCode.Remote.REC_SELECTED_PHOTO_DOES_NOT_EXISTS)
     }
 
     @Test
@@ -154,7 +154,7 @@ class ClientNewMalfunctionActivityViewModelTest {
 
         mViewModel.sendMalfunctionRequestToServer(false)
 
-        mViewModel.mErrors.onResponseBodyIsEmpty().test().assertValueCount(1)
+        mViewModel.mErrors.onBadResponse().test().assertValue(ErrorCode.Remote.REC_RESPONSE_BODY_IS_EMPTY)
     }
 
     @Test
@@ -166,7 +166,7 @@ class ClientNewMalfunctionActivityViewModelTest {
 
         mViewModel.sendMalfunctionRequestToServer(false)
 
-        mViewModel.mErrors.onFileAlreadySelected().test().assertValueCount(1)
+        mViewModel.mErrors.onBadResponse().test().assertValue(ErrorCode.Remote.REC_DUPLICATE_ENTRY_EXCEPTION)
     }
 
     @Test
@@ -178,7 +178,7 @@ class ClientNewMalfunctionActivityViewModelTest {
 
         mViewModel.sendMalfunctionRequestToServer(false)
 
-        mViewModel.mErrors.onBadServerResponse().test().assertValueCount(1)
+        mViewModel.mErrors.onBadResponse().test().assertValue(ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
     }
 
     @Test
@@ -190,7 +190,7 @@ class ClientNewMalfunctionActivityViewModelTest {
 
         mViewModel.sendMalfunctionRequestToServer(false)
 
-        mViewModel.mErrors.onBadOriginalFileNameSubject().test().assertValueCount(1)
+        mViewModel.mErrors.onBadResponse().test().assertValue(ErrorCode.Remote.REC_BAD_ORIGINAL_FILE_NAME)
     }
 }
 

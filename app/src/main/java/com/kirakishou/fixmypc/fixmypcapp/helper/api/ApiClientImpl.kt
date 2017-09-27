@@ -34,13 +34,13 @@ class ApiClientImpl
     }
 
     override fun getDamageClaims(lat: Double, lon: Double, radius: Double, skip: Long, count: Long): Single<DamageClaimsResponse> {
-        return GetDamageClaimRequest(lat, lon, radius, skip, count, mApiService, mGson)
+        return GetDamageClaimRequest(lat, lon, radius, skip, count, mApiService, mAppSettings, mGson)
                 .execute()
                 .delay(1, TimeUnit.SECONDS)
     }
 
     override fun getClientProfile(userId: Long): Single<ClientProfileResponse> {
-        return GetClientProfileRequest(userId, mApiService, mGson)
+        return GetClientProfileRequest(userId, mApiService, mAppSettings, mGson)
                 .execute()
     }
 

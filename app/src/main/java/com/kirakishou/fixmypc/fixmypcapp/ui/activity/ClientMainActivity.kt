@@ -4,8 +4,10 @@ import android.animation.AnimatorSet
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.widget.ImageView
 import butterknife.BindView
+import com.jakewharton.rxbinding2.view.RxView
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
@@ -14,12 +16,17 @@ import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientMainActivityViewModelFactory
 import com.squareup.leakcanary.RefWatcher
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.plusAssign
 import javax.inject.Inject
 
 class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>() {
 
     @BindView(R.id.my_profile_button)
     lateinit var myProfileButton: ImageView
+
+    @BindView(R.id.new_damage_claim_button)
+    lateinit var newDamageClaimButton: FloatingActionButton
 
     @Inject
     lateinit var mRefWatcher: RefWatcher
@@ -36,6 +43,10 @@ class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>() {
     override fun loadExitAnimations() = AnimatorSet()
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
+        mCompositeDisposable += RxView.clicks(newDamageClaimButton)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onNewDamageClaimButtonClick() })
     }
 
     override fun onActivityDestroy() {
@@ -43,11 +54,13 @@ class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>() {
     }
 
     override fun onActivityStart() {
-
     }
 
     override fun onActivityStop() {
+    }
 
+    private fun onNewDamageClaimButtonClick() {
+        runActivity(ClientNewDamageClaimActivity::class.java)
     }
 
     override fun resolveDaggerDependency() {

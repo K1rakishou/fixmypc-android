@@ -76,7 +76,7 @@ abstract class BaseActivity<out T: ViewModel> : AppCompatActivity() {
         super.onStop()
 
         AndroidUtils.hideSoftKeyboard(this)
-        mCompositeDisposable.clear()
+
         animateActivityStop()
     }
 
@@ -84,6 +84,7 @@ abstract class BaseActivity<out T: ViewModel> : AppCompatActivity() {
         super.onDestroy()
 
         onActivityDestroy()
+        mCompositeDisposable.clear()
 
         mUnBinder.ifPresent {
             it.unbind()

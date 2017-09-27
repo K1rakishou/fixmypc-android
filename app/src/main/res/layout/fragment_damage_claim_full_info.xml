@@ -39,55 +39,60 @@
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="4dp">
-
-                    <fragment
-                        android:id="@+id/damage_claim_client_location_map"
-                        class="com.google.android.gms.maps.SupportMapFragment"
-                        android:layout_width="match_parent"
-                        android:layout_height="128dp"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginTop="8dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="parent" />
+                    android:paddingBottom="4dp"
+                    android:paddingTop="4dp">
 
                     <TextView
                         android:id="@+id/damage_claim_description_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
+                        android:paddingEnd="4dp"
+                        android:paddingStart="4dp"
                         android:text="Описание поломки"
                         android:textColor="#000"
                         android:textSize="22sp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/damage_claim_client_location_map" />
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/damage_claim_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="18sp"
+                        android:paddingEnd="4dp"
+                        android:paddingStart="4dp"
                         android:text="Типа длинное описание  вар вар вар варвар\nfhfghfghfgjfgj dfh dfh dfh dfhdfh dfh dfh dfh df\nfgdfhdfjdfjdhdfghdsrtdrhdjtjfjftjftjftj\nydufdturutydtghdrgdrjdj"
+                        android:textSize="18sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/damage_claim_description_tv" />
 
+                    <fragment
+                        android:id="@+id/damage_claim_client_location_map"
+                        class="com.google.android.gms.maps.SupportMapFragment"
+                        android:layout_width="match_parent"
+                        android:layout_height="128dp"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/damage_claim_description" />
+
                     <android.support.v7.widget.AppCompatButton
                         android:id="@+id/respond_button"
-                        android:layout_width="192dp"
-                        android:layout_height="36dp"
+                        android:layout_width="256dp"
+                        android:layout_height="48dp"
                         android:layout_marginBottom="8dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="24dp"
                         android:background="@color/colorAccent"
                         android:text="Откликнуться"
+                        android:textSize="20sp"
                         android:textColor="#fff"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/damage_claim_description" />
+                        app:layout_constraintTop_toBottomOf="@+id/damage_claim_client_location_map" />
 
                 </android.support.constraint.ConstraintLayout>
 

@@ -83,7 +83,7 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
     override fun onActivityStart() {
         //FIXME: accountInfoPrefs should be loaded from preferences via accountInfoPrefs.load()
         //don't forger to delete the following:
-        accountInfoPrefs.login = Fickle.of("test2@gmail.com")
+        accountInfoPrefs.login = Fickle.of("test@gmail.com")
         accountInfoPrefs.password = Fickle.of("1234567890")
 
         if (accountInfoPrefs.exists()) {
@@ -111,7 +111,7 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
 
     private fun runClientMainActivity(sessionId: String, accountType: AccountType) {
         Timber.e("Running client MainActivity")
-        runActivity(ClientNewDamageClaimActivity::class.java, true)
+        runActivity(ClientMainActivity::class.java, true)
     }
 
     private fun runSpecialistMainActivity(sessionId: String, accountType: AccountType) {

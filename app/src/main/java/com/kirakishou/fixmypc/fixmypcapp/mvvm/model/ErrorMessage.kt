@@ -23,6 +23,12 @@ object ErrorMessage {
                         resources.getInteger(R.integer.max_password_length))
             }
             ErrorCode.Remote.REC_ACCOUNT_TYPE_IS_INCORRECT -> return resources.getString(R.string.rec_account_type_is_incorrect)
+            ErrorCode.Remote.REC_TIMEOUT -> return "Таймаут сетевого запроса. Попробуйте повторить запрос позже"
+            ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER -> return "Сервер не отвечает. Попробуйте повторить запрос позже"
+            ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION -> return "Получен некорректный ответ от сервера. Попробуйте повторить запрос позже"
+            ErrorCode.Remote.REC_COULD_NOT_RESPOND_TO_DAMAGE_CLAIM -> return "Не удалось добавить запрос к данному обхявлению. Попробуйте повторить запрос позже"
+            ErrorCode.Remote.REC_DAMAGE_CLAIM_DOES_NOT_EXIST -> return "Объявление не существует"
+            ErrorCode.Remote.REC_DAMAGE_CLAIM_IS_NOT_ACTIVE -> return "Объявление закрыто"
             else -> throw IllegalArgumentException("Unknown statusCode: $errorCode")
         }
     }

@@ -19,6 +19,8 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerSpecialistMainActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityViewModel
@@ -53,6 +55,21 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
+    private fun getDamageClaimFromBundle(arguments: Bundle): DamageClaim {
+        val damageClaim = DamageClaim()
+        damageClaim.id = arguments.getLong("damage_claim_id")
+        damageClaim.ownerId = arguments.getLong("damage_claim_owner_id")
+        damageClaim.isActive = arguments.getBoolean("damage_claim_is_active")
+        damageClaim.category = arguments.getInt("damage_claim_category")
+        damageClaim.description = arguments.getString("damage_claim_description")
+        damageClaim.lat = arguments.getDouble("damage_claim_lat")
+        damageClaim.lon = arguments.getDouble("damage_claim_lon")
+        damageClaim.createdOn = arguments.getLong("damage_claim_created_on")
+        damageClaim.photoNames = arguments.getStringArrayList("damage_claim_photo_names")
+
+        return damageClaim
+    }
+
     override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
         val mapFrag = childFragmentManager.findFragmentById(R.id.damage_claim_client_location_map) as SupportMapFragment
         mapFrag.getMapAsync(this)
@@ -66,8 +83,6 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
             val damageClaim = damageClaimFickle.get()
 
             Timber.e("damage_claim_id: ${damageClaim.id}, user_id: ${damageClaim.ownerId}")
-
-            //getViewModel().getClientProfile(damageClaim.ownerId)
             getViewModel().checkHasAlreadyRespondedToDamageClaim(damageClaim.id)
         } else {
             showToast("Не удалось получить данные об объявлении", Toast.LENGTH_LONG)
@@ -108,8 +123,16 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     onHasAlreadyRespondedResponse(it)
-                    //onClientProfileReceived(it.first)
                     mNavigator.hideLoadingIndicatorFragment()
+                }, { error ->
+                    Timber.e(error)
+                })
+
+        mCompositeDisposable += getViewModel().mErrors.onBadResponse()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    onBadResponse(it)
                 }, { error ->
                     Timber.e(error)
                 })
@@ -120,6 +143,16 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
             mNavigator.showLoadingIndicatorFragment()
             getViewModel().respondToDamageClaim(it.id)
         }
+    }
+
+    override fun onMapReady(map: GoogleMap) {
+        map.uiSettings.setAllGesturesEnabled(false)
+
+        val damageClaim = damageClaimFickle.get()
+        val center = LatLng(damageClaim.lat, damageClaim.lon)
+
+        map.addMarker(MarkerOptions().position(center))
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(center, MAP_ZOOM))
     }
 
     private fun onHasAlreadyRespondedResponse(responded: Boolean) {
@@ -138,33 +171,9 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
         respondButton.text = "Заявка отправлена"
     }
 
-    /*private fun onClientProfileReceived(response: ClientProfileResponse) {
-
-    }*/
-
-    private fun getDamageClaimFromBundle(arguments: Bundle): DamageClaim {
-        val damageClaim = DamageClaim()
-        damageClaim.id = arguments.getLong("damage_claim_id")
-        damageClaim.ownerId = arguments.getLong("damage_claim_owner_id")
-        damageClaim.isActive = arguments.getBoolean("damage_claim_is_active")
-        damageClaim.category = arguments.getInt("damage_claim_category")
-        damageClaim.description = arguments.getString("damage_claim_description")
-        damageClaim.lat = arguments.getDouble("damage_claim_lat")
-        damageClaim.lon = arguments.getDouble("damage_claim_lon")
-        damageClaim.createdOn = arguments.getLong("damage_claim_created_on")
-        damageClaim.photoNames = arguments.getStringArrayList("damage_claim_photo_names")
-
-        return damageClaim
-    }
-
-    override fun onMapReady(map: GoogleMap) {
-        map.uiSettings.setAllGesturesEnabled(false)
-
-        val damageClaim = damageClaimFickle.get()
-        val center = LatLng(damageClaim.lat, damageClaim.lon)
-
-        map.addMarker(MarkerOptions().position(center))
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(center, MAP_ZOOM))
+    private fun onBadResponse(errorCode: ErrorCode.Remote) {
+        val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
+        showToast(message, Toast.LENGTH_LONG)
     }
 
     private fun onUnknownError(error: Throwable) {

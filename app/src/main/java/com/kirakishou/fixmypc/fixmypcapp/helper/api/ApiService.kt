@@ -32,7 +32,8 @@ interface ApiService {
                         @Path("count") count: Long): Single<Response<DamageClaimsResponse>>
 
     @GET("/v1/api/profile/{user_id}")
-    fun getClientProfile(@Path("user_id") userId: Long): Single<Response<ClientProfileResponse>>
+    fun getClientProfile(@Header("session_id") sessionId: String,
+                         @Path("user_id") userId: Long): Single<Response<ClientProfileResponse>>
 
     @POST("/v1/api/damage_claim_request/respond")
     fun respondToDamageClaim(@Header("session_id") sessionId: String,

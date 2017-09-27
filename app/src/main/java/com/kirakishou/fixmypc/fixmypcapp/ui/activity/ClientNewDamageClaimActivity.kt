@@ -15,7 +15,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewDamageClaimActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.dialog.ProgressDialog
-import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction.DamageClaimPhotosFragmentCallbacks
+import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.new_damage_claim.DamageClaimPhotosFragmentCallbacks
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientNewDamageClaimActivityNavigator
 import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject

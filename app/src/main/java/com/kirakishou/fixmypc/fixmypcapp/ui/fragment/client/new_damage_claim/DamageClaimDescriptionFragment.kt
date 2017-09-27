@@ -1,9 +1,11 @@
-package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction
+package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.new_damage_claim
 
 import android.animation.AnimatorSet
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.support.design.widget.TextInputEditText
 import android.support.v7.widget.AppCompatButton
+import android.support.v7.widget.CardView
 import butterknife.BindView
 import com.jakewharton.rxbinding2.view.RxView
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
@@ -11,7 +13,6 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerClientNewDamageClaimActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewDamageClaimActivityModule
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.DamageClaimCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewDamageClaimActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewDamageClaimActivity
@@ -21,16 +22,17 @@ import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
 import javax.inject.Inject
 
-class DamageClaimCategoryFragment : BaseFragment<ClientNewDamageClaimActivityViewModel>() {
 
-    @BindView(R.id.computer_category_button)
-    lateinit var mComputerCategoryButton: AppCompatButton
+class DamageClaimDescriptionFragment : BaseFragment<ClientNewDamageClaimActivityViewModel>() {
 
-    @BindView(R.id.notebook_category_button)
-    lateinit var mNotebookCategoryButton: AppCompatButton
+    @BindView(R.id.card_view)
+    lateinit var mViewHolderCardView: CardView
 
-    @BindView(R.id.phone_category_button)
-    lateinit var mPhoneCategoryButton: AppCompatButton
+    @BindView(R.id.damage_claim_description)
+    lateinit var mDamageClaimDescriptionEditText: TextInputEditText
+
+    @BindView(R.id.button_done)
+    lateinit var mButtonDone: AppCompatButton
 
     @Inject
     lateinit var mViewModelFactory: ClientNewMalfunctionActivityViewModelFactory
@@ -38,11 +40,11 @@ class DamageClaimCategoryFragment : BaseFragment<ClientNewDamageClaimActivityVie
     @Inject
     lateinit var mNavigator: ClientNewDamageClaimActivityNavigator
 
-    override fun initViewModel(): ClientNewDamageClaimActivityViewModel {
+    override fun initViewModel(): ClientNewDamageClaimActivityViewModel? {
         return ViewModelProviders.of(activity, mViewModelFactory).get(ClientNewDamageClaimActivityViewModel::class.java)
     }
 
-    override fun getContentView(): Int = R.layout.fragment_damage_claim_category
+    override fun getContentView(): Int = R.layout.fragment_damage_claim_description
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
@@ -51,28 +53,10 @@ class DamageClaimCategoryFragment : BaseFragment<ClientNewDamageClaimActivityVie
     }
 
     private fun initRx() {
-        mCompositeDisposable += RxView.clicks(mComputerCategoryButton)
+        mCompositeDisposable += RxView.clicks(mButtonDone)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
-                    setMalfunctionCategory(DamageClaimCategory.Computer)
-                    loadNextFragment()
-                }, { error ->
-                    Timber.e(error)
-                })
-
-        mCompositeDisposable += RxView.clicks(mNotebookCategoryButton)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ _ ->
-                    setMalfunctionCategory(DamageClaimCategory.Notebook)
-                    loadNextFragment()
-                }, { error ->
-                    Timber.e(error)
-                })
-
-        mCompositeDisposable += RxView.clicks(mPhoneCategoryButton)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ _ ->
-                    setMalfunctionCategory(DamageClaimCategory.Phone)
+                    setMalfunctionDescription(mDamageClaimDescriptionEditText.text.toString())
                     loadNextFragment()
                 }, { error ->
                     Timber.e(error)
@@ -80,11 +64,11 @@ class DamageClaimCategoryFragment : BaseFragment<ClientNewDamageClaimActivityVie
     }
 
     private fun loadNextFragment() {
-        mNavigator.navigateToDamageClaimDescriptionFragment()
+        mNavigator.navigateToDamageClaimLocationFragment()
     }
 
-    private fun setMalfunctionCategory(category: DamageClaimCategory) {
-        getViewModel().setCategory(category)
+    private fun setMalfunctionDescription(description: String) {
+        getViewModel().setDescription(description)
     }
 
     override fun onFragmentViewDestroy() {

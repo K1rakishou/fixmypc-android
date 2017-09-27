@@ -4,10 +4,10 @@ import android.support.v7.app.AppCompatActivity
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseNavigator
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction.DamageClaimCategoryFragment
-import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction.DamageClaimDescriptionFragment
-import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction.DamageClaimLocationFragment
-import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.malfunction.DamageClaimPhotosFragment
+import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.new_damage_claim.DamageClaimCategoryFragment
+import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.new_damage_claim.DamageClaimDescriptionFragment
+import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.new_damage_claim.DamageClaimLocationFragment
+import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.new_damage_claim.DamageClaimPhotosFragment
 
 /**
  * Created by kirakishou on 9/10/2017.

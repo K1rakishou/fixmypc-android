@@ -37,11 +37,11 @@ class CheckAlreadyRespondedToDamageClaimRequest(protected val damageClaimId: Lon
                 .subscribeOn(Schedulers.io())
                 .lift(OnApiErrorSingle(mGson))
                 .flatMap { response ->
-                    if (response.errorCode == ErrorCode.Remote.REC_OK) {
-                        return@flatMap Single.just(response)
+                    if (response.errorCode == ErrorCode.Remote.REC_SESSION_ID_EXPIRED) {
+                        return@flatMap reLoginAndResendRequest()
                     }
 
-                    return@flatMap reLoginAndResendRequest()
+                    return@flatMap Single.just(response)
                 }
                 .onErrorResumeNext { error -> exceptionToErrorCode(error) }
     }

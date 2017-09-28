@@ -30,6 +30,8 @@ class DamageClaimListAdapter(private val mContext: Context,
                              private val mAdapterItemClickSubject: BehaviorSubject<DamageClaim>,
                              private val mImageLoader: ImageLoader) : BaseAdapter<DamageClaimListAdapterGenericParam>(mContext) {
 
+    private val mItemsSet = hashSetOf<Long>()
+
     override fun add(item: AdapterItem<DamageClaimListAdapterGenericParam>) {
         checkInited()
 

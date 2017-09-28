@@ -49,8 +49,9 @@ class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>(), Fragment
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
         supportFragmentManager.addOnBackStackChangedListener(this)
-
         initRx()
+
+        mNavigator.navigateToClientAllDamageClaimsFragment()
     }
 
     private fun initRx() {
@@ -61,8 +62,8 @@ class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>(), Fragment
     }
 
     override fun onActivityDestroy() {
-        mRefWatcher.watch(this)
         supportFragmentManager.removeOnBackStackChangedListener(this)
+        mRefWatcher.watch(this)
     }
 
     override fun onActivityStart() {

@@ -95,7 +95,7 @@ class SpecialistMainActivityNavigator(activity: AppCompatActivity) : BaseNavigat
 
         val newFragment = LoadingIndicatorFragment()
         fragmentTransaction
-                .add(R.id.fragment_frame, newFragment, Constant.FragmentTags.LOADING_INDICATOR_FRAGMENT)
+                .add(R.id.fragment_frame, newFragment, Constant.FragmentTags.LOADING_INDICATOR)
                 .addToBackStack(null)
 
         fragmentTransaction.commit()

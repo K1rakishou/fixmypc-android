@@ -4,8 +4,10 @@ import com.kirakishou.fixmypc.fixmypcapp.base.BaseViewModel
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsClientResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.ClientMainActivityErrors
@@ -33,6 +35,7 @@ class ClientMainActivityViewModel
     val mOutputs: ClientMainActivityOutputs = this
     val mErrors: ClientMainActivityErrors = this
 
+    private val itemsPerPage = Constant.MAX_DAMAGE_CLAIMS_PER_PAGE
     private val mCompositeDisposable = CompositeDisposable()
 
     lateinit var mGetActiveClientDamageClaimSubject: BehaviorSubject<GetClientDamageClaimsDTO>
@@ -45,6 +48,10 @@ class ClientMainActivityViewModel
     fun init() {
         mGetActiveClientDamageClaimSubject = BehaviorSubject.create()
         mGetInactiveClientDamageClaimSubject = BehaviorSubject.create()
+        mOnActiveDamageClaimsResponseSubject = BehaviorSubject.create()
+        mOnInactiveDamageClaimsResponseSubject = BehaviorSubject.create()
+        mOnBadResponseSubject = BehaviorSubject.create()
+        mOnUnknownErrorSubject = BehaviorSubject.create()
 
         mCompositeDisposable += mGetActiveClientDamageClaimSubject
                 .subscribeOn(mSchedulers.provideIo())
@@ -54,7 +61,7 @@ class ClientMainActivityViewModel
                             .toObservable()
                 }
                 .subscribe({
-                    handleResponse(it)
+                    handleResponse(DamageClaimsClientResponse(it.damageClaims, true, it.errorCode))
                 }, { error ->
                     handleError(error)
                 })
@@ -67,18 +74,25 @@ class ClientMainActivityViewModel
                             .toObservable()
                 }
                 .subscribe({
-                    handleResponse(it)
+                    handleResponse(DamageClaimsClientResponse(it.damageClaims, false, it.errorCode))
                 }, { error ->
                     handleError(error)
                 })
     }
 
+    override fun onCleared() {
+        super.onCleared()
+
+        Timber.e("ClientMainActivityViewModel.onCleared()")
+        mCompositeDisposable.clear()
+    }
+
     override fun getActiveClientDamageClaimSubject( skip: Long, count: Long) {
-        mGetActiveClientDamageClaimSubject.onNext(GetClientDamageClaimsDTO(true, skip, count))
+        mGetActiveClientDamageClaimSubject.onNext(GetClientDamageClaimsDTO(true, skip * itemsPerPage, count))
     }
 
     override fun getInactiveClientDamageClaimSubject(skip: Long, count: Long) {
-        mGetInactiveClientDamageClaimSubject.onNext(GetClientDamageClaimsDTO(false, skip, count))
+        mGetInactiveClientDamageClaimSubject.onNext(GetClientDamageClaimsDTO(false, skip * itemsPerPage, count))
     }
 
     private fun handleResponse(response: StatusResponse) {
@@ -86,8 +100,8 @@ class ClientMainActivityViewModel
 
         if (errorCode == ErrorCode.Remote.REC_OK) {
             when (response) {
-                is DamageClaimsResponse -> {
-                    if (response.damageClaims.first().isActive) {
+                is DamageClaimsClientResponse -> {
+                    if (response.isActive) {
                         mOnActiveDamageClaimsResponseSubject.onNext(response.damageClaims)
                     } else {
                         mOnInactiveDamageClaimsResponseSubject.onNext(response.damageClaims)
@@ -114,13 +128,6 @@ class ClientMainActivityViewModel
 
     private fun handleError(error: Throwable) {
         mOnUnknownErrorSubject.onNext(error)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-
-        Timber.e("ClientMainActivityViewModel.onCleared()")
-        mCompositeDisposable.clear()
     }
 
     override fun onActiveDamageClaimsResponse(): Observable<MutableList<DamageClaim>> = mOnActiveDamageClaimsResponseSubject

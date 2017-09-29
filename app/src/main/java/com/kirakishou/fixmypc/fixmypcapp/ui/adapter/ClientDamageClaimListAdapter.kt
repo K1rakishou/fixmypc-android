@@ -13,24 +13,18 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseAdapter
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.extension.myGetDrawable
-import com.kirakishou.fixmypc.fixmypcapp.helper.util.Utils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItem
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItemType
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.DamageClaimCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimListAdapterGenericParam
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimListGeneric
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimsAdapterMessage
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimsWithDistanceDTO
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
-import io.reactivex.subjects.BehaviorSubject
 
 /**
- * Created by kirakishou on 9/3/2017.
+ * Created by kirakishou on 9/29/2017.
  */
-class DamageClaimListAdapter(private val mContext: Context,
-                             private val mAdapterItemClickSubject: BehaviorSubject<DamageClaim>,
-                             private val mImageLoader: ImageLoader) : BaseAdapter<DamageClaimListAdapterGenericParam>(mContext) {
-
-    private val mItemsSet = hashSetOf<Long>()
+class ClientDamageClaimListAdapter(private val mContext: Context,
+                                   private val mImageLoader: ImageLoader) : BaseAdapter<DamageClaimListAdapterGenericParam>(mContext) {
 
     override fun add(item: AdapterItem<DamageClaimListAdapterGenericParam>) {
         checkInited()
@@ -108,22 +102,18 @@ class DamageClaimListAdapter(private val mContext: Context,
 
     override fun getBaseAdapterInfo(): MutableList<BaseAdapterInfo> {
         return mutableListOf(
-                BaseAdapterInfo(AdapterItemType.VIEW_ITEM, R.layout.adapter_item_damage_claim, DamageClaimItemHolder::class.java),
-                BaseAdapterInfo(AdapterItemType.VIEW_PROGRESSBAR, R.layout.item_progressbar, ProgressBarItemHolder::class.java),
-                BaseAdapterInfo(AdapterItemType.VIEW_MESSAGE, R.layout.item_message, MessageItemHolder::class.java))
+                BaseAdapterInfo(AdapterItemType.VIEW_ITEM, R.layout.adapter_client_item_damage_claim,
+                        DamageClaimItemHolder::class.java),
+                BaseAdapterInfo(AdapterItemType.VIEW_PROGRESSBAR, R.layout.item_progress,
+                        ProgressBarItemHolder::class.java),
+                BaseAdapterInfo(AdapterItemType.VIEW_MESSAGE, R.layout.item_message,
+                        MessageItemHolder::class.java))
     }
 
     override fun onViewHolderBound(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is DamageClaimItemHolder -> {
-                val claim = mItems[position].value.get() as DamageClaimsWithDistanceDTO
-                val distStr = Utils.distanceToString(claim.distance)
-
-                holder.clickView.setOnClickListener {
-                    mAdapterItemClickSubject.onNext(claim.damageClaim)
-                }
-
-                holder.distanceToMe.text = "$distStr КМ"
+            is SpecialistDamageClaimListAdapter.DamageClaimItemHolder -> {
+                val claim = mItems[position].value.get() as DamageClaimListGeneric
 
                 when (claim.damageClaim.category) {
                     DamageClaimCategory.Computer.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_computer))
@@ -138,11 +128,11 @@ class DamageClaimListAdapter(private val mContext: Context,
                 }
             }
 
-            is ProgressBarItemHolder -> {
+            is SpecialistDamageClaimListAdapter.ProgressBarItemHolder -> {
                 holder.progressBar.isIndeterminate = true
             }
 
-            is MessageItemHolder -> {
+            is SpecialistDamageClaimListAdapter.MessageItemHolder -> {
                 val adapterMessage = mItems[position].value.get() as DamageClaimsAdapterMessage
                 holder.message.text = adapterMessage.text
             }
@@ -156,9 +146,6 @@ class DamageClaimListAdapter(private val mContext: Context,
 
         @BindView(R.id.damage_photo)
         lateinit var damagePhoto: ImageView
-
-        @BindView(R.id.distance_to_me)
-        lateinit var distanceToMe: TextView
 
         @BindView(R.id.damage_type)
         lateinit var damageTypeIcon: ImageView

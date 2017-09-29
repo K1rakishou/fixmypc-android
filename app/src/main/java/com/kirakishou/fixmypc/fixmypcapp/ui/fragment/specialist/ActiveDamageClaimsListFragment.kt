@@ -25,7 +25,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
-import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.DamageClaimListAdapter
+import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.SpecialistDamageClaimListAdapter
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavigator
 import com.kirakishou.fixmypc.fixmypcapp.ui.widget.EndlessRecyclerOnScrollListener
 import com.squareup.leakcanary.RefWatcher
@@ -65,7 +65,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
 
     private val currentLocationPref by lazy { mAppSharedPreference.prepare<MyCurrentLocationPreference>() }
 
-    private lateinit var mAdapter: DamageClaimListAdapter
+    private lateinit var mAdapterSpecialist: SpecialistDamageClaimListAdapter
     private lateinit var mEndlessScrollListener: EndlessRecyclerOnScrollListener
 
     override fun initViewModel(): SpecialistMainActivityViewModel? {
@@ -104,7 +104,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
     }
 
     private fun recyclerStartLoadingItems() {
-        mAdapter.addProgressFooter()
+        mAdapterSpecialist.addProgressFooter()
     }
 
     private fun getCurrentLocationGps() {
@@ -126,7 +126,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
 
         layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                val type = mAdapter.getItemViewType(position)
+                val type = mAdapterSpecialist.getItemViewType(position)
                 return when (type) {
                     AdapterItemType.VIEW_PROGRESSBAR.ordinal, AdapterItemType.VIEW_MESSAGE.ordinal -> spanCount
                     AdapterItemType.VIEW_ITEM.ordinal -> 1
@@ -135,13 +135,13 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
             }
         }
 
-        mAdapter = DamageClaimListAdapter(activity, mAdapterItemClickSubject, mImageLoader)
-        mAdapter.init()
+        mAdapterSpecialist = SpecialistDamageClaimListAdapter(activity, mAdapterItemClickSubject, mImageLoader)
+        mAdapterSpecialist.init()
 
         mEndlessScrollListener = EndlessRecyclerOnScrollListener(layoutManager, mLoadMoreSubject)
 
         mDamageClaimList.layoutManager = layoutManager
-        mDamageClaimList.adapter = mAdapter
+        mDamageClaimList.adapter = mAdapterSpecialist
         mDamageClaimList.addOnScrollListener(mEndlessScrollListener)
         mDamageClaimList.setHasFixedSize(true)
     }
@@ -150,7 +150,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
         mCompositeDisposable += Observables.combineLatest(mLoadMoreSubject, mLocationSubject, { loadMore, location -> Pair(loadMore, location) })
                 .subscribeOn(Schedulers.io())
                 .subscribe({ (page, latlon) ->
-                    mAdapter.addProgressFooter()
+                    mAdapterSpecialist.addProgressFooter()
                     getDamageClaims(page, latlon)
                 }, { error ->
                     Timber.e(error)
@@ -194,13 +194,13 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
             mEndlessScrollListener.reachedEnd()
         }
 
-        mAdapter.removeProgressFooter()
+        mAdapterSpecialist.removeProgressFooter()
 
         val adapterDamageClaims = damageClaimList.map { AdapterItem(it, AdapterItemType.VIEW_ITEM) }
-        mAdapter.addAll(adapterDamageClaims as List<AdapterItem<DamageClaimListAdapterGenericParam>>)
+        mAdapterSpecialist.addAll(adapterDamageClaims as List<AdapterItem<DamageClaimListAdapterGenericParam>>)
 
         if (damageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
-            mAdapter.addMessageFooter("Последнее объявление")
+            mAdapterSpecialist.addMessageFooter("Последнее объявление")
         }
     }
 

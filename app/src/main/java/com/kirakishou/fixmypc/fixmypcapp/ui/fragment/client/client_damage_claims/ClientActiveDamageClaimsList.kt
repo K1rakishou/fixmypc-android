@@ -17,11 +17,12 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimListAdapterGenericParam
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimListGeneric
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
-import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.DamageClaimListAdapter
+import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.ClientDamageClaimListAdapter
 import com.kirakishou.fixmypc.fixmypcapp.ui.widget.EndlessRecyclerOnScrollListener
 import com.squareup.leakcanary.RefWatcher
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -48,7 +49,7 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
     private val mLoadMoreSubject = BehaviorSubject.create<Long>()
     private val mAdapterItemClickSubject = BehaviorSubject.create<DamageClaim>()
 
-    private lateinit var mAdapter: DamageClaimListAdapter
+    private lateinit var mAdapterClient: ClientDamageClaimListAdapter
     private lateinit var mEndlessScrollListener: EndlessRecyclerOnScrollListener
 
     override fun initViewModel(): ClientMainActivityViewModel? {
@@ -62,10 +63,15 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
     override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
         initRx()
         initRecycler()
+        recyclerStartLoadingItems()
     }
 
     override fun onFragmentViewDestroy() {
         mRefWatcher.watch(this)
+    }
+
+    private fun recyclerStartLoadingItems() {
+        mAdapterClient.addProgressFooter()
     }
 
     private fun initRecycler() {
@@ -74,7 +80,7 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
 
         layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                val type = mAdapter.getItemViewType(position)
+                val type = mAdapterClient.getItemViewType(position)
                 return when (type) {
                     AdapterItemType.VIEW_PROGRESSBAR.ordinal, AdapterItemType.VIEW_MESSAGE.ordinal -> spanCount
                     AdapterItemType.VIEW_ITEM.ordinal -> 1
@@ -83,13 +89,13 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
             }
         }
 
-        mAdapter = DamageClaimListAdapter(activity, mAdapterItemClickSubject, mImageLoader)
-        mAdapter.init()
+        mAdapterClient = ClientDamageClaimListAdapter(activity, mImageLoader)
+        mAdapterClient.init()
 
         mEndlessScrollListener = EndlessRecyclerOnScrollListener(layoutManager, mLoadMoreSubject)
 
         mActiveDamageClaimList.layoutManager = layoutManager
-        mActiveDamageClaimList.adapter = mAdapter
+        mActiveDamageClaimList.adapter = mAdapterClient
         mActiveDamageClaimList.addOnScrollListener(mEndlessScrollListener)
         mActiveDamageClaimList.setHasFixedSize(true)
     }
@@ -98,7 +104,7 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
         mCompositeDisposable += mLoadMoreSubject
                 .subscribeOn(Schedulers.io())
                 .subscribe({ page ->
-                    mAdapter.addProgressFooter()
+                    mAdapterClient.addProgressFooter()
                     getDamageClaims(page)
                 }, { error ->
                     Timber.e(error)
@@ -128,13 +134,13 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
             mEndlessScrollListener.reachedEnd()
         }
 
-        mAdapter.removeProgressFooter()
+        mAdapterClient.removeProgressFooter()
 
-        val adapterDamageClaims = activeDamageClaimList.map { AdapterItem(it, AdapterItemType.VIEW_ITEM) }
-        mAdapter.addAll(adapterDamageClaims as List<AdapterItem<DamageClaimListAdapterGenericParam>>)
+        val adapterDamageClaims = activeDamageClaimList.map { AdapterItem(DamageClaimListGeneric(it), AdapterItemType.VIEW_ITEM) }
+        mAdapterClient.addAll(adapterDamageClaims as List<AdapterItem<DamageClaimListAdapterGenericParam>>)
 
         if (activeDamageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
-            mAdapter.addMessageFooter("Последнее объявление")
+            mAdapterClient.addMessageFooter("Последнее объявление")
         }
     }
 

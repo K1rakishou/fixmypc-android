@@ -12,6 +12,7 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
+import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivityFragmentCallback
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerClientMainActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientMainActivityViewModel
@@ -22,7 +23,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import javax.inject.Inject
 
-class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>(), FragmentManager.OnBackStackChangedListener {
+class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>(), FragmentManager.OnBackStackChangedListener,
+    BaseActivityFragmentCallback {
 
     @BindView(R.id.my_profile_button)
     lateinit var myProfileButton: ImageView
@@ -85,7 +87,7 @@ class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>(), Fragment
                 .inject(this)
     }
 
-    fun onShowToast(message: String, duration: Int) {
+    override fun onShowToast(message: String, duration: Int) {
         showToast(message, duration)
     }
 

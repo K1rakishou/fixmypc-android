@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiService
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.operator.OnApiErrorSingle
+import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.Utils
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.retrofit.ProgressRequestBody
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
@@ -22,7 +23,6 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.functions.Function
 import io.reactivex.rxkotlin.Observables
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.ReplaySubject
 import okhttp3.MultipartBody
 import java.io.File
@@ -36,12 +36,13 @@ class CreateDamageClaimRequest(protected val mDamageClaimInfo: DamageClaimInfo,
                                protected val mUploadProgressUpdateSubject: ReplaySubject<ProgressUpdate>,
                                protected val mApiService: ApiService,
                                protected val mAppSettings: AppSettings,
-                               protected val mGson: Gson) : AbstractRequest<Single<StatusResponse>> {
+                               protected val mGson: Gson,
+                               protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<StatusResponse>> {
 
     override fun execute(): Single<StatusResponse> {
         //create MultipartFile bodies, check if user has selected the same file twice
         val progressBodyListObservable = Observable.fromIterable(mDamageClaimInfo.damageClaimPhotos)
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(mSchedulers.provideIo())
                 .map { prepareRequest(it, mUploadProgressUpdateSubject) }
                 //it.second is md5 string of the selected file
                 //FIXME: Fix ErrorOnDuplicate operator

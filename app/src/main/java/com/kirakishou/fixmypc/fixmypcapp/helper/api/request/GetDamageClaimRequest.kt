@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiService
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.operator.OnApiErrorObservable
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.operator.OnApiErrorSingle
+import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.LoginPacket
@@ -15,7 +16,6 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.CouldNotUpdateSes
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UserInfoIsEmpty
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
 import java.net.UnknownHostException
 import java.util.concurrent.TimeoutException
 
@@ -29,7 +29,8 @@ class GetDamageClaimRequest(protected val mLat: Double,
                             protected val mCount: Long,
                             protected val mApiService: ApiService,
                             protected val mAppSettings: AppSettings,
-                            protected val mGson: Gson) : AbstractRequest<Single<DamageClaimsResponse>> {
+                            protected val mGson: Gson,
+                            protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<DamageClaimsResponse>> {
 
     override fun execute(): Single<DamageClaimsResponse> {
         if (!mAppSettings.isUserInfoExists()) {
@@ -37,7 +38,7 @@ class GetDamageClaimRequest(protected val mLat: Double,
         }
 
         return mApiService.getDamageClaims(mAppSettings.loadUserInfo().sessionId, mLat, mLon, mRadius, mPage, mCount)
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(mSchedulers.provideIo())
                 .lift(OnApiErrorSingle(mGson))
                 .flatMap { response ->
                     if (response.errorCode == ErrorCode.Remote.REC_SESSION_ID_EXPIRED) {
@@ -57,7 +58,7 @@ class GetDamageClaimRequest(protected val mLat: Double,
         val userInfo = mAppSettings.loadUserInfo()
 
         val loginResponseObservable = mApiService.doLogin(LoginPacket(userInfo.login, userInfo.password))
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(mSchedulers.provideIo())
                 .lift(OnApiErrorSingle(mGson))
                 .toObservable()
                 .publish()

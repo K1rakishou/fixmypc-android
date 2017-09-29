@@ -112,7 +112,7 @@ class ClientDamageClaimListAdapter(private val mContext: Context,
 
     override fun onViewHolderBound(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is SpecialistDamageClaimListAdapter.DamageClaimItemHolder -> {
+            is DamageClaimItemHolder -> {
                 val claim = mItems[position].value.get() as DamageClaimListGeneric
 
                 when (claim.damageClaim.category) {
@@ -128,11 +128,11 @@ class ClientDamageClaimListAdapter(private val mContext: Context,
                 }
             }
 
-            is SpecialistDamageClaimListAdapter.ProgressBarItemHolder -> {
+            is ProgressBarItemHolder -> {
                 holder.progressBar.isIndeterminate = true
             }
 
-            is SpecialistDamageClaimListAdapter.MessageItemHolder -> {
+            is MessageItemHolder -> {
                 val adapterMessage = mItems[position].value.get() as DamageClaimsAdapterMessage
                 holder.message.text = adapterMessage.text
             }

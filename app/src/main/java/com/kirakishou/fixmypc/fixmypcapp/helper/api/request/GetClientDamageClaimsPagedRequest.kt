@@ -20,23 +20,21 @@ import java.net.UnknownHostException
 import java.util.concurrent.TimeoutException
 
 /**
- * Created by kirakishou on 9/12/2017.
+ * Created by kirakishou on 9/29/2017.
  */
-class GetDamageClaimRequest(protected val mLat: Double,
-                            protected val mLon: Double,
-                            protected val mRadius: Double,
-                            protected val mPage: Long,
-                            protected val mCount: Long,
-                            protected val mApiService: ApiService,
-                            protected val mAppSettings: AppSettings,
-                            protected val mGson: Gson) : AbstractRequest<Single<DamageClaimsResponse>> {
+class GetClientDamageClaimsPagedRequest(protected val isActive: Boolean,
+                                        protected val skip: Long,
+                                        protected val count: Long,
+                                        protected val mApiService: ApiService,
+                                        protected val mAppSettings: AppSettings,
+                                        protected val mGson: Gson) : AbstractRequest<Single<DamageClaimsResponse>> {
 
     override fun execute(): Single<DamageClaimsResponse> {
         if (!mAppSettings.isUserInfoExists()) {
             throw UserInfoIsEmpty()
         }
 
-        return mApiService.getDamageClaims(mAppSettings.loadUserInfo().sessionId, mLat, mLon, mRadius, mPage, mCount)
+        return mApiService.getClientDamageClaimsPaged(mAppSettings.loadUserInfo().sessionId, isActive, skip, count)
                 .subscribeOn(Schedulers.io())
                 .lift(OnApiErrorSingle(mGson))
                 .flatMap { response ->
@@ -67,7 +65,7 @@ class GetDamageClaimRequest(protected val mLat: Double,
                 .filter { it.errorCode == ErrorCode.Remote.REC_OK }
                 .doOnNext { mAppSettings.updateSessionId(it.sessionId) }
                 .flatMap {
-                    return@flatMap mApiService.getDamageClaims(mAppSettings.loadUserInfo().sessionId, mLat, mLon, mRadius, mPage, mCount)
+                    return@flatMap mApiService.getClientDamageClaimsPaged(mAppSettings.loadUserInfo().sessionId, isActive, skip, count)
                             .toObservable()
                 }
                 .lift<DamageClaimsResponse>(OnApiErrorObservable(mGson))

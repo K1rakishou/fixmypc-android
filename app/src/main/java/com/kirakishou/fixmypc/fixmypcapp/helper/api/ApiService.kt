@@ -42,4 +42,10 @@ interface ApiService {
     @GET("/v1/api/damage_claim_request/respond/{damage_claim_id}")
     fun checkAlreadyRespondedToDamageClaim(@Header("session_id") sessionId: String,
                                            @Path("damage_claim_id") damageClaimId: Long): Single<Response<HasAlreadyRespondedResponse>>
+
+    @GET("/v1/api/damage_claim_request/get_client/{is_active}/{skip}/{count}")
+    fun getClientDamageClaimsPaged(@Header("session_id") sessionId: String,
+                                   @Path("is_active") isActive: Boolean,
+                                   @Path("skip") skip: Long,
+                                   @Path("count") count: Long): Single<Response<DamageClaimsResponse>>
 }

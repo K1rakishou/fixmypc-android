@@ -53,6 +53,11 @@ class ApiClientImpl
         return CheckAlreadyRespondedToDamageClaimRequest(damageClaimId, mApiService, mAppSettings, mGson)
                 .execute()
     }
+
+    override fun getClientDamageClaimsPaged(isActive: Boolean, skip: Long, count: Long): Single<DamageClaimsResponse> {
+        return GetClientDamageClaimsPagedRequest(isActive, skip, count, mApiService, mAppSettings, mGson)
+                .execute()
+    }
 }
 
 

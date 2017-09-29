@@ -4,9 +4,9 @@
     android:layout_height="match_parent"
     tools:context="com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.client_damage_claims.ClientInactiveDamageClaimsList">
 
-    <TextView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/inactive_damage_claim_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="456" />
+        android:layout_height="match_parent"/>
 
 </FrameLayout>

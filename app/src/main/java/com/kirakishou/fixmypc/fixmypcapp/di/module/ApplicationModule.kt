@@ -166,8 +166,8 @@ class ApplicationModule(private val mApplication: Application,
 
     @Singleton
     @Provides
-    fun provideFixmypcApiStore(mApiService: ApiService, mAppSettings: AppSettings, mGson: Gson): ApiClient {
-        return ApiClientImpl(mApiService, mAppSettings, mGson)
+    fun provideFixmypcApiStore(mApiService: ApiService, mAppSettings: AppSettings, mGson: Gson, mSchedulers: SchedulerProvider): ApiClient {
+        return ApiClientImpl(mApiService, mAppSettings, mGson, mSchedulers)
     }
 
     @Singleton

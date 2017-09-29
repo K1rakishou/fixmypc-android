@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.widget.Toast
 import butterknife.BindView
 import com.google.android.gms.maps.model.LatLng
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
@@ -17,10 +18,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.MyCurrentLocationPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItem
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItemType
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimListAdapterGenericParam
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimsWithDistanceDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
@@ -92,7 +90,6 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
         Timber.e("savedInstanceState == $savedInstanceState")
 
         initRx()
-
         initRecycler()
         getCurrentLocationGps()
         recyclerStartLoadingItems()
@@ -124,7 +121,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
     }
 
     private fun initRecycler() {
-        val spanCount = AndroidUtils.calculateNoOfColumns(activity, Constant.Views.DAMAGE_CLAIM_ADAPTER_VIEW_WITH)
+        val spanCount = AndroidUtils.calculateNoOfColumns(activity, Constant.Views.DAMAGE_CLAIM_ADAPTER_VIEW_WIDTH)
         val layoutManager = GridLayoutManager(activity, spanCount)
 
         layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -167,6 +164,10 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUnknownError(it) })
 
+        mCompositeDisposable += getViewModel().mErrors.onBadResponse()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onBadResponse(it) })
+
         mCompositeDisposable += mAdapterItemClickSubject
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onAdapterItemClick(it) })
@@ -203,6 +204,19 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
         }
     }
 
+    fun onShowToast(message: String, duration: Int) {
+        showToast(message, duration)
+    }
+
+    private fun onUnknownError(throwable: Throwable) {
+        unknownError(throwable)
+    }
+
+    private fun onBadResponse(errorCode: ErrorCode.Remote) {
+        val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
+        showToast(message, Toast.LENGTH_LONG)
+    }
+
     override fun resolveDaggerDependency() {
         DaggerSpecialistMainActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
@@ -210,12 +224,39 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
                 .build()
                 .inject(this)
     }
-
-    fun onShowToast(message: String, duration: Int) {
-        showToast(message, duration)
-    }
-
-    fun onUnknownError(throwable: Throwable) {
-        unknownError(throwable)
-    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -2,6 +2,7 @@ package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel
 
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseViewModel
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
+import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AccountType
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
@@ -17,7 +18,6 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 import java.net.UnknownHostException
@@ -29,7 +29,8 @@ import javax.inject.Inject
  */
 class LoadingActivityViewModel
 @Inject constructor(protected val mApiClient: ApiClient,
-                    protected val mAppSettings: AppSettings) :
+                    protected val mAppSettings: AppSettings,
+                    protected val mSchedulers: SchedulerProvider) :
         BaseViewModel(),
         LoadingActivityInputs,
         LoadingActivityOutputs,
@@ -50,7 +51,7 @@ class LoadingActivityViewModel
 
     init {
         mCompositeDisposable += mLogInSubject
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(mSchedulers.provideIo())
                 .map { LoginPacket(it.login, it.password) }
                 .flatMap { Observables.zip(mApiClient.loginRequest(it).toObservable(), Observable.just(it)) }
                 .subscribe({ (loginResponse, loginRequest) ->
@@ -98,10 +99,6 @@ class LoadingActivityViewModel
     }
 
     private fun handleError(error: Throwable) {
-        if (error !is ApiException) {
-            Timber.e(error)
-        }
-
         when (error) {
             is ApiException -> {
                 val remoteErrorCode = error.errorCode

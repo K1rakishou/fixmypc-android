@@ -89,7 +89,7 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewDamageClaimActivityViewM
         mPhotoAdapter.add(AdapterItem(AdapterItemType.VIEW_ADD_BUTTON))
 
         val layoutManager = GridLayoutManager(activity,
-                AndroidUtils.calculateColumnsCount(activity, Constant.Views.PHOTO_ADAPTER_VIEW_WITH))
+                AndroidUtils.calculateColumnsCount(activity, Constant.Views.PHOTO_ADAPTER_VIEW_WIDTH))
 
         mPhotoRecyclerView.layoutManager = layoutManager
         mPhotoRecyclerView.setHasFixedSize(true)

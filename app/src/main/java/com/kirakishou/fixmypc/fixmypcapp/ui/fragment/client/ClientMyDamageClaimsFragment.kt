@@ -49,6 +49,7 @@ class ClientMyDamageClaimsFragment : BaseFragment<ClientMainActivityViewModel>()
 
         val adapter = FragmentTabsPager(activity.supportFragmentManager)
         viewPager.adapter = adapter
+        viewPager.offscreenPageLimit = 1
 
         viewPager.addOnPageChangeListener(this)
         tabLayout.addOnTabSelectedListener(this)

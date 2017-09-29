@@ -113,7 +113,7 @@ open class BaseRobolectricTestCase {
     }
 
     fun provideApiClient(): ApiClient {
-        return ApiClientImpl(provideApiService(), provideAppSettings(), provideGson())
+        return ApiClientImpl(provideApiService(), provideAppSettings(), provideGson(), provideSchedulers())
     }
 
     fun provideSharedPreferences(): SharedPreferences {

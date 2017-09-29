@@ -50,6 +50,7 @@ class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>(), Fragment
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
         supportFragmentManager.addOnBackStackChangedListener(this)
         initRx()
+        getViewModel().init()
 
         mNavigator.navigateToClientAllDamageClaimsFragment()
     }

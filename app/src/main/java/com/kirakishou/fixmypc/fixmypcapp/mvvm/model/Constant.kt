@@ -45,8 +45,8 @@ object Constant {
     }
 
     object Views {
-        val PHOTO_ADAPTER_VIEW_WITH: Int = 128
-        val DAMAGE_CLAIM_ADAPTER_VIEW_WITH = 288
+        val PHOTO_ADAPTER_VIEW_WIDTH: Int = 128
+        val DAMAGE_CLAIM_ADAPTER_VIEW_WIDTH = 288
     }
 
     object PermissionCodes {

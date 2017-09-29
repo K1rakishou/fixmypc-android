@@ -3,6 +3,7 @@ package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
+import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.LoadingActivityViewModel
 import javax.inject.Inject
@@ -12,11 +13,12 @@ import javax.inject.Inject
  */
 class LoadingActivityViewModelFactory
     @Inject constructor(val apiClient: ApiClient,
-                        val appSettings: AppSettings): ViewModelProvider.Factory {
+                        val appSettings: AppSettings,
+                        val mSchedulers: SchedulerProvider): ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return LoadingActivityViewModel(apiClient, appSettings) as T
+        return LoadingActivityViewModel(apiClient, appSettings, mSchedulers) as T
     }
 
 }

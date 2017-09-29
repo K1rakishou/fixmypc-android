@@ -1,6 +1,9 @@
 package com.kirakishou.fixmypc.fixmypcapp.di.module
 
 import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerActivity
+import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
+import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientMainActivityNavigator
@@ -22,7 +25,8 @@ class ClientMainActivityModule(val activity: ClientMainActivity) {
 
     @PerActivity
     @Provides
-    fun provideViewModelFactory(): ClientMainActivityViewModelFactory {
-        return ClientMainActivityViewModelFactory()
+    fun provideViewModelFactory(mApiClient: ApiClient, mAppSettings: AppSettings,
+                                mSchedulers: SchedulerProvider): ClientMainActivityViewModelFactory {
+        return ClientMainActivityViewModelFactory(mApiClient, mAppSettings, mSchedulers)
     }
 }

@@ -19,12 +19,15 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.DamageClaimCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimListAdapterGenericParam
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimListGeneric
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimsAdapterMessage
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
+import io.reactivex.subjects.BehaviorSubject
 
 /**
  * Created by kirakishou on 9/29/2017.
  */
 class ClientDamageClaimListAdapter(private val mContext: Context,
-                                   private val mImageLoader: ImageLoader) : BaseAdapter<DamageClaimListAdapterGenericParam>(mContext) {
+                                   private val mImageLoader: ImageLoader,
+                                   private val mAdapterItemClickSubject: BehaviorSubject<DamageClaim>) : BaseAdapter<DamageClaimListAdapterGenericParam>(mContext) {
 
     override fun add(item: AdapterItem<DamageClaimListAdapterGenericParam>) {
         checkInited()
@@ -113,16 +116,17 @@ class ClientDamageClaimListAdapter(private val mContext: Context,
     override fun onViewHolderBound(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is DamageClaimItemHolder -> {
-                val claim = mItems[position].value.get() as DamageClaimListGeneric
+                val damageClaim = (mItems[position].value.get() as DamageClaimListGeneric).damageClaim
+                mAdapterItemClickSubject.onNext(damageClaim)
 
-                when (claim.damageClaim.category) {
+                when (damageClaim.category) {
                     DamageClaimCategory.Computer.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_computer))
                     DamageClaimCategory.Notebook.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_laptop))
                     DamageClaimCategory.Phone.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_smartphone))
                 }
 
-                if (claim.damageClaim.photoNames.isNotEmpty()) {
-                    mImageLoader.loadImageFromNetInto(claim.damageClaim.photoNames.first(), holder.damagePhoto)
+                if (damageClaim.photoNames.isNotEmpty()) {
+                    mImageLoader.loadImageFromNetInto(damageClaim.photoNames.first(), holder.damagePhoto)
                 } else {
                     //TODO: load image with an error message
                 }

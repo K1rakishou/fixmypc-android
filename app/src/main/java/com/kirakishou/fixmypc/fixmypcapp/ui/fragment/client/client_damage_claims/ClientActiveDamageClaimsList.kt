@@ -89,7 +89,7 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
             }
         }
 
-        mAdapterClient = ClientDamageClaimListAdapter(activity, mImageLoader)
+        mAdapterClient = ClientDamageClaimListAdapter(activity, mImageLoader, mAdapterItemClickSubject)
         mAdapterClient.init()
 
         mEndlessScrollListener = EndlessRecyclerOnScrollListener(layoutManager, mLoadMoreSubject)
@@ -110,6 +110,10 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
                     Timber.e(error)
                 })
 
+        mCompositeDisposable += mAdapterItemClickSubject
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onClientDamageClaimClick(it) })
+
         mCompositeDisposable += getViewModel().mOutputs.onActiveDamageClaimsResponse()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onActiveDamageClaimsResponse(it) })
@@ -125,6 +129,10 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
 
     private fun getDamageClaims(page: Long) {
         getViewModel().mInputs.getActiveClientDamageClaimSubject(page,  5)
+    }
+
+    private fun onClientDamageClaimClick(damageClaim: DamageClaim) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private fun onActiveDamageClaimsResponse(activeDamageClaimList: MutableList<DamageClaim>) {

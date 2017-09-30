@@ -38,6 +38,7 @@ class ClientMainActivityViewModel
     private val itemsPerPage = Constant.MAX_DAMAGE_CLAIMS_PER_PAGE
     private val mCompositeDisposable = CompositeDisposable()
 
+    lateinit var mGetRespondedSpecialistsSubject: BehaviorSubject<GetRespondedSpecialistsDTO>
     lateinit var mGetActiveClientDamageClaimSubject: BehaviorSubject<GetClientDamageClaimsDTO>
     lateinit var mGetInactiveClientDamageClaimSubject: BehaviorSubject<GetClientDamageClaimsDTO>
     lateinit var mOnActiveDamageClaimsResponseSubject: BehaviorSubject<MutableList<DamageClaim>>
@@ -46,6 +47,7 @@ class ClientMainActivityViewModel
     lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
 
     fun init() {
+        mGetRespondedSpecialistsSubject = BehaviorSubject.create()
         mGetActiveClientDamageClaimSubject = BehaviorSubject.create()
         mGetInactiveClientDamageClaimSubject = BehaviorSubject.create()
         mOnActiveDamageClaimsResponseSubject = BehaviorSubject.create()
@@ -78,6 +80,11 @@ class ClientMainActivityViewModel
                 }, { error ->
                     handleError(error)
                 })
+
+        mCompositeDisposable += mGetRespondedSpecialistsSubject
+                .subscribeOn(mSchedulers.provideIo())
+                .observeOn(mSchedulers.provideIo())
+                .subscribe()
     }
 
     override fun onCleared() {
@@ -85,6 +92,10 @@ class ClientMainActivityViewModel
 
         Timber.e("ClientMainActivityViewModel.onCleared()")
         mCompositeDisposable.clear()
+    }
+
+    override fun getRespondedSpecialistsSubject(damageClaimId: Long, skip: Long, count: Long) {
+        mGetRespondedSpecialistsSubject.onNext(GetRespondedSpecialistsDTO(damageClaimId, skip, count))
     }
 
     override fun getActiveClientDamageClaimSubject( skip: Long, count: Long) {
@@ -134,6 +145,10 @@ class ClientMainActivityViewModel
     override fun onInactiveDamageClaimsResponse(): Observable<MutableList<DamageClaim>> = mOnInactiveDamageClaimsResponseSubject
     override fun onBadResponse(): Observable<ErrorCode.Remote> = mOnBadResponseSubject
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
+
+    data class GetRespondedSpecialistsDTO(val damageClaimId: Long,
+                                          val skip: Long,
+                                          val count: Long)
 
     data class GetClientDamageClaimsDTO(val isActive: Boolean,
                                         val skip: Long,

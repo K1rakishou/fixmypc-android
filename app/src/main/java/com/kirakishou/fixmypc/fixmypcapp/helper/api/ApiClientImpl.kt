@@ -6,8 +6,8 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.api.request.*
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimInfo
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.LoginPacket
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.request.RespondToDamageClaimPacket
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.LoginPacket
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.RespondToDamageClaimPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.*
 import io.reactivex.Single
 import io.reactivex.subjects.ReplaySubject
@@ -60,7 +60,38 @@ class ApiClientImpl
         return GetClientDamageClaimsPagedRequest(isActive, skip, count, mApiService, mAppSettings, mGson, mSchedulers)
                 .execute()
     }
+
+    override fun getRespondedSpecialistsPaged(damageClaimId: Long, skip: Long, count: Long): Single<SpecialistsListResponse> {
+        return GetRespondedSpecialistsPagedRequest(damageClaimId, skip, count, mApiService, mAppSettings, mGson, mSchedulers)
+                .execute()
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

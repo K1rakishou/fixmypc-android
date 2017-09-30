@@ -8,7 +8,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.LoginPacket
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.SpecialistsListResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.BadServerResponseException
@@ -20,22 +20,22 @@ import java.net.UnknownHostException
 import java.util.concurrent.TimeoutException
 
 /**
- * Created by kirakishou on 9/29/2017.
+ * Created by kirakishou on 9/30/2017.
  */
-class GetClientDamageClaimsPagedRequest(protected val isActive: Boolean,
-                                        protected val skip: Long,
-                                        protected val count: Long,
-                                        protected val mApiService: ApiService,
-                                        protected val mAppSettings: AppSettings,
-                                        protected val mGson: Gson,
-                                        protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<DamageClaimsResponse>> {
+class GetRespondedSpecialistsPagedRequest(protected val damageClaimId: Long,
+                                          protected val skip: Long,
+                                          protected val count: Long,
+                                          protected val mApiService: ApiService,
+                                          protected val mAppSettings: AppSettings,
+                                          protected val mGson: Gson,
+                                          protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<SpecialistsListResponse>> {
 
-    override fun execute(): Single<DamageClaimsResponse> {
+    override fun execute(): Single<SpecialistsListResponse> {
         if (!mAppSettings.isUserInfoExists()) {
             throw UserInfoIsEmpty()
         }
 
-        return mApiService.getClientDamageClaimsPaged(mAppSettings.loadUserInfo().sessionId, isActive, skip, count)
+        return mApiService.getRespondedSpecialistsPaged(mAppSettings.loadUserInfo().sessionId, damageClaimId, skip, count)
                 .subscribeOn(mSchedulers.provideIo())
                 .lift(OnApiErrorSingle(mGson))
                 .flatMap { response ->
@@ -48,7 +48,7 @@ class GetClientDamageClaimsPagedRequest(protected val isActive: Boolean,
                 .onErrorResumeNext { error -> exceptionToErrorCode(error) }
     }
 
-    private fun reLoginAndResendRequest(): Single<DamageClaimsResponse> {
+    private fun reLoginAndResendRequest(): Single<SpecialistsListResponse> {
         if (!mAppSettings.isUserInfoExists()) {
             throw UserInfoIsEmpty()
         }
@@ -66,26 +66,26 @@ class GetClientDamageClaimsPagedRequest(protected val isActive: Boolean,
                 .filter { it.errorCode == ErrorCode.Remote.REC_OK }
                 .doOnNext { mAppSettings.updateSessionId(it.sessionId) }
                 .flatMap {
-                    return@flatMap mApiService.getClientDamageClaimsPaged(mAppSettings.loadUserInfo().sessionId, isActive, skip, count)
+                    return@flatMap mApiService.getRespondedSpecialistsPaged(mAppSettings.loadUserInfo().sessionId, damageClaimId, skip, count)
                             .toObservable()
                 }
-                .lift<DamageClaimsResponse>(OnApiErrorObservable(mGson))
+                .lift<SpecialistsListResponse>(OnApiErrorObservable(mGson))
 
         val failObservable = loginResponseObservable
                 .filter { it.errorCode != ErrorCode.Remote.REC_OK }
                 .doOnNext { throw CouldNotUpdateSessionId() }
-                .map { DamageClaimsResponse(mutableListOf(), it.errorCode) }
+                .map { SpecialistsListResponse(emptyList(), it.errorCode) }
 
         return Observable.merge(successObservable, failObservable)
-                .single(StatusResponse(ErrorCode.Remote.REC_EMPTY_OBSERVABLE_ERROR) as DamageClaimsResponse)
+                .single(StatusResponse(ErrorCode.Remote.REC_EMPTY_OBSERVABLE_ERROR) as SpecialistsListResponse)
     }
 
-    private fun exceptionToErrorCode(error: Throwable): Single<DamageClaimsResponse> {
+    private fun exceptionToErrorCode(error: Throwable): Single<SpecialistsListResponse> {
         val response = when (error) {
-            is ApiException -> DamageClaimsResponse(mutableListOf(), error.errorCode)
-            is TimeoutException -> DamageClaimsResponse(mutableListOf(), ErrorCode.Remote.REC_TIMEOUT)
-            is UnknownHostException -> DamageClaimsResponse(mutableListOf(), ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
-            is BadServerResponseException -> DamageClaimsResponse(mutableListOf(), ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
+            is ApiException -> SpecialistsListResponse(emptyList(), error.errorCode)
+            is TimeoutException -> SpecialistsListResponse(emptyList(), ErrorCode.Remote.REC_TIMEOUT)
+            is UnknownHostException -> SpecialistsListResponse(emptyList(), ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
+            is BadServerResponseException -> SpecialistsListResponse(emptyList(), ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
 
             else -> throw RuntimeException("Unknown exception")
         }
@@ -93,3 +93,34 @@ class GetClientDamageClaimsPagedRequest(protected val isActive: Boolean,
         return Single.just(response)
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

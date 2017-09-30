@@ -59,11 +59,13 @@ class ApiClientImpl
     override fun getClientDamageClaimsPaged(isActive: Boolean, skip: Long, count: Long): Single<DamageClaimsResponse> {
         return GetClientDamageClaimsPagedRequest(isActive, skip, count, mApiService, mAppSettings, mGson, mSchedulers)
                 .execute()
+                .delay(1, TimeUnit.SECONDS)
     }
 
     override fun getRespondedSpecialistsPaged(damageClaimId: Long, skip: Long, count: Long): Single<SpecialistsListResponse> {
         return GetRespondedSpecialistsPagedRequest(damageClaimId, skip, count, mApiService, mAppSettings, mGson, mSchedulers)
                 .execute()
+                .delay(1, TimeUnit.SECONDS)
     }
 }
 

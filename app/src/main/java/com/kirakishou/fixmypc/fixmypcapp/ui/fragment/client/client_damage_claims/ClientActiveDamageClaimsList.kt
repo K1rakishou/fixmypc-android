@@ -23,6 +23,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientMainActivityViewMo
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.ClientDamageClaimListAdapter
+import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientMainActivityNavigator
 import com.kirakishou.fixmypc.fixmypcapp.ui.widget.EndlessRecyclerOnScrollListener
 import com.squareup.leakcanary.RefWatcher
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -45,6 +46,9 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
 
     @Inject
     lateinit var mImageLoader: ImageLoader
+
+    @Inject
+    lateinit var mNavigator: ClientMainActivityNavigator
 
     private val mLoadMoreSubject = BehaviorSubject.create<Long>()
     private val mAdapterItemClickSubject = BehaviorSubject.create<DamageClaim>()
@@ -132,7 +136,7 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
     }
 
     private fun onClientDamageClaimClick(damageClaim: DamageClaim) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        mNavigator.navigateToRespondedSpecialistsListFragment(damageClaim.id)
     }
 
     private fun onActiveDamageClaimsResponse(activeDamageClaimList: MutableList<DamageClaim>) {

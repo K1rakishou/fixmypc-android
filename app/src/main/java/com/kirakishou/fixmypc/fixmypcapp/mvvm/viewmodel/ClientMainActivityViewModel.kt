@@ -6,9 +6,11 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsClientResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.SpecialistsListResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.ClientMainActivityErrors
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.ClientMainActivityInputs
@@ -38,6 +40,7 @@ class ClientMainActivityViewModel
     private val itemsPerPage = Constant.MAX_DAMAGE_CLAIMS_PER_PAGE
     private val mCompositeDisposable = CompositeDisposable()
 
+    lateinit var mOnSpecialistsListResponseSubject: BehaviorSubject<List<SpecialistProfile>>
     lateinit var mGetRespondedSpecialistsSubject: BehaviorSubject<GetRespondedSpecialistsDTO>
     lateinit var mGetActiveClientDamageClaimSubject: BehaviorSubject<GetClientDamageClaimsDTO>
     lateinit var mGetInactiveClientDamageClaimSubject: BehaviorSubject<GetClientDamageClaimsDTO>
@@ -47,6 +50,7 @@ class ClientMainActivityViewModel
     lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
 
     fun init() {
+        mOnSpecialistsListResponseSubject = BehaviorSubject.create()
         mGetRespondedSpecialistsSubject = BehaviorSubject.create()
         mGetActiveClientDamageClaimSubject = BehaviorSubject.create()
         mGetInactiveClientDamageClaimSubject = BehaviorSubject.create()
@@ -84,7 +88,15 @@ class ClientMainActivityViewModel
         mCompositeDisposable += mGetRespondedSpecialistsSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .observeOn(mSchedulers.provideIo())
-                .subscribe()
+                .flatMap { (damageClaimId, skip, count) ->
+                    return@flatMap mApiClient.getRespondedSpecialistsPaged(damageClaimId, skip, count)
+                            .toObservable()
+                }
+                .subscribe({
+                    handleResponse(it)
+                }, { error ->
+                    handleError(error)
+                })
     }
 
     override fun onCleared() {
@@ -118,10 +130,27 @@ class ClientMainActivityViewModel
                         mOnInactiveDamageClaimsResponseSubject.onNext(response.damageClaims)
                     }
                 }
+
+                is SpecialistsListResponse -> {
+                    mOnSpecialistsListResponseSubject.onNext(response.specialists)
+                }
             }
         } else {
             when (response) {
                 is DamageClaimsResponse -> {
+                    when (errorCode) {
+                        ErrorCode.Remote.REC_TIMEOUT,
+                        ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER,
+                        ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION,
+                        ErrorCode.Remote.REC_BAD_ACCOUNT_TYPE -> {
+                            mOnBadResponseSubject.onNext(errorCode)
+                        }
+
+                        else -> throw RuntimeException("Unknown errorCode: $errorCode")
+                    }
+                }
+
+                is SpecialistsListResponse -> {
                     when (errorCode) {
                         ErrorCode.Remote.REC_TIMEOUT,
                         ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER,
@@ -141,6 +170,7 @@ class ClientMainActivityViewModel
         mOnUnknownErrorSubject.onNext(error)
     }
 
+    override fun mOnSpecialistsListResponse(): Observable<List<SpecialistProfile>> = mOnSpecialistsListResponseSubject
     override fun onActiveDamageClaimsResponse(): Observable<MutableList<DamageClaim>> = mOnActiveDamageClaimsResponseSubject
     override fun onInactiveDamageClaimsResponse(): Observable<MutableList<DamageClaim>> = mOnInactiveDamageClaimsResponseSubject
     override fun onBadResponse(): Observable<ErrorCode.Remote> = mOnBadResponseSubject

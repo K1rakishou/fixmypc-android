@@ -17,9 +17,9 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.util.Utils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItem
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItemType
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.DamageClaimCategory
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimListAdapterGenericParam
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimsAdapterMessage
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimsWithDistanceDTO
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimListAdapterGenericParam
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimsAdapterMessage
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimsWithDistanceDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 import io.reactivex.subjects.BehaviorSubject
 
@@ -117,25 +117,27 @@ class SpecialistDamageClaimListAdapter(private val mContext: Context,
     override fun onViewHolderBound(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is DamageClaimItemHolder -> {
-                val claim = mItems[position].value.get() as DamageClaimsWithDistanceDTO
-                val distStr = Utils.distanceToString(claim.distance)
+                if (mItems[position].value.isPresent()) {
+                    val claim = mItems[position].value.get() as DamageClaimsWithDistanceDTO
+                    val distStr = Utils.distanceToString(claim.distance)
 
-                holder.clickView.setOnClickListener {
-                    mAdapterItemClickSubject.onNext(claim.damageClaim)
-                }
+                    holder.clickView.setOnClickListener {
+                        mAdapterItemClickSubject.onNext(claim.damageClaim)
+                    }
 
-                holder.distanceToMe.text = "$distStr КМ"
+                    holder.distanceToMe.text = "$distStr КМ"
 
-                when (claim.damageClaim.category) {
-                    DamageClaimCategory.Computer.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_computer))
-                    DamageClaimCategory.Notebook.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_laptop))
-                    DamageClaimCategory.Phone.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_smartphone))
-                }
+                    when (claim.damageClaim.category) {
+                        DamageClaimCategory.Computer.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_computer))
+                        DamageClaimCategory.Notebook.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_laptop))
+                        DamageClaimCategory.Phone.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_smartphone))
+                    }
 
-                if (claim.damageClaim.photoNames.isNotEmpty()) {
-                    mImageLoader.loadImageFromNetInto(claim.damageClaim.photoNames.first(), holder.damagePhoto)
-                } else {
-                    //TODO: load image with an error message
+                    if (claim.damageClaim.photoNames.isNotEmpty()) {
+                        mImageLoader.loadImageFromNetInto(claim.damageClaim.photoNames.first(), holder.damagePhoto)
+                    } else {
+                        //TODO: load image with an error message
+                    }
                 }
             }
 
@@ -145,7 +147,7 @@ class SpecialistDamageClaimListAdapter(private val mContext: Context,
 
             is MessageItemHolder -> {
                 val adapterMessage = mItems[position].value.get() as DamageClaimsAdapterMessage
-                holder.message.text = adapterMessage.text
+                holder.message.text = adapterMessage.message
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.ui.adapter
 
 import android.content.Context
+import android.support.v7.widget.AppCompatRatingBar
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -12,24 +13,23 @@ import butterknife.ButterKnife
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseAdapter
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
-import com.kirakishou.fixmypc.fixmypcapp.helper.extension.myGetDrawable
+import com.kirakishou.fixmypc.fixmypcapp.helper.util.TimeUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItem
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItemType
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.DamageClaimCategory
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimGeneric
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimListAdapterGenericParam
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimsAdapterMessage
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.specialist_profile.SpecialistProfileAdapterMessage
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.specialist_profile.SpecialistProfileGenericParam
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.specialist_profile.SpecialistsProfilesGeneric
 import io.reactivex.subjects.BehaviorSubject
 
 /**
- * Created by kirakishou on 9/29/2017.
+ * Created by kirakishou on 10/1/2017.
  */
-class ClientDamageClaimListAdapter(private val mContext: Context,
+class SpecialistProfileListAdapter(private val mContext: Context,
                                    private val mImageLoader: ImageLoader,
-                                   private val mAdapterItemClickSubject: BehaviorSubject<DamageClaim>) : BaseAdapter<DamageClaimListAdapterGenericParam>(mContext) {
+                                   private val mAdapterItemClickSubject: BehaviorSubject<SpecialistProfile>) : BaseAdapter<SpecialistProfileGenericParam>(mContext) {
 
-    override fun add(item: AdapterItem<DamageClaimListAdapterGenericParam>) {
+    override fun add(item: AdapterItem<SpecialistProfileGenericParam>) {
         checkInited()
 
         mHandler.post {
@@ -38,7 +38,7 @@ class ClientDamageClaimListAdapter(private val mContext: Context,
         }
     }
 
-    override fun addAll(items: List<AdapterItem<DamageClaimListAdapterGenericParam>>) {
+    override fun addAll(items: List<AdapterItem<SpecialistProfileGenericParam>>) {
         checkInited()
 
         for (item in items) {
@@ -84,7 +84,7 @@ class ClientDamageClaimListAdapter(private val mContext: Context,
 
         mHandler.post {
             if (mItems.isEmpty() || mItems.last().getType() != AdapterItemType.VIEW_MESSAGE.ordinal) {
-                mItems.add(AdapterItem(DamageClaimsAdapterMessage(message), AdapterItemType.VIEW_MESSAGE))
+                mItems.add(AdapterItem(SpecialistProfileAdapterMessage(message), AdapterItemType.VIEW_MESSAGE))
                 notifyItemInserted(mItems.lastIndex)
             }
         }
@@ -105,8 +105,8 @@ class ClientDamageClaimListAdapter(private val mContext: Context,
 
     override fun getBaseAdapterInfo(): MutableList<BaseAdapterInfo> {
         return mutableListOf(
-                BaseAdapterInfo(AdapterItemType.VIEW_ITEM, R.layout.adapter_client_item_damage_claim,
-                        DamageClaimItemHolder::class.java),
+                BaseAdapterInfo(AdapterItemType.VIEW_ITEM, R.layout.adapter_item_specialist_profile,
+                        SpecialistProfileItemHolder::class.java),
                 BaseAdapterInfo(AdapterItemType.VIEW_PROGRESSBAR, R.layout.item_progress,
                         ProgressBarItemHolder::class.java),
                 BaseAdapterInfo(AdapterItemType.VIEW_MESSAGE, R.layout.item_message,
@@ -115,26 +115,26 @@ class ClientDamageClaimListAdapter(private val mContext: Context,
 
     override fun onViewHolderBound(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is DamageClaimItemHolder -> {
+            is SpecialistProfileItemHolder -> {
                 if (mItems[position].value.isPresent()) {
                     val item = mItems[position].value.get()
-                    val damageClaim = (item as DamageClaimGeneric).damageClaim
+                    val profileAdapterItem = (item as SpecialistsProfilesGeneric).specialistProfile
 
                     holder.clickView.setOnClickListener {
-                        mAdapterItemClickSubject.onNext(damageClaim)
+                        mAdapterItemClickSubject.onNext(profileAdapterItem)
                     }
 
-                    when (damageClaim.category) {
-                        DamageClaimCategory.Computer.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_computer))
-                        DamageClaimCategory.Notebook.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_laptop))
-                        DamageClaimCategory.Phone.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_smartphone))
-                    }
+                    holder.profileName.text = profileAdapterItem.name
+                    holder.profileRating.rating = profileAdapterItem.rating
 
-                    if (damageClaim.photoNames.isNotEmpty()) {
-                        mImageLoader.loadImageFromNetInto(damageClaim.photoNames.first(), holder.damagePhoto)
+                    val registeredOnDateStr = TimeUtils.format(profileAdapterItem.registeredOn)
+                    if (registeredOnDateStr.isNotEmpty()) {
+                        holder.profileRegisteredOn.text = "Зарегистрирован с $registeredOnDateStr"
                     } else {
-                        //TODO: load image with an error message
+                        holder.profileRegisteredOn.text = "Зарегистрирован с неизвестно"
                     }
+
+                    mImageLoader.loadImageFromNetInto(profileAdapterItem.photoName, holder.profilePhoto)
                 }
             }
 
@@ -143,22 +143,28 @@ class ClientDamageClaimListAdapter(private val mContext: Context,
             }
 
             is MessageItemHolder -> {
-                val adapterMessage = mItems[position].value.get() as DamageClaimsAdapterMessage
+                val adapterMessage = mItems[position].value.get() as SpecialistProfileAdapterMessage
                 holder.message.text = adapterMessage.message
             }
         }
     }
 
-    class DamageClaimItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class SpecialistProfileItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         @BindView(R.id.click_view)
         lateinit var clickView: CardView
 
-        @BindView(R.id.damage_photo)
-        lateinit var damagePhoto: ImageView
+        @BindView(R.id.specialist_profile_photo)
+        lateinit var profilePhoto: ImageView
 
-        @BindView(R.id.damage_type)
-        lateinit var damageTypeIcon: ImageView
+        @BindView(R.id.specialist_profile_name)
+        lateinit var profileName: TextView
+
+        @BindView(R.id.specialist_profile_rating)
+        lateinit var profileRating: AppCompatRatingBar
+
+        @BindView(R.id.specialist_profile_registered_on)
+        lateinit var profileRegisteredOn: TextView
 
         init {
             ButterKnife.bind(this, itemView)

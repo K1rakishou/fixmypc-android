@@ -16,8 +16,8 @@ import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.*
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimListAdapterGenericParam
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.DamageClaimListGeneric
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimGeneric
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimListAdapterGenericParam
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientMainActivityViewModelFactory
@@ -148,11 +148,11 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
 
         mAdapterClient.removeProgressFooter()
 
-        val adapterDamageClaims = activeDamageClaimList.map { AdapterItem(DamageClaimListGeneric(it), AdapterItemType.VIEW_ITEM) }
+        val adapterDamageClaims = activeDamageClaimList.map { AdapterItem(DamageClaimGeneric(it), AdapterItemType.VIEW_ITEM) }
         mAdapterClient.addAll(adapterDamageClaims as List<AdapterItem<DamageClaimListAdapterGenericParam>>)
 
         if (activeDamageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
-            mAdapterClient.addMessageFooter("Последнее объявление")
+            mAdapterClient.addMessageFooter("Конец списка")
         }
     }
 

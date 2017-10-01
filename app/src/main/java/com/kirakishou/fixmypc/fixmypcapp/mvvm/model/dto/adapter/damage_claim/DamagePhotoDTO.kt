@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter
+package com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim
 
 /**
  * Created by kirakishou on 7/31/2017.

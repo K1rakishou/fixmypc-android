@@ -9,6 +9,7 @@ object Constant {
     val DAMAGE_CLAIM_PHOTO_ADAPTER_MAX_PHOTOS = 4
     val RECYCLER_VIEW_MAX_COLUMNS_COUNT = 10
     val MAX_DAMAGE_CLAIMS_PER_PAGE = 5L
+    val MAX_SPECIALISTS_PROFILES_PER_PAGE = 5L
     val MAX_FILE_SIZE = 5242880
     val MAX_REPO_STORE_ITEMS_TIME = 1000L * 60L * 60L // one hour
 
@@ -48,6 +49,7 @@ object Constant {
     object Views {
         val PHOTO_ADAPTER_VIEW_WIDTH: Int = 128
         val DAMAGE_CLAIM_ADAPTER_VIEW_WIDTH = 288
+        val SPECIALIST_PROFILE_ADAPTER_VIEW_WIDTH = 384
     }
 
     object PermissionCodes {

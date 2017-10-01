@@ -28,26 +28,29 @@
             android:padding="4dp">
 
             <ImageView
-                android:id="@+id/damage_photo"
+                android:id="@+id/specialist_profile_photo"
                 android:layout_width="96dp"
                 android:layout_height="96dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/name"
-                android:layout_width="wrap_content"
+                android:id="@+id/specialist_profile_name"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:ellipsize="end"
+                android:maxLines="2"
                 android:text="Василий Булочкин"
                 android:textColor="#000"
                 android:textSize="20sp"
-                app:layout_constraintStart_toEndOf="@+id/damage_photo"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/specialist_profile_photo"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <android.support.v7.widget.AppCompatRatingBar
-                android:id="@+id/rating"
+                android:id="@+id/specialist_profile_rating"
                 style="?android:attr/ratingBarStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -55,19 +58,23 @@
                 android:layout_marginTop="4dp"
                 android:numStars="5"
                 android:rating="3.5"
-                app:layout_constraintStart_toEndOf="@+id/damage_photo"
-                app:layout_constraintTop_toBottomOf="@+id/name" />
+                android:theme="@style/RatingBar"
+                app:layout_constraintStart_toEndOf="@+id/specialist_profile_photo"
+                app:layout_constraintTop_toBottomOf="@+id/specialist_profile_name" />
 
             <TextView
-                android:id="@+id/registered_on"
-                android:layout_width="wrap_content"
+                android:id="@+id/specialist_profile_registered_on"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="4dp"
-                android:text="Зарегистрирован с 22 сентября 2017 года"
+                android:maxLines="2"
+                android:text="Зарегистрирован с 10.01.2017"
                 android:textSize="12sp"
-                app:layout_constraintStart_toEndOf="@+id/damage_photo"
-                app:layout_constraintTop_toBottomOf="@+id/rating" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/specialist_profile_photo"
+                app:layout_constraintTop_toBottomOf="@+id/specialist_profile_rating" />
 
         </android.support.constraint.ConstraintLayout>
 

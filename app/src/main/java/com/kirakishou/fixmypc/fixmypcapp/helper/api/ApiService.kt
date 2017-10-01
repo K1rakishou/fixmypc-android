@@ -31,27 +31,64 @@ interface ApiService {
                         @Path("skip") skip: Long,
                         @Path("count") count: Long): Single<Response<DamageClaimsResponse>>
 
-    @GET("/v1/api/profile/{user_id}")
+    @GET("/v1/api/client/profile/{user_id}")
     fun getClientProfile(@Header("session_id") sessionId: String,
                          @Path("user_id") userId: Long): Single<Response<ClientProfileResponse>>
 
-    @POST("/v1/api/damage_claim_request/respond")
+    @POST("/v1/api/damage_claim/respond")
     fun respondToDamageClaim(@Header("session_id") sessionId: String,
                              @Body packet: RespondToDamageClaimPacket): Single<Response<RespondToDamageClaimResponse>>
 
-    @GET("/v1/api/damage_claim_request/respond/{damage_claim_id}")
+    @GET("/v1/api/damage_claim/respond/{damage_claim_id}")
     fun checkAlreadyRespondedToDamageClaim(@Header("session_id") sessionId: String,
                                            @Path("damage_claim_id") damageClaimId: Long): Single<Response<HasAlreadyRespondedResponse>>
 
-    @GET("/v1/api/damage_claim_request/get_client/{is_active}/{skip}/{count}")
+    @GET("/v1/api/damage_claim/get_client/{is_active}/{skip}/{count}")
     fun getClientDamageClaimsPaged(@Header("session_id") sessionId: String,
                                    @Path("is_active") isActive: Boolean,
                                    @Path("skip") skip: Long,
                                    @Path("count") count: Long): Single<Response<DamageClaimsResponse>>
 
-    @GET("/v1/api/damage_claim_request/get/{damage_claim_id}/{skip}/{count}")
+    @GET("/v1/api/specialist/profile/{damage_claim_id}/{skip}/{count}")
     fun getRespondedSpecialistsPaged(@Header("session_id") sessionId: String,
                                      @Path("damage_claim_id") damageClaimId: Long,
                                      @Path("skip") skip: Long,
                                      @Path("count") count: Long): Single<Response<SpecialistsListResponse>>
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

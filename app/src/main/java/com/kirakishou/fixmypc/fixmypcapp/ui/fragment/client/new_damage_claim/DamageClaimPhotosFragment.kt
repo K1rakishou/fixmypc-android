@@ -6,7 +6,6 @@ import android.animation.AnimatorSet
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.AppCompatButton
 import android.support.v7.widget.GridLayoutManager
@@ -195,13 +194,13 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewDamageClaimActivityViewM
         runActivity(ClientMainActivity::class.java, true)
     }
 
-    private fun onBadResponse(errorCode: ErrorCode.Remote) {
+    override fun onBadResponse(errorCode: ErrorCode.Remote) {
         val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
         showToast(message, Toast.LENGTH_LONG)
     }
 
-    private fun onUnknownError(error: Throwable) {
-        super.unknownError(error)
+    override fun onUnknownError(error: Throwable) {
+        unknownError(error)
     }
 
     override fun resolveDaggerDependency() {
@@ -210,14 +209,5 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewDamageClaimActivityViewM
                 .clientNewDamageClaimActivityModule(ClientNewDamageClaimActivityModule(activity as ClientNewDamageClaimActivity))
                 .build()
                 .inject(this)
-    }
-
-    companion object {
-        fun newInstance(): Fragment {
-            val fragment = DamageClaimPhotosFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            return fragment
-        }
     }
 }

@@ -156,12 +156,12 @@ class ClientInactiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>
         }
     }
 
-    private fun onBadResponse(errorCode: ErrorCode.Remote) {
+    override fun onBadResponse(errorCode: ErrorCode.Remote) {
         val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
         showToast(message, Toast.LENGTH_LONG)
     }
 
-    private fun onUnknownError(error: Throwable) {
+    override fun onUnknownError(error: Throwable) {
         unknownError(error)
     }
 

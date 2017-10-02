@@ -2,6 +2,7 @@ package com.kirakishou.fixmypc.fixmypcapp.helper.api
 
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.DamageClaimPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.LoginPacket
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.AssignSpecialistPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.RespondToDamageClaimPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.*
 import io.reactivex.Single
@@ -54,6 +55,10 @@ interface ApiService {
                                      @Path("damage_claim_id") damageClaimId: Long,
                                      @Path("skip") skip: Long,
                                      @Path("count") count: Long): Single<Response<SpecialistsListResponse>>
+
+    @POST("/v1/api/specialist/assign")
+    fun assignSpecialist(@Header("session_id") sessionId: String,
+                         @Body packet: AssignSpecialistPacket): Single<Response<StatusResponse>>
 }
 
 

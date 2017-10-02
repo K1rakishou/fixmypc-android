@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.design.widget.TextInputEditText
 import android.support.v7.widget.AppCompatButton
 import android.support.v7.widget.CardView
+import android.widget.Toast
 import butterknife.BindView
 import com.jakewharton.rxbinding2.view.RxView
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
@@ -13,6 +14,8 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerClientNewDamageClaimActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewDamageClaimActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewDamageClaimActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewDamageClaimActivity
@@ -77,6 +80,15 @@ class DamageClaimDescriptionFragment : BaseFragment<ClientNewDamageClaimActivity
 
     override fun onFragmentViewDestroy() {
         mRefWatcher.watch(this)
+    }
+
+    override fun onBadResponse(errorCode: ErrorCode.Remote) {
+        val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
+        showToast(message, Toast.LENGTH_LONG)
+    }
+
+    override fun onUnknownError(error: Throwable) {
+        unknownError(error)
     }
 
     override fun resolveDaggerDependency() {

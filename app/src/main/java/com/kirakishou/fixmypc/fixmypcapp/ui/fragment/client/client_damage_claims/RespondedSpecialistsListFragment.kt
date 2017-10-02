@@ -101,7 +101,6 @@ class RespondedSpecialistsListFragment : BaseFragment<ClientMainActivityViewMode
         respondedSpecialistsList.setHasFixedSize(true)
     }
 
-
     private fun initRx() {
         mCompositeDisposable += mLoadMoreSubject
                 .subscribeOn(Schedulers.io())
@@ -154,12 +153,12 @@ class RespondedSpecialistsListFragment : BaseFragment<ClientMainActivityViewMode
         mDamageClaimId = arguments.getLong("damage_claim_id", -1L)
     }
 
-    private fun onBadResponse(errorCode: ErrorCode.Remote) {
+    override fun onBadResponse(errorCode: ErrorCode.Remote) {
         val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
         showToast(message, Toast.LENGTH_LONG)
     }
 
-    private fun onUnknownError(error: Throwable) {
+    override fun onUnknownError(error: Throwable) {
         unknownError(error)
     }
 

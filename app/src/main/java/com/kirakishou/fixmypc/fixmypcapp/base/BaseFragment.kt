@@ -12,6 +12,7 @@ import butterknife.ButterKnife
 import butterknife.Unbinder
 import com.kirakishou.fixmypc.fixmypcapp.helper.extension.myAddListener
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import io.reactivex.disposables.CompositeDisposable
 
@@ -103,5 +104,7 @@ abstract class BaseFragment<T : ViewModel> : Fragment() {
     protected abstract fun loadExitAnimations(): AnimatorSet
     protected abstract fun onFragmentViewCreated(savedInstanceState: Bundle?)
     protected abstract fun onFragmentViewDestroy()
+    protected abstract fun onBadResponse(errorCode: ErrorCode.Remote)
+    protected abstract fun onUnknownError(error: Throwable)
     protected abstract fun resolveDaggerDependency()
 }

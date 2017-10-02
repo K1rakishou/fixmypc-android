@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client
+package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.client_damage_claims
 
 
 import android.animation.AnimatorSet
@@ -15,22 +15,18 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
-import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
-class ClientProfileFragment : BaseFragment<ClientMainActivityViewModel>() {
+class SpecialistFullProfileFragment : BaseFragment<ClientMainActivityViewModel>() {
 
     @Inject
     lateinit var mViewModelFactory: ClientMainActivityViewModelFactory
-
-    @Inject
-    lateinit var mRefWatcher: RefWatcher
 
     override fun initViewModel(): ClientMainActivityViewModel? {
         return ViewModelProviders.of(activity, mViewModelFactory).get(ClientMainActivityViewModel::class.java)
     }
 
-    override fun getContentView(): Int = R.layout.fragment_client_profile
+    override fun getContentView(): Int = R.layout.fragment_specialist_full_profile
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
@@ -38,7 +34,6 @@ class ClientProfileFragment : BaseFragment<ClientMainActivityViewModel>() {
     }
 
     override fun onFragmentViewDestroy() {
-        mRefWatcher.watch(this)
     }
 
     override fun onBadResponse(errorCode: ErrorCode.Remote) {

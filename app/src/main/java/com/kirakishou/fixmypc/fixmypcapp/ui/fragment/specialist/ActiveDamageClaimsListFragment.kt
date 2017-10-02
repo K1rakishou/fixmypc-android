@@ -208,13 +208,13 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
         showToast(message, duration)
     }
 
-    private fun onUnknownError(throwable: Throwable) {
-        unknownError(throwable)
-    }
-
-    private fun onBadResponse(errorCode: ErrorCode.Remote) {
+    override fun onBadResponse(errorCode: ErrorCode.Remote) {
         val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
         showToast(message, Toast.LENGTH_LONG)
+    }
+
+    override fun onUnknownError(error: Throwable) {
+        unknownError(error)
     }
 
     override fun resolveDaggerDependency() {

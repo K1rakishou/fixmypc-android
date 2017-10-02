@@ -6,12 +6,15 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.view.ViewPager
+import android.widget.Toast
 import butterknife.BindView
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerClientMainActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientMainActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
@@ -85,6 +88,15 @@ class ClientMyDamageClaimsFragment : BaseFragment<ClientMainActivityViewModel>()
     }
 
     override fun onPageSelected(position: Int) {
+    }
+
+    override fun onBadResponse(errorCode: ErrorCode.Remote) {
+        val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
+        showToast(message, Toast.LENGTH_LONG)
+    }
+
+    override fun onUnknownError(error: Throwable) {
+        unknownError(error)
     }
 
     override fun resolveDaggerDependency() {

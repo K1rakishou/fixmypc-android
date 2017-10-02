@@ -175,14 +175,13 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
         respondButton.text = "Заявка отправлена"
     }
 
-    private fun onBadResponse(errorCode: ErrorCode.Remote) {
+    override fun onBadResponse(errorCode: ErrorCode.Remote) {
         val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
         showToast(message, Toast.LENGTH_LONG)
     }
 
-    private fun onUnknownError(error: Throwable) {
-        mNavigator.hideLoadingIndicatorFragment()
-        super.unknownError(error)
+    override fun onUnknownError(error: Throwable) {
+        unknownError(error)
     }
 
     override fun resolveDaggerDependency() {

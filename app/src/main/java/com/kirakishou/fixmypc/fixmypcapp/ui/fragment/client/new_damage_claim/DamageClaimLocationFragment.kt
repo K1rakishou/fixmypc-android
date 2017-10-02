@@ -20,6 +20,8 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerClientNewDamageClaimActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewDamageClaimActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewDamageClaimActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewDamageClaimActivity
@@ -139,6 +141,15 @@ class DamageClaimLocationFragment : BaseFragment<ClientNewDamageClaimActivityVie
                 .start {
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(it.latitude, it.longitude), MAP_ZOOM))
                 }
+    }
+
+    override fun onBadResponse(errorCode: ErrorCode.Remote) {
+        val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
+        showToast(message, Toast.LENGTH_LONG)
+    }
+
+    override fun onUnknownError(error: Throwable) {
+        unknownError(error)
     }
 
     override fun resolveDaggerDependency() {

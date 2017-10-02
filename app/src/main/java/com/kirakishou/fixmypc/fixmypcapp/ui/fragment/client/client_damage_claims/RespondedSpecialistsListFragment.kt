@@ -111,6 +111,10 @@ class RespondedSpecialistsListFragment : BaseFragment<ClientMainActivityViewMode
                     Timber.e(error)
                 })
 
+        mCompositeDisposable += mAdapterItemClickSubject
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onSpecialistProfileClick(it) })
+
         mCompositeDisposable += getViewModel().mOutputs.mOnSpecialistsListResponse()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onSpecialistsResponse(it) })
@@ -122,6 +126,10 @@ class RespondedSpecialistsListFragment : BaseFragment<ClientMainActivityViewMode
         mCompositeDisposable += getViewModel().mErrors.onUnknownError()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUnknownError(it) })
+    }
+
+    private fun onSpecialistProfileClick(profile: SpecialistProfile) {
+        mNavigator.navigateToSpecialistFullProfileFragment(profile)
     }
 
     private fun getRespondedSpecialists(page: Long) {

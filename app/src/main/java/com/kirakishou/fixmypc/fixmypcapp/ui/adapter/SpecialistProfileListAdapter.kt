@@ -134,7 +134,8 @@ class SpecialistProfileListAdapter(private val mContext: Context,
                         holder.profileRegisteredOn.text = "Зарегистрирован с неизвестно"
                     }
 
-                    mImageLoader.loadImageFromNetInto(profileAdapterItem.photoName, holder.profilePhoto)
+                    //TODO
+                    //mImageLoader.loadImageFromNetInto(profileAdapterItem.photoName, holder.profilePhoto)
                 }
             }
 

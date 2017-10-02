@@ -33,8 +33,7 @@ class SpecialistMainActivityViewModel
 @Inject constructor(protected val mApiClient: ApiClient,
                     protected val mWifiUtils: WifiUtils,
                     protected val mDamageClaimRepo: DamageClaimRepository,
-                    protected val mSchedulers: SchedulerProvider) :
-        BaseViewModel(),
+                    protected val mSchedulers: SchedulerProvider) : BaseViewModel(),
         ActiveDamageClaimListFragmentInputs,
         ActiveDamageClaimListFragmentOutputs,
         ActiveDamageClaimListFragmentErrors {

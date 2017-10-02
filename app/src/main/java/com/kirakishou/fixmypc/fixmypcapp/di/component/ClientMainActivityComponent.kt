@@ -7,8 +7,6 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.ClientMyDamageClaims
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.ClientProfileFragment
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.client_damage_claims.ClientActiveDamageClaimsList
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.client_damage_claims.ClientInactiveDamageClaimsList
-import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.client_damage_claims.RespondedSpecialistsListFragment
-import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.client_damage_claims.SpecialistFullProfileFragment
 import dagger.Component
 
 /**
@@ -23,6 +21,4 @@ interface ClientMainActivityComponent {
     fun inject(fragment: ClientMyDamageClaimsFragment)
     fun inject(fragment: ClientActiveDamageClaimsList)
     fun inject(fragment: ClientInactiveDamageClaimsList)
-    fun inject(fragment: RespondedSpecialistsListFragment)
-    fun inject(fragment: SpecialistFullProfileFragment)
 }

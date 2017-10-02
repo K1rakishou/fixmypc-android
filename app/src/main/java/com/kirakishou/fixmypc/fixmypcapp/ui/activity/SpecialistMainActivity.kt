@@ -47,8 +47,8 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), 
     }
 
     override fun onActivityDestroy() {
-        mRefWatcher.watch(this)
         supportFragmentManager.removeOnBackStackChangedListener(this)
+        mRefWatcher.watch(this)
     }
 
     override fun onActivityStart() {

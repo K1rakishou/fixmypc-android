@@ -3,6 +3,7 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.client_damage_claim
 
 import android.animation.AnimatorSet
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -22,6 +23,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
+import com.kirakishou.fixmypc.fixmypcapp.ui.activity.RespondedSpecialistsActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.ClientDamageClaimListAdapter
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientMainActivityNavigator
 import com.kirakishou.fixmypc.fixmypcapp.ui.widget.EndlessRecyclerOnScrollListener
@@ -136,7 +138,12 @@ class ClientInactiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>
     }
 
     private fun onClientDamageClaimClick(damageClaim: DamageClaim) {
-        mNavigator.navigateToRespondedSpecialistsListFragment(damageClaim.id)
+        val intent = Intent(activity, RespondedSpecialistsActivity::class.java)
+        val params = Bundle()
+        params.putLong("damage_claim_id", damageClaim.id)
+
+        intent.putExtras(params)
+        activity.startActivity(intent)
     }
 
     private fun onInactiveDamageClaimsResponse(inactiveDamageClaimList: MutableList<DamageClaim>) {

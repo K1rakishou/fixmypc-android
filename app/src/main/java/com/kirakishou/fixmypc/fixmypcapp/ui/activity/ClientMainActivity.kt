@@ -26,7 +26,7 @@ import javax.inject.Inject
 class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>(), FragmentManager.OnBackStackChangedListener,
     BaseActivityFragmentCallback {
 
-    @BindView(R.id.my_profile_button)
+    @BindView(R.id.damage_claim_list)
     lateinit var myProfileButton: ImageView
 
     @BindView(R.id.new_damage_claim_button)

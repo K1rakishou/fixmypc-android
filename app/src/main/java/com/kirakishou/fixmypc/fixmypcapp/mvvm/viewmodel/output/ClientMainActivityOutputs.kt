@@ -10,5 +10,5 @@ import io.reactivex.Observable
 interface ClientMainActivityOutputs {
     fun onActiveDamageClaimsResponse(): Observable<MutableList<DamageClaim>>
     fun onInactiveDamageClaimsResponse(): Observable<MutableList<DamageClaim>>
-    fun mOnSpecialistsListResponse(): Observable<List<SpecialistProfile>>
+
 }

@@ -33,7 +33,7 @@ interface ApplicationComponent {
     fun exposeGson(): Gson
     fun exposeRetrofit(): Retrofit
     fun exposeApiService(): ApiService
-    fun exposeFixmypcApiStore(): ApiClient
+    fun exposeApiClient(): ApiClient
     fun exposeAppSharedPreferences(): AppSharedPreference
     fun exposeAppSettings(): AppSettings
     fun exposePermissionManager(): PermissionManager

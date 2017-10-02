@@ -5,6 +5,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.RespondedSpecialistsActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.RespondedSpecialistsActivity
+import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.RespondedSpecialistsActivityNavigator
 import dagger.Module
 import dagger.Provides
 
@@ -14,6 +15,12 @@ import dagger.Provides
 
 @Module
 class RespondedSpecialistsActivityModule(val activity: RespondedSpecialistsActivity) {
+
+    @PerActivity
+    @Provides
+    fun provideNavigator(): RespondedSpecialistsActivityNavigator {
+        return RespondedSpecialistsActivityNavigator(activity)
+    }
 
     @PerActivity
     @Provides

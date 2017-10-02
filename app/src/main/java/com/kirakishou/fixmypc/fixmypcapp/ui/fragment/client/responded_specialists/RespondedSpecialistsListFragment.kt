@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.client_damage_claims
+package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.responded_specialists
 
 
 import android.animation.AnimatorSet
@@ -11,18 +11,18 @@ import butterknife.BindView
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
-import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerClientMainActivityComponent
-import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientMainActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerRespondedSpecialistsActivityComponent
+import com.kirakishou.fixmypc.fixmypcapp.di.module.RespondedSpecialistsActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.specialist_profile.SpecialistProfileGenericParam
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.specialist_profile.SpecialistsProfilesGeneric
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientMainActivityViewModel
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientMainActivityViewModelFactory
-import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.RespondedSpecialistsViewModel
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.RespondedSpecialistsActivityViewModelFactory
+import com.kirakishou.fixmypc.fixmypcapp.ui.activity.RespondedSpecialistsActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.SpecialistProfileListAdapter
-import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientMainActivityNavigator
+import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.RespondedSpecialistsActivityNavigator
 import com.kirakishou.fixmypc.fixmypcapp.ui.widget.EndlessRecyclerOnScrollListener
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
@@ -31,16 +31,16 @@ import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 import javax.inject.Inject
 
-class RespondedSpecialistsListFragment : BaseFragment<ClientMainActivityViewModel>() {
+class RespondedSpecialistsListFragment : BaseFragment<RespondedSpecialistsViewModel>() {
 
     @BindView(R.id.responded_specialists_list)
     lateinit var respondedSpecialistsList: RecyclerView
 
     @Inject
-    lateinit var mViewModelFactory: ClientMainActivityViewModelFactory
+    lateinit var mViewModelFactory: RespondedSpecialistsActivityViewModelFactory
 
     @Inject
-    lateinit var mNavigator: ClientMainActivityNavigator
+    lateinit var mNavigator: RespondedSpecialistsActivityNavigator
 
     @Inject
     lateinit var mImageLoader: ImageLoader
@@ -52,8 +52,8 @@ class RespondedSpecialistsListFragment : BaseFragment<ClientMainActivityViewMode
     private lateinit var mSpecialistProfileAdapter: SpecialistProfileListAdapter
     private lateinit var mEndlessScrollListener: EndlessRecyclerOnScrollListener
 
-    override fun initViewModel(): ClientMainActivityViewModel? {
-        return ViewModelProviders.of(activity, mViewModelFactory).get(ClientMainActivityViewModel::class.java)
+    override fun initViewModel(): RespondedSpecialistsViewModel? {
+        return ViewModelProviders.of(activity, mViewModelFactory).get(RespondedSpecialistsViewModel::class.java)
     }
 
     override fun getContentView(): Int = R.layout.fragment_responded_specialists_list
@@ -171,9 +171,9 @@ class RespondedSpecialistsListFragment : BaseFragment<ClientMainActivityViewMode
     }
 
     override fun resolveDaggerDependency() {
-        DaggerClientMainActivityComponent.builder()
+        DaggerRespondedSpecialistsActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
-                .clientMainActivityModule(ClientMainActivityModule(activity as ClientMainActivity))
+                .respondedSpecialistsActivityModule(RespondedSpecialistsActivityModule(activity as RespondedSpecialistsActivity))
                 .build()
                 .inject(this)
     }

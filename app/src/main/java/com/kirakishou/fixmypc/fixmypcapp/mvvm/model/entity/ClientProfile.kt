@@ -16,4 +16,12 @@ data class ClientProfile(@Expose
 
                          @Expose
                          @SerializedName("phone")
-                         val phone: String = "")
+                         val phone: String = "",
+
+                         @Expose
+                         @SerializedName("photo_folder")
+                         val photoFolder: String = "",
+
+                         @Expose
+                         @SerializedName("photo_name")
+                         val photoName: String = "")

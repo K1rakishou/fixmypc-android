@@ -1,8 +1,8 @@
 package com.kirakishou.fixmypc.fixmypcapp.helper.api
 
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.AssignSpecialistPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.DamageClaimPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.LoginPacket
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.AssignSpecialistPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.RespondToDamageClaimPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.*
 import io.reactivex.Single
@@ -18,13 +18,13 @@ interface ApiService {
     fun doLogin(@Body packet: LoginPacket): Single<Response<LoginResponse>>
 
     @Multipart
-    @POST("/v1/api/damage_claim_request/create")
+    @POST("/v1/api/damage_claim/create")
     fun sendMalfunctionRequest(@Header("session_id") sessionId: String,
                                @Part photos: List<MultipartBody.Part>,
                                @Part("request") requestBody: DamageClaimPacket,
                                @Part("images_type") imagesType: Int): Single<Response<StatusResponse>>
 
-    @GET("/v1/api/damage_claim_request/get_within/{lat}/{lon}/{radius}/{skip}/{count}")
+    @GET("/v1/api/damage_claim/get_within/{lat}/{lon}/{radius}/{skip}/{count}")
     fun getDamageClaims(@Header("session_id") sessionId: String,
                         @Path("lat") lat: Double,
                         @Path("lon") lon: Double,

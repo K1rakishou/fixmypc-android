@@ -101,7 +101,7 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
 
     private fun runLoginActivity() {
         Timber.e("Running LoginActivity")
-        runActivity(LoadingActivity::class.java, true)
+        runActivity(LoginActivity::class.java, true)
     }
 
     private fun runClientMainActivity(sessionId: String, accountType: AccountType) {

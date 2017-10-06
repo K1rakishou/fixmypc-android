@@ -17,7 +17,7 @@ import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
 class RespondedSpecialistsActivity : BaseActivity<RespondedSpecialistsViewModel>(),
-        FragmentManager.OnBackStackChangedListener{
+        FragmentManager.OnBackStackChangedListener {
 
     @Inject
     lateinit var mViewModelFactory: RespondedSpecialistsActivityViewModelFactory

@@ -25,63 +25,24 @@ class SpecialistMainActivityNavigator(activity: AppCompatActivity) : BaseNavigat
     }
 
     fun navigateToActiveDamageClaimsListFragment() {
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        val visibleFragment = getVisibleFragment()
-
-        if (visibleFragment != null) {
-            fragmentTransaction.hide(visibleFragment)
-        }
-
-        val fragmentInStack = fragmentManager.findFragmentByTag(Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST)
-        if (fragmentInStack == null) {
-            val newFragment = ActiveDamageClaimsListFragment()
-
-            fragmentTransaction
-                    .add(R.id.fragment_frame, newFragment, Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST)
-                    .addToBackStack(null)
-        } else {
-            fragmentTransaction
-                    .show(fragmentInStack)
-                    .addToBackStack(null)
-        }
-
-        fragmentTransaction.commit()
+        navigateToFragment(ActiveDamageClaimsListFragment::class,
+                Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST)
     }
 
     fun navigateToDamageClaimFullInfoFragment(damageClaim: DamageClaim) {
-        val bundle = Bundle()
-        bundle.putLong("damage_claim_id", damageClaim.id)
-        bundle.putLong("damage_claim_owner_id", damageClaim.ownerId)
-        bundle.putBoolean("damage_claim_is_active", damageClaim.isActive)
-        bundle.putInt("damage_claim_category", damageClaim.category)
-        bundle.putString("damage_claim_description", damageClaim.description)
-        bundle.putDouble("damage_claim_lat", damageClaim.lat)
-        bundle.putDouble("damage_claim_lon", damageClaim.lon)
-        bundle.putLong("damage_claim_created_on", damageClaim.createdOn)
-        bundle.putStringArrayList("damage_claim_photo_names", ArrayList(damageClaim.photoNames))
+        val args = Bundle()
+        args.putLong("damage_claim_id", damageClaim.id)
+        args.putLong("damage_claim_owner_id", damageClaim.ownerId)
+        args.putBoolean("damage_claim_is_active", damageClaim.isActive)
+        args.putInt("damage_claim_category", damageClaim.category)
+        args.putString("damage_claim_description", damageClaim.description)
+        args.putDouble("damage_claim_lat", damageClaim.lat)
+        args.putDouble("damage_claim_lon", damageClaim.lon)
+        args.putLong("damage_claim_created_on", damageClaim.createdOn)
+        args.putStringArrayList("damage_claim_photo_names", ArrayList(damageClaim.photoNames))
 
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        val visibleFragment = getVisibleFragment()
-
-        if (visibleFragment != null) {
-            fragmentTransaction.hide(visibleFragment)
-        }
-
-        val fragmentInStack = fragmentManager.findFragmentByTag(Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO)
-        if (fragmentInStack == null) {
-            val newFragment = DamageClaimFullInfoFragment()
-            newFragment.arguments = bundle
-
-            fragmentTransaction
-                    .add(R.id.fragment_frame, newFragment, Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO)
-                    .addToBackStack(null)
-        } else {
-            fragmentTransaction
-                    .show(fragmentInStack)
-                    .addToBackStack(null)
-        }
-
-        fragmentTransaction.commit()
+        navigateToFragment(DamageClaimFullInfoFragment::class,
+                Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO, args)
     }
 
     fun showLoadingIndicatorFragment() {

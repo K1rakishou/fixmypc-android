@@ -54,7 +54,7 @@ class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>(), Fragment
         initRx()
         getViewModel().init()
 
-        mNavigator.navigateToClientAllDamageClaimsFragment()
+        mNavigator.navigateToClientMyDamageClaimsFragment()
     }
 
     private fun initRx() {

@@ -129,10 +129,10 @@ class SpecialistMainActivityViewModel
     }
 
     override fun onCleared() {
-        super.onCleared()
-
         Timber.e("SpecialistMainActivityViewModel.onCleared()")
         mCompositeDisposable.clear()
+
+        super.onCleared()
     }
 
     override fun getDamageClaimsWithinRadius(latLng: LatLng, radius: Double, page: Long) {

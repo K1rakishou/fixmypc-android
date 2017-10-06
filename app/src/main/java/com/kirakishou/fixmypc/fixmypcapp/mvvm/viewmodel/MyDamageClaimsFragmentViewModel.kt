@@ -14,9 +14,9 @@ class MyDamageClaimsFragmentViewModel
     private val mCompositeDisposable = CompositeDisposable()
 
     override fun onCleared() {
-        super.onCleared()
-
         Timber.e("MyDamageClaimsFragmentViewModel.onCleared()")
         mCompositeDisposable.clear()
+
+        super.onCleared()
     }
 }

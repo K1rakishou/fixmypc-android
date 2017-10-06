@@ -63,10 +63,10 @@ class LoadingActivityViewModel
     }
 
     override fun onCleared() {
-        super.onCleared()
-
         Timber.e("LoadingActivityViewModel.onCleared()")
         mCompositeDisposable.clear()
+
+        super.onCleared()
     }
 
     override fun startLoggingIn(params: LoginPasswordDTO) {

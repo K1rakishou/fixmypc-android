@@ -33,7 +33,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyB3rwPBjBAw6GLkC8rnCTIpb1BAkoBKnZw" />
 
-        <activity android:name=".ui.activity.RespondedSpecialistsActivity"></activity>
+        <activity android:name=".ui.activity.RespondedSpecialistsActivity" />
+        <activity android:name=".ui.activity.LoginActivity"></activity>
     </application>
 
 </manifest>

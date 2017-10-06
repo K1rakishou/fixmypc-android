@@ -81,10 +81,10 @@ class ClientMainActivityViewModel
     }
 
     override fun onCleared() {
-        super.onCleared()
-
         Timber.e("ClientMainActivityViewModel.onCleared()")
         mCompositeDisposable.clear()
+
+        super.onCleared()
     }
 
     override fun getActiveClientDamageClaimSubject( skip: Long, count: Long) {

@@ -59,10 +59,10 @@ class RespondedSpecialistsViewModel
     }
 
     override fun onCleared() {
-        super.onCleared()
-
         Timber.e("RespondedSpecialistsViewModel.onCleared()")
         mCompositeDisposable.clear()
+
+        super.onCleared()
     }
 
     override fun getRespondedSpecialistsSubject(damageClaimId: Long, skip: Long, count: Long) {

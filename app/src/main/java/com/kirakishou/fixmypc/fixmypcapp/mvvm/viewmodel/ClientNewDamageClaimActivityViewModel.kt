@@ -73,10 +73,10 @@ class ClientNewDamageClaimActivityViewModel
     }
 
     override fun onCleared() {
-        super.onCleared()
-
         Timber.e("ClientNewMalfunctionActivityViewModel.onCleared()")
         mCompositeDisposable.clear()
+
+        super.onCleared()
     }
 
     fun setCategory(category: DamageClaimCategory) {

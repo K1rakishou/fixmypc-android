@@ -14,7 +14,6 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AccountInfoPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AccountType
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.LoginPasswordDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.LoadingActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.LoadingActivityViewModelFactory
@@ -55,7 +54,7 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
 
         mCompositeDisposable += getViewModel().mOutputs.runGuestMainActivity()
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ runGuestMainActivity() })
+                .subscribe({ runLoginActivity() })
 
         mCompositeDisposable += getViewModel().mOutputs.runSpecialistMainActivity()
                 .subscribeOn(AndroidSchedulers.mainThread())
@@ -81,11 +80,6 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
     }
 
     override fun onActivityStart() {
-        //FIXME: accountInfoPrefs should be loaded from preferences via accountInfoPrefs.load()
-        //don't forger to delete the following:
-        accountInfoPrefs.login = Fickle.of("test@gmail.com")
-        accountInfoPrefs.password = Fickle.of("1234567890")
-
         if (accountInfoPrefs.exists()) {
             val login = accountInfoPrefs.login.get()
             val password = accountInfoPrefs.password.get()
@@ -93,7 +87,7 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
             getViewModel().mInputs.startLoggingIn(LoginPasswordDTO(login, password))
         } else {
             accountInfoPrefs.clear()
-            runGuestMainActivity()
+            runLoginActivity()
         }
     }
 
@@ -105,8 +99,9 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
         mRefWatcher.watch(this)
     }
 
-    private fun runGuestMainActivity() {
-        Timber.e("Running guest MainActivity")
+    private fun runLoginActivity() {
+        Timber.e("Running LoginActivity")
+        runActivity(LoadingActivity::class.java, true)
     }
 
     private fun runClientMainActivity(sessionId: String, accountType: AccountType) {

@@ -118,23 +118,24 @@ class SpecialistDamageClaimListAdapter(private val mContext: Context,
         when (holder) {
             is DamageClaimItemHolder -> {
                 if (mItems[position].value.isPresent()) {
-                    val claim = mItems[position].value.get() as DamageClaimsWithDistanceDTO
-                    val distStr = Utils.distanceToString(claim.distance)
+                    val dto = mItems[position].value.get() as DamageClaimsWithDistanceDTO
+                    val damageClaim = dto.damageClaim
+                    val distStr = Utils.distanceToString(dto.distance)
 
                     holder.clickView.setOnClickListener {
-                        mAdapterItemClickSubject.onNext(claim.damageClaim)
+                        mAdapterItemClickSubject.onNext(damageClaim)
                     }
 
                     holder.distanceToMe.text = "$distStr КМ"
 
-                    when (claim.damageClaim.category) {
+                    when (damageClaim.category) {
                         DamageClaimCategory.Computer.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_computer))
                         DamageClaimCategory.Notebook.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_laptop))
                         DamageClaimCategory.Phone.ordinal -> holder.damageTypeIcon.setImageDrawable(mContext.myGetDrawable(R.drawable.ic_smartphone))
                     }
 
-                    if (claim.damageClaim.photoNames.isNotEmpty()) {
-                        mImageLoader.loadImageFromNetInto(claim.damageClaim.photoNames.first(), holder.damagePhoto)
+                    if (damageClaim.photoNames.isNotEmpty()) {
+                        mImageLoader.loadDamageClaimImageFromNetInto(damageClaim.ownerId, damageClaim.photoNames.first(), holder.damagePhoto)
                     } else {
                         //TODO: load image with an error message
                     }

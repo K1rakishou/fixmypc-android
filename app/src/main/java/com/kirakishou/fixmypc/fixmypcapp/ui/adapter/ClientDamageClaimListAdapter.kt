@@ -131,7 +131,7 @@ class ClientDamageClaimListAdapter(private val mContext: Context,
                     }
 
                     if (damageClaim.photoNames.isNotEmpty()) {
-                        mImageLoader.loadImageFromNetInto(damageClaim.photoNames.first(), holder.damagePhoto)
+                        mImageLoader.loadDamageClaimImageFromNetInto(damageClaim.ownerId, damageClaim.photoNames.first(), holder.damagePhoto)
                     } else {
                         //TODO: load image with an error message
                     }

@@ -17,10 +17,10 @@ class ImageLoader(protected val mContext: Context,
                   mBaseUrl: String) {
     private val url = "$mBaseUrl/v1/api/image/"
 
-    fun loadImageFromNetInto(imageName: String, view: ImageView) {
+    fun loadDamageClaimImageFromNetInto(userId: Long, imageName: String, view: ImageView) {
         if (mWifiUtils.isWifiConnected()) {
             Glide.with(mContext)
-                    .load("$url/$imageName/${Constant.ImageSize.SMALL}/")
+                    .load("$url/$userId/${Constant.ImageSize.SMALL}/$imageName/")
                     .apply(RequestOptions().centerCrop())
                     .into(view)
         } else {

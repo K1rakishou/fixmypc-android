@@ -135,7 +135,7 @@ class SpecialistProfileListAdapter(private val mContext: Context,
                     }
 
                     //TODO
-                    //mImageLoader.loadImageFromNetInto(profileAdapterItem.photoName, holder.profilePhoto)
+                    //mImageLoader.loadDamageClaimImageFromNetInto(profileAdapterItem.photoName, holder.profilePhoto)
                 }
             }
 

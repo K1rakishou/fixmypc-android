@@ -113,7 +113,7 @@ abstract class BaseActivity<out T: ViewModel> : AppCompatActivity() {
         set.start()
     }
 
-    protected open fun showToast(message: String, duration: Int = Toast.LENGTH_LONG) {
+    protected open fun onShowToast(message: String, duration: Int = Toast.LENGTH_LONG) {
         runOnUiThread {
             Toast.makeText(this, message, duration).show()
         }
@@ -121,9 +121,9 @@ abstract class BaseActivity<out T: ViewModel> : AppCompatActivity() {
 
     protected open fun onUnknownError(error: Throwable) {
         if (error.message != null) {
-            showToast(error.message!!)
+            onShowToast(error.message!!)
         } else {
-            showToast("Неизвестная ошибка")
+            onShowToast("Неизвестная ошибка")
         }
 
         finish()

@@ -56,7 +56,7 @@ class LoginActivity : BaseActivity<LoginActivityViewModel>(),
     }
 
     override fun onShowToast(message: String, duration: Int) {
-        showToast(message, duration)
+        super.onShowToast(message, duration)
     }
 
     override fun onUnknownError(error: Throwable) {

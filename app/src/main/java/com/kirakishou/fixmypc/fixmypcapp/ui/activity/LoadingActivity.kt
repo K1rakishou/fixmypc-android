@@ -4,7 +4,6 @@ import android.animation.AnimatorSet
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
@@ -138,8 +137,8 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
         super.onUnknownError(error)
     }
 
-    private fun onShowToast(message: String) {
-        showToast(message, Toast.LENGTH_SHORT)
+    override fun onShowToast(message: String, duration: Int) {
+        super.onShowToast(message, duration)
     }
 
     override fun resolveDaggerDependency() {

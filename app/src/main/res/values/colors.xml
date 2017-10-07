@@ -7,7 +7,6 @@
     <color name="additionalColor1">#3D2117</color>
     <color name="additionalColor2">#FEFCE8</color>
     <color name="colorTextNormal">#808080</color>
-    <color name="colorTextDark">@android:color/primary_text_light</color>
     <color name="lighter_gray">#ddd</color>
     <color name="white">#FFFFFFFF</color>
 </resources>

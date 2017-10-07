@@ -32,6 +32,11 @@ open class BaseNavigator(activity: AppCompatActivity) {
         val visibleFragment = getVisibleFragment()
 
         if (visibleFragment != null) {
+            if (visibleFragment::class == fragmentClass) {
+                //do nothing if we are already showing this fragment
+                return
+            }
+
             fragmentTransaction.hide(visibleFragment)
         }
 

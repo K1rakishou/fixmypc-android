@@ -41,6 +41,16 @@ object ErrorMessage {
             ErrorCode.Remote.REC_RESPONSE_BODY_IS_EMPTY -> return "Response body is empty!"
             ErrorCode.Remote.REC_DUPLICATE_ENTRY_EXCEPTION -> return "Нельзя отправить два одинаковых файла"
             ErrorCode.Remote.REC_BAD_ORIGINAL_FILE_NAME -> return "Попытка отправить файл не являющийся изображением"
+            ErrorCode.Remote.REC_SESSION_ID_EXPIRED -> return "REC_SESSION_ID_EXPIRED"
+            ErrorCode.Remote.REC_LOGIN_IS_TOO_LONG -> return "Введённый логин слишком длинный"
+            ErrorCode.Remote.REC_USER_INFO_IS_EMPTY -> return "USER_INFO_IS_EMPTY"
+            ErrorCode.Remote.REC_COULD_NOT_UPDATE_SESSION_ID -> return "Не удалось перелогиниться. Попробуйте повторить запрос позже"
+            ErrorCode.Remote.REC_BAD_ACCOUNT_TYPE -> return "Невозможно выполнить операцию из данного аккаунта"
+            ErrorCode.Remote.REC_COULD_NOT_REMOVE_RESPONDED_SPECIALISTS -> return "Ошибка на сервере"
+            ErrorCode.Remote.REC_DAMAGE_CLAIM_DOES_NOT_BELONG_TO_USER -> return "Попытка доступа к данным, которые не принадлежат пользователю"
+            ErrorCode.Remote.REC_COULD_NOT_FIND_PROFILE_WITH_USER_ID -> return "Не удалось найти профиль по данному айди"
+            ErrorCode.Remote.REC_EMPTY_OBSERVABLE_ERROR -> return "EMPTY_OBSERVABLE_ERROR"
+
             else -> throw IllegalArgumentException("Unknown statusCode: $errorCode")
         }
     }

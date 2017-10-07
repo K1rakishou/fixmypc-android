@@ -72,7 +72,7 @@ class ClientNewDamageClaimActivity : BaseActivity<ClientNewDamageClaimActivityVi
                 }
 
             } else {
-                showToast("Не удалось получить разрешение на открытие галлереи фото", Toast.LENGTH_LONG)
+                onShowToast("Не удалось получить разрешение на открытие галлереи фото", Toast.LENGTH_LONG)
             }
         }
     }
@@ -98,7 +98,7 @@ class ClientNewDamageClaimActivity : BaseActivity<ClientNewDamageClaimActivityVi
     }
 
     override fun onShowToast(message: String, duration: Int) {
-        showToast(message, duration)
+        super.onShowToast(message, duration)
     }
 
     override fun runActivity(clazz: Class<*>, finishCurrentActivity: Boolean) {

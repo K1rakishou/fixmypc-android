@@ -4,7 +4,10 @@ import android.animation.AnimatorSet
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.FragmentManager
+import android.view.MenuItem
+import butterknife.BindView
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
@@ -15,10 +18,14 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityVi
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavigator
 import com.squareup.leakcanary.RefWatcher
+import timber.log.Timber
 import javax.inject.Inject
 
 class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), BaseActivityFragmentCallback,
-        FragmentManager.OnBackStackChangedListener {
+        FragmentManager.OnBackStackChangedListener, BottomNavigationView.OnNavigationItemSelectedListener {
+
+    @BindView(R.id.bottom_navigation)
+    lateinit var bottomNavigationView: BottomNavigationView
 
     @Inject
     lateinit var mRefWatcher: RefWatcher
@@ -41,6 +48,8 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), 
         supportFragmentManager.addOnBackStackChangedListener(this)
         getViewModel().init()
 
+        bottomNavigationView.setOnNavigationItemSelectedListener(this)
+
         if (savedInstanceState == null) {
             mNavigator.navigateToActiveDamageClaimsListFragment()
         }
@@ -59,6 +68,23 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), 
 
     }
 
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.damage_claim_list -> {
+                mNavigator.navigateToActiveDamageClaimsListFragment()
+            }
+
+            R.id.profile -> {
+                mNavigator.navigateToSpecialistProfileFragment()
+            }
+
+            R.id.options -> {
+                Timber.e("Navigate to options fragment")
+            }
+        }
+        return true
+    }
+
     override fun resolveDaggerDependency() {
         DaggerSpecialistMainActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
@@ -68,15 +94,15 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), 
     }
 
     override fun onShowToast(message: String, duration: Int) {
-        showToast(message, duration)
-    }
-
-    override fun onUnknownError(error: Throwable) {
-        super.onUnknownError(error)
+        super.onShowToast(message, duration)
     }
 
     override fun runActivity(clazz: Class<*>, finishCurrentActivity: Boolean) {
         super.runActivity(clazz, finishCurrentActivity)
+    }
+
+    override fun onUnknownError(error: Throwable) {
+        super.onUnknownError(error)
     }
 
     override fun onBackStackChanged() {

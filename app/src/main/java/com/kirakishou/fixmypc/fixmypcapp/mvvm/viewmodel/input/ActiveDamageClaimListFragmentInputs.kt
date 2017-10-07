@@ -10,4 +10,5 @@ interface ActiveDamageClaimListFragmentInputs {
     //fun getClientProfile(userId: Long)
     fun checkHasAlreadyRespondedToDamageClaim(damageClaimId: Long)
     fun respondToDamageClaim(damageClaimId: Long)
+    fun getSpecialistProfile()
 }

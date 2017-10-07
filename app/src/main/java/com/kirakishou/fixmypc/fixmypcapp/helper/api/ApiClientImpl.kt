@@ -73,6 +73,11 @@ class ApiClientImpl
         return AssignSpecialistRequest(packet, mApiService, mAppSettings, mGson, mSchedulers)
                 .execute()
     }
+
+    override fun getSpecialistProfile(): Single<SpecialistProfileResponse> {
+        return SpecialistProfileRequest(mApiService, mAppSettings, mGson, mSchedulers)
+                .execute()
+    }
 }
 
 

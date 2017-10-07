@@ -31,6 +31,10 @@ class ImageLoader(protected val mContext: Context,
         }
     }
 
+    fun loadProfileImageFromNetInto() {
+
+    }
+
     fun loadImageFromDiskInto(file: File, imageView: ImageView) {
         Glide.with(mContext)
                 .load(file)

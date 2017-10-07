@@ -55,6 +55,7 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
         accountInfoPrefs.load()
+        getViewModel().init()
         initRx()
 
         if (accountInfoPrefs.exists()) {

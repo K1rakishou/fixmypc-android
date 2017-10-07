@@ -9,12 +9,10 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.util.MathUtils
 import com.kirakishou.fixmypc.fixmypcapp.helper.wifi.WifiUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimsWithDistanceDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.RespondToDamageClaimPacket
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.HasAlreadyRespondedResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.RespondToDamageClaimResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.ActiveDamageClaimListFragmentErrors
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.ActiveDamageClaimListFragmentInputs
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.ActiveDamageClaimListFragmentOutputs
@@ -45,6 +43,7 @@ class SpecialistMainActivityViewModel
     private val itemsPerPage = Constant.MAX_DAMAGE_CLAIMS_PER_PAGE
     private val mCompositeDisposable = CompositeDisposable()
 
+    lateinit var mOnSpecialistProfileResponseSubject: BehaviorSubject<SpecialistProfile>
     lateinit var mOnBadResponseSubject: BehaviorSubject<ErrorCode.Remote>
     lateinit var mOnHasAlreadyRespondedResponse: BehaviorSubject<Boolean>
     lateinit var mCheckHasAlreadyRespondedSubject: BehaviorSubject<Long>
@@ -54,10 +53,12 @@ class SpecialistMainActivityViewModel
     lateinit var mOnDamageClaimsPageReceivedSubject: BehaviorSubject<ArrayList<DamageClaimsWithDistanceDTO>>
     lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
     lateinit var mEitherFromRepoOrServerSubject: BehaviorSubject<Pair<LatLng, DamageClaimsResponse>>
+    lateinit var mGetSpecialistProfileSubject: BehaviorSubject<Unit>
 
     fun init() {
         mCompositeDisposable.clear()
 
+        mOnSpecialistProfileResponseSubject = BehaviorSubject.create()
         mOnBadResponseSubject = BehaviorSubject.create()
         mOnHasAlreadyRespondedResponse = BehaviorSubject.create()
         mCheckHasAlreadyRespondedSubject = BehaviorSubject.create()
@@ -67,6 +68,16 @@ class SpecialistMainActivityViewModel
         mOnDamageClaimsPageReceivedSubject = BehaviorSubject.create()
         mOnUnknownErrorSubject = BehaviorSubject.create()
         mEitherFromRepoOrServerSubject = BehaviorSubject.create()
+        mGetSpecialistProfileSubject = BehaviorSubject.create()
+
+        mCompositeDisposable += mGetSpecialistProfileSubject
+                .subscribeOn(mSchedulers.provideIo())
+                .flatMap { mApiClient.getSpecialistProfile().toObservable() }
+                .subscribe({
+                    handleResponse(it)
+                }, {
+                    handleError(it)
+                })
 
         mCompositeDisposable += mEitherFromRepoOrServerSubject
                 .map { (latlon, response) -> calcDistances(latlon.latitude, latlon.longitude, response) }
@@ -94,7 +105,6 @@ class SpecialistMainActivityViewModel
 
         val repositoryItemsObservable = mGetDamageClaimsWithinRadiusSubject
                 .subscribeOn(mSchedulers.provideIo())
-                .observeOn(mSchedulers.provideIo())
                 .flatMap { (latlon, radius, skip) ->
                     val repoResultObservable = mDamageClaimRepo.findWithinBBox(latlon.latitude, latlon.longitude, radius, skip)
                             .map { DamageClaimsResponse(it.toMutableList(), ErrorCode.Remote.REC_OK) }
@@ -134,6 +144,10 @@ class SpecialistMainActivityViewModel
         super.onCleared()
     }
 
+    override fun getSpecialistProfile() {
+        mGetSpecialistProfileSubject.onNext(Unit)
+    }
+
     override fun getDamageClaimsWithinRadius(latLng: LatLng, radius: Double, page: Long) {
         mGetDamageClaimsWithinRadiusSubject.onNext(GetDamageClaimsRequestParamsDTO(latLng, radius, page * itemsPerPage))
     }
@@ -161,6 +175,10 @@ class SpecialistMainActivityViewModel
 
                 is HasAlreadyRespondedResponse -> {
                     mOnHasAlreadyRespondedResponse.onNext(response.hasAlreadyResponded)
+                }
+
+                is SpecialistProfileResponse -> {
+                    mOnSpecialistProfileResponseSubject.onNext(response.profile)
                 }
             }
         } else {
@@ -206,6 +224,10 @@ class SpecialistMainActivityViewModel
                         else -> throw RuntimeException("Unknown errorCode: $errorCode")
                     }
                 }
+
+                is SpecialistProfileResponse -> {
+                    TODO()
+                }
             }
         }
     }
@@ -227,6 +249,7 @@ class SpecialistMainActivityViewModel
         return retVal
     }
 
+    override fun onSpecialistProfileResponseSubject(): Observable<SpecialistProfile> = mOnSpecialistProfileResponseSubject
     override fun onBadResponse(): Observable<ErrorCode.Remote> = mOnBadResponseSubject
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
     override fun onDamageClaimsPageReceived(): Observable<ArrayList<DamageClaimsWithDistanceDTO>> = mOnDamageClaimsPageReceivedSubject

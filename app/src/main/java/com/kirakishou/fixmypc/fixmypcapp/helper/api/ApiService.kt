@@ -59,6 +59,9 @@ interface ApiService {
     @POST("/v1/api/specialist/assign")
     fun assignSpecialist(@Header("session_id") sessionId: String,
                          @Body packet: AssignSpecialistPacket): Single<Response<StatusResponse>>
+
+    @GET("/v1/api/specialist/profile")
+    fun getSpecialistProfile(@Header("session_id") sessionId: String): Single<Response<SpecialistProfileResponse>>
 }
 
 

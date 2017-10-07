@@ -14,13 +14,21 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerLoginActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.LoginActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AccountInfoPreference
+import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.LoginPasswordDTO
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.LoginResponseDataDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.LoginActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.LoginActivityViewModelFactory
+import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.LoginActivity
+import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
+import timber.log.Timber
 import javax.inject.Inject
 
 class LoginFragment : BaseFragment<LoginActivityViewModel>() {
@@ -37,15 +45,27 @@ class LoginFragment : BaseFragment<LoginActivityViewModel>() {
     @Inject
     lateinit var mViewModelFactory: LoginActivityViewModelFactory
 
+    @Inject
+    lateinit var mAppSharedPreference: AppSharedPreference
+
+
+    private val accountInfoPrefs by lazy { mAppSharedPreference.prepare<AccountInfoPreference>() }
+
     override fun initViewModel(): LoginActivityViewModel? {
-        return ViewModelProviders.of(this, mViewModelFactory).get(LoginActivityViewModel::class.java)
+        return ViewModelProviders.of(activity, mViewModelFactory).get(LoginActivityViewModel::class.java)
     }
 
     override fun getContentView(): Int = R.layout.fragment_login
     override fun loadStartAnimations(): AnimatorSet = AnimatorSet()
     override fun loadExitAnimations(): AnimatorSet = AnimatorSet()
 
+    override fun onPause() {
+        super.onPause()
+        accountInfoPrefs.save()
+    }
+
     override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
+        accountInfoPrefs.load()
         initRx()
     }
 
@@ -55,11 +75,52 @@ class LoginFragment : BaseFragment<LoginActivityViewModel>() {
     private fun initRx() {
         mCompositeDisposable += RxView.clicks(loginButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onLoginButtonClick() })
+                .map {
+                    val login = inputLogin.text.toString()
+                    val password = inputPassword.text.toString()
+
+                    return@map LoginPasswordDTO(login, password)
+                }
+                .subscribe({ onLoginButtonClick(it) })
+
+        mCompositeDisposable += getViewModel().mOutputs.runClientMainActivity()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ runClientMainActivity(it) })
+
+        mCompositeDisposable += getViewModel().mOutputs.runSpecialistMainActivity()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ runSpecialistMainActivity(it) })
+
+        mCompositeDisposable += getViewModel().mErrors.onBadResponse()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onBadResponse(it) })
+
+        mCompositeDisposable += getViewModel().mErrors.onUnknownError()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onUnknownError(it) })
     }
 
-    private fun onLoginButtonClick() {
+    private fun onLoginButtonClick(loginPassword: LoginPasswordDTO) {
+        getViewModel().mInputs.startLoggingIn(loginPassword)
+    }
 
+    private fun runClientMainActivity(loginResponseData: LoginResponseDataDTO) {
+        Timber.e("Running client MainActivity")
+
+        updateAccountInfoPres(loginResponseData.login, loginResponseData.password)
+        runActivity(ClientMainActivity::class.java, true)
+    }
+
+    private fun runSpecialistMainActivity(loginResponseData: LoginResponseDataDTO) {
+        Timber.e("Running specialist MainActivity")
+
+        updateAccountInfoPres(loginResponseData.login, loginResponseData.password)
+        runActivity(SpecialistMainActivity::class.java, true)
+    }
+
+    private fun updateAccountInfoPres(login: String, password: String) {
+        accountInfoPrefs.login = Fickle.of(login)
+        accountInfoPrefs.password = Fickle.of(password)
     }
 
     override fun onBadResponse(errorCode: ErrorCode.Remote) {

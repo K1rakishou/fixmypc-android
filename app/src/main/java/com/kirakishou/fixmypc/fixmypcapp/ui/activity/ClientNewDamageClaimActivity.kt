@@ -101,8 +101,8 @@ class ClientNewDamageClaimActivity : BaseActivity<ClientNewDamageClaimActivityVi
         showToast(message, duration)
     }
 
-    override fun startActivity(activityClass: Class<*>, finishCurrentActivity: Boolean) {
-        runActivity(activityClass, finishCurrentActivity)
+    override fun runActivity(clazz: Class<*>, finishCurrentActivity: Boolean) {
+        super.runActivity(clazz, finishCurrentActivity)
     }
 
     override fun onUnknownError(error: Throwable) {

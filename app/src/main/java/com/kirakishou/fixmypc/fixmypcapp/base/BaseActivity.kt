@@ -113,7 +113,7 @@ abstract class BaseActivity<out T: ViewModel> : AppCompatActivity() {
         set.start()
     }
 
-    protected fun showToast(message: String, duration: Int = Toast.LENGTH_LONG) {
+    protected open fun showToast(message: String, duration: Int = Toast.LENGTH_LONG) {
         runOnUiThread {
             Toast.makeText(this, message, duration).show()
         }
@@ -129,7 +129,7 @@ abstract class BaseActivity<out T: ViewModel> : AppCompatActivity() {
         finish()
     }
 
-    protected fun runActivity(clazz: Class<*>, finishCurrentActivity: Boolean = false) {
+    protected open fun runActivity(clazz: Class<*>, finishCurrentActivity: Boolean = false) {
         val intent = Intent(this, clazz)
         startActivity(intent)
 

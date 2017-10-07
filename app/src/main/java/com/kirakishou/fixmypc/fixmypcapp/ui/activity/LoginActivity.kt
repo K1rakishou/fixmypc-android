@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
+import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivityFragmentCallback
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerLoginActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.LoginActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.LoginActivityViewModel
@@ -16,7 +17,7 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.LoginActivityNavigator
 import javax.inject.Inject
 
 class LoginActivity : BaseActivity<LoginActivityViewModel>(),
-        FragmentManager.OnBackStackChangedListener{
+        FragmentManager.OnBackStackChangedListener, BaseActivityFragmentCallback {
 
     @Inject
     lateinit var mViewModelFactory: LoginActivityViewModelFactory
@@ -34,6 +35,7 @@ class LoginActivity : BaseActivity<LoginActivityViewModel>(),
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
         supportFragmentManager.addOnBackStackChangedListener(this)
+        getViewModel().init()
         mNavigator.navigateToLoginFragment()
     }
 
@@ -51,6 +53,18 @@ class LoginActivity : BaseActivity<LoginActivityViewModel>(),
         if (supportFragmentManager.backStackEntryCount == 0) {
             finish()
         }
+    }
+
+    override fun onShowToast(message: String, duration: Int) {
+        showToast(message, duration)
+    }
+
+    override fun onUnknownError(error: Throwable) {
+        super.onUnknownError(error)
+    }
+
+    override fun runActivity(clazz: Class<*>, finishCurrentActivity: Boolean) {
+        super.runActivity(clazz, finishCurrentActivity)
     }
 
     override fun resolveDaggerDependency() {

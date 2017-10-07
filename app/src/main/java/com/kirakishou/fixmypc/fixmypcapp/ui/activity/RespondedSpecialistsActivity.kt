@@ -73,6 +73,14 @@ class RespondedSpecialistsActivity : BaseActivity<RespondedSpecialistsViewModel>
         }
     }
 
+    override fun onUnknownError(error: Throwable) {
+        super.onUnknownError(error)
+    }
+
+    override fun runActivity(clazz: Class<*>, finishCurrentActivity: Boolean) {
+        super.runActivity(clazz, finishCurrentActivity)
+    }
+
     override fun resolveDaggerDependency() {
         DaggerRespondedSpecialistsActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)

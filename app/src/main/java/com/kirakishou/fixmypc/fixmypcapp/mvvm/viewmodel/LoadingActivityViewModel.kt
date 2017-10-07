@@ -10,18 +10,14 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.LoginPasswordDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.LoginResponseDataDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.LoginPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.LoginResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.LoadingActivityErrors
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.LoadingActivityInputs
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.LoadingActivityOutputs
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
-import java.net.UnknownHostException
-import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 
 /**
@@ -45,18 +41,18 @@ class LoadingActivityViewModel
     private val mLogInSubject = BehaviorSubject.create<LoginPasswordDTO>()
     private val mRunClientActivitySubject = BehaviorSubject.create<LoginResponseDataDTO>()
     private val mRunSpecialistMainActivitySubject = BehaviorSubject.create<LoginResponseDataDTO>()
-    private val mRunGuestMainActivity = BehaviorSubject.create<Boolean>()
-    private val mCouldNotConnectToServerSubject = BehaviorSubject.create<Throwable>()
     private val mUnknownErrorSubject = BehaviorSubject.create<Throwable>()
+    private val mOnBadResponseSubject = BehaviorSubject.create<ErrorCode.Remote>()
 
     init {
         mCompositeDisposable += mLogInSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .map { LoginPacket(it.login, it.password) }
-                .flatMap { Observables.zip(mApiClient.loginRequest(it).toObservable(), Observable.just(it)) }
-                .subscribe({ (loginResponse, loginRequest) ->
+                .doOnNext { mAppSettings.saveUserInfo(it.login, it.password, "") }
+                .flatMap { mApiClient.loginRequest(it).toObservable() }
+                .subscribe({
                     Timber.e("Login response received")
-                    handleResponse(loginRequest.login, loginRequest.password, loginResponse)
+                    handleResponse(it)
                 }, {
                     handleError(it)
                 })
@@ -73,24 +69,27 @@ class LoadingActivityViewModel
         mLogInSubject.onNext(params)
     }
 
-    private fun handleResponse(login: String, password: String, response: LoginResponse) {
+    private fun handleResponse(response: LoginResponse) {
         val sessionId = response.sessionId
         val accountType = response.accountType
         val errorCode = response.errorCode
 
         if (errorCode != ErrorCode.Remote.REC_OK) {
-            throw IllegalStateException("ServerResponse is Success but errorCode is not SEC_OK: $errorCode")
+            handleBadResponse(response.errorCode)
+            return
         }
 
-        mAppSettings.saveUserInfo(login, password, sessionId)
+        mAppSettings.updateSessionId(sessionId)
 
         when (accountType) {
             AccountType.Client -> {
-                mRunClientActivitySubject.onNext(LoginResponseDataDTO(sessionId, accountType))
+                val userInfo = mAppSettings.loadUserInfo()
+                mRunClientActivitySubject.onNext(LoginResponseDataDTO(userInfo.login, userInfo.password, sessionId, accountType))
             }
 
             AccountType.Specialist -> {
-                mRunSpecialistMainActivitySubject.onNext(LoginResponseDataDTO(sessionId, accountType))
+                val userInfo = mAppSettings.loadUserInfo()
+                mRunSpecialistMainActivitySubject.onNext(LoginResponseDataDTO(userInfo.login, userInfo.password, sessionId, accountType))
             }
 
             //should never happen
@@ -98,33 +97,27 @@ class LoadingActivityViewModel
         }
     }
 
-    private fun handleError(error: Throwable) {
-        when (error) {
-            is ApiException -> {
-                val remoteErrorCode = error.errorCode
-
-                when (remoteErrorCode) {
-                    ErrorCode.Remote.REC_WRONG_LOGIN_OR_PASSWORD,
-                    ErrorCode.Remote.REC_UNKNOWN_SERVER_ERROR -> {
-                        mRunGuestMainActivity.onNext(true)
-                    }
-
-                    else -> throw IllegalStateException("This should never happen errCode = $remoteErrorCode")
-                }
+    private fun handleBadResponse(errorCode: ErrorCode.Remote) {
+        when (errorCode) {
+            ErrorCode.Remote.REC_TIMEOUT,
+            ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER,
+            ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION,
+            ErrorCode.Remote.REC_WRONG_LOGIN_OR_PASSWORD,
+            ErrorCode.Remote.REC_UNKNOWN_SERVER_ERROR,
+            ErrorCode.Remote.REC_BAD_ACCOUNT_TYPE -> {
+                mOnBadResponseSubject.onNext(errorCode)
             }
 
-            is TimeoutException,
-            is UnknownHostException -> {
-                mCouldNotConnectToServerSubject.onNext(error)
-            }
-
-            else -> mUnknownErrorSubject.onNext(error)
+            else -> throw RuntimeException("Unknown errorCode: $errorCode")
         }
+    }
+
+    private fun handleError(error: Throwable) {
+        mUnknownErrorSubject.onNext(error)
     }
 
     override fun runClientMainActivity(): Observable<LoginResponseDataDTO> = mRunClientActivitySubject
     override fun runSpecialistMainActivity(): Observable<LoginResponseDataDTO> = mRunSpecialistMainActivitySubject
-    override fun runGuestMainActivity(): Observable<Boolean> = mRunGuestMainActivity
-    override fun onCouldNotConnectToServer(): Observable<Throwable> = mCouldNotConnectToServerSubject
     override fun onUnknownError(): Observable<Throwable> = mUnknownErrorSubject
+    override fun onBadResponse(): Observable<ErrorCode.Remote> = mOnBadResponseSubject
 }

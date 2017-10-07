@@ -76,18 +76,13 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
-    override fun onResume() {
-        super.onResume()
-        currentLocationPref.load()
-    }
-
     override fun onPause() {
         super.onPause()
         currentLocationPref.save()
     }
 
     override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
-        Timber.e("savedInstanceState == $savedInstanceState")
+        currentLocationPref.load()
 
         initRx()
         initRecycler()

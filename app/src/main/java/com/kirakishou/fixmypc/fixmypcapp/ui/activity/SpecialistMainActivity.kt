@@ -75,6 +75,10 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), 
         super.onUnknownError(error)
     }
 
+    override fun runActivity(clazz: Class<*>, finishCurrentActivity: Boolean) {
+        super.runActivity(clazz, finishCurrentActivity)
+    }
+
     override fun onBackStackChanged() {
         if (supportFragmentManager.backStackEntryCount == 0) {
             finish()

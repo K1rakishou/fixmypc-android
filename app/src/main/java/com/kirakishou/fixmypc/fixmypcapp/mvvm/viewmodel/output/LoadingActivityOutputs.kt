@@ -9,5 +9,4 @@ import io.reactivex.Observable
 interface LoadingActivityOutputs {
     fun runClientMainActivity(): Observable<LoginResponseDataDTO>
     fun runSpecialistMainActivity(): Observable<LoginResponseDataDTO>
-    fun runGuestMainActivity(): Observable<Boolean>
 }

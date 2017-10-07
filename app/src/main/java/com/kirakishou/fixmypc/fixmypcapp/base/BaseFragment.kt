@@ -72,6 +72,14 @@ abstract class BaseFragment<T : ViewModel> : Fragment() {
         super.onDestroyView()
     }
 
+    protected fun runActivity(clazz: Class<*>, finishCurrentActivity: Boolean = false) {
+        if (activity !is BaseActivityFragmentCallback) {
+            throw IllegalStateException("Activity should implement BaseActivityFragmentCallback!")
+        }
+
+        (activity as BaseActivityFragmentCallback).runActivity(clazz, finishCurrentActivity)
+    }
+
     protected fun showToast(message: String, duration: Int) {
         if (activity !is BaseActivityFragmentCallback) {
             throw IllegalStateException("Activity should implement BaseActivityFragmentCallback!")

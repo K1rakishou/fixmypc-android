@@ -14,6 +14,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AccountInfoPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AccountType
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.LoginPasswordDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.LoadingActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.LoadingActivityViewModelFactory
@@ -47,39 +48,15 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
-    override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
-        mCompositeDisposable += getViewModel().mOutputs.runClientMainActivity()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ runClientMainActivity(it.sessionId, it.accountType) })
-
-        mCompositeDisposable += getViewModel().mOutputs.runGuestMainActivity()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ runLoginActivity() })
-
-        mCompositeDisposable += getViewModel().mOutputs.runSpecialistMainActivity()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ runSpecialistMainActivity(it.sessionId, it.accountType) })
-
-        mCompositeDisposable += getViewModel().mErrors.onCouldNotConnectToServer()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onCouldNotConnectToServer(it) })
-
-        mCompositeDisposable += getViewModel().mErrors.onUnknownError()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onUnknownError(it) })
-    }
-
-    override fun onResume() {
-        super.onResume()
-        accountInfoPrefs.load()
-    }
-
     override fun onPause() {
         super.onPause()
         accountInfoPrefs.save()
     }
 
-    override fun onActivityStart() {
+    override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
+        accountInfoPrefs.load()
+        initRx()
+
         if (accountInfoPrefs.exists()) {
             val login = accountInfoPrefs.login.get()
             val password = accountInfoPrefs.password.get()
@@ -91,12 +68,34 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
         }
     }
 
-    override fun onActivityStop() {
+    override fun onActivityDestroy() {
+        mRefWatcher.watch(this)
+    }
+
+    private fun initRx() {
+        mCompositeDisposable += getViewModel().mOutputs.runClientMainActivity()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ runClientMainActivity(it.sessionId, it.accountType) })
+
+        mCompositeDisposable += getViewModel().mOutputs.runSpecialistMainActivity()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ runSpecialistMainActivity(it.sessionId, it.accountType) })
+
+        mCompositeDisposable += getViewModel().mErrors.onBadResponse()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onBadResponse(it) })
+
+        mCompositeDisposable += getViewModel().mErrors.onUnknownError()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onUnknownError(it) })
+    }
+
+    override fun onActivityStart() {
 
     }
 
-    override fun onActivityDestroy() {
-        mRefWatcher.watch(this)
+    override fun onActivityStop() {
+
     }
 
     private fun runLoginActivity() {
@@ -114,10 +113,24 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
         runActivity(SpecialistMainActivity::class.java, true)
     }
 
-    private fun onCouldNotConnectToServer(error: Throwable) {
-        Timber.e(error)
-
+    private fun onCouldNotConnectToServer() {
         //TODO: show reconnection button
+    }
+
+    private fun onBadResponse(errorCode: ErrorCode.Remote) {
+        when (errorCode) {
+            ErrorCode.Remote.REC_WRONG_LOGIN_OR_PASSWORD -> {
+                accountInfoPrefs.clear()
+                runLoginActivity()
+            }
+
+            ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER,
+            ErrorCode.Remote.REC_TIMEOUT -> {
+                onCouldNotConnectToServer()
+            }
+
+            else -> throw IllegalArgumentException("unknown errorCode: $errorCode")
+        }
     }
 
     override fun onUnknownError(error: Throwable) {

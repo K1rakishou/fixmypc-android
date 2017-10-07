@@ -56,7 +56,6 @@ class SpecialistMainActivityViewModel
     lateinit var mEitherFromRepoOrServerSubject: BehaviorSubject<Pair<LatLng, DamageClaimsResponse>>
 
     fun init() {
-        Timber.e("SpecialistMainActivityViewModel init()")
         mCompositeDisposable.clear()
 
         mOnBadResponseSubject = BehaviorSubject.create()

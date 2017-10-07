@@ -38,13 +38,21 @@ class LoadingActivityViewModel
 
     private val mCompositeDisposable = CompositeDisposable()
 
-    private val mLogInSubject = BehaviorSubject.create<LoginPasswordDTO>()
-    private val mRunClientActivitySubject = BehaviorSubject.create<LoginResponseDataDTO>()
-    private val mRunSpecialistMainActivitySubject = BehaviorSubject.create<LoginResponseDataDTO>()
-    private val mUnknownErrorSubject = BehaviorSubject.create<Throwable>()
-    private val mOnBadResponseSubject = BehaviorSubject.create<ErrorCode.Remote>()
+    lateinit var mLogInSubject: BehaviorSubject<LoginPasswordDTO>
+    lateinit var mRunClientActivitySubject: BehaviorSubject<LoginResponseDataDTO>
+    lateinit var mRunSpecialistMainActivitySubject: BehaviorSubject<LoginResponseDataDTO>
+    lateinit var mUnknownErrorSubject: BehaviorSubject<Throwable>
+    lateinit var mOnBadResponseSubject: BehaviorSubject<ErrorCode.Remote>
 
-    init {
+    fun init() {
+        mCompositeDisposable.clear()
+
+        mLogInSubject = BehaviorSubject.create<LoginPasswordDTO>()
+        mRunClientActivitySubject = BehaviorSubject.create<LoginResponseDataDTO>()
+        mRunSpecialistMainActivitySubject = BehaviorSubject.create<LoginResponseDataDTO>()
+        mUnknownErrorSubject = BehaviorSubject.create<Throwable>()
+        mOnBadResponseSubject = BehaviorSubject.create<ErrorCode.Remote>()
+
         mCompositeDisposable += mLogInSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .map { LoginPacket(it.login, it.password) }

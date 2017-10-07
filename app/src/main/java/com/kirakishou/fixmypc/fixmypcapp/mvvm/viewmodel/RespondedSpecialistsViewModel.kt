@@ -39,6 +39,8 @@ class RespondedSpecialistsViewModel
     lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
 
     fun init() {
+        mCompositeDisposable.clear()
+
         mGetRespondedSpecialistsSubject = BehaviorSubject.create()
         mOnSpecialistsListResponseSubject = BehaviorSubject.create()
         mOnBadResponseSubject = BehaviorSubject.create()

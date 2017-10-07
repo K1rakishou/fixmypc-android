@@ -44,6 +44,8 @@ class LoginActivityViewModel
     lateinit var mUnknownErrorSubject: BehaviorSubject<Throwable>
 
     fun init() {
+        mCompositeDisposable.clear()
+
         mDoLoginSubject = BehaviorSubject.create()
         mRunClientActivitySubject = BehaviorSubject.create()
         mRunSpecialistMainActivitySubject = BehaviorSubject.create()

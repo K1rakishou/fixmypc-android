@@ -46,6 +46,8 @@ class ClientMainActivityViewModel
     lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
 
     fun init() {
+        mCompositeDisposable.clear()
+
         mGetActiveClientDamageClaimSubject = BehaviorSubject.create()
         mGetInactiveClientDamageClaimSubject = BehaviorSubject.create()
         mOnActiveDamageClaimsResponseSubject = BehaviorSubject.create()

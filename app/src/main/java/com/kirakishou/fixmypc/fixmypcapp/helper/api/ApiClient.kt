@@ -5,6 +5,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.AssignSpecialistPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.LoginPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.RespondToDamageClaimPacket
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.SpecialistProfilePacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.*
 import io.reactivex.Single
 import io.reactivex.subjects.ReplaySubject
@@ -33,4 +34,7 @@ interface ApiClient {
     fun assignSpecialist(packet: AssignSpecialistPacket): Single<StatusResponse>
 
     fun getSpecialistProfile(): Single<SpecialistProfileResponse>
+
+    fun updateSpecialistProfile(photoPath: String,
+                                packet: SpecialistProfilePacket): Single<UpdateSpecialistProfileResponse>
 }

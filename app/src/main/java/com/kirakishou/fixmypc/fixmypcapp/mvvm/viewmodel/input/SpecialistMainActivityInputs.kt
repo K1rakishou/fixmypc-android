@@ -5,10 +5,10 @@ import com.google.android.gms.maps.model.LatLng
 /**
  * Created by kirakishou on 9/9/2017.
  */
-interface ActiveDamageClaimListFragmentInputs {
+interface SpecialistMainActivityInputs {
     fun getDamageClaimsWithinRadius(latLng: LatLng, radius: Double, page: Long)
-    //fun getClientProfile(userId: Long)
     fun checkHasAlreadyRespondedToDamageClaim(damageClaimId: Long)
     fun respondToDamageClaim(damageClaimId: Long)
     fun getSpecialistProfile()
+    fun updateSpecialistProfile(photoPath: String, name: String, phone: String)
 }

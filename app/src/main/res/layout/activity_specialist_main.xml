@@ -24,6 +24,8 @@
         app:itemIconTint="@color/white"
         app:itemTextColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/specialist_menu_bottomview" />
 
 </android.support.constraint.ConstraintLayout>

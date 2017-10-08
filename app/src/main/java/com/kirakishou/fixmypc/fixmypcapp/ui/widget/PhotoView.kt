@@ -17,9 +17,9 @@ import android.view.View
 
 class PhotoView : AppCompatImageView, View.OnClickListener {
     private var isPhotoAdded = false
-    private var addButtonDrawable: Drawable? = null
-    private var removeButtonDrawable: Drawable? = null
-    private var borderDrawable: Drawable? = null
+    private lateinit var addButtonDrawable: Drawable
+    private lateinit var removeButtonDrawable: Drawable
+    private lateinit var borderDrawable: Drawable
     private var addButtonId = 0
     private var removeButtonId = 0
     private var borderId = 0
@@ -93,14 +93,14 @@ class PhotoView : AppCompatImageView, View.OnClickListener {
         val posY = (height - drawableWidth) / 2
 
         if (!isPhotoAdded) {
-            borderDrawable!!.setBounds(0, 0, width, height)
-            borderDrawable!!.draw(canvas)
+            borderDrawable.setBounds(0, 0, width, height)
+            borderDrawable.draw(canvas)
 
-            addButtonDrawable!!.setBounds(posX, posY, posX + drawableWidth, posY + drawableWidth)
-            addButtonDrawable!!.draw(canvas)
+            addButtonDrawable.setBounds(posX, posY, posX + drawableWidth, posY + drawableWidth)
+            addButtonDrawable.draw(canvas)
         } else {
-            removeButtonDrawable!!.setBounds(posX, posY, posX + drawableWidth, posY + drawableWidth)
-            removeButtonDrawable!!.draw(canvas)
+            removeButtonDrawable.setBounds(posX, posY, posX + drawableWidth, posY + drawableWidth)
+            removeButtonDrawable.draw(canvas)
         }
     }
 

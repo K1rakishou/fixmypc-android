@@ -1,9 +1,6 @@
 package com.kirakishou.fixmypc.fixmypcapp.helper.api
 
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.AssignSpecialistPacket
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.DamageClaimPacket
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.LoginPacket
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.RespondToDamageClaimPacket
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.*
 import io.reactivex.Single
 import okhttp3.MultipartBody
@@ -62,6 +59,11 @@ interface ApiService {
 
     @GET("/v1/api/specialist/profile")
     fun getSpecialistProfile(@Header("session_id") sessionId: String): Single<Response<SpecialistProfileResponse>>
+
+    @POST("/v1/api/specialist/profile")
+    fun updateSpecialistProfile(@Header("session_id") sessionId: String,
+                                @Part photo: MultipartBody.Part,
+                                @Part("request") requestBody: SpecialistProfilePacket): Single<Response<UpdateSpecialistProfileResponse>>
 }
 
 

@@ -9,6 +9,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.AssignSpecialistPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.LoginPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.RespondToDamageClaimPacket
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.SpecialistProfilePacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.*
 import io.reactivex.Single
 import io.reactivex.subjects.ReplaySubject
@@ -75,7 +76,12 @@ class ApiClientImpl
     }
 
     override fun getSpecialistProfile(): Single<SpecialistProfileResponse> {
-        return SpecialistProfileRequest(mApiService, mAppSettings, mGson, mSchedulers)
+        return GetSpecialistProfileRequest(mApiService, mAppSettings, mGson, mSchedulers)
+                .execute()
+    }
+
+    override fun updateSpecialistProfile(photoPath: String, packet: SpecialistProfilePacket): Single<UpdateSpecialistProfileResponse> {
+        return UpdateSpecialistProfileRequest(photoPath, packet, mApiService, mAppSettings, mGson, mSchedulers)
                 .execute()
     }
 }

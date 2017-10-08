@@ -23,10 +23,10 @@ import java.util.concurrent.TimeoutException
 /**
  * Created by kirakishou on 10/7/2017.
  */
-class SpecialistProfileRequest(protected val mApiService: ApiService,
-                               protected val mAppSettings: AppSettings,
-                               protected val mGson: Gson,
-                               protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<SpecialistProfileResponse>> {
+class GetSpecialistProfileRequest(protected val mApiService: ApiService,
+                                  protected val mAppSettings: AppSettings,
+                                  protected val mGson: Gson,
+                                  protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<SpecialistProfileResponse>> {
 
     override fun execute(): Single<SpecialistProfileResponse> {
         if (!mAppSettings.isUserInfoExists()) {

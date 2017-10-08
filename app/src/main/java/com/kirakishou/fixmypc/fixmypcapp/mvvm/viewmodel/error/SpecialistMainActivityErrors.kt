@@ -6,7 +6,7 @@ import io.reactivex.Observable
 /**
  * Created by kirakishou on 9/9/2017.
  */
-interface ActiveDamageClaimListFragmentErrors {
+interface SpecialistMainActivityErrors {
     fun onBadResponse(): Observable<ErrorCode.Remote>
     fun onUnknownError(): Observable<Throwable>
 }

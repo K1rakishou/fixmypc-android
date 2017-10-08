@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.ui.dialog
+package com.kirakishou.fixmypc.fixmypcapp.ui.interfaces
 
 /**
  * Created by kirakishou on 8/16/2017.

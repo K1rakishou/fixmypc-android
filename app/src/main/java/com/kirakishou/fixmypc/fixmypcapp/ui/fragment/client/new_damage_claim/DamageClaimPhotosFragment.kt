@@ -26,8 +26,9 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewDamageClaimActi
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewDamageClaimActivity
-import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewMalfunctionActivityFragmentCallback
+import com.kirakishou.fixmypc.fixmypcapp.ui.interfaces.RequestPermissionCallback
 import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.DamageClaimPhotosAdapter
+import com.kirakishou.fixmypc.fixmypcapp.ui.interfaces.PermissionGrantedCallback
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientNewDamageClaimActivityNavigator
 import com.squareup.leakcanary.RefWatcher
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -40,7 +41,7 @@ import javax.inject.Inject
 
 
 class DamageClaimPhotosFragment : BaseFragment<ClientNewDamageClaimActivityViewModel>(),
-        DamageClaimPhotosFragmentCallbacks,
+        PermissionGrantedCallback,
         DamageClaimPhotosAdapter.PhotoClickCallback {
 
     @BindView(R.id.photo_recycler_view)
@@ -129,7 +130,7 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewDamageClaimActivityViewM
     }
 
     override fun onPhotoAddClick(position: Int) {
-        val activityHolder = activity as ClientNewMalfunctionActivityFragmentCallback
+        val activityHolder = activity as RequestPermissionCallback
         activityHolder.requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Constant.PermissionCodes.PERMISSION_CODE_WRITE_EXTERNAL_STORAGE)
     }
@@ -160,13 +161,7 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewDamageClaimActivityViewM
                 }
 
                 override fun onImagesPicked(imageFiles: List<File>, source: EasyImage.ImageSource, type: Int) {
-                    for (file in imageFiles) {
-                        mPhotoAdapter.add(AdapterItem(DamagePhotoDTO(file.absolutePath), AdapterItemType.VIEW_PHOTO))
-                    }
-
-                    if (mPhotoAdapter.getPhotosCount() > 0) {
-                        mButtonSendApplication.isEnabled = true
-                    }
+                    onImages(imageFiles)
                 }
 
                 override fun onCanceled(source: EasyImage.ImageSource?, type: Int) {
@@ -178,6 +173,16 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewDamageClaimActivityViewM
                     }*/
                 }
             })
+        }
+    }
+
+    private fun onImages(imageFiles: List<File>) {
+        for (file in imageFiles) {
+            mPhotoAdapter.add(AdapterItem(DamagePhotoDTO(file.absolutePath), AdapterItemType.VIEW_PHOTO))
+        }
+
+        if (mPhotoAdapter.getPhotosCount() > 0) {
+            mButtonSendApplication.isEnabled = true
         }
     }
 

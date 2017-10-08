@@ -18,6 +18,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerSpecialistMainActivi
 import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.TimeUtils
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
@@ -67,6 +68,8 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
     @Inject
     lateinit var mImageLoader: ImageLoader
 
+    private val fragmentTag = Constant.FragmentTags.SPECIALIST_PROFILE
+
     override fun initViewModel(): SpecialistMainActivityViewModel? {
         return ViewModelProviders.of(activity, mViewModelFactory).get(SpecialistMainActivityViewModel::class.java)
     }
@@ -94,7 +97,18 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
 
         mCompositeDisposable += getViewModel().mOutputs.onSpecialistProfileResponseSubject()
                 .subscribeOn(AndroidSchedulers.mainThread())
+                .filter { getViewModel().currentFragmentTag == fragmentTag }
                 .subscribe({ onSpecialistProfileResponseSubject(it) })
+
+        mCompositeDisposable += getViewModel().mErrors.onUnknownError()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .filter { getViewModel().currentFragmentTag == fragmentTag }
+                .subscribe({ onUnknownError(it) })
+
+        mCompositeDisposable += getViewModel().mErrors.onBadResponse()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .filter { getViewModel().currentFragmentTag == fragmentTag }
+                .subscribe({ onBadResponse(it) })
     }
 
     private fun onUpdateProfileButtonClick() {

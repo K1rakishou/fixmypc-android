@@ -25,7 +25,6 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewDamageClaimActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewDamageClaimActivity
-import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewMalfunctionActivityFragmentCallback
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientNewDamageClaimActivityNavigator
 import com.squareup.leakcanary.RefWatcher
 import io.nlopez.smartlocation.SmartLocation
@@ -108,10 +107,8 @@ class DamageClaimLocationFragment : BaseFragment<ClientNewDamageClaimActivityVie
     }
 
     private fun setMalfunctionLocation() {
-        val activityHolder = activity as ClientNewMalfunctionActivityFragmentCallback
-
         if (mLocation == null) {
-            activityHolder.onShowToast("Текущее местоположение не задано!", Toast.LENGTH_LONG)
+            showToast("Текущее местоположение не задано!", Toast.LENGTH_LONG)
         } else {
             getViewModel().setLocation(mLocation!!)
         }

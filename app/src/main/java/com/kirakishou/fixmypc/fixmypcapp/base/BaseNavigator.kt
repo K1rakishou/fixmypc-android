@@ -53,7 +53,6 @@ open class BaseNavigator(activity: AppCompatActivity) {
         } else {
             fragmentTransaction
                     .show(fragmentInStack)
-                    .addToBackStack(null)
         }
 
         fragmentTransaction.commit()

@@ -41,6 +41,7 @@ class SpecialistMainActivityViewModel
     val mOutputs: SpecialistMainActivityOutputs = this
     val mErrors: SpecialistMainActivityErrors = this
 
+    var currentFragmentTag = Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST
     private val itemsPerPage = Constant.MAX_DAMAGE_CLAIMS_PER_PAGE
     private val mCompositeDisposable = CompositeDisposable()
 

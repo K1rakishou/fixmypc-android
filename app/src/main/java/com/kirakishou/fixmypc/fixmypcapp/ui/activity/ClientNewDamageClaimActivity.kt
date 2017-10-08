@@ -9,19 +9,21 @@ import android.widget.Toast
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
+import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivityFragmentCallback
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerClientNewDamageClaimActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewDamageClaimActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewDamageClaimActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.dialog.ProgressDialog
-import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.new_damage_claim.DamageClaimPhotosFragmentCallbacks
+import com.kirakishou.fixmypc.fixmypcapp.ui.interfaces.PermissionGrantedCallback
+import com.kirakishou.fixmypc.fixmypcapp.ui.interfaces.RequestPermissionCallback
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientNewDamageClaimActivityNavigator
 import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
 class ClientNewDamageClaimActivity : BaseActivity<ClientNewDamageClaimActivityViewModel>(),
-        ClientNewMalfunctionActivityFragmentCallback, FragmentManager.OnBackStackChangedListener {
+        RequestPermissionCallback, BaseActivityFragmentCallback, FragmentManager.OnBackStackChangedListener {
 
     @Inject
     lateinit var mPermissionManager: PermissionManager
@@ -67,7 +69,7 @@ class ClientNewDamageClaimActivity : BaseActivity<ClientNewDamageClaimActivityVi
                 val currentFragmentTag = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 1).name
                 val currentFragment = supportFragmentManager.findFragmentByTag(currentFragmentTag)
 
-                if (currentFragment is DamageClaimPhotosFragmentCallbacks) {
+                if (currentFragment is PermissionGrantedCallback) {
                     currentFragment.onPermissionGranted()
                 }
 

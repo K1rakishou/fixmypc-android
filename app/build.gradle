@@ -118,8 +118,8 @@ dependencies {
         exclude group: 'com.android.support'
     }
 
-    compile 'com.jakewharton:butterknife:8.6.0'
-    kapt 'com.jakewharton:butterknife-compiler:8.6.0'
+    compile 'com.jakewharton:butterknife:8.8.1'
+    kapt 'com.jakewharton:butterknife-compiler:8.8.1'
 
     compile 'com.google.dagger:dagger:2.11'
     kapt 'com.google.dagger:dagger-compiler:2.11'

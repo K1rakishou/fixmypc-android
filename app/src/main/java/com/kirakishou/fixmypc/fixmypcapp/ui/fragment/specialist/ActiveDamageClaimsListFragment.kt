@@ -59,6 +59,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
     @Inject
     lateinit var mRefWatcher: RefWatcher
 
+    private val fragmentTag = Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST
     private val mLoadMoreSubject = BehaviorSubject.create<Long>()
     private val mLocationSubject = BehaviorSubject.create<LatLng>()
     private val mAdapterItemClickSubject = BehaviorSubject.create<DamageClaim>()
@@ -145,6 +146,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
         mCompositeDisposable += Observables.combineLatest(mLoadMoreSubject, mLocationSubject, { loadMore, location -> Pair(loadMore, location) })
                 .subscribeOn(Schedulers.io())
                 .subscribe({ (page, latlon) ->
+                    Timber.e("getDamageClaims()")
                     mAdapterSpecialist.addProgressFooter()
                     getDamageClaims(page, latlon)
                 }, { error ->
@@ -153,18 +155,22 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
 
         mCompositeDisposable += getViewModel().mOutputs.onDamageClaimsPageReceived()
                 .subscribeOn(AndroidSchedulers.mainThread())
+                .filter { getViewModel().currentFragmentTag == fragmentTag }
                 .subscribe({ onDamageClaimsPageReceived(it) })
 
         mCompositeDisposable += getViewModel().mErrors.onUnknownError()
                 .subscribeOn(AndroidSchedulers.mainThread())
+                .filter { getViewModel().currentFragmentTag == fragmentTag }
                 .subscribe({ onUnknownError(it) })
 
         mCompositeDisposable += getViewModel().mErrors.onBadResponse()
                 .subscribeOn(AndroidSchedulers.mainThread())
+                .filter { getViewModel().currentFragmentTag == fragmentTag }
                 .subscribe({ onBadResponse(it) })
 
         mCompositeDisposable += mAdapterItemClickSubject
                 .subscribeOn(AndroidSchedulers.mainThread())
+                .filter { getViewModel().currentFragmentTag == fragmentTag }
                 .subscribe({ onAdapterItemClick(it) })
     }
 

@@ -97,8 +97,7 @@ class PhotoView : AppCompatImageView, View.OnClickListener {
         val width = width
         val height = height
 
-        val drawableWidth = width / 100 * 30
-
+        val drawableWidth = width / 100 * 40
         val posX = (width - drawableWidth) / 2
         val posY = (height - drawableWidth) / 2
 
@@ -128,7 +127,7 @@ class PhotoView : AppCompatImageView, View.OnClickListener {
                 .apply(RequestOptions()
                         .centerCrop())
                 .load(imageFile)
-                .into(object : SimpleTarget<Bitmap>() {
+                .into(object : SimpleTarget<Bitmap>(this.width, this.height) {
                     override fun onResourceReady(resource: Bitmap?, transition: Transition<in Bitmap>?) {
                         setImageBitmap(resource)
                     }

@@ -38,9 +38,7 @@ class ImageLoader(protected val mContext: Context,
     fun loadImageFromDiskInto(file: File, imageView: ImageView) {
         Glide.with(mContext)
                 .load(file)
-                .apply(RequestOptions()
-                        .fitCenter()
-                        .centerCrop())
+                .apply(RequestOptions().centerCrop())
                 .into(imageView)
     }
 }

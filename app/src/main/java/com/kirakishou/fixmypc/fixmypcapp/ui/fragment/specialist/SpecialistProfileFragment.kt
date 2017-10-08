@@ -112,7 +112,7 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
     }
 
     private fun onUpdateProfileButtonClick() {
-        //TODO runActivity UpdateSpecialistProfileActivity
+        mNavigator.navigateToUpdateSpecialistProfileFragment()
     }
 
     private fun onSpecialistProfileResponseSubject(profile: SpecialistProfile) {

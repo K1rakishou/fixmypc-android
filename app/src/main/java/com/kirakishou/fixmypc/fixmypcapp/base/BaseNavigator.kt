@@ -15,7 +15,7 @@ open class BaseNavigator(activity: AppCompatActivity) {
 
     protected val fragmentManager = activity.supportFragmentManager
 
-    protected fun getVisibleFragment(): Fragment? {
+    fun getVisibleFragment(): Fragment? {
         val fragments = fragmentManager.fragments
         if (fragments != null) {
             for (fragment in fragments) {

@@ -10,6 +10,11 @@ import android.support.annotation.DrawableRes
 import android.support.v7.widget.AppCompatImageView
 import android.util.AttributeSet
 import android.view.View
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
+import java.io.File
 
 /**
  * Created by kirakishou on 4/7/2017.
@@ -23,13 +28,18 @@ class PhotoView : AppCompatImageView, View.OnClickListener {
     private var addButtonId = 0
     private var removeButtonId = 0
     private var borderId = 0
-    private var listener: OnPhotoClickedListener? = null
+    private lateinit var listener: OnPhotoClickedListener
+    private lateinit var mContext: Context
+
+    var imageFile: File? = null
 
     constructor(context: Context) : super(context) {
+        mContext = context
         setOnClickListener(this)
     }
 
     constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet) {
+        mContext = context
         setOnClickListener(this)
     }
 
@@ -87,7 +97,7 @@ class PhotoView : AppCompatImageView, View.OnClickListener {
         val width = width
         val height = height
 
-        val drawableWidth = width / 100 * 20
+        val drawableWidth = width / 100 * 30
 
         val posX = (width - drawableWidth) / 2
         val posY = (height - drawableWidth) / 2
@@ -106,10 +116,23 @@ class PhotoView : AppCompatImageView, View.OnClickListener {
 
     override fun onClick(v: View) {
         if (isPhotoAdded) {
-            listener!!.removePhoto()
+            listener.removePhoto()
         } else {
-            listener!!.addPhoto()
+            listener.addPhoto()
         }
+    }
+
+    fun loadImageFromDisk(imageFile: File) {
+        Glide.with(mContext)
+                .asBitmap()
+                .apply(RequestOptions()
+                        .centerCrop())
+                .load(imageFile)
+                .into(object : SimpleTarget<Bitmap>() {
+                    override fun onResourceReady(resource: Bitmap?, transition: Transition<in Bitmap>?) {
+                        setImageBitmap(resource)
+                    }
+                })
     }
 
     fun isPhotoAdded(): Boolean {

@@ -12,4 +12,5 @@ interface SpecialistMainActivityOutputs {
     fun onRespondToDamageClaimSuccessSubject(): Observable<Unit>
     fun onHasAlreadyRespondedResponse(): Observable<Boolean>
     fun onSpecialistProfileResponseSubject(): Observable<SpecialistProfile>
+    fun onUpdateSpecialistProfileResponseSubject(): Observable<Unit>
 }

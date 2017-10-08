@@ -37,7 +37,8 @@ import java.io.File
 import javax.inject.Inject
 
 
-class ChangeSpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(), PhotoView.OnPhotoClickedListener,
+class UpdateSpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(),
+        PhotoView.OnPhotoClickedListener,
         PermissionGrantedCallback {
 
     @BindView(R.id.profile_photo)
@@ -65,7 +66,7 @@ class ChangeSpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewM
         return ViewModelProviders.of(activity, mViewModelFactory).get(SpecialistMainActivityViewModel::class.java)
     }
 
-    override fun getContentView(): Int = R.layout.fragment_change_specialist_profile
+    override fun getContentView(): Int = R.layout.fragment_update_specialist_profile
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
@@ -85,6 +86,42 @@ class ChangeSpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewM
         mCompositeDisposable += RxView.clicks(updateProfileButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUpdateProfileButtonClick() })
+
+        mCompositeDisposable += getViewModel().mOutputs.onUpdateSpecialistProfileResponseSubject()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onUpdateSpecialistProfileResponse() })
+    }
+
+    private fun onUpdateProfileButtonClick() {
+        profileName.error = null
+
+        if (profilePhoto.imageFile == null) {
+            showToast("Необходимо выбрать изображение для профиля", Toast.LENGTH_SHORT)
+            return
+        }
+
+        if (profileName.text.isEmpty()) {
+            profileName.error = "Необходимо указать имя"
+            return
+        }
+
+        if (profilePhone.text.isEmpty()) {
+            profileName.error = "Необходимо указать телефон"
+            return
+        }
+
+        val imageFile = profilePhoto.imageFile!!
+        val name = profileName.text.toString()
+        val phone = profilePhone.text.toString()
+
+        mNavigator.showLoadingIndicatorFragment()
+        getViewModel().mInputs.updateSpecialistProfile(imageFile.absolutePath, name, phone)
+    }
+
+    private fun onUpdateSpecialistProfileResponse() {
+        mNavigator.hideLoadingIndicatorFragment()
+
+        Timber.e("Updated!")
     }
 
     override fun addPhoto() {
@@ -105,22 +142,18 @@ class ChangeSpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewM
         EasyImage.openGallery(this, 0)
     }
 
-    private fun onUpdateProfileButtonClick() {
-        mNavigator.showLoadingIndicatorFragment()
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == AppCompatActivity.RESULT_OK) {
-            EasyImage.handleActivityResult(requestCode, resultCode, data, this@ChangeSpecialistProfileFragment.activity, object : DefaultCallback() {
+            EasyImage.handleActivityResult(requestCode, resultCode, data, this@UpdateSpecialistProfileFragment.activity, object : DefaultCallback() {
                 override fun onImagePickerError(e: Exception, source: EasyImage.ImageSource?, type: Int) {
                     Timber.e(e)
                 }
 
                 override fun onImagesPicked(imageFiles: List<File>, source: EasyImage.ImageSource, type: Int) {
                     if (imageFiles.isNotEmpty()) {
-                        onImages(imageFiles.first())
+                        onImage(imageFiles.first())
                     }
                 }
 
@@ -131,8 +164,8 @@ class ChangeSpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewM
         }
     }
 
-    private fun onImages(imageFile: File) {
-        mImageLoader.loadImageFromDiskInto(imageFile, profilePhoto)
+    private fun onImage(imageFile: File) {
+        profilePhoto.loadImageFromDisk(imageFile)
     }
 
     override fun onBadResponse(errorCode: ErrorCode.Remote) {

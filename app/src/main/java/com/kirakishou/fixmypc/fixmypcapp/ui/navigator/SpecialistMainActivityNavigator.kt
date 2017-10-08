@@ -10,6 +10,7 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.LoadingIndicatorFragment
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.ActiveDamageClaimsListFragment
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.DamageClaimFullInfoFragment
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.SpecialistProfileFragment
+import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.UpdateSpecialistProfileFragment
 
 /**
  * Created by kirakishou on 9/11/2017.
@@ -33,6 +34,11 @@ class SpecialistMainActivityNavigator(activity: AppCompatActivity) : BaseNavigat
     fun navigateToSpecialistProfileFragment() {
         navigateToFragment(SpecialistProfileFragment::class,
                 Constant.FragmentTags.SPECIALIST_PROFILE)
+    }
+
+    fun navigateToUpdateSpecialistProfileFragment() {
+        navigateToFragment(UpdateSpecialistProfileFragment::class,
+                Constant.FragmentTags.UPDATE_SPECIALIST_PROFILE)
     }
 
     fun navigateToDamageClaimFullInfoFragment(damageClaim: DamageClaim) {

@@ -98,13 +98,13 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), 
     override fun requestPermission(permission: String, requestCode: Int) {
         mPermissionManager.askForPermission(this, permission, requestCode) { granted ->
             if (granted) {
-                val currentFragmentTag = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 1).name
-                val currentFragment = supportFragmentManager.findFragmentByTag(currentFragmentTag)
+                val visibleFragment = mNavigator.getVisibleFragment()
+                        ?: throw NullPointerException("visibleFragment == null")
 
-                if (currentFragment is PermissionGrantedCallback) {
-                    currentFragment.onPermissionGranted()
+                if (visibleFragment is PermissionGrantedCallback) {
+                    visibleFragment.onPermissionGranted()
                 } else {
-                    Timber.e("currentFragment is not ")
+                    throw IllegalStateException("currentFragment does not implement PermissionGrantedCallback")
                 }
 
             } else {

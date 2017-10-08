@@ -45,6 +45,7 @@ class SpecialistMainActivityViewModel
     private val itemsPerPage = Constant.MAX_DAMAGE_CLAIMS_PER_PAGE
     private val mCompositeDisposable = CompositeDisposable()
 
+    lateinit var mOnUpdateSpecialistProfileResponseSubject: BehaviorSubject<Unit>
     lateinit var mUpdateSpecialistProfileSubject: BehaviorSubject<UpdateSpecialistProfileDTO>
     lateinit var mOnSpecialistProfileResponseSubject: BehaviorSubject<SpecialistProfile>
     lateinit var mOnBadResponseSubject: BehaviorSubject<ErrorCode.Remote>
@@ -61,6 +62,7 @@ class SpecialistMainActivityViewModel
     fun init() {
         mCompositeDisposable.clear()
 
+        mOnUpdateSpecialistProfileResponseSubject = BehaviorSubject.create()
         mUpdateSpecialistProfileSubject = BehaviorSubject.create()
         mOnSpecialistProfileResponseSubject = BehaviorSubject.create()
         mOnBadResponseSubject = BehaviorSubject.create()
@@ -298,6 +300,7 @@ class SpecialistMainActivityViewModel
         return retVal
     }
 
+    override fun onUpdateSpecialistProfileResponseSubject(): Observable<Unit> = mOnUpdateSpecialistProfileResponseSubject
     override fun onSpecialistProfileResponseSubject(): Observable<SpecialistProfile> = mOnSpecialistProfileResponseSubject
     override fun onBadResponse(): Observable<ErrorCode.Remote> = mOnBadResponseSubject
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject

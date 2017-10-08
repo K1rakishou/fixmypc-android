@@ -13,7 +13,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusRespon
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.BadServerResponseException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.CouldNotUpdateSessionId
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UserInfoIsEmpty
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UserInfoIsEmptyException
 import io.reactivex.Observable
 import io.reactivex.Single
 import java.net.UnknownHostException
@@ -30,7 +30,7 @@ class AssignSpecialistRequest(protected val packet: AssignSpecialistPacket,
 
     override fun execute(): Single<StatusResponse> {
         if (!mAppSettings.isUserInfoExists()) {
-            throw UserInfoIsEmpty()
+            throw UserInfoIsEmptyException()
         }
 
         return mApiService.assignSpecialist(mAppSettings.loadUserInfo().sessionId, packet)
@@ -48,7 +48,7 @@ class AssignSpecialistRequest(protected val packet: AssignSpecialistPacket,
 
     private fun reLoginAndResendRequest(): Single<StatusResponse> {
         if (!mAppSettings.isUserInfoExists()) {
-            throw UserInfoIsEmpty()
+            throw UserInfoIsEmptyException()
         }
 
         val userInfo = mAppSettings.loadUserInfo()

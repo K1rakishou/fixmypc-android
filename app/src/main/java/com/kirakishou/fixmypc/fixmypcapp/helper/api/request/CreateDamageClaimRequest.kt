@@ -122,14 +122,14 @@ class CreateDamageClaimRequest(protected val mDamageClaimInfo: DamageClaimInfo,
         val request = DamageClaimPacket(it.third.damageClaimCategory.ordinal, it.third.damageClaimDescription,
                 it.third.damageClaimLocation.latitude, it.third.damageClaimLocation.longitude)
 
-        return mApiService.sendMalfunctionRequest(it.first, it.second, request, ImageType.IMAGE_TYPE_MALFUNCTION_PHOTO.value)
+        return mApiService.createDamageClaim(it.first, it.second, request, ImageType.IMAGE_TYPE_MALFUNCTION_PHOTO.value)
                 .lift(OnApiErrorSingle(mGson))
                 .toObservable()
     }
 
     private fun reLogin(): Observable<String> {
         if (!mAppSettings.isUserInfoExists()) {
-            throw UserInfoIsEmpty()
+            throw UserInfoIsEmptyException()
         }
 
         val userInfo = mAppSettings.loadUserInfo()
@@ -147,14 +147,14 @@ class CreateDamageClaimRequest(protected val mDamageClaimInfo: DamageClaimInfo,
 
     private fun sendRequest(it: Pair<List<MultipartBody.Part>, DamageClaimInfo>): Observable<StatusResponse> {
         if (!mAppSettings.isUserInfoExists()) {
-            throw UserInfoIsEmpty()
+            throw UserInfoIsEmptyException()
         }
 
         val sessionId = mAppSettings.loadUserInfo().sessionId
         val request = DamageClaimPacket(it.second.damageClaimCategory.ordinal, it.second.damageClaimDescription,
                 it.second.damageClaimLocation.latitude, it.second.damageClaimLocation.longitude)
 
-        return mApiService.sendMalfunctionRequest(sessionId, it.first, request, ImageType.IMAGE_TYPE_MALFUNCTION_PHOTO.value)
+        return mApiService.createDamageClaim(sessionId, it.first, request, ImageType.IMAGE_TYPE_MALFUNCTION_PHOTO.value)
                 .lift(OnApiErrorSingle(mGson))
                 .toObservable()
     }

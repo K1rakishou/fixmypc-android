@@ -8,6 +8,7 @@ import io.reactivex.SingleObserver
 import io.reactivex.SingleOperator
 import io.reactivex.disposables.Disposable
 import retrofit2.Response
+import timber.log.Timber
 
 /**
  * Created by kirakishou on 8/25/2017.
@@ -36,6 +37,7 @@ class OnApiErrorSingle<T>(val gson: Gson) : SingleOperator<T, Response<T>> {
                     try {
                         val responseJson = response.errorBody()!!.string()
                         val error = gson.fromJson<StatusResponse>(responseJson, StatusResponse::class.java)
+                        Timber.e(responseJson)
 
                         //may happen in some rare cases
                         if (error.errorCode != null) {

@@ -13,7 +13,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusRespon
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.BadServerResponseException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.CouldNotUpdateSessionId
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UserInfoIsEmpty
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UserInfoIsEmptyException
 import io.reactivex.Observable
 import io.reactivex.Single
 import java.net.UnknownHostException
@@ -31,7 +31,7 @@ class CheckAlreadyRespondedToDamageClaimRequest(protected val damageClaimId: Lon
 
     override fun execute(): Single<HasAlreadyRespondedResponse> {
         if (!mAppSettings.isUserInfoExists()) {
-            throw UserInfoIsEmpty()
+            throw UserInfoIsEmptyException()
         }
 
         return mApiService.checkAlreadyRespondedToDamageClaim(mAppSettings.loadUserInfo().sessionId, damageClaimId)
@@ -49,7 +49,7 @@ class CheckAlreadyRespondedToDamageClaimRequest(protected val damageClaimId: Lon
 
     private fun reLoginAndResendRequest(): Single<HasAlreadyRespondedResponse> {
         if (!mAppSettings.isUserInfoExists()) {
-            throw UserInfoIsEmpty()
+            throw UserInfoIsEmptyException()
         }
 
         val userInfo = mAppSettings.loadUserInfo()

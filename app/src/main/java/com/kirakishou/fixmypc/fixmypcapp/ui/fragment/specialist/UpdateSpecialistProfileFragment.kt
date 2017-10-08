@@ -135,7 +135,7 @@ class UpdateSpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewM
     }
 
     override fun onPermissionGranted() {
-        if (!isAdded) {
+        if (!isVisible) {
             return
         }
 
@@ -177,7 +177,6 @@ class UpdateSpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewM
 
     override fun onUnknownError(error: Throwable) {
         mNavigator.hideLoadingIndicatorFragment()
-
         unknownError(error)
     }
 

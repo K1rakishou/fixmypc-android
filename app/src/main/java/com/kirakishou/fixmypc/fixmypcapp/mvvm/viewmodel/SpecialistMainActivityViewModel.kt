@@ -79,7 +79,7 @@ class SpecialistMainActivityViewModel
         mCompositeDisposable += mUpdateSpecialistProfileSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .flatMap {
-                    mApiClient.updateSpecialistProfile(it.photoPath, SpecialistProfilePacket(it.name, it.name))
+                    mApiClient.updateSpecialistProfile(it.photoPath, SpecialistProfilePacket(it.name, it.phone))
                             .toObservable()
                 }
                 .subscribe({

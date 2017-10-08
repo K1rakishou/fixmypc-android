@@ -26,9 +26,9 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewDamageClaimActi
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewDamageClaimActivity
-import com.kirakishou.fixmypc.fixmypcapp.ui.interfaces.RequestPermissionCallback
 import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.DamageClaimPhotosAdapter
 import com.kirakishou.fixmypc.fixmypcapp.ui.interfaces.PermissionGrantedCallback
+import com.kirakishou.fixmypc.fixmypcapp.ui.interfaces.RequestPermissionCallback
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientNewDamageClaimActivityNavigator
 import com.squareup.leakcanary.RefWatcher
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -144,7 +144,7 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewDamageClaimActivityViewM
     }
 
     override fun onPermissionGranted() {
-        if (!isAdded) {
+        if (!isVisible) {
             return
         }
 

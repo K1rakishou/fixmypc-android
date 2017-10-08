@@ -16,10 +16,10 @@ interface ApiService {
 
     @Multipart
     @POST("/v1/api/damage_claim/create")
-    fun sendMalfunctionRequest(@Header("session_id") sessionId: String,
-                               @Part photos: List<MultipartBody.Part>,
-                               @Part("request") requestBody: DamageClaimPacket,
-                               @Part("images_type") imagesType: Int): Single<Response<StatusResponse>>
+    fun createDamageClaim(@Header("session_id") sessionId: String,
+                          @Part photos: List<MultipartBody.Part>,
+                          @Part("request") requestBody: DamageClaimPacket,
+                          @Part("images_type") imagesType: Int): Single<Response<StatusResponse>>
 
     @GET("/v1/api/damage_claim/get_within/{lat}/{lon}/{radius}/{skip}/{count}")
     fun getDamageClaims(@Header("session_id") sessionId: String,
@@ -60,6 +60,7 @@ interface ApiService {
     @GET("/v1/api/specialist/profile")
     fun getSpecialistProfile(@Header("session_id") sessionId: String): Single<Response<SpecialistProfileResponse>>
 
+    @Multipart
     @POST("/v1/api/specialist/profile")
     fun updateSpecialistProfile(@Header("session_id") sessionId: String,
                                 @Part photo: MultipartBody.Part,

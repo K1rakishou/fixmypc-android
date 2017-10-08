@@ -15,6 +15,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import io.reactivex.disposables.CompositeDisposable
+import timber.log.Timber
 
 /**
  * Created by kirakishou on 7/30/2017.
@@ -89,6 +90,8 @@ abstract class BaseFragment<T : ViewModel> : Fragment() {
     }
 
     protected open fun unknownError(throwable: Throwable) {
+        Timber.e(throwable)
+
         if (activity !is BaseActivityFragmentCallback) {
             throw IllegalStateException("Activity should implement BaseActivityFragmentCallback!")
         }

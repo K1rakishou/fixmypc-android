@@ -13,7 +13,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusRespon
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.BadServerResponseException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.CouldNotUpdateSessionId
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UserInfoIsEmpty
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UserInfoIsEmptyException
 import io.reactivex.Observable
 import io.reactivex.Single
 import java.net.UnknownHostException
@@ -34,7 +34,7 @@ class GetDamageClaimRequest(protected val mLat: Double,
 
     override fun execute(): Single<DamageClaimsResponse> {
         if (!mAppSettings.isUserInfoExists()) {
-            throw UserInfoIsEmpty()
+            throw UserInfoIsEmptyException()
         }
 
         return mApiService.getDamageClaims(mAppSettings.loadUserInfo().sessionId, mLat, mLon, mRadius, mPage, mCount)
@@ -52,7 +52,7 @@ class GetDamageClaimRequest(protected val mLat: Double,
 
     private fun reLoginAndResendRequest(): Single<DamageClaimsResponse> {
         if (!mAppSettings.isUserInfoExists()) {
-            throw UserInfoIsEmpty()
+            throw UserInfoIsEmptyException()
         }
 
         val userInfo = mAppSettings.loadUserInfo()

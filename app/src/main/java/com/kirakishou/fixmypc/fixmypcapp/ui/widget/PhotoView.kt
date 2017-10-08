@@ -122,6 +122,8 @@ class PhotoView : AppCompatImageView, View.OnClickListener {
     }
 
     fun loadImageFromDisk(imageFile: File) {
+        this.imageFile = imageFile
+
         Glide.with(mContext)
                 .asBitmap()
                 .apply(RequestOptions()

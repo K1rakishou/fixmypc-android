@@ -14,7 +14,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.UpdateSpecia
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.BadServerResponseException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.CouldNotUpdateSessionId
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UserInfoIsEmpty
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UserInfoIsEmptyException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.malfunction_request.FileSizeExceededException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.malfunction_request.SelectedPhotoDoesNotExistsException
 import io.reactivex.Observable
@@ -42,12 +42,12 @@ class UpdateSpecialistProfileRequest(protected val photoPath: String,
                     val photoBody = prepareRequest(it.photoPath)
                     return@map photoBody to it.packet
                 }
-                .flatMap { params ->
+                .flatMap { (photoBody, packet) ->
                     if (!mAppSettings.isUserInfoExists()) {
-                        throw UserInfoIsEmpty()
+                        throw UserInfoIsEmptyException()
                     }
 
-                    mApiService.updateSpecialistProfile(mAppSettings.loadUserInfo().sessionId, params.first, params.second)
+                    return@flatMap mApiService.updateSpecialistProfile(mAppSettings.loadUserInfo().sessionId, photoBody, packet)
                 }
                 .subscribeOn(mSchedulers.provideIo())
                 .lift(OnApiErrorSingle(mGson))
@@ -63,7 +63,7 @@ class UpdateSpecialistProfileRequest(protected val photoPath: String,
 
     private fun reLoginAndResendRequest(): Single<UpdateSpecialistProfileResponse> {
         if (!mAppSettings.isUserInfoExists()) {
-            throw UserInfoIsEmpty()
+            throw UserInfoIsEmptyException()
         }
 
         val userInfo = mAppSettings.loadUserInfo()
@@ -103,6 +103,7 @@ class UpdateSpecialistProfileRequest(protected val photoPath: String,
             is BadServerResponseException -> UpdateSpecialistProfileResponse(ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
             is FileSizeExceededException -> UpdateSpecialistProfileResponse(ErrorCode.Remote.REC_FILE_SIZE_EXCEEDED)
             is SelectedPhotoDoesNotExistsException -> UpdateSpecialistProfileResponse(ErrorCode.Remote.REC_SELECTED_PHOTO_DOES_NOT_EXISTS)
+            is UserInfoIsEmptyException -> UpdateSpecialistProfileResponse(ErrorCode.Remote.REC_USER_INFO_IS_EMPTY)
 
             else -> throw RuntimeException("Unknown exception")
         }

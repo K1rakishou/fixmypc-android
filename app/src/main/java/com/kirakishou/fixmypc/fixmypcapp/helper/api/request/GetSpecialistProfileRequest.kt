@@ -14,7 +14,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusRespon
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.BadServerResponseException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.CouldNotUpdateSessionId
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UserInfoIsEmpty
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UserInfoIsEmptyException
 import io.reactivex.Observable
 import io.reactivex.Single
 import java.net.UnknownHostException
@@ -30,7 +30,7 @@ class GetSpecialistProfileRequest(protected val mApiService: ApiService,
 
     override fun execute(): Single<SpecialistProfileResponse> {
         if (!mAppSettings.isUserInfoExists()) {
-            throw UserInfoIsEmpty()
+            throw UserInfoIsEmptyException()
         }
 
         return mApiService.getSpecialistProfile(mAppSettings.loadUserInfo().sessionId)
@@ -48,7 +48,7 @@ class GetSpecialistProfileRequest(protected val mApiService: ApiService,
 
     private fun reLoginAndResendRequest(): Single<SpecialistProfileResponse> {
         if (!mAppSettings.isUserInfoExists()) {
-            throw UserInfoIsEmpty()
+            throw UserInfoIsEmptyException()
         }
 
         val userInfo = mAppSettings.loadUserInfo()

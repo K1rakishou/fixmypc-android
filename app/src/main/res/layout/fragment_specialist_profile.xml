@@ -51,7 +51,7 @@
                     android:ellipsize="end"
                     android:gravity="center_horizontal"
                     android:maxLines="2"
-                    android:text="Василий Булочкин"
+                    android:text="Василий"
                     android:textColor="#000"
                     android:textSize="20sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -67,7 +67,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="4dp"
                     android:numStars="5"
-                    android:rating="3.5"
+                    android:rating="0"
                     android:theme="@style/RatingBar"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -101,7 +101,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="4dp"
-                    android:text="Всего проведено ремонтов: 123"
+                    android:text="Всего проведено ремонтов: 0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/profile_phone" />
 
@@ -111,7 +111,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="4dp"
-                    android:text="Успешных ремонтов: 111"
+                    android:text="Успешных ремонтов: 0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/profile_total_repairs" />
 
@@ -121,7 +121,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="4dp"
-                    android:text="Неудачных ремонтов: 12"
+                    android:text="Неудачных ремонтов: 0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/profile_success_repairs" />
 

@@ -32,4 +32,8 @@ data class SpecialistProfile(@Expose
 
                              @Expose
                              @SerializedName("fail_repairs")
-                             val failRepairs: Int = 0)
+                             val failRepairs: Int = 0,
+
+                             @Expose
+                             @SerializedName("is_filled_in")
+                             var isFilledIn: Boolean = false)

@@ -14,6 +14,7 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerLoginActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.LoginActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.helper.extension.removeSpaces
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AccountInfoPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
@@ -76,8 +77,8 @@ class LoginFragment : BaseFragment<LoginActivityViewModel>() {
         mCompositeDisposable += RxView.clicks(loginButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .map {
-                    val login = inputLogin.text.toString()
-                    val password = inputPassword.text.toString()
+                    val login = inputLogin.text.toString().removeSpaces()
+                    val password = inputPassword.text.toString().removeSpaces()
 
                     return@map LoginPasswordDTO(login, password)
                 }

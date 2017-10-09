@@ -25,7 +25,6 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavigator
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
-import timber.log.Timber
 import javax.inject.Inject
 
 class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>() {
@@ -67,6 +66,7 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
     lateinit var mImageLoader: ImageLoader
 
     private val fragmentTag = Constant.FragmentTags.SPECIALIST_PROFILE
+    private var userId = -1L
 
     override fun initViewModel(): SpecialistMainActivityViewModel? {
         return ViewModelProviders.of(activity, mViewModelFactory).get(SpecialistMainActivityViewModel::class.java)
@@ -122,12 +122,9 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
     }
 
     private fun updateUi(profile: SpecialistProfile) {
-        if (profile.photoName.isNotEmpty()) {
-            mImageLoader.loadProfileImageFromNetInto(profile.userId, profile.photoName, profilePhoto)
-        } else {
-            TODO("load default profile image")
-        }
+        userId = profile.userId
 
+        loadPhoto(profile.photoName, profile.userId)
         profileName.text = profile.name
         profileRating.rating = profile.rating
 
@@ -145,7 +142,15 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
             profileName.text = newProfileInfo.name
             profilePhone.text = "Телефон: ${newProfileInfo.phone}"
 
-            Timber.e(newProfileInfo.photoPath)
+            loadPhoto(newProfileInfo.photoPath, userId)
+        }
+    }
+
+    private fun loadPhoto(photoName: String, userId: Long) {
+        if (photoName.isNotEmpty()) {
+            mImageLoader.loadProfileImageFromNetInto(userId, photoName, profilePhoto)
+        } else {
+            //TODO: load default profile image
         }
     }
 

@@ -20,7 +20,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.preference.MyCurrentLocationPref
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimListAdapterGenericParam
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimsWithDistanceDTO
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimsWithDistance
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainActivityViewModelFactory
@@ -155,22 +155,18 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
 
         mCompositeDisposable += getViewModel().mOutputs.onDamageClaimsPageReceived()
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .filter { getViewModel().currentFragmentTag == fragmentTag }
                 .subscribe({ onDamageClaimsPageReceived(it) })
 
         mCompositeDisposable += getViewModel().mErrors.onUnknownError()
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .filter { getViewModel().currentFragmentTag == fragmentTag }
                 .subscribe({ onUnknownError(it) })
 
         mCompositeDisposable += getViewModel().mErrors.onBadResponse()
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .filter { getViewModel().currentFragmentTag == fragmentTag }
                 .subscribe({ onBadResponse(it) })
 
         mCompositeDisposable += mAdapterItemClickSubject
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .filter { getViewModel().currentFragmentTag == fragmentTag }
                 .subscribe({ onAdapterItemClick(it) })
     }
 
@@ -188,7 +184,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun onDamageClaimsPageReceived(damageClaimList: ArrayList<DamageClaimsWithDistanceDTO>) {
+    private fun onDamageClaimsPageReceived(damageClaimList: ArrayList<DamageClaimsWithDistance>) {
         mEndlessScrollListener.pageLoaded()
 
         if (damageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {

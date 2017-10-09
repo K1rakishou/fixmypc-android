@@ -8,9 +8,9 @@ import io.reactivex.functions.Predicate
  */
 object RxUtils {
 
-    fun <T> splitRxStream(stream: Observable<T>, vararg predicateArray: List<Predicate<T>>): List<Observable<T>> {
+    fun <T> splitRxStream(inStream: Observable<T>, vararg predicateArray: List<Predicate<T>>): List<Observable<T>> {
         val outStreams = ArrayList<Observable<T>>(predicateArray.size)
-        val publishedObservable = stream.publish().autoConnect(predicateArray.size)
+        val publishedObservable = inStream.publish().autoConnect(predicateArray.size)
 
         for (predicateList in predicateArray) {
             var stream: Observable<T> = publishedObservable

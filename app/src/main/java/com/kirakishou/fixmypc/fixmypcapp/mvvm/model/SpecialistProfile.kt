@@ -23,6 +23,10 @@ data class SpecialistProfile(@Expose
                              val photoName: String = "",
 
                              @Expose
+                             @SerializedName("phone")
+                             var phone: String = "",
+
+                             @Expose
                              @SerializedName("registered_on")
                              val registeredOn: Long = 0L,
 

@@ -5,5 +5,5 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 /**
  * Created by kirakishou on 9/7/2017.
  */
-open class DamageClaimsWithDistanceDTO(val distance: Double,
-                                       val damageClaim: DamageClaim) : DamageClaimListAdapterGenericParam()
+open class DamageClaimsWithDistance(val distance: Double,
+                                    val damageClaim: DamageClaim) : DamageClaimListAdapterGenericParam()

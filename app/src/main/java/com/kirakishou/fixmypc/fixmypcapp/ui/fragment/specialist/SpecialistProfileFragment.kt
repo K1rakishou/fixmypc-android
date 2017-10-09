@@ -18,16 +18,14 @@ import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerSpecialistMainActivi
 import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.TimeUtils
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavigator
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
+import timber.log.Timber
 import javax.inject.Inject
 
 class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>() {
@@ -97,17 +95,19 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
 
         mCompositeDisposable += getViewModel().mOutputs.onSpecialistProfileResponseSubject()
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .filter { getViewModel().currentFragmentTag == fragmentTag }
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onSpecialistProfileResponseSubject(it) })
+
+        mCompositeDisposable += getViewModel().mOutputs.onUpdateSpecialistProfileFragment()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onUpdateSpecialistProfileFragment(it) })
 
         mCompositeDisposable += getViewModel().mErrors.onUnknownError()
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .filter { getViewModel().currentFragmentTag == fragmentTag }
                 .subscribe({ onUnknownError(it) })
 
         mCompositeDisposable += getViewModel().mErrors.onBadResponse()
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .filter { getViewModel().currentFragmentTag == fragmentTag }
                 .subscribe({ onBadResponse(it) })
     }
 
@@ -122,7 +122,7 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
     }
 
     private fun updateUi(profile: SpecialistProfile) {
-        mImageLoader.loadProfileImageFromNetInto() //TODO
+        mImageLoader.loadProfileImageFromNetInto(profile.userId, profile.photoName, profilePhoto)
 
         profileName.text = profile.name
         profileRating.rating = profile.rating
@@ -130,10 +130,19 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
         val registeredOnFormatted = TimeUtils.format(profile.registeredOn)
         profileRegisteredOn.text = "Зарегистрирован с $registeredOnFormatted"
 
-        profilePhone.text = "Телефон: " // TODO
+        profilePhone.text = "Телефон: ${profile.phone}"
         profileTotalRepairs.text = "Всего проведено ремонтов: ${profile.failRepairs + profile.successRepairs}"
         profileSuccessRepairs.text = "Успешных ремонтов: ${profile.successRepairs}"
         profileFailRepairs.text = "Неудачных ремонтов: ${profile.failRepairs}"
+    }
+
+    private fun onUpdateSpecialistProfileFragment(newProfileInfo: NewProfileInfo) {
+        activity.runOnUiThread {
+            profileName.text = newProfileInfo.name
+            profilePhone.text = "Телефон: ${newProfileInfo.phone}"
+
+            Timber.e(newProfileInfo.photoPath)
+        }
     }
 
     override fun onBadResponse(errorCode: ErrorCode.Remote) {

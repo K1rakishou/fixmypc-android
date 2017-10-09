@@ -31,6 +31,7 @@ class RespondedSpecialistsActivityNavigator(activity: AppCompatActivity) : BaseN
         args.putString("name", profile.name)
         args.putFloat("rating", profile.rating)
         args.putString("photo_name", profile.photoName)
+        args.putString("phone", profile.phone)
         args.putLong("registered_on", profile.registeredOn)
         args.putInt("success_repairs", profile.successRepairs)
         args.putInt("fail_repairs", profile.failRepairs)

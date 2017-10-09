@@ -11,6 +11,7 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.ActiveDamageClai
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.DamageClaimFullInfoFragment
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.SpecialistProfileFragment
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.UpdateSpecialistProfileFragment
+import timber.log.Timber
 
 /**
  * Created by kirakishou on 9/11/2017.
@@ -81,6 +82,33 @@ class SpecialistMainActivityNavigator(activity: AppCompatActivity) : BaseNavigat
             if (visibleFragment is LoadingIndicatorFragment) {
                 fragmentManager.popBackStack()
             }
+        }
+    }
+
+    fun removeUpdateSpecialistProfileFragment() {
+        val updateSpecialistProfileFragment = getFragmentByTag(Constant.FragmentTags.UPDATE_SPECIALIST_PROFILE)
+        if (updateSpecialistProfileFragment == null) {
+            Timber.e("Could not file SPECIALIST_PROFILE fragment")
+            return
+        }
+
+        fragmentManager.beginTransaction()
+                .remove(updateSpecialistProfileFragment)
+                .commit()
+
+        var specialistProfileFragment = getFragmentByTag(Constant.FragmentTags.SPECIALIST_PROFILE)
+        if (specialistProfileFragment == null) {
+            specialistProfileFragment = SpecialistProfileFragment()
+
+            fragmentManager.beginTransaction()
+                    .add(R.id.fragment_frame, specialistProfileFragment, Constant.FragmentTags.SPECIALIST_PROFILE)
+                    .addToBackStack(null)
+                    .commit()
+        } else {
+            fragmentManager.beginTransaction()
+                    .show(specialistProfileFragment)
+                    .addToBackStack(null)
+                    .commit()
         }
     }
 }

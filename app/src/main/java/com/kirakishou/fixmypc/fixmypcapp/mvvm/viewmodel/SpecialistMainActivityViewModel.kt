@@ -9,8 +9,9 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.util.MathUtils
 import com.kirakishou.fixmypc.fixmypcapp.helper.wifi.WifiUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.NewProfileInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimsWithDistanceDTO
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimsWithDistance
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.RespondToDamageClaimPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.SpecialistProfilePacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.*
@@ -45,16 +46,17 @@ class SpecialistMainActivityViewModel
     private val itemsPerPage = Constant.MAX_DAMAGE_CLAIMS_PER_PAGE
     private val mCompositeDisposable = CompositeDisposable()
 
+    lateinit var mUpdateSpecialistProfileFragment: BehaviorSubject<NewProfileInfo>
     lateinit var mOnUpdateSpecialistProfileResponseSubject: BehaviorSubject<Unit>
-    lateinit var mUpdateSpecialistProfileSubject: BehaviorSubject<UpdateSpecialistProfileDTO>
+    lateinit var mNewProfileSubject: BehaviorSubject<NewProfileInfo>
     lateinit var mOnSpecialistProfileResponseSubject: BehaviorSubject<SpecialistProfile>
     lateinit var mOnBadResponseSubject: BehaviorSubject<ErrorCode.Remote>
     lateinit var mOnHasAlreadyRespondedResponse: BehaviorSubject<Boolean>
     lateinit var mCheckHasAlreadyRespondedSubject: BehaviorSubject<Long>
     lateinit var mOnRespondToDamageClaimSuccessSubject: BehaviorSubject<Unit>
     lateinit var mRespondToDamageClaimSubject: BehaviorSubject<Long>
-    lateinit var mGetDamageClaimsWithinRadiusSubject: BehaviorSubject<GetDamageClaimsRequestParamsDTO>
-    lateinit var mOnDamageClaimsPageReceivedSubject: BehaviorSubject<ArrayList<DamageClaimsWithDistanceDTO>>
+    lateinit var mGetDamageClaimsWithinRadiusSubject: BehaviorSubject<GetDamageClaimsRequestParams>
+    lateinit var mOnDamageClaimsPageReceivedSubject: BehaviorSubject<ArrayList<DamageClaimsWithDistance>>
     lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
     lateinit var mEitherFromRepoOrServerSubject: BehaviorSubject<Pair<LatLng, DamageClaimsResponse>>
     lateinit var mGetSpecialistProfileSubject: BehaviorSubject<Unit>
@@ -62,8 +64,9 @@ class SpecialistMainActivityViewModel
     fun init() {
         mCompositeDisposable.clear()
 
+        mUpdateSpecialistProfileFragment = BehaviorSubject.create()
         mOnUpdateSpecialistProfileResponseSubject = BehaviorSubject.create()
-        mUpdateSpecialistProfileSubject = BehaviorSubject.create()
+        mNewProfileSubject = BehaviorSubject.create()
         mOnSpecialistProfileResponseSubject = BehaviorSubject.create()
         mOnBadResponseSubject = BehaviorSubject.create()
         mOnHasAlreadyRespondedResponse = BehaviorSubject.create()
@@ -76,14 +79,22 @@ class SpecialistMainActivityViewModel
         mEitherFromRepoOrServerSubject = BehaviorSubject.create()
         mGetSpecialistProfileSubject = BehaviorSubject.create()
 
-        mCompositeDisposable += mUpdateSpecialistProfileSubject
+        mCompositeDisposable += mNewProfileSubject
                 .subscribeOn(mSchedulers.provideIo())
-                .flatMap {
-                    mApiClient.updateSpecialistProfile(it.photoPath, SpecialistProfilePacket(it.name, it.phone))
+                .flatMap { newProfileInfo ->
+                    val response = mApiClient.updateSpecialistProfile(newProfileInfo.photoPath, SpecialistProfilePacket(newProfileInfo.name, newProfileInfo.phone))
                             .toObservable()
+
+                    return@flatMap Observables.zip(response, Observable.just(newProfileInfo))
                 }
-                .subscribe({
-                    handleResponse(it)
+                .doOnNext { (response, newProfileInfo) ->
+                    if (response.errorCode == ErrorCode.Remote.REC_OK) {
+                        newProfileInfo.photoPath = response.newPhotoName
+                        mUpdateSpecialistProfileFragment.onNext(newProfileInfo)
+                    }
+                }
+                .subscribe({ (response, _) ->
+                    handleResponse(response)
                 }, {
                     handleError(it)
                 })
@@ -163,7 +174,7 @@ class SpecialistMainActivityViewModel
     }
 
     override fun updateSpecialistProfile(photoPath: String, name: String, phone: String) {
-        mUpdateSpecialistProfileSubject.onNext(UpdateSpecialistProfileDTO(photoPath, name, phone))
+        mNewProfileSubject.onNext(NewProfileInfo(photoPath, name, phone))
     }
 
     override fun getSpecialistProfile() {
@@ -171,7 +182,7 @@ class SpecialistMainActivityViewModel
     }
 
     override fun getDamageClaimsWithinRadius(latLng: LatLng, radius: Double, page: Long) {
-        mGetDamageClaimsWithinRadiusSubject.onNext(GetDamageClaimsRequestParamsDTO(latLng, radius, page * itemsPerPage))
+        mGetDamageClaimsWithinRadiusSubject.onNext(GetDamageClaimsRequestParams(latLng, radius, page * itemsPerPage))
     }
 
     override fun respondToDamageClaim(damageClaimId: Long) {
@@ -204,7 +215,7 @@ class SpecialistMainActivityViewModel
                 }
 
                 is UpdateSpecialistProfileResponse -> {
-                    TODO()
+                    mOnUpdateSpecialistProfileResponseSubject.onNext(Unit)
                 }
             }
         } else {
@@ -292,7 +303,7 @@ class SpecialistMainActivityViewModel
 
         for (damageClaim in response.damageClaims) {
             val dist = MathUtils.distance(lat, lon, damageClaim.lat, damageClaim.lon)
-            val dcwd = DamageClaimsWithDistanceDTO(MathUtils.round(dist, 2), damageClaim)
+            val dcwd = DamageClaimsWithDistance(MathUtils.round(dist, 2), damageClaim)
             retVal.damageClaims.add(dcwd)
         }
 
@@ -300,38 +311,35 @@ class SpecialistMainActivityViewModel
         return retVal
     }
 
+    override fun onUpdateSpecialistProfileFragment(): Observable<NewProfileInfo> = mUpdateSpecialistProfileFragment
     override fun onUpdateSpecialistProfileResponseSubject(): Observable<Unit> = mOnUpdateSpecialistProfileResponseSubject
     override fun onSpecialistProfileResponseSubject(): Observable<SpecialistProfile> = mOnSpecialistProfileResponseSubject
     override fun onBadResponse(): Observable<ErrorCode.Remote> = mOnBadResponseSubject
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
-    override fun onDamageClaimsPageReceived(): Observable<ArrayList<DamageClaimsWithDistanceDTO>> = mOnDamageClaimsPageReceivedSubject
+    override fun onDamageClaimsPageReceived(): Observable<ArrayList<DamageClaimsWithDistance>> = mOnDamageClaimsPageReceivedSubject
     override fun onRespondToDamageClaimSuccessSubject(): Observable<Unit> = mOnRespondToDamageClaimSuccessSubject
     override fun onHasAlreadyRespondedResponse(): Observable<Boolean> = mOnHasAlreadyRespondedResponse
-
-    data class UpdateSpecialistProfileDTO(val photoPath: String,
-                                          val name: String,
-                                          val phone: String)
 
     data class IsRepoEmptyDTO(val latlon: LatLng,
                               val radius: Double,
                               val page: Long,
                               val response: DamageClaimsResponse)
 
-    inner class GetDamageClaimsRequestParamsDTO(val latlon: LatLng,
-                                                val radius: Double,
-                                                val skip: Long) {
+    inner class GetDamageClaimsRequestParams(val latlon: LatLng,
+                                             val radius: Double,
+                                             val skip: Long) {
 
         operator fun component1() = latlon
         operator fun component2() = radius
         operator fun component3() = skip
     }
 
-    inner class DistanceWithDamageClaimResponse(var damageClaims: ArrayList<DamageClaimsWithDistanceDTO>,
+    inner class DistanceWithDamageClaimResponse(var damageClaims: ArrayList<DamageClaimsWithDistance>,
                                                 errorCode: ErrorCode.Remote) : StatusResponse(errorCode)
 
-    inner class DistanceComparator : Comparator<DamageClaimsWithDistanceDTO> {
+    inner class DistanceComparator : Comparator<DamageClaimsWithDistance> {
 
-        override fun compare(p0: DamageClaimsWithDistanceDTO, p1: DamageClaimsWithDistanceDTO): Int {
+        override fun compare(p0: DamageClaimsWithDistance, p1: DamageClaimsWithDistance): Int {
             if (p0.distance < p1.distance) {
                 return -1
             }

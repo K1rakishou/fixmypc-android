@@ -109,6 +109,7 @@ class RespondedSpecialistFullProfileFragment : BaseFragment<RespondedSpecialists
                 bundle.getString("name"),
                 bundle.getFloat("rating"),
                 bundle.getString("photo_name"),
+                bundle.getString("phone"),
                 bundle.getLong("registered_on,"),
                 bundle.getInt("success_repairs"),
                 bundle.getInt("fail_repairs")))

@@ -8,6 +8,7 @@ import io.reactivex.ObservableOperator
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import retrofit2.Response
+import timber.log.Timber
 
 /**
  * Created by kirakishou on 8/27/2017.
@@ -26,6 +27,7 @@ class OnApiErrorObservable<T : StatusResponse>(val gson: Gson) : ObservableOpera
                     try {
                         val responseJson = response.errorBody()!!.string()
                         val error = gson.fromJson<StatusResponse>(responseJson, StatusResponse::class.java)
+                        Timber.e(responseJson)
 
                         //may happen in some rare cases
                         if (error.errorCode != null) {

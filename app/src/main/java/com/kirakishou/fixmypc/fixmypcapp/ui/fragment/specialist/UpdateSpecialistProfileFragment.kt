@@ -120,8 +120,7 @@ class UpdateSpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewM
 
     private fun onUpdateSpecialistProfileResponse() {
         mNavigator.hideLoadingIndicatorFragment()
-
-        Timber.e("Updated!")
+        mNavigator.removeUpdateSpecialistProfileFragment()
     }
 
     override fun addPhoto() {

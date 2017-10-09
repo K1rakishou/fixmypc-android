@@ -27,6 +27,18 @@ open class BaseNavigator(activity: AppCompatActivity) {
         return null
     }
 
+    fun getFragmentByTag(tag: String): Fragment? {
+        val fragments = fragmentManager.fragments
+        if (fragments != null) {
+            for (fragment in fragments) {
+                if (fragment != null && fragment.tag == tag)
+                    return fragment
+            }
+        }
+
+        return null
+    }
+
     fun navigateToFragment(fragmentClass: KClass<*>, fragmentTag: String, bundle: Bundle? = null, fragmentFrameId: Int = R.id.fragment_frame) {
         val fragmentTransaction = fragmentManager.beginTransaction()
         val visibleFragment = getVisibleFragment()

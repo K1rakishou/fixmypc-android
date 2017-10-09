@@ -15,12 +15,15 @@ import java.io.File
 class ImageLoader(protected val mContext: Context,
                   protected val mWifiUtils: WifiUtils,
                   mBaseUrl: String) {
-    private val url = "$mBaseUrl/v1/api/image/"
+    private val damageClaimImagesUrl = "$mBaseUrl/v1/api/image"
+    private val specialistProfileImagesUrl = "$mBaseUrl/v1/api/image"
+    private val IMAGE_TYPE_DAMAGE_CLAIM = 0
+    private val IMAGE_TYPE_PROFILE = 1
 
     fun loadDamageClaimImageFromNetInto(userId: Long, imageName: String, view: ImageView) {
         if (mWifiUtils.isWifiConnected()) {
             Glide.with(mContext)
-                    .load("$url/$userId/${Constant.ImageSize.SMALL}/$imageName/")
+                    .load("$damageClaimImagesUrl/$userId/$IMAGE_TYPE_DAMAGE_CLAIM/${Constant.ImageSize.SMALL}/$imageName/")
                     .apply(RequestOptions().centerCrop())
                     .into(view)
         } else {
@@ -31,8 +34,18 @@ class ImageLoader(protected val mContext: Context,
         }
     }
 
-    fun loadProfileImageFromNetInto() {
-
+    fun loadProfileImageFromNetInto(userId: Long, imageName: String, view: ImageView) {
+        if (mWifiUtils.isWifiConnected()) {
+            Glide.with(mContext)
+                    .load("$specialistProfileImagesUrl/$userId/$IMAGE_TYPE_PROFILE/${Constant.ImageSize.SMALL}/$imageName/")
+                    .apply(RequestOptions().centerCrop())
+                    .into(view)
+        } else {
+            Glide.with(mContext)
+                    .load(R.drawable.ic_no_wifi)
+                    .apply(RequestOptions().centerCrop())
+                    .into(view)
+        }
     }
 
     fun loadImageFromDiskInto(file: File, imageView: ImageView) {

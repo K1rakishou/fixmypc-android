@@ -73,6 +73,12 @@ abstract class BaseFragment<T : ViewModel> : Fragment() {
         super.onDestroyView()
     }
 
+    override fun onStop() {
+        super.onStop()
+
+        AndroidUtils.hideSoftKeyboard(activity)
+    }
+
     protected fun runActivity(clazz: Class<*>, finishCurrentActivity: Boolean = false) {
         if (activity !is BaseActivityFragmentCallback) {
             throw IllegalStateException("Activity should implement BaseActivityFragmentCallback!")

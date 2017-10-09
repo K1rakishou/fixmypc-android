@@ -19,7 +19,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItemType
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.DamageClaimCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimListAdapterGenericParam
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimsAdapterMessage
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimsWithDistanceDTO
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimsWithDistance
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 import io.reactivex.subjects.BehaviorSubject
 
@@ -118,7 +118,7 @@ class SpecialistDamageClaimListAdapter(private val mContext: Context,
         when (holder) {
             is DamageClaimItemHolder -> {
                 if (mItems[position].value.isPresent()) {
-                    val dto = mItems[position].value.get() as DamageClaimsWithDistanceDTO
+                    val dto = mItems[position].value.get() as DamageClaimsWithDistance
                     val damageClaim = dto.damageClaim
                     val distStr = Utils.distanceToString(dto.distance)
 

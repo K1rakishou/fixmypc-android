@@ -122,7 +122,11 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
     }
 
     private fun updateUi(profile: SpecialistProfile) {
-        mImageLoader.loadProfileImageFromNetInto(profile.userId, profile.photoName, profilePhoto)
+        if (profile.photoName.isNotEmpty()) {
+            mImageLoader.loadProfileImageFromNetInto(profile.userId, profile.photoName, profilePhoto)
+        } else {
+            TODO("load default profile image")
+        }
 
         profileName.text = profile.name
         profileRating.rating = profile.rating

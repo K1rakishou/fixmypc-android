@@ -55,18 +55,6 @@ class LoginActivity : BaseActivity<LoginActivityViewModel>(),
         }
     }
 
-    override fun onShowToast(message: String, duration: Int) {
-        super.onShowToast(message, duration)
-    }
-
-    override fun onUnknownError(error: Throwable) {
-        super.onUnknownError(error)
-    }
-
-    override fun runActivity(clazz: Class<*>, finishCurrentActivity: Boolean) {
-        super.runActivity(clazz, finishCurrentActivity)
-    }
-
     override fun resolveDaggerDependency() {
         DaggerLoginActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)

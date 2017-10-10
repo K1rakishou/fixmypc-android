@@ -6,6 +6,8 @@ import android.support.v4.app.FragmentManager
 import android.support.v7.app.AppCompatActivity
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.helper.extension.newInstance
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.LoadingIndicatorFragment
 import kotlin.reflect.KClass
 
 /**
@@ -37,6 +39,33 @@ open class BaseNavigator(activity: AppCompatActivity) {
         }
 
         return null
+    }
+
+    fun showLoadingIndicatorFragment() {
+        val visibleFragment = getVisibleFragment() ?: return
+        if (visibleFragment is LoadingIndicatorFragment) {
+            return
+        }
+
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        fragmentTransaction.hide(visibleFragment)
+
+        val newFragment = LoadingIndicatorFragment()
+        fragmentTransaction
+                .add(R.id.fragment_frame, newFragment, Constant.FragmentTags.LOADING_INDICATOR)
+                .addToBackStack(null)
+
+        fragmentTransaction.commit()
+    }
+
+    fun hideLoadingIndicatorFragment() {
+        val visibleFragment = getVisibleFragment()
+
+        if (visibleFragment != null) {
+            if (visibleFragment is LoadingIndicatorFragment) {
+                fragmentManager.popBackStack()
+            }
+        }
     }
 
     fun navigateToFragment(fragmentClass: KClass<*>, fragmentTag: String, bundle: Bundle? = null, fragmentFrameId: Int = R.id.fragment_frame) {

@@ -125,18 +125,6 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), 
                 .inject(this)
     }
 
-    override fun onShowToast(message: String, duration: Int) {
-        super.onShowToast(message, duration)
-    }
-
-    override fun runActivity(clazz: Class<*>, finishCurrentActivity: Boolean) {
-        super.runActivity(clazz, finishCurrentActivity)
-    }
-
-    override fun onUnknownError(error: Throwable) {
-        super.onUnknownError(error)
-    }
-
     override fun onBackStackChanged() {
         if (supportFragmentManager.backStackEntryCount == 0) {
             finish()

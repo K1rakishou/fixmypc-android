@@ -2,7 +2,6 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.navigator
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseNavigator
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
@@ -10,8 +9,6 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.LoadingIndicatorFragment
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.ActiveDamageClaimsListFragment
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.DamageClaimFullInfoFragment
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.SpecialistProfileFragment
-import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.UpdateSpecialistProfileFragment
-import timber.log.Timber
 
 /**
  * Created by kirakishou on 9/11/2017.
@@ -37,11 +34,6 @@ class SpecialistMainActivityNavigator(activity: AppCompatActivity) : BaseNavigat
                 Constant.FragmentTags.SPECIALIST_PROFILE)
     }
 
-    fun navigateToUpdateSpecialistProfileFragment() {
-        navigateToFragment(UpdateSpecialistProfileFragment::class,
-                Constant.FragmentTags.UPDATE_SPECIALIST_PROFILE)
-    }
-
     fun navigateToDamageClaimFullInfoFragment(damageClaim: DamageClaim) {
         val args = Bundle()
         args.putLong("damage_claim_id", damageClaim.id)
@@ -56,60 +48,6 @@ class SpecialistMainActivityNavigator(activity: AppCompatActivity) : BaseNavigat
 
         navigateToFragment(DamageClaimFullInfoFragment::class,
                 Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO, args)
-    }
-
-    fun showLoadingIndicatorFragment() {
-        val visibleFragment = getVisibleFragment() ?: return
-        if (visibleFragment is LoadingIndicatorFragment) {
-            return
-        }
-
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.hide(visibleFragment)
-
-        val newFragment = LoadingIndicatorFragment()
-        fragmentTransaction
-                .add(R.id.fragment_frame, newFragment, Constant.FragmentTags.LOADING_INDICATOR)
-                .addToBackStack(null)
-
-        fragmentTransaction.commit()
-    }
-
-    fun hideLoadingIndicatorFragment() {
-        val visibleFragment = getVisibleFragment()
-
-        if (visibleFragment != null) {
-            if (visibleFragment is LoadingIndicatorFragment) {
-                fragmentManager.popBackStack()
-            }
-        }
-    }
-
-    fun removeUpdateSpecialistProfileFragment() {
-        val updateSpecialistProfileFragment = getFragmentByTag(Constant.FragmentTags.UPDATE_SPECIALIST_PROFILE)
-        if (updateSpecialistProfileFragment == null) {
-            Timber.e("Could not file SPECIALIST_PROFILE fragment")
-            return
-        }
-
-        fragmentManager.beginTransaction()
-                .remove(updateSpecialistProfileFragment)
-                .commit()
-
-        var specialistProfileFragment = getFragmentByTag(Constant.FragmentTags.SPECIALIST_PROFILE)
-        if (specialistProfileFragment == null) {
-            specialistProfileFragment = SpecialistProfileFragment()
-
-            fragmentManager.beginTransaction()
-                    .add(R.id.fragment_frame, specialistProfileFragment, Constant.FragmentTags.SPECIALIST_PROFILE)
-                    .addToBackStack(null)
-                    .commit()
-        } else {
-            fragmentManager.beginTransaction()
-                    .show(specialistProfileFragment)
-                    .addToBackStack(null)
-                    .commit()
-        }
     }
 }
 

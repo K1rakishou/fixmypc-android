@@ -133,14 +133,6 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
         }
     }
 
-    override fun onUnknownError(error: Throwable) {
-        super.onUnknownError(error)
-    }
-
-    override fun onShowToast(message: String, duration: Int) {
-        super.onShowToast(message, duration)
-    }
-
     override fun resolveDaggerDependency() {
         DaggerLoadingActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)

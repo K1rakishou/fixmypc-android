@@ -18,13 +18,18 @@ import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerSpecialistMainActivi
 import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.TimeUtils
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.*
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
+import com.kirakishou.fixmypc.fixmypcapp.ui.activity.UpdateSpecialistProfileActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavigator
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
+import timber.log.Timber
 import javax.inject.Inject
 
 class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>() {
@@ -66,7 +71,7 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
     lateinit var mImageLoader: ImageLoader
 
     private val fragmentTag = Constant.FragmentTags.SPECIALIST_PROFILE
-    private var userId = -1L
+    private var savedProfile: SpecialistProfile? = null
 
     override fun initViewModel(): SpecialistMainActivityViewModel? {
         return ViewModelProviders.of(activity, mViewModelFactory).get(SpecialistMainActivityViewModel::class.java)
@@ -98,10 +103,6 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onSpecialistProfileResponseSubject(it) })
 
-        mCompositeDisposable += getViewModel().mOutputs.onUpdateSpecialistProfileFragment()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onUpdateSpecialistProfileFragment(it) })
-
         mCompositeDisposable += getViewModel().mErrors.onUnknownError()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUnknownError(it) })
@@ -112,7 +113,25 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
     }
 
     private fun onUpdateProfileButtonClick() {
-        mNavigator.navigateToUpdateSpecialistProfileFragment()
+        if (savedProfile == null) {
+            Timber.e("savedProfile must not be null")
+            return
+        }
+
+        savedProfile!!.let { profile ->
+            val args = Bundle()
+            args.putLong("user_id", profile.userId)
+            args.putString("name", profile.name)
+            args.putFloat("rating", profile.rating)
+            args.putString("photo_name", profile.photoName)
+            args.putString("phone", profile.phone)
+            args.putLong("registered_on", profile.registeredOn)
+            args.putInt("success_repairs", profile.successRepairs)
+            args.putInt("fail_repairs", profile.failRepairs)
+            args.putBoolean("is_filled_in", profile.isFilledIn)
+
+            runActivityWithArgs(UpdateSpecialistProfileActivity::class.java, args)
+        }
     }
 
     private fun onSpecialistProfileResponseSubject(profile: SpecialistProfile) {
@@ -122,7 +141,7 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
     }
 
     private fun updateUi(profile: SpecialistProfile) {
-        userId = profile.userId
+        savedProfile = profile
 
         loadPhoto(profile.photoName, profile.userId)
         profileName.text = profile.name
@@ -135,15 +154,6 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
         profileTotalRepairs.text = "Всего проведено ремонтов: ${profile.failRepairs + profile.successRepairs}"
         profileSuccessRepairs.text = "Успешных ремонтов: ${profile.successRepairs}"
         profileFailRepairs.text = "Неудачных ремонтов: ${profile.failRepairs}"
-    }
-
-    private fun onUpdateSpecialistProfileFragment(newProfileInfo: NewProfileInfo) {
-        activity.runOnUiThread {
-            profileName.text = newProfileInfo.name
-            profilePhone.text = "Телефон: ${newProfileInfo.phone}"
-
-            loadPhoto(newProfileInfo.photoPath, userId)
-        }
     }
 
     private fun loadPhoto(photoName: String, userId: Long) {

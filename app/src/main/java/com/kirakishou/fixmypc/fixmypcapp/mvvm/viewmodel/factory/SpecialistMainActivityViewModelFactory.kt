@@ -7,14 +7,16 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.repository.DamageClaimRepository
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.helper.wifi.WifiUtilsImpl
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityViewModel
+import javax.inject.Inject
 
 /**
  * Created by kirakishou on 9/9/2017.
  */
-class SpecialistMainActivityViewModelFactory(val apiClient: ApiClient,
-                                             val wifiUtils: WifiUtilsImpl,
-                                             val damageClaimRepo: DamageClaimRepository,
-                                             val schedulers: SchedulerProvider) : ViewModelProvider.Factory {
+class SpecialistMainActivityViewModelFactory
+@Inject constructor(val apiClient: ApiClient,
+                    val wifiUtils: WifiUtilsImpl,
+                    val damageClaimRepo: DamageClaimRepository,
+                    val schedulers: SchedulerProvider) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

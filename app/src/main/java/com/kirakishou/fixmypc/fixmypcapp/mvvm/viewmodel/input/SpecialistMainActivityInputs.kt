@@ -10,5 +10,4 @@ interface SpecialistMainActivityInputs {
     fun checkHasAlreadyRespondedToDamageClaim(damageClaimId: Long)
     fun respondToDamageClaim(damageClaimId: Long)
     fun getSpecialistProfile()
-    fun updateSpecialistProfile(photoPath: String, name: String, phone: String)
 }

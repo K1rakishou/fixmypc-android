@@ -138,6 +138,16 @@ abstract class BaseActivity<out T: ViewModel> : AppCompatActivity() {
         }
     }
 
+    public open fun runActivityWithArgs(clazz: Class<*>, args: Bundle, finishCurrentActivity: Boolean) {
+        val intent = Intent(this, clazz)
+        intent.putExtras(args)
+        startActivity(intent)
+
+        if (finishCurrentActivity) {
+            finish()
+        }
+    }
+
     protected abstract fun initViewModel(): T?
     protected abstract fun getContentView(): Int
     protected abstract fun loadStartAnimations(): AnimatorSet

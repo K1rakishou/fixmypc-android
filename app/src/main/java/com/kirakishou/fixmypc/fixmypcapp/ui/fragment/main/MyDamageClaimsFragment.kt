@@ -17,7 +17,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.MyDamageClaimsFr
 import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
-class MyDamageClaimsFragment  : BaseFragment<MyDamageClaimsFragmentViewModel>() {
+class MyDamageClaimsFragment : BaseFragment<MyDamageClaimsFragmentViewModel>() {
 
     @Inject
     lateinit var mViewModelFactory: MyDamageClaimsFragmentViewModelFactory

@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist
+package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.update_specialist_profile
 
 
 import android.Manifest
@@ -16,18 +16,16 @@ import com.kirakishou.billboards.modules.controller.PhotoView
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
-import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerSpecialistMainActivityComponent
-import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerUpdateSpecialistProfileActivityComponent
+import com.kirakishou.fixmypc.fixmypcapp.di.module.UpdateSpecialistProfileActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityViewModel
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainActivityViewModelFactory
-import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.*
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.UpdateSpecialistProfileActivityViewModel
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.UpdateSpecialistProfileActivityViewModelFactory
+import com.kirakishou.fixmypc.fixmypcapp.ui.activity.UpdateSpecialistProfileActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.interfaces.PermissionGrantedCallback
 import com.kirakishou.fixmypc.fixmypcapp.ui.interfaces.RequestPermissionCallback
-import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavigator
+import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.UpdateSpecialistProfileActivityNavigator
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import pl.aprilapps.easyphotopicker.DefaultCallback
@@ -37,7 +35,7 @@ import java.io.File
 import javax.inject.Inject
 
 
-class UpdateSpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(),
+class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActivityViewModel>(),
         PhotoView.OnPhotoClickedListener,
         PermissionGrantedCallback {
 
@@ -54,24 +52,50 @@ class UpdateSpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewM
     lateinit var updateProfileButton: AppCompatButton
 
     @Inject
-    lateinit var mNavigator: SpecialistMainActivityNavigator
+    lateinit var mNavigator: UpdateSpecialistProfileActivityNavigator
 
     @Inject
-    lateinit var mViewModelFactory: SpecialistMainActivityViewModelFactory
+    lateinit var mViewModelFactory: UpdateSpecialistProfileActivityViewModelFactory
 
     @Inject
     lateinit var mImageLoader: ImageLoader
 
-    override fun initViewModel(): SpecialistMainActivityViewModel? {
-        return ViewModelProviders.of(activity, mViewModelFactory).get(SpecialistMainActivityViewModel::class.java)
+    private var savedProfile: SpecialistProfile? = null
+
+    override fun initViewModel(): UpdateSpecialistProfileActivityViewModel? {
+        return ViewModelProviders.of(activity, mViewModelFactory).get(UpdateSpecialistProfileActivityViewModel::class.java)
     }
 
     override fun getContentView(): Int = R.layout.fragment_update_specialist_profile
     override fun loadStartAnimations() = AnimatorSet()
     override fun loadExitAnimations() = AnimatorSet()
 
+    private fun getProfileFromBundle(arguments: Bundle?) {
+        if (arguments != null) {
+            val profile  = SpecialistProfile()
+            profile.userId = arguments.getLong("user_id")
+            profile.name = arguments.getString("name")
+            profile.rating = arguments.getFloat("rating")
+            profile.photoName = arguments.getString("photo_name")
+            profile.phone = arguments.getString("phone")
+            profile.registeredOn = arguments.getLong("registered_on")
+            profile.successRepairs = arguments.getInt("success_repairs")
+            profile.failRepairs = arguments.getInt("fail_repairs")
+            profile.isFilledIn = arguments.getBoolean("is_filled_in")
+
+            profileName.setText(profile.name)
+            profilePhone.setText(profile.phone)
+            loadPhoto(profile.photoName, profile.userId)
+
+            savedProfile = profile
+        } else {
+            Timber.e("fragment must have arguments")
+        }
+    }
+
     override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
         initRx()
+        getProfileFromBundle(arguments)
 
         profilePhoto.setAddButtonIcon(R.drawable.ic_add_photo)
         profilePhoto.setRemoveButtonIcon(R.drawable.ic_remove_photo)
@@ -90,6 +114,24 @@ class UpdateSpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewM
         mCompositeDisposable += getViewModel().mOutputs.onUpdateSpecialistProfileResponseSubject()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUpdateSpecialistProfileResponse() })
+    }
+
+    private fun onUpdateSpecialistProfileFragment(newProfileInfo: NewProfileInfo) {
+        activity.runOnUiThread {
+            profileName.setText(newProfileInfo.name)
+            profilePhone.setText("Телефон: ${newProfileInfo.phone}")
+
+            //TODO
+            //loadPhoto(newProfileInfo.photoPath, save)
+        }
+    }
+
+    private fun loadPhoto(photoName: String, userId: Long) {
+        if (photoName.isNotEmpty()) {
+            mImageLoader.loadProfileImageFromNetInto(userId, photoName, profilePhoto)
+        } else {
+            //TODO: load default profile image
+        }
     }
 
     private fun onUpdateProfileButtonClick() {
@@ -120,7 +162,6 @@ class UpdateSpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewM
 
     private fun onUpdateSpecialistProfileResponse() {
         mNavigator.hideLoadingIndicatorFragment()
-        mNavigator.removeUpdateSpecialistProfileFragment()
     }
 
     override fun addPhoto() {
@@ -180,10 +221,39 @@ class UpdateSpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewM
     }
 
     override fun resolveDaggerDependency() {
-        DaggerSpecialistMainActivityComponent.builder()
+        DaggerUpdateSpecialistProfileActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
-                .specialistMainActivityModule(SpecialistMainActivityModule(activity as SpecialistMainActivity))
+                .updateSpecialistProfileActivityModule(UpdateSpecialistProfileActivityModule(activity as UpdateSpecialistProfileActivity))
                 .build()
                 .inject(this)
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

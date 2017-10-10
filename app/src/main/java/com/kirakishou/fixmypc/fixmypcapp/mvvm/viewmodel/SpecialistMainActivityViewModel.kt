@@ -9,11 +9,9 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.util.MathUtils
 import com.kirakishou.fixmypc.fixmypcapp.helper.wifi.WifiUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.NewProfileInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimsWithDistance
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.RespondToDamageClaimPacket
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.SpecialistProfilePacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.SpecialistMainActivityErrors
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.SpecialistMainActivityInputs
@@ -46,9 +44,6 @@ class SpecialistMainActivityViewModel
     private val itemsPerPage = Constant.MAX_DAMAGE_CLAIMS_PER_PAGE
     private val mCompositeDisposable = CompositeDisposable()
 
-    lateinit var mUpdateSpecialistProfileFragment: BehaviorSubject<NewProfileInfo>
-    lateinit var mOnUpdateSpecialistProfileResponseSubject: BehaviorSubject<Unit>
-    lateinit var mNewProfileSubject: BehaviorSubject<NewProfileInfo>
     lateinit var mOnSpecialistProfileResponseSubject: BehaviorSubject<SpecialistProfile>
     lateinit var mOnBadResponseSubject: BehaviorSubject<ErrorCode.Remote>
     lateinit var mOnHasAlreadyRespondedResponse: BehaviorSubject<Boolean>
@@ -64,9 +59,6 @@ class SpecialistMainActivityViewModel
     fun init() {
         mCompositeDisposable.clear()
 
-        mUpdateSpecialistProfileFragment = BehaviorSubject.create()
-        mOnUpdateSpecialistProfileResponseSubject = BehaviorSubject.create()
-        mNewProfileSubject = BehaviorSubject.create()
         mOnSpecialistProfileResponseSubject = BehaviorSubject.create()
         mOnBadResponseSubject = BehaviorSubject.create()
         mOnHasAlreadyRespondedResponse = BehaviorSubject.create()
@@ -78,26 +70,6 @@ class SpecialistMainActivityViewModel
         mOnUnknownErrorSubject = BehaviorSubject.create()
         mEitherFromRepoOrServerSubject = BehaviorSubject.create()
         mGetSpecialistProfileSubject = BehaviorSubject.create()
-
-        mCompositeDisposable += mNewProfileSubject
-                .subscribeOn(mSchedulers.provideIo())
-                .flatMap { newProfileInfo ->
-                    val response = mApiClient.updateSpecialistProfile(newProfileInfo.photoPath, SpecialistProfilePacket(newProfileInfo.name, newProfileInfo.phone))
-                            .toObservable()
-
-                    return@flatMap Observables.zip(response, Observable.just(newProfileInfo))
-                }
-                .doOnNext { (response, newProfileInfo) ->
-                    if (response.errorCode == ErrorCode.Remote.REC_OK) {
-                        newProfileInfo.photoPath = response.newPhotoName
-                        mUpdateSpecialistProfileFragment.onNext(newProfileInfo)
-                    }
-                }
-                .subscribe({ (response, _) ->
-                    handleResponse(response)
-                }, {
-                    handleError(it)
-                })
 
         mCompositeDisposable += mGetSpecialistProfileSubject
                 .subscribeOn(mSchedulers.provideIo())
@@ -173,10 +145,6 @@ class SpecialistMainActivityViewModel
         super.onCleared()
     }
 
-    override fun updateSpecialistProfile(photoPath: String, name: String, phone: String) {
-        mNewProfileSubject.onNext(NewProfileInfo(photoPath, name, phone))
-    }
-
     override fun getSpecialistProfile() {
         mGetSpecialistProfileSubject.onNext(Unit)
     }
@@ -212,10 +180,6 @@ class SpecialistMainActivityViewModel
 
                 is SpecialistProfileResponse -> {
                     mOnSpecialistProfileResponseSubject.onNext(response.profile)
-                }
-
-                is UpdateSpecialistProfileResponse -> {
-                    mOnUpdateSpecialistProfileResponseSubject.onNext(Unit)
                 }
             }
         } else {
@@ -275,21 +239,6 @@ class SpecialistMainActivityViewModel
                         else -> throw RuntimeException("Unknown errorCode: $errorCode")
                     }
                 }
-
-                is UpdateSpecialistProfileResponse -> {
-                    when (errorCode) {
-                        ErrorCode.Remote.REC_TIMEOUT,
-                        ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER,
-                        ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION,
-                        ErrorCode.Remote.REC_BAD_ACCOUNT_TYPE,
-                        ErrorCode.Remote.REC_FILE_SIZE_EXCEEDED,
-                        ErrorCode.Remote.REC_SELECTED_PHOTO_DOES_NOT_EXISTS -> {
-                            mOnBadResponseSubject.onNext(errorCode)
-                        }
-
-                        else -> throw RuntimeException("Unknown errorCode: $errorCode")
-                    }
-                }
             }
         }
     }
@@ -311,8 +260,6 @@ class SpecialistMainActivityViewModel
         return retVal
     }
 
-    override fun onUpdateSpecialistProfileFragment(): Observable<NewProfileInfo> = mUpdateSpecialistProfileFragment
-    override fun onUpdateSpecialistProfileResponseSubject(): Observable<Unit> = mOnUpdateSpecialistProfileResponseSubject
     override fun onSpecialistProfileResponseSubject(): Observable<SpecialistProfile> = mOnSpecialistProfileResponseSubject
     override fun onBadResponse(): Observable<ErrorCode.Remote> = mOnBadResponseSubject
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject

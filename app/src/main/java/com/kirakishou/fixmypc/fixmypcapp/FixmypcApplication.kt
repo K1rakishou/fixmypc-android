@@ -23,7 +23,7 @@ class FixmypcApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        MapsInitializer.initialize(this);
+        MapsInitializer.initialize(this)
 
         applicationComponent = DaggerApplicationComponent.builder()
                 .applicationModule(ApplicationModule(this, mBaseUrl, mDatabaseName))

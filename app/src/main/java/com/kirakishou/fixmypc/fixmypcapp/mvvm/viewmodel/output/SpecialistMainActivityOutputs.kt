@@ -1,6 +1,5 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output
 
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.NewProfileInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimsWithDistance
 import io.reactivex.Observable
@@ -13,6 +12,4 @@ interface SpecialistMainActivityOutputs {
     fun onRespondToDamageClaimSuccessSubject(): Observable<Unit>
     fun onHasAlreadyRespondedResponse(): Observable<Boolean>
     fun onSpecialistProfileResponseSubject(): Observable<SpecialistProfile>
-    fun onUpdateSpecialistProfileResponseSubject(): Observable<Unit>
-    fun onUpdateSpecialistProfileFragment(): Observable<NewProfileInfo>
 }

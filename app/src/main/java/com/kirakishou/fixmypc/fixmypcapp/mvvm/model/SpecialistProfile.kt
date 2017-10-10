@@ -8,19 +8,19 @@ import com.google.gson.annotations.SerializedName
  */
 data class SpecialistProfile(@Expose
                              @SerializedName("user_id")
-                             val userId: Long = 0L,
+                             var userId: Long = 0L,
 
                              @Expose
                              @SerializedName("name")
-                             val name: String = "",
+                             var name: String = "",
 
                              @Expose
                              @SerializedName("rating")
-                             val rating: Float = 0f,
+                             var rating: Float = 0f,
 
                              @Expose
                              @SerializedName("photo_name")
-                             val photoName: String = "",
+                             var photoName: String = "",
 
                              @Expose
                              @SerializedName("phone")
@@ -28,15 +28,15 @@ data class SpecialistProfile(@Expose
 
                              @Expose
                              @SerializedName("registered_on")
-                             val registeredOn: Long = 0L,
+                             var registeredOn: Long = 0L,
 
                              @Expose
                              @SerializedName("success_repairs")
-                             val successRepairs: Int = 0,
+                             var successRepairs: Int = 0,
 
                              @Expose
                              @SerializedName("fail_repairs")
-                             val failRepairs: Int = 0,
+                             var failRepairs: Int = 0,
 
                              @Expose
                              @SerializedName("is_filled_in")

@@ -9,7 +9,7 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerUpdateSpecialistProfileActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.UpdateSpecialistProfileActivityModule
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.UpdateSpecialistProfileActivityViewModel
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.UpdateSpecialistProfileActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.UpdateSpecialistProfileActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.UpdateSpecialistProfileActivityNavigator
 import javax.inject.Inject
@@ -31,7 +31,10 @@ class UpdateSpecialistProfileActivity : BaseActivity<UpdateSpecialistProfileActi
     override fun loadExitAnimations(): AnimatorSet = AnimatorSet()
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
-        mNavigator.navigateToUpdateSpecialistProfileFragment()
+        getViewModel().init()
+
+        val args = intent.extras
+        mNavigator.navigateToUpdateSpecialistProfileFragment(args)
     }
 
     override fun onActivityDestroy() {
@@ -51,3 +54,30 @@ class UpdateSpecialistProfileActivity : BaseActivity<UpdateSpecialistProfileActi
                 .inject(this)
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

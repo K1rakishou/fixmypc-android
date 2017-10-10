@@ -113,13 +113,13 @@ abstract class BaseActivity<out T: ViewModel> : AppCompatActivity() {
         set.start()
     }
 
-    public open fun onShowToast(message: String, duration: Int = Toast.LENGTH_LONG) {
+    open fun onShowToast(message: String, duration: Int = Toast.LENGTH_LONG) {
         runOnUiThread {
             Toast.makeText(this, message, duration).show()
         }
     }
 
-    public open fun onUnknownError(error: Throwable) {
+    open fun onUnknownError(error: Throwable) {
         if (error.message != null) {
             onShowToast(error.message!!)
         } else {
@@ -129,7 +129,7 @@ abstract class BaseActivity<out T: ViewModel> : AppCompatActivity() {
         finish()
     }
 
-    public open fun runActivity(clazz: Class<*>, finishCurrentActivity: Boolean = false) {
+    open fun runActivity(clazz: Class<*>, finishCurrentActivity: Boolean = false) {
         val intent = Intent(this, clazz)
         startActivity(intent)
 
@@ -138,7 +138,11 @@ abstract class BaseActivity<out T: ViewModel> : AppCompatActivity() {
         }
     }
 
-    public open fun runActivityWithArgs(clazz: Class<*>, args: Bundle, finishCurrentActivity: Boolean) {
+    open fun finishActivity() {
+        finish()
+    }
+
+    open fun runActivityWithArgs(clazz: Class<*>, args: Bundle, finishCurrentActivity: Boolean) {
         val intent = Intent(this, clazz)
         intent.putExtras(args)
         startActivity(intent)

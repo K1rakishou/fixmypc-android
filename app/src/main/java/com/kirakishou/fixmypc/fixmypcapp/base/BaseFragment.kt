@@ -3,6 +3,7 @@ package com.kirakishou.fixmypc.fixmypcapp.base
 import android.animation.AnimatorSet
 import android.arch.lifecycle.LifecycleRegistry
 import android.arch.lifecycle.ViewModel
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -22,13 +23,13 @@ import timber.log.Timber
  */
 abstract class BaseFragment<T : ViewModel> : Fragment() {
 
-    private val mRegistry by lazy {
+    protected val mRegistry by lazy {
         LifecycleRegistry(this)
     }
 
     override fun getLifecycle(): LifecycleRegistry = mRegistry
 
-    private var mUnBinder: Fickle<Unbinder> = Fickle.empty()
+    private lateinit var mUnBinder: Unbinder
     protected var mViewModel: Fickle<T> = Fickle.empty()
     protected val mCompositeDisposable = CompositeDisposable()
 
@@ -45,7 +46,7 @@ abstract class BaseFragment<T : ViewModel> : Fragment() {
 
         val viewId = getContentView()
         val root = inflater.inflate(viewId, container, false)
-        mUnBinder = Fickle.of(ButterKnife.bind(this, root))
+        mUnBinder = ButterKnife.bind(this, root)
 
         return root
     }
@@ -66,10 +67,7 @@ abstract class BaseFragment<T : ViewModel> : Fragment() {
             onFragmentViewDestroy()
         }
 
-        mUnBinder.ifPresent {
-            it.unbind()
-        }
-
+        mUnBinder.unbind()
         super.onDestroyView()
     }
 
@@ -93,6 +91,22 @@ abstract class BaseFragment<T : ViewModel> : Fragment() {
         }
 
         (activity as BaseActivityFragmentCallback).runActivity(clazz, finishCurrentActivity)
+    }
+
+    protected fun finishActivity() {
+        if (activity !is BaseActivityFragmentCallback) {
+            throw IllegalStateException("Activity should implement BaseActivityFragmentCallback!")
+        }
+
+        (activity as BaseActivityFragmentCallback).finishActivity()
+    }
+
+    protected fun sendBroadcast(intent: Intent) {
+        if (activity !is BaseActivityFragmentCallback) {
+            throw IllegalStateException("Activity should implement BaseActivityFragmentCallback!")
+        }
+
+        (activity as BaseActivityFragmentCallback).sendBroadcast(intent)
     }
 
     protected fun showToast(message: String, duration: Int) {

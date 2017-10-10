@@ -4,7 +4,7 @@ package com.kirakishou.fixmypc.fixmypcapp.mvvm.model
  * Created by kirakishou on 7/21/2017.
  */
 object Constant {
-    private val APPLICATION_ID = "com.kirakishou.fixmypc.fixmypcapp"
+    val APPLICATION_ID = "com.kirakishou.fixmypc.fixmypcapp"
     val SHARED_PREFS_PREFIX = "${APPLICATION_ID}_SHARED_PREF"
     val DAMAGE_CLAIM_PHOTO_ADAPTER_MAX_PHOTOS = 4
     val RECYCLER_VIEW_MAX_COLUMNS_COUNT = 10
@@ -12,6 +12,10 @@ object Constant {
     val MAX_SPECIALISTS_PROFILES_PER_PAGE = 5L
     val MAX_FILE_SIZE = 5242880
     val MAX_REPO_STORE_ITEMS_TIME = 1000L * 60L * 60L // one hour
+
+    object ReceiverActions {
+        val WAIT_FOR_SPECIALIST_PROFILE_UPDATE_NOTIFICATION = "${APPLICATION_ID}_SPECIALIST_PROFILE_UPDATE"
+    }
 
     object SerializedNames {
         const val LOGIN = "login"

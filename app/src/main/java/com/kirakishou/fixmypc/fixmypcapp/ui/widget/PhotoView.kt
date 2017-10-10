@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
+import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import java.io.File
 
 /**
@@ -30,6 +31,7 @@ class PhotoView : AppCompatImageView, View.OnClickListener {
     private var borderId = 0
     private lateinit var listener: OnPhotoClickedListener
     private lateinit var mContext: Context
+    private lateinit var mImageLoader: ImageLoader
 
     var imageFile: File? = null
 
@@ -41,6 +43,10 @@ class PhotoView : AppCompatImageView, View.OnClickListener {
     constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet) {
         mContext = context
         setOnClickListener(this)
+    }
+
+    fun setImageLoader(imageLoader: ImageLoader) {
+        mImageLoader = imageLoader
     }
 
     fun setAddButtonIcon(@DrawableRes id: Int) {
@@ -136,8 +142,18 @@ class PhotoView : AppCompatImageView, View.OnClickListener {
                 })
     }
 
+    fun loadImageFromNet(photoName: String, userId: Long) {
+        this.post {
+            mImageLoader.loadImageFromNetToPhotoView(photoName, userId, this)
+        }
+    }
+
     fun isPhotoAdded(): Boolean {
         return isPhotoAdded
+    }
+
+    fun setPhotoAdded() {
+        isPhotoAdded = true
     }
 
     interface OnPhotoClickedListener {

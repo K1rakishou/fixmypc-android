@@ -1,9 +1,13 @@
 package com.kirakishou.fixmypc.fixmypcapp.helper
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
+import com.kirakishou.billboards.modules.controller.PhotoView
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.helper.wifi.WifiUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
@@ -46,6 +50,20 @@ class ImageLoader(protected val mContext: Context,
                     .apply(RequestOptions().centerCrop())
                     .into(view)
         }
+    }
+
+    fun loadImageFromNetToPhotoView(photoName: String, userId: Long, photoView: PhotoView) {
+        Glide.with(mContext)
+                .asBitmap()
+                .apply(RequestOptions()
+                        .centerCrop())
+                .load("$specialistProfileImagesUrl/$userId/$IMAGE_TYPE_PROFILE/${Constant.ImageSize.SMALL}/$photoName/")
+                .into(object : SimpleTarget<Bitmap>(photoView.width, photoView.height) {
+                    override fun onResourceReady(resource: Bitmap?, transition: Transition<in Bitmap>?) {
+                        photoView.setImageBitmap(resource)
+                        photoView.setPhotoAdded()
+                    }
+                })
     }
 
     fun loadImageFromDiskInto(file: File, imageView: ImageView) {

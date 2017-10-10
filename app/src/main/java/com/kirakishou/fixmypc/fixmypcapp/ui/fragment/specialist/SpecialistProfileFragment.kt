@@ -3,6 +3,10 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist
 
 import android.animation.AnimatorSet
 import android.arch.lifecycle.ViewModelProviders
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.support.v7.widget.AppCompatButton
 import android.support.v7.widget.AppCompatRatingBar
@@ -70,6 +74,7 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
     @Inject
     lateinit var mImageLoader: ImageLoader
 
+    private val receiver = UpdateWaitingReceiver()
     private val fragmentTag = Constant.FragmentTags.SPECIALIST_PROFILE
     private var savedProfile: SpecialistProfile? = null
 
@@ -88,9 +93,14 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
             mNavigator.showLoadingIndicatorFragment()
             getViewModel().mInputs.getSpecialistProfile()
         }
+
+        activity.registerReceiver(receiver, IntentFilter(Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_NOTIFICATION))
+        Timber.e("Receiver registered")
     }
 
     override fun onFragmentViewDestroy() {
+        activity.unregisterReceiver(receiver)
+        Timber.e("Receiver unregistered")
     }
 
     private fun initRx() {
@@ -184,4 +194,17 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
                 .inject(this)
     }
 
+    inner class UpdateWaitingReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_NOTIFICATION) {
+               activity.runOnUiThread {
+                   val args = intent.extras
+
+                   loadPhoto(args.getString("new_photo_name"), savedProfile!!.userId)
+                   profileName.text = args.getString("new_name")
+                   profilePhone.text = "Телефон: ${args.getString("new_phone")}"
+               }
+            }
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.kirakishou.fixmypc.fixmypcapp.base
 
+import android.content.Intent
 import android.os.Bundle
 
 /**
@@ -8,6 +9,8 @@ import android.os.Bundle
 interface BaseActivityFragmentCallback {
     fun runActivityWithArgs(clazz: Class<*>, args: Bundle, finishCurrentActivity: Boolean)
     fun runActivity(clazz: Class<*>, finishCurrentActivity: Boolean)
+    fun finishActivity()
     fun onShowToast(message: String, duration: Int)
     fun onUnknownError(error: Throwable)
+    fun sendBroadcast(intent: Intent)
 }

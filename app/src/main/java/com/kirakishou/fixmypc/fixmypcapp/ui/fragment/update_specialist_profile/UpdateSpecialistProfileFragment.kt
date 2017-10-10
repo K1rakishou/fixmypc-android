@@ -72,7 +72,7 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
 
     private fun getProfileFromBundle(arguments: Bundle?) {
         if (arguments != null) {
-            val profile  = SpecialistProfile()
+            val profile = SpecialistProfile()
             profile.userId = arguments.getLong("user_id")
             profile.name = arguments.getString("name")
             profile.rating = arguments.getFloat("rating")
@@ -95,12 +95,14 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
 
     override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
         initRx()
-        getProfileFromBundle(arguments)
 
+        profilePhoto.setImageLoader(mImageLoader)
         profilePhoto.setAddButtonIcon(R.drawable.ic_add_photo)
         profilePhoto.setRemoveButtonIcon(R.drawable.ic_remove_photo)
         profilePhoto.setBorderDrawable(R.drawable.view_border)
         profilePhoto.setOnPhotoClickedCallback(this)
+
+        getProfileFromBundle(arguments)
     }
 
     override fun onFragmentViewDestroy() {
@@ -114,21 +116,30 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
         mCompositeDisposable += getViewModel().mOutputs.onUpdateSpecialistProfileResponseSubject()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUpdateSpecialistProfileResponse() })
+
+        mCompositeDisposable += getViewModel().mOutputs.onUpdateSpecialistProfileFragment()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onUpdateSpecialistProfileFragment(it) })
     }
 
     private fun onUpdateSpecialistProfileFragment(newProfileInfo: NewProfileInfo) {
         activity.runOnUiThread {
-            profileName.setText(newProfileInfo.name)
-            profilePhone.setText("Телефон: ${newProfileInfo.phone}")
+            val intent = Intent()
+            intent.action = Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_NOTIFICATION
 
-            //TODO
-            //loadPhoto(newProfileInfo.photoPath, save)
+            val args = Bundle()
+            args.putString("new_photo_name", newProfileInfo.photoPath)
+            args.putString("new_name", newProfileInfo.name)
+            args.putString("new_phone", newProfileInfo.phone)
+            intent.putExtras(args)
+
+            sendBroadcast(intent)
         }
     }
 
     private fun loadPhoto(photoName: String, userId: Long) {
         if (photoName.isNotEmpty()) {
-            mImageLoader.loadProfileImageFromNetInto(userId, photoName, profilePhoto)
+            profilePhoto.loadImageFromNet(photoName, userId)
         } else {
             //TODO: load default profile image
         }
@@ -162,6 +173,8 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
 
     private fun onUpdateSpecialistProfileResponse() {
         mNavigator.hideLoadingIndicatorFragment()
+        Timber.e("Profile updated")
+        finishActivity()
     }
 
     override fun addPhoto() {

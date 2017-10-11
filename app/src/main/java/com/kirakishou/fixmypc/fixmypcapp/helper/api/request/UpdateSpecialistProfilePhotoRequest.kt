@@ -9,7 +9,6 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.LoginPacket
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.SpecialistProfilePacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.UpdateSpecialistProfileResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.BadServerResponseException
@@ -29,25 +28,23 @@ import java.util.concurrent.TimeoutException
 /**
  * Created by kirakishou on 10/8/2017.
  */
-class UpdateSpecialistProfileRequest(protected val photoPath: String,
-                                     protected val packet: SpecialistProfilePacket,
-                                     protected val mApiService: ApiService,
-                                     protected val mAppSettings: AppSettings,
-                                     protected val mGson: Gson,
-                                     protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<UpdateSpecialistProfileResponse>> {
+class UpdateSpecialistProfilePhotoRequest(protected val photoPath: String,
+                                          protected val mApiService: ApiService,
+                                          protected val mAppSettings: AppSettings,
+                                          protected val mGson: Gson,
+                                          protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<UpdateSpecialistProfileResponse>> {
 
     override fun execute(): Single<UpdateSpecialistProfileResponse> {
-        return Single.just(Params(photoPath, packet))
+        return Single.just(photoPath)
                 .map {
-                    val photoBody = prepareRequest(it.photoPath)
-                    return@map photoBody to it.packet
+                    return@map prepareRequest(it)
                 }
-                .flatMap { (photoBody, packet) ->
+                .flatMap {
                     if (!mAppSettings.isUserInfoExists()) {
                         throw UserInfoIsEmptyException()
                     }
 
-                    return@flatMap mApiService.updateSpecialistProfile(mAppSettings.loadUserInfo().sessionId, photoBody, packet)
+                    return@flatMap mApiService.updateSpecialistProfilePhoto(mAppSettings.loadUserInfo().sessionId, it)
                 }
                 .subscribeOn(mSchedulers.provideIo())
                 .lift(OnApiErrorSingle(mGson))
@@ -81,7 +78,7 @@ class UpdateSpecialistProfileRequest(protected val photoPath: String,
                 .flatMap {
                     val photoBody = prepareRequest(photoPath)
 
-                    return@flatMap mApiService.updateSpecialistProfile(mAppSettings.loadUserInfo().sessionId, photoBody, packet)
+                    return@flatMap mApiService.updateSpecialistProfilePhoto(mAppSettings.loadUserInfo().sessionId, photoBody)
                             .toObservable()
                 }
                 .lift<UpdateSpecialistProfileResponse>(OnApiErrorObservable(mGson))
@@ -124,7 +121,4 @@ class UpdateSpecialistProfileRequest(protected val photoPath: String,
         val body = RequestBody.create(MediaType.parse("image/*"), photoFile)
         return MultipartBody.Part.createFormData("photo", photoFile.name, body)
     }
-
-    data class Params(val photoPath: String,
-                      val packet: SpecialistProfilePacket)
 }

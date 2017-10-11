@@ -114,7 +114,7 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
     private fun initRx() {
         mCompositeDisposable += RxView.clicks(updateProfileButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onUpdateProfileButtonClick() })
+                .subscribe({ onUpdateProfileButtonInfoClick() })
 
         mCompositeDisposable += RxView.clicks(updateProfilePhotoButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
@@ -124,18 +124,34 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUpdateSpecialistProfileResponse() })
 
-        mCompositeDisposable += getViewModel().mOutputs.onUpdateSpecialistProfileFragment()
+        mCompositeDisposable += getViewModel().mOutputs.onUpdateSpecialistProfileFragmentInfo()
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onUpdateSpecialistProfileFragment(it) })
+                .subscribe({ onUpdateSpecialistProfileInfoFragment(it) })
+
+        mCompositeDisposable += getViewModel().mOutputs.onUpdateSpecialistProfileFragmentPhoto()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onUpdateSpecialistProfilePhotoFragment(it) })
     }
 
-    private fun onUpdateSpecialistProfileFragment(newProfileInfo: NewProfileInfo) {
+    private fun onUpdateSpecialistProfilePhotoFragment(newPhotoName: String) {
         activity.runOnUiThread {
             val intent = Intent()
-            intent.action = Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_NOTIFICATION
+            intent.action = Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_PHOTO_NOTIFICATION
 
             val args = Bundle()
-            args.putString("new_photo_name", newProfileInfo.photoPath)
+            args.putString("new_photo_name", newPhotoName)
+            intent.putExtras(args)
+
+            sendBroadcast(intent)
+        }
+    }
+
+    private fun onUpdateSpecialistProfileInfoFragment(newProfileInfo: NewProfileInfo) {
+        activity.runOnUiThread {
+            val intent = Intent()
+            intent.action = Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_INFO_NOTIFICATION
+
+            val args = Bundle()
             args.putString("new_name", newProfileInfo.name)
             args.putString("new_phone", newProfileInfo.phone)
             intent.putExtras(args)
@@ -153,16 +169,19 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
     }
 
     private fun onUpdateProfilePhotoButtonClick() {
-        //TODO
-    }
-
-    private fun onUpdateProfileButtonClick() {
-        profileName.error = null
-
         if (profilePhoto.imageFile == null) {
             showToast("Необходимо выбрать изображение для профиля", Toast.LENGTH_SHORT)
             return
         }
+
+        val imageFile = profilePhoto.imageFile!!
+
+        mNavigator.showLoadingIndicatorFragment()
+        getViewModel().mInputs.updateSpecialistProfilePhoto(imageFile.absolutePath)
+    }
+
+    private fun onUpdateProfileButtonInfoClick() {
+        profileName.error = null
 
         if (profileName.text.isEmpty()) {
             profileName.error = "Необходимо указать имя"
@@ -174,12 +193,11 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
             return
         }
 
-        val imageFile = profilePhoto.imageFile!!
         val name = profileName.text.toString()
         val phone = profilePhone.text.toString()
 
         mNavigator.showLoadingIndicatorFragment()
-        getViewModel().mInputs.updateSpecialistProfile(imageFile.absolutePath, name, phone)
+        getViewModel().mInputs.updateSpecialistProfileInfo(name, phone)
     }
 
     private fun onUpdateSpecialistProfileResponse() {

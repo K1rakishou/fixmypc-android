@@ -94,7 +94,7 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
             getViewModel().mInputs.getSpecialistProfile()
         }
 
-        activity.registerReceiver(receiver, IntentFilter(Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_NOTIFICATION))
+        activity.registerReceiver(receiver, IntentFilter(Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_INFO_NOTIFICATION))
         Timber.e("Receiver registered")
     }
 
@@ -196,14 +196,19 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
 
     inner class UpdateWaitingReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_NOTIFICATION) {
+            if (intent.action == Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_INFO_NOTIFICATION) {
                activity.runOnUiThread {
                    val args = intent.extras
 
-                   loadPhoto(args.getString("new_photo_name"), savedProfile!!.userId)
                    profileName.text = args.getString("new_name")
                    profilePhone.text = "Телефон: ${args.getString("new_phone")}"
                }
+            } else if (intent.action == Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_PHOTO_NOTIFICATION) {
+                activity.runOnUiThread {
+                    val args = intent.extras
+
+                    loadPhoto(args.getString("new_photo_name"), savedProfile!!.userId)
+                }
             }
         }
     }

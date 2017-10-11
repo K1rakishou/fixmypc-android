@@ -11,5 +11,5 @@ data class SpecialistProfilePacket(@Expose
                                    val profileName: String,
 
                                    @Expose
-                                   @SerializedName("profile_photo")
+                                   @SerializedName("profile_phone")
                                    val profilePhone: String) : BasePacket

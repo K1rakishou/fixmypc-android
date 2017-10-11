@@ -8,5 +8,6 @@ import io.reactivex.Observable
  */
 interface UpdateSpecialistProfileActivityOutputs {
     fun onUpdateSpecialistProfileResponseSubject(): Observable<Unit>
-    fun onUpdateSpecialistProfileFragment(): Observable<NewProfileInfo>
+    fun onUpdateSpecialistProfileFragmentInfo(): Observable<NewProfileInfo>
+    fun onUpdateSpecialistProfileFragmentPhoto(): Observable<String>
 }

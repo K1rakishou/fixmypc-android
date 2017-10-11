@@ -60,11 +60,14 @@ interface ApiService {
     @GET("/v1/api/specialist/profile")
     fun getSpecialistProfile(@Header("session_id") sessionId: String): Single<Response<SpecialistProfileResponse>>
 
-    @Multipart
     @POST("/v1/api/specialist/profile")
-    fun updateSpecialistProfile(@Header("session_id") sessionId: String,
-                                @Part photo: MultipartBody.Part,
-                                @Part("request") requestBody: SpecialistProfilePacket): Single<Response<UpdateSpecialistProfileResponse>>
+    fun updateSpecialistProfileInfo(@Header("session_id") sessionId: String,
+                                    @Body requestBody: SpecialistProfilePacket): Single<Response<StatusResponse>>
+
+    @Multipart
+    @POST("/v1/api/specialist/profile/photo")
+    fun updateSpecialistProfilePhoto(@Header("session_id") sessionId: String,
+                                     @Part photo: MultipartBody.Part): Single<Response<UpdateSpecialistProfileResponse>>
 }
 
 

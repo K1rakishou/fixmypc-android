@@ -35,44 +35,66 @@ class UpdateSpecialistProfileActivityViewModel
 
     private val mCompositeDisposable = CompositeDisposable()
 
-    lateinit var mUpdateSpecialistProfileFragment: BehaviorSubject<NewProfileInfo>
+    lateinit var mUpdateSpecialistProfileFragmentUiInfoSubject: BehaviorSubject<NewProfileInfo>
+    lateinit var mUpdateSpecialistProfileFragmentUiPhotoSubject: BehaviorSubject<String>
+    lateinit var mUpdateProfilePhotoSubject: BehaviorSubject<String>
+    lateinit var mUpdateProfileInfoSubject: BehaviorSubject<NewProfileInfo>
     lateinit var mOnUpdateSpecialistProfileResponseSubject: BehaviorSubject<Unit>
-    lateinit var mNewProfileSubject: BehaviorSubject<NewProfileInfo>
     lateinit var mOnBadResponseSubject: BehaviorSubject<ErrorCode.Remote>
     lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
 
     fun init() {
         mCompositeDisposable.clear()
 
-        mUpdateSpecialistProfileFragment = BehaviorSubject.create()
+        mUpdateSpecialistProfileFragmentUiInfoSubject = BehaviorSubject.create()
+        mUpdateSpecialistProfileFragmentUiPhotoSubject = BehaviorSubject.create()
+        mUpdateProfileInfoSubject = BehaviorSubject.create()
+        mUpdateProfilePhotoSubject = BehaviorSubject.create()
         mOnUpdateSpecialistProfileResponseSubject = BehaviorSubject.create()
-        mNewProfileSubject = BehaviorSubject.create()
         mOnBadResponseSubject = BehaviorSubject.create()
         mOnUnknownErrorSubject = BehaviorSubject.create()
 
-        mCompositeDisposable += mNewProfileSubject
+        mCompositeDisposable += mUpdateProfileInfoSubject
                 .subscribeOn(mSchedulers.provideIo())
-                .flatMap { newProfileInfo ->
-                    val response = mApiClient.updateSpecialistProfile(newProfileInfo.photoPath, SpecialistProfilePacket(newProfileInfo.name, newProfileInfo.phone))
+                .flatMap {
+                    val response = mApiClient.updateSpecialistProfileInfo(SpecialistProfilePacket(it.name, it.phone))
                             .toObservable()
-
-                    return@flatMap Observables.zip(response, Observable.just(newProfileInfo))
+                    
+                    return@flatMap Observables.zip(response, Observable.just(it))
                 }
                 .doOnNext { (response, newProfileInfo) ->
                     if (response.errorCode == ErrorCode.Remote.REC_OK) {
-                        newProfileInfo.photoPath = response.newPhotoName
-                        mUpdateSpecialistProfileFragment.onNext(newProfileInfo)
+                        mUpdateSpecialistProfileFragmentUiInfoSubject.onNext(newProfileInfo)
                     }
                 }
-                .subscribe({ (response, _) ->
+                .map { it.first }
+                .subscribe({ response ->
+                    handleResponse(response)
+                }, {
+                    handleError(it)
+                })
+
+        mCompositeDisposable += mUpdateProfilePhotoSubject
+                .subscribeOn(mSchedulers.provideIo())
+                .flatMap { mApiClient.updateSpecialistProfilePhoto(it).toObservable() }
+                .doOnNext { response ->
+                    if (response.errorCode == ErrorCode.Remote.REC_OK) {
+                        mUpdateSpecialistProfileFragmentUiPhotoSubject.onNext(response.newPhotoName)
+                    }
+                }
+                .subscribe({ response ->
                     handleResponse(response)
                 }, {
                     handleError(it)
                 })
     }
 
-    override fun updateSpecialistProfile(photoPath: String, name: String, phone: String) {
-        mNewProfileSubject.onNext(NewProfileInfo(photoPath, name, phone))
+    override fun updateSpecialistProfileInfo(name: String, phone: String) {
+        mUpdateProfileInfoSubject.onNext(NewProfileInfo(name, phone))
+    }
+
+    override fun updateSpecialistProfilePhoto(photoPath: String) {
+        mUpdateProfilePhotoSubject.onNext(photoPath)
     }
 
     override fun onCleared() {
@@ -115,7 +137,8 @@ class UpdateSpecialistProfileActivityViewModel
         mOnUnknownErrorSubject.onNext(error)
     }
 
-    override fun onUpdateSpecialistProfileFragment(): Observable<NewProfileInfo> = mUpdateSpecialistProfileFragment
+    override fun onUpdateSpecialistProfileFragmentPhoto(): Observable<String> = mUpdateSpecialistProfileFragmentUiPhotoSubject
+    override fun onUpdateSpecialistProfileFragmentInfo(): Observable<NewProfileInfo> = mUpdateSpecialistProfileFragmentUiInfoSubject
     override fun onUpdateSpecialistProfileResponseSubject(): Observable<Unit> = mOnUpdateSpecialistProfileResponseSubject
     override fun onBadResponse(): Observable<ErrorCode.Remote> = mOnBadResponseSubject
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject

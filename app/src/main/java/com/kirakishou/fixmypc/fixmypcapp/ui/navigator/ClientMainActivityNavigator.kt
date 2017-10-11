@@ -10,10 +10,6 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.ClientMyDamageClaims
  */
 class ClientMainActivityNavigator(activity: AppCompatActivity) : BaseNavigator(activity) {
 
-    fun popFragment() {
-        fragmentManager.popBackStack()
-    }
-
     fun navigateToClientMyDamageClaimsFragment() {
         navigateToFragment(ClientMyDamageClaimsFragment::class, Constant.FragmentTags.CLIENT_MY_DAMAGE_CLAIMS)
     }

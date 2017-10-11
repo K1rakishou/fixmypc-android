@@ -17,6 +17,15 @@ open class BaseNavigator(activity: AppCompatActivity) {
 
     protected val fragmentManager = activity.supportFragmentManager
 
+    fun popFragment() {
+        val currentFragment = getVisibleFragment()
+        if (currentFragment != null) {
+            if (currentFragment !is LoadingIndicatorFragment) {
+                fragmentManager.popBackStack()
+            }
+        }
+    }
+
     fun getVisibleFragment(): Fragment? {
         val fragments = fragmentManager.fragments
         if (fragments != null) {

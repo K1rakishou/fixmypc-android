@@ -12,6 +12,7 @@ import android.support.v7.widget.AppCompatEditText
 import android.widget.Toast
 import butterknife.BindView
 import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding2.widget.RxTextView
 import com.kirakishou.billboards.modules.controller.PhotoView
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
@@ -27,6 +28,7 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.interfaces.PermissionGrantedCallback
 import com.kirakishou.fixmypc.fixmypcapp.ui.interfaces.RequestPermissionCallback
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.UpdateSpecialistProfileActivityNavigator
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
 import pl.aprilapps.easyphotopicker.DefaultCallback
 import pl.aprilapps.easyphotopicker.EasyImage
@@ -51,8 +53,8 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
     @BindView(R.id.profile_phone)
     lateinit var profilePhone: AppCompatEditText
 
-    @BindView(R.id.update_profile_button)
-    lateinit var updateProfileButton: AppCompatButton
+    @BindView(R.id.update_profile_info_button)
+    lateinit var updateProfileInfoButton: AppCompatButton
 
     @Inject
     lateinit var mNavigator: UpdateSpecialistProfileActivityNavigator
@@ -112,7 +114,21 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
     }
 
     private fun initRx() {
-        mCompositeDisposable += RxView.clicks(updateProfileButton)
+        val profileNameChangeObservable = RxTextView.textChanges(profileName)
+                .skipInitialValue()
+
+        val profilePhoneChangeObservable = RxTextView.textChanges(profilePhone)
+                .skipInitialValue()
+
+        mCompositeDisposable += Observables.combineLatest(profileNameChangeObservable, profilePhoneChangeObservable)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .map { (profileName, profilePhone) ->
+                    return@map !(profileName.isEmpty() || profilePhone.isEmpty())
+                }
+                .distinctUntilChanged()
+                .subscribe({ updateProfileInfoButton.isEnabled = it })
+
+        mCompositeDisposable += RxView.clicks(updateProfileInfoButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUpdateProfileButtonInfoClick() })
 
@@ -131,14 +147,23 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
         mCompositeDisposable += getViewModel().mOutputs.onUpdateSpecialistProfileFragmentPhoto()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUpdateSpecialistProfilePhotoFragment(it) })
+
+        mCompositeDisposable += getViewModel().mErrors.onUnknownError()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onUnknownError(it) })
+
+        mCompositeDisposable += getViewModel().mErrors.onBadResponse()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onBadResponse(it) })
     }
 
     private fun onUpdateSpecialistProfilePhotoFragment(newPhotoName: String) {
         activity.runOnUiThread {
             val intent = Intent()
-            intent.action = Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_PHOTO_NOTIFICATION
+            intent.action = Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_NOTIFICATION
 
             val args = Bundle()
+            args.putString("update_type", "photo")
             args.putString("new_photo_name", newPhotoName)
             intent.putExtras(args)
 
@@ -149,9 +174,10 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
     private fun onUpdateSpecialistProfileInfoFragment(newProfileInfo: NewProfileInfo) {
         activity.runOnUiThread {
             val intent = Intent()
-            intent.action = Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_INFO_NOTIFICATION
+            intent.action = Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_NOTIFICATION
 
             val args = Bundle()
+            args.putString("update_type", "info")
             args.putString("new_name", newProfileInfo.name)
             args.putString("new_phone", newProfileInfo.phone)
             intent.putExtras(args)
@@ -202,8 +228,6 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
 
     private fun onUpdateSpecialistProfileResponse() {
         mNavigator.hideLoadingIndicatorFragment()
-        Timber.e("Profile updated")
-        finishActivity()
     }
 
     override fun addPhoto() {
@@ -240,9 +264,6 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
                     }
                 }
 
-                override fun onCanceled(source: EasyImage.ImageSource?, type: Int) {
-                    super.onCanceled(source, type)
-                }
             })
         }
     }

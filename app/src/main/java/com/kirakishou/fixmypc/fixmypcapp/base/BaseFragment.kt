@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import butterknife.ButterKnife
 import butterknife.Unbinder
+import com.kirakishou.fixmypc.fixmypcapp.helper.extension.hideKeyboard
 import com.kirakishou.fixmypc.fixmypcapp.helper.extension.myAddListener
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
@@ -60,7 +61,7 @@ abstract class BaseFragment<T : ViewModel> : Fragment() {
     }
 
     override fun onDestroyView() {
-        AndroidUtils.hideSoftKeyboard(activity)
+        hideKeyboard()
         mCompositeDisposable.clear()
 
         runCallbackAfterAnimation(loadExitAnimations()) {

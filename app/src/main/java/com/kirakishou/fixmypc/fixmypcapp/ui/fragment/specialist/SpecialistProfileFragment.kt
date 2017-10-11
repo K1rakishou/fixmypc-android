@@ -21,6 +21,7 @@ import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerSpecialistMainActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
+import com.kirakishou.fixmypc.fixmypcapp.helper.extension.hideKeyboard
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.TimeUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
@@ -31,6 +32,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainAc
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.UpdateSpecialistProfileActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavigator
+import com.squareup.leakcanary.RefWatcher
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
@@ -74,6 +76,9 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
     @Inject
     lateinit var mImageLoader: ImageLoader
 
+    @Inject
+    lateinit var mRefWatcher: RefWatcher
+
     private val receiver = UpdateWaitingReceiver()
     private val fragmentTag = Constant.FragmentTags.SPECIALIST_PROFILE
     private var savedProfile: SpecialistProfile? = null
@@ -94,13 +99,13 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
             getViewModel().mInputs.getSpecialistProfile()
         }
 
-        activity.registerReceiver(receiver, IntentFilter(Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_INFO_NOTIFICATION))
-        Timber.e("Receiver registered")
+        activity.registerReceiver(receiver, IntentFilter(Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_NOTIFICATION))
     }
 
     override fun onFragmentViewDestroy() {
         activity.unregisterReceiver(receiver)
-        Timber.e("Receiver unregistered")
+
+        mRefWatcher.watch(this)
     }
 
     private fun initRx() {
@@ -142,6 +147,8 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
 
             runActivityWithArgs(UpdateSpecialistProfileActivity::class.java, args)
         }
+
+        hideKeyboard()
     }
 
     private fun onSpecialistProfileResponseSubject(profile: SpecialistProfile) {
@@ -196,19 +203,22 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
 
     inner class UpdateWaitingReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_INFO_NOTIFICATION) {
+            if (intent.action == Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_NOTIFICATION) {
                activity.runOnUiThread {
                    val args = intent.extras
 
-                   profileName.text = args.getString("new_name")
-                   profilePhone.text = "Телефон: ${args.getString("new_phone")}"
+                   val updateType = args.getString("update_type")
+                   when (updateType) {
+                       "photo" -> {
+                           loadPhoto(args.getString("new_photo_name"), savedProfile!!.userId)
+                       }
+                       "info" -> {
+                           profileName.text = args.getString("new_name")
+                           profilePhone.text = "Телефон: ${args.getString("new_phone")}"
+                       }
+                       else -> throw IllegalStateException("Unknown updateType: $updateType")
+                   }
                }
-            } else if (intent.action == Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_PHOTO_NOTIFICATION) {
-                activity.runOnUiThread {
-                    val args = intent.extras
-
-                    loadPhoto(args.getString("new_photo_name"), savedProfile!!.userId)
-                }
             }
         }
     }

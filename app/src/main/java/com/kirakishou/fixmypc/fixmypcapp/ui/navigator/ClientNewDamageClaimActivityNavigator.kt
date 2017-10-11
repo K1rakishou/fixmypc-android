@@ -14,10 +14,6 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.new_damage_claim.Dam
  */
 class ClientNewDamageClaimActivityNavigator(activity: AppCompatActivity) : BaseNavigator(activity) {
 
-    fun popFragment() {
-        fragmentManager.popBackStack()
-    }
-
     fun navigateToDamageClaimCategoryFragment() {
         val fragment = createNewFragmentIfNotInStack<DamageClaimCategoryFragment>(fragmentManager,
                 Constant.FragmentTags.DAMAGE_CATEGORY)

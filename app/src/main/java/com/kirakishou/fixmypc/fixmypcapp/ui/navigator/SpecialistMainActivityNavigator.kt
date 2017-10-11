@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseNavigator
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
-import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.LoadingIndicatorFragment
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.ActiveDamageClaimsListFragment
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.DamageClaimFullInfoFragment
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.SpecialistProfileFragment
@@ -14,15 +13,6 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.SpecialistProfil
  * Created by kirakishou on 9/11/2017.
  */
 class SpecialistMainActivityNavigator(activity: AppCompatActivity) : BaseNavigator(activity) {
-
-    fun popFragment() {
-        val currentFragment = getVisibleFragment()
-        if (currentFragment != null) {
-            if (currentFragment !is LoadingIndicatorFragment) {
-                fragmentManager.popBackStack()
-            }
-        }
-    }
 
     fun navigateToActiveDamageClaimsListFragment() {
         navigateToFragment(ActiveDamageClaimsListFragment::class,

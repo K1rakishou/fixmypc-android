@@ -13,10 +13,6 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.responded_specialist
  */
 class RespondedSpecialistsActivityNavigator(activity: AppCompatActivity) : BaseNavigator(activity) {
 
-    fun popFragment() {
-        fragmentManager.popBackStack()
-    }
-
     fun navigateToRespondedSpecialistsList(damageClaimId: Long) {
         val bundle = Bundle()
         bundle.putLong("damage_claim_id", damageClaimId)

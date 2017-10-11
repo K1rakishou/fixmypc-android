@@ -9,8 +9,8 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import butterknife.ButterKnife
 import butterknife.Unbinder
+import com.kirakishou.fixmypc.fixmypcapp.helper.extension.hideKeyboard
 import com.kirakishou.fixmypc.fixmypcapp.helper.extension.myAddListener
-import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import io.reactivex.disposables.CompositeDisposable
 
@@ -75,8 +75,7 @@ abstract class BaseActivity<out T: ViewModel> : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
 
-        AndroidUtils.hideSoftKeyboard(this)
-
+        hideKeyboard()
         animateActivityStop()
     }
 

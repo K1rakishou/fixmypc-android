@@ -88,8 +88,6 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), 
         return true
     }
 
-
-
     override fun resolveDaggerDependency() {
         DaggerSpecialistMainActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)

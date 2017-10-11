@@ -10,10 +10,6 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.login.LoginFragment
  */
 class LoginActivityNavigator(activity: AppCompatActivity) : BaseNavigator(activity) {
 
-    fun popFragment() {
-        fragmentManager.popBackStack()
-    }
-
     fun navigateToLoginFragment() {
         navigateToFragment(LoginFragment::class, Constant.FragmentTags.LOGIN_FRAGMENT)
     }

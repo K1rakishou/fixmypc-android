@@ -10,6 +10,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.LoginPasswordDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.LoginResponseDataDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.LoginPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.LoginResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UnknownErrorCodeException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.LoginActivityErrors
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.LoginActivityInputs
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.LoginActivityOutputs
@@ -41,7 +42,7 @@ class LoginActivityViewModel
     lateinit var mRunClientActivitySubject: BehaviorSubject<LoginResponseDataDTO>
     lateinit var mRunSpecialistMainActivitySubject: BehaviorSubject<LoginResponseDataDTO>
     lateinit var mOnBadResponseSubject: BehaviorSubject<ErrorCode.Remote>
-    lateinit var mUnknownErrorSubject: BehaviorSubject<Throwable>
+    lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
 
     fun init() {
         mCompositeDisposable.clear()
@@ -49,7 +50,7 @@ class LoginActivityViewModel
         mDoLoginSubject = BehaviorSubject.create()
         mRunClientActivitySubject = BehaviorSubject.create()
         mRunSpecialistMainActivitySubject = BehaviorSubject.create()
-        mUnknownErrorSubject = BehaviorSubject.create()
+        mOnUnknownErrorSubject = BehaviorSubject.create()
         mOnBadResponseSubject = BehaviorSubject.create()
 
         mCompositeDisposable += mDoLoginSubject
@@ -116,17 +117,17 @@ class LoginActivityViewModel
                 mOnBadResponseSubject.onNext(errorCode)
             }
 
-            else -> throw RuntimeException("Unknown errorCode: $errorCode")
+            else -> mOnUnknownErrorSubject.onNext(UnknownErrorCodeException("Unknown errorCode: $errorCode"))
         }
     }
 
     private fun handleError(throwable: Throwable) {
-        mUnknownErrorSubject.onNext(throwable)
+        mOnUnknownErrorSubject.onNext(throwable)
     }
 
     override fun runClientMainActivity(): Observable<LoginResponseDataDTO> = mRunClientActivitySubject
     override fun runSpecialistMainActivity(): Observable<LoginResponseDataDTO> = mRunSpecialistMainActivitySubject
-    override fun onUnknownError(): Observable<Throwable> = mUnknownErrorSubject
+    override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
     override fun onBadResponse(): Observable<ErrorCode.Remote> = mOnBadResponseSubject
 }
 

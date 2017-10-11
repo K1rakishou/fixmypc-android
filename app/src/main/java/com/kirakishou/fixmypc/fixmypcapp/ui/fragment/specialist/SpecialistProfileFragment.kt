@@ -21,7 +21,6 @@ import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerSpecialistMainActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
-import com.kirakishou.fixmypc.fixmypcapp.helper.extension.hideKeyboard
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.TimeUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
@@ -147,8 +146,6 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
 
             runActivityWithArgs(UpdateSpecialistProfileActivity::class.java, args)
         }
-
-        hideKeyboard()
     }
 
     private fun onSpecialistProfileResponseSubject(profile: SpecialistProfile) {

@@ -20,6 +20,7 @@ import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerUpdateSpecialistProfileActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.UpdateSpecialistProfileActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
+import com.kirakishou.fixmypc.fixmypcapp.helper.extension.hideKeyboard
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.UpdateSpecialistProfileActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.UpdateSpecialistProfileActivityViewModelFactory
@@ -204,6 +205,8 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
 
         mNavigator.showLoadingIndicatorFragment()
         getViewModel().mInputs.updateSpecialistProfilePhoto(imageFile.absolutePath)
+
+        hideKeyboard()
     }
 
     private fun onUpdateProfileButtonInfoClick() {
@@ -224,6 +227,8 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
 
         mNavigator.showLoadingIndicatorFragment()
         getViewModel().mInputs.updateSpecialistProfileInfo(name, phone)
+
+        hideKeyboard()
     }
 
     private fun onUpdateSpecialistProfileResponse() {

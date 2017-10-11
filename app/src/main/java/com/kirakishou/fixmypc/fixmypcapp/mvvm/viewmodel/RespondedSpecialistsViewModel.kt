@@ -7,6 +7,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.SpecialistsListResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UnknownErrorCodeException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.RespondedSpecialistsActivityErrors
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.RespondedSpecialistsActivityInputs
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.RespondedSpecialistsActivityOutputs
@@ -91,7 +92,7 @@ class RespondedSpecialistsViewModel
                             mOnBadResponseSubject.onNext(errorCode)
                         }
 
-                        else -> throw RuntimeException("Unknown errorCode: $errorCode")
+                        else -> mOnUnknownErrorSubject.onNext(UnknownErrorCodeException("Unknown errorCode: $errorCode"))
                     }
                 }
             }

@@ -9,7 +9,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.LoginPacket
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.UpdateSpecialistProfileResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.UpdateSpecialistProfilePhotoResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.BadServerResponseException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.CouldNotUpdateSessionId
@@ -32,9 +32,9 @@ class UpdateSpecialistProfilePhotoRequest(protected val photoPath: String,
                                           protected val mApiService: ApiService,
                                           protected val mAppSettings: AppSettings,
                                           protected val mGson: Gson,
-                                          protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<UpdateSpecialistProfileResponse>> {
+                                          protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<UpdateSpecialistProfilePhotoResponse>> {
 
-    override fun execute(): Single<UpdateSpecialistProfileResponse> {
+    override fun execute(): Single<UpdateSpecialistProfilePhotoResponse> {
         return Single.just(photoPath)
                 .map {
                     return@map prepareRequest(it)
@@ -58,7 +58,7 @@ class UpdateSpecialistProfilePhotoRequest(protected val photoPath: String,
                 .onErrorResumeNext { error -> exceptionToErrorCode(error) }
     }
 
-    private fun reLoginAndResendRequest(): Single<UpdateSpecialistProfileResponse> {
+    private fun reLoginAndResendRequest(): Single<UpdateSpecialistProfilePhotoResponse> {
         if (!mAppSettings.isUserInfoExists()) {
             throw UserInfoIsEmptyException()
         }
@@ -81,26 +81,26 @@ class UpdateSpecialistProfilePhotoRequest(protected val photoPath: String,
                     return@flatMap mApiService.updateSpecialistProfilePhoto(mAppSettings.loadUserInfo().sessionId, photoBody)
                             .toObservable()
                 }
-                .lift<UpdateSpecialistProfileResponse>(OnApiErrorObservable(mGson))
+                .lift<UpdateSpecialistProfilePhotoResponse>(OnApiErrorObservable(mGson))
 
         val failObservable = loginResponseObservable
                 .filter { it.errorCode != ErrorCode.Remote.REC_OK }
                 .doOnNext { throw CouldNotUpdateSessionId() }
-                .map { UpdateSpecialistProfileResponse(it.errorCode) }
+                .map { UpdateSpecialistProfilePhotoResponse(it.errorCode) }
 
         return Observable.merge(successObservable, failObservable)
-                .single(UpdateSpecialistProfileResponse(ErrorCode.Remote.REC_EMPTY_OBSERVABLE_ERROR))
+                .single(UpdateSpecialistProfilePhotoResponse(ErrorCode.Remote.REC_EMPTY_OBSERVABLE_ERROR))
     }
 
-    private fun exceptionToErrorCode(error: Throwable): Single<UpdateSpecialistProfileResponse> {
+    private fun exceptionToErrorCode(error: Throwable): Single<UpdateSpecialistProfilePhotoResponse> {
         val response = when (error) {
-            is ApiException -> UpdateSpecialistProfileResponse(error.errorCode)
-            is TimeoutException -> UpdateSpecialistProfileResponse(ErrorCode.Remote.REC_TIMEOUT)
-            is UnknownHostException -> UpdateSpecialistProfileResponse(ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
-            is BadServerResponseException -> UpdateSpecialistProfileResponse(ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
-            is FileSizeExceededException -> UpdateSpecialistProfileResponse(ErrorCode.Remote.REC_FILE_SIZE_EXCEEDED)
-            is SelectedPhotoDoesNotExistsException -> UpdateSpecialistProfileResponse(ErrorCode.Remote.REC_SELECTED_PHOTO_DOES_NOT_EXISTS)
-            is UserInfoIsEmptyException -> UpdateSpecialistProfileResponse(ErrorCode.Remote.REC_USER_INFO_IS_EMPTY)
+            is ApiException -> UpdateSpecialistProfilePhotoResponse(error.errorCode)
+            is TimeoutException -> UpdateSpecialistProfilePhotoResponse(ErrorCode.Remote.REC_TIMEOUT)
+            is UnknownHostException -> UpdateSpecialistProfilePhotoResponse(ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
+            is BadServerResponseException -> UpdateSpecialistProfilePhotoResponse(ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
+            is FileSizeExceededException -> UpdateSpecialistProfilePhotoResponse(ErrorCode.Remote.REC_FILE_SIZE_EXCEEDED)
+            is SelectedPhotoDoesNotExistsException -> UpdateSpecialistProfilePhotoResponse(ErrorCode.Remote.REC_SELECTED_PHOTO_DOES_NOT_EXISTS)
+            is UserInfoIsEmptyException -> UpdateSpecialistProfilePhotoResponse(ErrorCode.Remote.REC_USER_INFO_IS_EMPTY)
 
             else -> throw RuntimeException("Unknown exception")
         }

@@ -80,12 +80,12 @@ class ApiClientImpl
                 .execute()
     }
 
-    override fun updateSpecialistProfilePhoto(photoPath: String): Single<UpdateSpecialistProfileResponse> {
+    override fun updateSpecialistProfilePhoto(photoPath: String): Single<UpdateSpecialistProfilePhotoResponse> {
         return UpdateSpecialistProfilePhotoRequest(photoPath, mApiService, mAppSettings, mGson, mSchedulers)
                 .execute()
     }
 
-    override fun updateSpecialistProfileInfo(packet: SpecialistProfilePacket): Single<StatusResponse> {
+    override fun updateSpecialistProfileInfo(packet: SpecialistProfilePacket): Single<UpdateSpecialistProfileInfoResponse> {
         return UpdateSpecialistProfileInfoRequest(packet, mApiService, mAppSettings, mGson, mSchedulers)
                 .execute()
     }

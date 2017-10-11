@@ -7,7 +7,9 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.NewProfileInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.SpecialistProfilePacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.UpdateSpecialistProfileResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.UpdateSpecialistProfileInfoResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.UpdateSpecialistProfilePhotoResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UnknownErrorCodeException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.UpdateSpecialistProfileActivityErrors
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.UpdateSpecialistProfileActivityInputs
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.UpdateSpecialistProfileActivityOutputs
@@ -109,13 +111,17 @@ class UpdateSpecialistProfileActivityViewModel
 
         if (errorCode == ErrorCode.Remote.REC_OK) {
             when (response) {
-                is UpdateSpecialistProfileResponse -> {
+                is UpdateSpecialistProfilePhotoResponse -> {
+                    mOnUpdateSpecialistProfileResponseSubject.onNext(Unit)
+                }
+
+                is UpdateSpecialistProfileInfoResponse -> {
                     mOnUpdateSpecialistProfileResponseSubject.onNext(Unit)
                 }
             }
         } else {
             when (response) {
-                is UpdateSpecialistProfileResponse -> {
+                is UpdateSpecialistProfilePhotoResponse -> {
                     when (errorCode) {
                         ErrorCode.Remote.REC_TIMEOUT,
                         ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER,
@@ -126,7 +132,22 @@ class UpdateSpecialistProfileActivityViewModel
                             mOnBadResponseSubject.onNext(errorCode)
                         }
 
-                        else -> throw RuntimeException("Unknown errorCode: $errorCode")
+                        else -> mOnUnknownErrorSubject.onNext(UnknownErrorCodeException("Unknown errorCode: $errorCode"))
+                    }
+                }
+
+                is UpdateSpecialistProfileInfoResponse -> {
+                    when (errorCode) {
+                        ErrorCode.Remote.REC_TIMEOUT,
+                        ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER,
+                        ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION,
+                        ErrorCode.Remote.REC_BAD_ACCOUNT_TYPE,
+                        ErrorCode.Remote.REC_FILE_SIZE_EXCEEDED,
+                        ErrorCode.Remote.REC_SELECTED_PHOTO_DOES_NOT_EXISTS -> {
+                            mOnBadResponseSubject.onNext(errorCode)
+                        }
+
+                        else -> mOnUnknownErrorSubject.onNext(UnknownErrorCodeException("Unknown errorCode: $errorCode"))
                     }
                 }
             }

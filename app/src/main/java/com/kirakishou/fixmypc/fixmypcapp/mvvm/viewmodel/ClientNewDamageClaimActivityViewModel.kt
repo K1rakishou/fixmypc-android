@@ -10,6 +10,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.DamageClaimCategory
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UnknownErrorCodeException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.ClientNewDamageClaimActivityErrors
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.ClientNewDamageClaimActivityInputs
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.ClientNewDamageClaimActivityOutputs
@@ -131,7 +132,7 @@ class ClientNewDamageClaimActivityViewModel
                 mOnBadResponseSubject.onNext(errorCode)
             }
 
-            else -> throw RuntimeException("Unknown errorCode: $errorCode")
+            else -> mOnUnknownErrorSubject.onNext(UnknownErrorCodeException("Unknown errorCode: $errorCode"))
         }
     }
 

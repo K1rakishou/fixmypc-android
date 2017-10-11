@@ -13,6 +13,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimsWithDistance
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.RespondToDamageClaimPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.*
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UnknownErrorCodeException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.SpecialistMainActivityErrors
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.SpecialistMainActivityInputs
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.SpecialistMainActivityOutputs
@@ -196,7 +197,7 @@ class SpecialistMainActivityViewModel
                             mOnBadResponseSubject.onNext(errorCode)
                         }
 
-                        else -> throw RuntimeException("Unknown errorCode: $errorCode")
+                        else -> mOnUnknownErrorSubject.onNext(UnknownErrorCodeException("Unknown errorCode: $errorCode"))
                     }
                 }
 
@@ -209,7 +210,7 @@ class SpecialistMainActivityViewModel
                             mOnBadResponseSubject.onNext(errorCode)
                         }
 
-                        else -> throw RuntimeException("Unknown errorCode: $errorCode")
+                        else -> mOnUnknownErrorSubject.onNext(UnknownErrorCodeException("Unknown errorCode: $errorCode"))
                     }
                 }
 
@@ -222,7 +223,7 @@ class SpecialistMainActivityViewModel
                             mOnBadResponseSubject.onNext(errorCode)
                         }
 
-                        else -> throw RuntimeException("Unknown errorCode: $errorCode")
+                        else -> mOnUnknownErrorSubject.onNext(UnknownErrorCodeException("Unknown errorCode: $errorCode"))
                     }
                 }
 
@@ -236,7 +237,7 @@ class SpecialistMainActivityViewModel
                             mOnBadResponseSubject.onNext(errorCode)
                         }
 
-                        else -> throw RuntimeException("Unknown errorCode: $errorCode")
+                        else -> mOnUnknownErrorSubject.onNext(UnknownErrorCodeException("Unknown errorCode: $errorCode"))
                     }
                 }
             }

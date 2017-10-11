@@ -23,17 +23,30 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/update_profile_photo_button"
+                android:layout_width="192dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Отправить фото"
+                android:enabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/profile_photo" />
+
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/profile_name_til"
                 android:layout_width="256dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="32dp"
                 app:counterMaxLength="11"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/profile_photo">
+                app:layout_constraintTop_toBottomOf="@+id/update_profile_photo_button">
 
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/profile_name"
@@ -72,7 +85,8 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="32dp"
-                android:text="Отправить"
+                android:text="Отправить данные"
+                android:enabled="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

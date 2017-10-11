@@ -42,6 +42,9 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
     @BindView(R.id.profile_photo)
     lateinit var profilePhoto: PhotoView
 
+    @BindView(R.id.update_profile_photo_button)
+    lateinit var updateProfilePhotoButton: AppCompatButton
+
     @BindView(R.id.profile_name)
     lateinit var profileName: AppCompatEditText
 
@@ -113,6 +116,10 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUpdateProfileButtonClick() })
 
+        mCompositeDisposable += RxView.clicks(updateProfilePhotoButton)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onUpdateProfilePhotoButtonClick() })
+
         mCompositeDisposable += getViewModel().mOutputs.onUpdateSpecialistProfileResponseSubject()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUpdateSpecialistProfileResponse() })
@@ -143,6 +150,10 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
         } else {
             //TODO: load default profile image
         }
+    }
+
+    private fun onUpdateProfilePhotoButtonClick() {
+        //TODO
     }
 
     private fun onUpdateProfileButtonClick() {
@@ -185,6 +196,7 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
 
     override fun removePhoto() {
         profilePhoto.setImageBitmap(null)
+        updateProfilePhotoButton.isEnabled = false
     }
 
     override fun onPermissionGranted() {
@@ -219,6 +231,7 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
 
     private fun onImage(imageFile: File) {
         profilePhoto.loadImageFromDisk(imageFile)
+        updateProfilePhotoButton.isEnabled = true
     }
 
     override fun onBadResponse(errorCode: ErrorCode.Remote) {

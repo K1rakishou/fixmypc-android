@@ -207,11 +207,20 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
                    val updateType = args.getString("update_type")
                    when (updateType) {
                        "photo" -> {
-                           loadPhoto(args.getString("new_photo_name"), savedProfile!!.userId)
+                           val newPhotoName = args.getString("new_photo_name")
+
+                           loadPhoto(newPhotoName, savedProfile!!.userId)
+                           savedProfile!!.photoName = newPhotoName
                        }
                        "info" -> {
-                           profileName.text = args.getString("new_name")
-                           profilePhone.text = "Телефон: ${args.getString("new_phone")}"
+                           val newName = args.getString("new_name")
+                           val newPhone = "Телефон: ${args.getString("new_phone")}"
+
+                           profileName.text = newName
+                           profilePhone.text = newPhone
+
+                           savedProfile!!.name = newName
+                           savedProfile!!.photoName = newPhone
                        }
                        else -> throw IllegalStateException("Unknown updateType: $updateType")
                    }

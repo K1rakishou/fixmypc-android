@@ -29,7 +29,6 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.interfaces.PermissionGrantedCallback
 import com.kirakishou.fixmypc.fixmypcapp.ui.interfaces.RequestPermissionCallback
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.UpdateSpecialistProfileActivityNavigator
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
 import pl.aprilapps.easyphotopicker.DefaultCallback
 import pl.aprilapps.easyphotopicker.EasyImage
@@ -115,17 +114,15 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
     }
 
     private fun initRx() {
-        val profileNameChangeObservable = RxTextView.textChanges(profileName)
-                .skipInitialValue()
+        mCompositeDisposable += RxTextView.textChanges(profileName)
+                .skip(2)
+                .map { it.isNotEmpty() }
+                .distinctUntilChanged()
+                .subscribe({ updateProfileInfoButton.isEnabled = it })
 
-        val profilePhoneChangeObservable = RxTextView.textChanges(profilePhone)
-                .skipInitialValue()
-
-        mCompositeDisposable += Observables.combineLatest(profileNameChangeObservable, profilePhoneChangeObservable)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .map { (profileName, profilePhone) ->
-                    return@map !(profileName.isEmpty() || profilePhone.isEmpty())
-                }
+        mCompositeDisposable += RxTextView.textChanges(profilePhone)
+                .skip(2)
+                .map { it.isNotEmpty() }
                 .distinctUntilChanged()
                 .subscribe({ updateProfileInfoButton.isEnabled = it })
 

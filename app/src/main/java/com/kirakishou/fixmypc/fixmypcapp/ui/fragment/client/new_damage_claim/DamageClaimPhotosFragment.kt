@@ -24,7 +24,6 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamagePhotoDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewDamageClaimActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
-import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewDamageClaimActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.DamageClaimPhotosAdapter
 import com.kirakishou.fixmypc.fixmypcapp.ui.interfaces.PermissionGrantedCallback
@@ -188,7 +187,7 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewDamageClaimActivityViewM
 
     private fun onMalfunctionRequestSuccessfullyCreated() {
         showToast("Заявка успешно создана", Toast.LENGTH_LONG)
-        runActivity(ClientMainActivity::class.java, true)
+        //runActivity(ClientMainActivity::class.java, true)
     }
 
     override fun onBadResponse(errorCode: ErrorCode.Remote) {

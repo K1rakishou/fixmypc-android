@@ -107,13 +107,7 @@ class DamageClaimSendRequestFragment : BaseFragment<ClientNewDamageClaimActivity
     private fun setUiData() {
         val damageClaimInfo = getViewModel().getDamageClaimRequestInfo()
 
-        val damageTypeString = when (damageClaimInfo.damageClaimCategory) {
-            DamageClaimCategory.Computer -> "Компьютер"
-            DamageClaimCategory.Notebook -> "Ноутбук"
-            DamageClaimCategory.Phone -> "Телефон"
-        }
-
-        mDamageType.text = damageTypeString
+        mDamageType.text = DamageClaimCategory.getString(damageClaimInfo.damageClaimCategory)
         mDamageDescription.text = damageClaimInfo.damageClaimDescription
     }
 

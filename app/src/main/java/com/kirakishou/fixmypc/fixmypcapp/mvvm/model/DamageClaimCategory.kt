@@ -6,5 +6,15 @@ package com.kirakishou.fixmypc.fixmypcapp.mvvm.model
 enum class DamageClaimCategory {
     Computer,
     Notebook,
-    Phone
+    Phone;
+
+    companion object {
+        fun getString(category: DamageClaimCategory): String {
+            return when (category) {
+                DamageClaimCategory.Computer -> "Компьютер"
+                DamageClaimCategory.Notebook -> "Ноутбук"
+                DamageClaimCategory.Phone -> "Телефон"
+            }
+        }
+    }
 }

@@ -53,8 +53,9 @@ abstract class BaseAdapter<T>(mContext: Context) : RecyclerView.Adapter<Recycler
     open fun addAll(items: List<AdapterItem<T>>) {
         checkInited()
 
-        for (item in items) {
-            add(item)
+        mHandler.post {
+            mItems.addAll(items)
+            notifyDataSetChanged()
         }
     }
 

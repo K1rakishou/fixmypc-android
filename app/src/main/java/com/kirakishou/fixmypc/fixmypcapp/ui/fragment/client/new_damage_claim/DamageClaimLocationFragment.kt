@@ -38,14 +38,14 @@ import javax.inject.Inject
 class DamageClaimLocationFragment : BaseFragment<ClientNewDamageClaimActivityViewModel>(),
         OnMapReadyCallback {
 
-    @BindView(R.id.button_done)
-    lateinit var buttonDone: AppCompatButton
+    @BindView(R.id.button_load_next)
+    lateinit var mButtonLoadNext: AppCompatButton
 
     @BindView(R.id.button_zoom_in)
-    lateinit var buttonZoomIn: FloatingActionButton
+    lateinit var mButtonZoomIn: FloatingActionButton
 
     @BindView(R.id.button_zoom_out)
-    lateinit var buttonZoomOut: FloatingActionButton
+    lateinit var mButtonZoomOut: FloatingActionButton
 
     @Inject
     lateinit var mViewModelFactory: ClientNewMalfunctionActivityViewModelFactory
@@ -56,8 +56,9 @@ class DamageClaimLocationFragment : BaseFragment<ClientNewDamageClaimActivityVie
     @Inject
     lateinit var mRefWatcher: RefWatcher
 
+    private lateinit var mGoogleMap: GoogleMap
+
     private val MAP_ZOOM = 14f
-    private lateinit var googleMap: GoogleMap
     private var mLocation: LatLng? = null
 
     override fun initViewModel(): ClientNewDamageClaimActivityViewModel? {
@@ -76,7 +77,7 @@ class DamageClaimLocationFragment : BaseFragment<ClientNewDamageClaimActivityVie
     }
 
     private fun initRx() {
-        mCompositeDisposable += RxView.clicks(buttonDone)
+        mCompositeDisposable += RxView.clicks(mButtonLoadNext)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
                     setMalfunctionLocation()
@@ -85,18 +86,18 @@ class DamageClaimLocationFragment : BaseFragment<ClientNewDamageClaimActivityVie
                     Timber.e(error)
                 })
 
-        mCompositeDisposable += RxView.clicks(buttonZoomIn)
+        mCompositeDisposable += RxView.clicks(mButtonZoomIn)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
-                    googleMap.animateCamera(CameraUpdateFactory.zoomIn())
+                    mGoogleMap.animateCamera(CameraUpdateFactory.zoomIn())
                 }, { error ->
                     Timber.e(error)
                 })
 
-        mCompositeDisposable += RxView.clicks(buttonZoomOut)
+        mCompositeDisposable += RxView.clicks(mButtonZoomOut)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
-                    googleMap.animateCamera(CameraUpdateFactory.zoomOut())
+                    mGoogleMap.animateCamera(CameraUpdateFactory.zoomOut())
                 }, { error ->
                     Timber.e(error)
                 })
@@ -123,7 +124,7 @@ class DamageClaimLocationFragment : BaseFragment<ClientNewDamageClaimActivityVie
     }
 
     override fun onMapReady(map: GoogleMap) {
-        googleMap = map
+        mGoogleMap = map
 
         map.setOnCameraIdleListener {
             mLocation = map.cameraPosition.target

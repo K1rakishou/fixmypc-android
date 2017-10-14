@@ -29,32 +29,6 @@ class SpecialistProfileListAdapter(private val mContext: Context,
                                    private val mImageLoader: ImageLoader,
                                    private val mAdapterItemClickSubject: BehaviorSubject<SpecialistProfile>) : BaseAdapter<SpecialistProfileGenericParam>(mContext) {
 
-    override fun add(item: AdapterItem<SpecialistProfileGenericParam>) {
-        checkInited()
-
-        mHandler.post {
-            mItems.add(item)
-            notifyItemInserted(mItems.lastIndex)
-        }
-    }
-
-    override fun addAll(items: List<AdapterItem<SpecialistProfileGenericParam>>) {
-        checkInited()
-
-        for (item in items) {
-            add(item)
-        }
-    }
-
-    override fun remove(position: Int) {
-        checkInited()
-
-        mHandler.post {
-            mItems.removeAt(position)
-            notifyItemRemoved(position)
-        }
-    }
-
     fun addProgressFooter() {
         checkInited()
 

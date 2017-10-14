@@ -41,15 +41,39 @@ abstract class BaseAdapter<T>(mContext: Context) : RecyclerView.Adapter<Recycler
         }
     }
 
-    abstract fun add(item: AdapterItem<T>)
-    abstract fun addAll(items: List<AdapterItem<T>>)
-    abstract fun remove(position: Int)
+    open fun add(item: AdapterItem<T>) {
+        checkInited()
+
+        mHandler.post {
+            mItems.add(item)
+            notifyItemInserted(mItems.lastIndex)
+        }
+    }
+
+    open fun addAll(items: List<AdapterItem<T>>) {
+        checkInited()
+
+        for (item in items) {
+            add(item)
+        }
+    }
+
+    open fun remove(position: Int) {
+        checkInited()
+
+        mHandler.post {
+            mItems.removeAt(position)
+            notifyItemRemoved(position)
+        }
+    }
 
     open fun clear() {
         checkInited()
 
-        mItems.clear()
-        notifyDataSetChanged()
+        mHandler.post {
+            mItems.clear()
+            notifyDataSetChanged()
+        }
     }
 
     override fun getItemViewType(position: Int) = mItems[position].getType()

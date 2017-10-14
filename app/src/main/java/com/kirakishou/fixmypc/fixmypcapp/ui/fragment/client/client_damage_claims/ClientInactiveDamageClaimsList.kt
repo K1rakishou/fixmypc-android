@@ -77,9 +77,8 @@ class ClientInactiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>
     }
 
     private fun recyclerStartLoadingItems() {
-        if (isVisible) {
-            mAdapterClient.addProgressFooter()
-        }
+        //TODO: do not load damage claims if the fragment is not visible to the user
+        mAdapterClient.addProgressFooter()
     }
 
     private fun initRecycler() {

@@ -29,14 +29,11 @@ import javax.inject.Inject
 
 class DamageClaimDescriptionFragment : BaseFragment<ClientNewDamageClaimActivityViewModel>() {
 
-    @BindView(R.id.card_view)
-    lateinit var mViewHolderCardView: CardView
-
     @BindView(R.id.damage_claim_description)
     lateinit var mDamageClaimDescriptionEditText: TextInputEditText
 
-    @BindView(R.id.button_done)
-    lateinit var mButtonDone: AppCompatButton
+    @BindView(R.id.button_load_next)
+    lateinit var mButtonLoadNext: AppCompatButton
 
     @Inject
     lateinit var mViewModelFactory: ClientNewMalfunctionActivityViewModelFactory
@@ -60,7 +57,7 @@ class DamageClaimDescriptionFragment : BaseFragment<ClientNewDamageClaimActivity
     }
 
     private fun initRx() {
-        mCompositeDisposable += RxView.clicks(mButtonDone)
+        mCompositeDisposable += RxView.clicks(mButtonLoadNext)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ _ ->
                     setMalfunctionDescription(mDamageClaimDescriptionEditText.text.toString())

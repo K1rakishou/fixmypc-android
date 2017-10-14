@@ -77,9 +77,7 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
     }
 
     private fun recyclerStartLoadingItems() {
-        if (isVisible) {
-            mAdapterClient.addProgressFooter()
-        }
+        mAdapterClient.addProgressFooter()
     }
 
     private fun initRecycler() {

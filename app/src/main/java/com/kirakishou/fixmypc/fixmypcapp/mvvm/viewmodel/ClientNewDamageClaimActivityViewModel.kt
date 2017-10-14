@@ -38,7 +38,7 @@ class ClientNewDamageClaimActivityViewModel
     val mErrors: ClientNewDamageClaimActivityErrors = this
 
     private val mCompositeDisposable = CompositeDisposable()
-    private val malfunctionRequestInfo = DamageClaimInfo()
+    private val damageClaimRequestInfo = DamageClaimInfo()
 
     private val mOnBadResponseSubject = BehaviorSubject.create<ErrorCode.Remote>()
     private val mUploadProgressUpdateSubject = ReplaySubject.create<ProgressUpdate>()
@@ -83,23 +83,27 @@ class ClientNewDamageClaimActivityViewModel
     }
 
     fun setCategory(category: DamageClaimCategory) {
-        malfunctionRequestInfo.damageClaimCategory = category
+        damageClaimRequestInfo.damageClaimCategory = category
     }
 
     fun setDescription(description: String) {
-        malfunctionRequestInfo.damageClaimDescription = description
+        damageClaimRequestInfo.damageClaimDescription = description
     }
 
     fun setPhotos(photos: List<String>) {
-        malfunctionRequestInfo.damageClaimPhotos = ArrayList(photos)
+        damageClaimRequestInfo.damageClaimPhotos = ArrayList(photos)
     }
 
     fun setLocation(location: LatLng) {
-        malfunctionRequestInfo.damageClaimLocation = location
+        damageClaimRequestInfo.damageClaimLocation = location
+    }
+
+    fun getDamageClaimRequestInfo(): DamageClaimInfo {
+        return damageClaimRequestInfo
     }
 
     override fun sendMalfunctionRequestToServer(checkWifiStatus: Boolean) {
-        mSendMalfunctionRequestToServerSubject.onNext(malfunctionRequestInfo)
+        mSendMalfunctionRequestToServerSubject.onNext(damageClaimRequestInfo)
     }
 
     private fun handleResponse(response: StatusResponse) {

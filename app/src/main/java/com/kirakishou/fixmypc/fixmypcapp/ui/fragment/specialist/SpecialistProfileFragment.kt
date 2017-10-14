@@ -158,13 +158,28 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
         savedProfile = profile
 
         loadPhoto(profile.photoName, profile.userId)
-        profileName.text = profile.name
+
+        if (profile.name.isNotEmpty()) {
+            profileName.text = profile.name
+        } else {
+            profileName.text = "Не заполнено"
+        }
+
         profileRating.rating = profile.rating
 
-        val registeredOnFormatted = TimeUtils.format(profile.registeredOn)
-        profileRegisteredOn.text = "Зарегистрирован с $registeredOnFormatted"
+        if (profile.registeredOn != 0L) {
+            val registeredOnFormatted = TimeUtils.format(profile.registeredOn)
+            profileRegisteredOn.text = "Зарегистрирован: $registeredOnFormatted"
+        } else {
+            profileRegisteredOn.text = "Зарегистрирован: Не заполнено"
+        }
 
-        profilePhone.text = "Телефон: ${profile.phone}"
+        if (profile.phone.isNotEmpty()) {
+            profilePhone.text = "Телефон: ${profile.phone}"
+        } else {
+            profilePhone.text = "Телефон: Не заполнено"
+        }
+
         profileTotalRepairs.text = "Всего проведено ремонтов: ${profile.failRepairs + profile.successRepairs}"
         profileSuccessRepairs.text = "Успешных ремонтов: ${profile.successRepairs}"
         profileFailRepairs.text = "Неудачных ремонтов: ${profile.failRepairs}"

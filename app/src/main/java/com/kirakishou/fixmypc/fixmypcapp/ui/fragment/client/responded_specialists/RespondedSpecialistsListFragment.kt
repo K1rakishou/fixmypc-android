@@ -152,7 +152,10 @@ class RespondedSpecialistsListFragment : BaseFragment<RespondedSpecialistsViewMo
         val adapterSpecialistProfiles = specialistsList.map { AdapterItem(SpecialistsProfilesGeneric(it), AdapterItemType.VIEW_ITEM) }
         mSpecialistProfileAdapter.addAll(adapterSpecialistProfiles as List<AdapterItem<SpecialistProfileGenericParam>>)
 
-        if (specialistsList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
+        if (mSpecialistProfileAdapter.itemCount == 0 && specialistsList.isEmpty()) {
+            mSpecialistProfileAdapter.addMessageFooter("Пока ещё никто не откликнулся")
+        } else if (mSpecialistProfileAdapter.itemCount > 0
+                && specialistsList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
             mSpecialistProfileAdapter.addMessageFooter("Конец списка")
         }
     }

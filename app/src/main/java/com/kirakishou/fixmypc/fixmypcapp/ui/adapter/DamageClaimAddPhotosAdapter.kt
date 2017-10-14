@@ -99,15 +99,14 @@ class DamageClaimAddPhotosAdapter(context: Context,
     fun getPhotosCount(): Int {
         checkInited()
 
-        return mItems
-                .filter { it.getType() == AdapterItemType.VIEW_PHOTO.ordinal }
-                .count()
+        return mItems.count { it.getType() == AdapterItemType.VIEW_PHOTO.ordinal }
     }
 
     fun getPhotos(): ArrayList<String> {
         checkInited()
 
-        return ArrayList(mItems.filter { it.getType() == AdapterItemType.VIEW_PHOTO.ordinal }
+        return ArrayList(mItems
+                .filter { it.getType() == AdapterItemType.VIEW_PHOTO.ordinal }
                 .map { it.value.get().path })
     }
 

@@ -158,8 +158,10 @@ class DamageClaimPhotosFragment : BaseFragment<ClientNewDamageClaimActivityViewM
             mAdapter.add(AdapterItem(DamagePhotoDTO(file.absolutePath), AdapterItemType.VIEW_PHOTO))
         }
 
-        if (mAdapter.getPhotosCount() > 0) {
-            mButtonLoadNext.isEnabled = true
+        mAdapter.runOnAdapterHandler {
+            if (mAdapter.getPhotosCount() > 0) {
+                mButtonLoadNext.isEnabled = true
+            }
         }
     }
 

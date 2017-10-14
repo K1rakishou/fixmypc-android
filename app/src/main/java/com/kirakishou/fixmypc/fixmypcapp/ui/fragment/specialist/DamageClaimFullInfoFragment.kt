@@ -19,6 +19,7 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerSpecialistMainActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
@@ -48,7 +49,6 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
     @Inject
     lateinit var mRefWatcher: RefWatcher
 
-    private val MAP_ZOOM = 13.5f
     private var damageClaimFickle = Fickle.empty<DamageClaim>()
 
     override fun initViewModel(): SpecialistMainActivityViewModel? {
@@ -156,7 +156,7 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
         val center = LatLng(damageClaim.lat, damageClaim.lon)
 
         map.addMarker(MarkerOptions().position(center))
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(center, MAP_ZOOM))
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(center, Constant.MAP_ZOOM))
     }
 
     private fun onHasAlreadyRespondedResponse(responded: Boolean) {

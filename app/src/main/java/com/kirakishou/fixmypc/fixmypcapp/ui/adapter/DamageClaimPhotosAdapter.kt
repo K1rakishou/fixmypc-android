@@ -4,16 +4,12 @@ import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
-import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseAdapter
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItem
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AdapterItemType
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamagePhotoDTO
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.specialist_profile.SpecialistsProfilesGeneric
 import java.io.File
 
 /**

@@ -76,6 +76,10 @@ abstract class BaseAdapter<T>(mContext: Context) : RecyclerView.Adapter<Recycler
         }
     }
 
+    fun runOnAdapterHandler(func: () -> Unit) {
+        mHandler.post(func)
+    }
+
     override fun getItemViewType(position: Int) = mItems[position].getType()
     override fun getItemCount() = mItems.size
 

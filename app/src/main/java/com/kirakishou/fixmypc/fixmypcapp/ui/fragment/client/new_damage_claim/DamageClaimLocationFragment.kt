@@ -6,6 +6,8 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.AppCompatButton
+import android.support.v7.widget.CardView
+import android.view.View
 import android.widget.Toast
 import butterknife.BindView
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -46,6 +48,9 @@ class DamageClaimLocationFragment : BaseFragment<ClientNewDamageClaimActivityVie
 
     @BindView(R.id.button_zoom_out)
     lateinit var mButtonZoomOut: FloatingActionButton
+
+    @BindView(R.id.card_view_location)
+    lateinit var cardViewLocation: CardView
 
     @Inject
     lateinit var mViewModelFactory: ClientNewMalfunctionActivityViewModelFactory
@@ -137,6 +142,7 @@ class DamageClaimLocationFragment : BaseFragment<ClientNewDamageClaimActivityVie
                 .config(LocationParams.BEST_EFFORT)
                 .oneFix()
                 .start {
+                    cardViewLocation.visibility = View.GONE
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(it.latitude, it.longitude), MAP_ZOOM))
                 }
     }

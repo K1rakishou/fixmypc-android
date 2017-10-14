@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView
 import android.widget.TextView
 import android.widget.Toast
 import butterknife.BindView
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -73,7 +74,7 @@ class DamageClaimSendRequestFragment : BaseFragment<ClientNewDamageClaimActivity
     override fun loadExitAnimations() = AnimatorSet()
 
     override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
-        val mapFrag = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        val mapFrag = childFragmentManager.findFragmentById(R.id.damage_location) as SupportMapFragment
         mapFrag.getMapAsync(this)
 
         initRx()
@@ -143,6 +144,7 @@ class DamageClaimSendRequestFragment : BaseFragment<ClientNewDamageClaimActivity
 
         val location = getViewModel().getDamageClaimRequestInfo().damageClaimLocation
         map.addMarker(MarkerOptions().position(location))
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, Constant.MAP_ZOOM))
     }
 
     private fun sendDamageClaim() {

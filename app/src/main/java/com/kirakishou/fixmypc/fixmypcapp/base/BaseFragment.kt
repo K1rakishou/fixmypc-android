@@ -75,7 +75,7 @@ abstract class BaseFragment<T : ViewModel> : Fragment() {
     override fun onStop() {
         super.onStop()
 
-        AndroidUtils.hideSoftKeyboard(activity)
+        hideKeyboard()
     }
 
     protected fun runActivityWithArgs(clazz: Class<*>, args: Bundle, finishCurrentActivity: Boolean = false) {

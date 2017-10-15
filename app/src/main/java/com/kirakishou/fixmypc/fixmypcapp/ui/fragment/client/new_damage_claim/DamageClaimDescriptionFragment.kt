@@ -14,6 +14,7 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerClientNewDamageClaimActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewDamageClaimActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.helper.extension.hideKeyboard
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewDamageClaimActivityViewModel
@@ -68,6 +69,7 @@ class DamageClaimDescriptionFragment : BaseFragment<ClientNewDamageClaimActivity
     }
 
     private fun loadNextFragment() {
+        hideKeyboard()
         mNavigator.navigateToDamageClaimLocationFragment()
     }
 

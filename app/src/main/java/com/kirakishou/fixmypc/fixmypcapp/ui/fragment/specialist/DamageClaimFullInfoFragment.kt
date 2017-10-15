@@ -78,20 +78,16 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
         val mapFrag = childFragmentManager.findFragmentById(R.id.damage_claim_client_location_map) as SupportMapFragment
         mapFrag.getMapAsync(this)
 
-        damageClaimFickle = Fickle.of(getDamageClaimFromBundle(arguments))
-
         initRx()
 
-        if (damageClaimFickle.isPresent()) {
-            mNavigator.showLoadingIndicatorFragment()
-            val damageClaim = damageClaimFickle.get()
+        damageClaimFickle = Fickle.of(getDamageClaimFromBundle(arguments))
+        check(damageClaimFickle.isPresent())
 
-            Timber.e("damage_claim_id: ${damageClaim.id}, user_id: ${damageClaim.ownerId}")
-            getViewModel().checkHasAlreadyRespondedToDamageClaim(damageClaim.id)
-        } else {
-            showToast("Не удалось получить данные об объявлении", Toast.LENGTH_LONG)
-            mNavigator.popFragment()
-        }
+        mNavigator.showLoadingIndicatorFragment()
+        val damageClaim = damageClaimFickle.get()
+
+        Timber.e("damage_claim_id: ${damageClaim.id}, user_id: ${damageClaim.ownerId}")
+        getViewModel().checkHasAlreadyRespondedToDamageClaim(damageClaim.id)
     }
 
     override fun onFragmentViewDestroy() {
@@ -101,45 +97,26 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
     private fun initRx() {
         mCompositeDisposable += RxView.clicks(respondButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onRespondButtonClick() })
-
-        mCompositeDisposable += getViewModel().mErrors.onUnknownError()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    onUnknownError(it)
-                }, { error ->
-                    Timber.e(error)
-                })
 
         mCompositeDisposable += getViewModel().mOutputs.onRespondToDamageClaimSuccessSubject()
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    onRespondToDamageClaimSuccessSubject()
-                }, { error ->
-                    Timber.e(error)
-                })
+                .subscribe({ onRespondToDamageClaimSuccessSubject() })
 
         mCompositeDisposable += getViewModel().mOutputs.onHasAlreadyRespondedResponse()
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     onHasAlreadyRespondedResponse(it)
                     mNavigator.hideLoadingIndicatorFragment()
-                }, { error ->
-                    Timber.e(error)
                 })
 
         mCompositeDisposable += getViewModel().mErrors.onBadResponse()
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    onBadResponse(it)
-                }, { error ->
-                    Timber.e(error)
-                })
+                .subscribe({ onBadResponse(it) })
+
+        mCompositeDisposable += getViewModel().mErrors.onUnknownError()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onUnknownError(it) })
     }
 
     private fun onRespondButtonClick() {
@@ -160,19 +137,27 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
     }
 
     private fun onHasAlreadyRespondedResponse(responded: Boolean) {
-        if (responded) {
-            respondButton.isEnabled = false
-            respondButton.text = "Заявка отправлена"
-        } else {
-            respondButton.isEnabled = true
-            respondButton.text = "Отправить заявку"
+        activity.runOnUiThread {
+            if (responded) {
+                respondButton.isEnabled = false
+                respondButton.text = "Заявка отправлена"
+            } else {
+                respondButton.isEnabled = true
+                respondButton.text = "Отправить заявку"
+            }
         }
     }
 
     private fun onRespondToDamageClaimSuccessSubject() {
-        mNavigator.hideLoadingIndicatorFragment()
-        respondButton.isEnabled = false
-        respondButton.text = "Заявка отправлена"
+        Timber.e("currentThreadName: ${Thread.currentThread().name}")
+
+        activity.runOnUiThread {
+            Timber.e("currentThreadName: ${Thread.currentThread().name}")
+
+            mNavigator.hideLoadingIndicatorFragment()
+            respondButton.isEnabled = false
+            respondButton.text = "Заявка отправлена"
+        }
     }
 
     override fun onBadResponse(errorCode: ErrorCode.Remote) {

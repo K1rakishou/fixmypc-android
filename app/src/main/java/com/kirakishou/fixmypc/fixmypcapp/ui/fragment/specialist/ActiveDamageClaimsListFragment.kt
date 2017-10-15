@@ -171,6 +171,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
     }
 
     private fun onAdapterItemClick(damageClaim: DamageClaim) {
+        Timber.e("onAdapterItemClick id: ${damageClaim.id}")
         mNavigator.navigateToDamageClaimFullInfoFragment(damageClaim)
     }
 

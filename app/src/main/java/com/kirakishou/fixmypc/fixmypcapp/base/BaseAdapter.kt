@@ -44,37 +44,29 @@ abstract class BaseAdapter<T>(mContext: Context) : RecyclerView.Adapter<Recycler
     open fun add(item: AdapterItem<T>) {
         checkInited()
 
-        mHandler.post {
-            mItems.add(item)
-            notifyItemInserted(mItems.lastIndex)
-        }
+        mItems.add(item)
+        notifyItemInserted(mItems.lastIndex)
     }
 
     open fun addAll(items: List<AdapterItem<T>>) {
         checkInited()
 
-        mHandler.post {
-            mItems.addAll(items)
-            notifyDataSetChanged()
-        }
+        mItems.addAll(items)
+        notifyDataSetChanged()
     }
 
     open fun remove(position: Int) {
         checkInited()
 
-        mHandler.post {
-            mItems.removeAt(position)
-            notifyItemRemoved(position)
-        }
+        mItems.removeAt(position)
+        notifyItemRemoved(position)
     }
 
     open fun clear() {
         checkInited()
 
-        mHandler.post {
-            mItems.clear()
-            notifyDataSetChanged()
-        }
+        mItems.clear()
+        notifyDataSetChanged()
     }
 
     fun runOnAdapterHandler(func: () -> Unit) {

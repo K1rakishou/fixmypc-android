@@ -55,7 +55,7 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
     private val mLoadMoreSubject = BehaviorSubject.create<Long>()
     private val mAdapterItemClickSubject = BehaviorSubject.create<DamageClaim>()
 
-    private lateinit var mAdapterClient: ClientDamageClaimListAdapter
+    private lateinit var mAdapter: ClientDamageClaimListAdapter
     private lateinit var mEndlessScrollListener: EndlessRecyclerOnScrollListener
 
     override fun initViewModel(): ClientMainActivityViewModel? {
@@ -77,7 +77,7 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
     }
 
     private fun recyclerStartLoadingItems() {
-        mAdapterClient.addProgressFooter()
+        mAdapter.addProgressFooter()
     }
 
     private fun initRecycler() {
@@ -86,7 +86,7 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
 
         layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                val type = mAdapterClient.getItemViewType(position)
+                val type = mAdapter.getItemViewType(position)
                 return when (type) {
                     AdapterItemType.VIEW_PROGRESSBAR.ordinal, AdapterItemType.VIEW_MESSAGE.ordinal -> spanCount
                     AdapterItemType.VIEW_ITEM.ordinal -> 1
@@ -95,13 +95,13 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
             }
         }
 
-        mAdapterClient = ClientDamageClaimListAdapter(activity, mImageLoader, mAdapterItemClickSubject)
-        mAdapterClient.init()
+        mAdapter = ClientDamageClaimListAdapter(activity, mImageLoader, mAdapterItemClickSubject)
+        mAdapter.init()
 
         mEndlessScrollListener = EndlessRecyclerOnScrollListener(layoutManager, mLoadMoreSubject)
 
         mActiveDamageClaimList.layoutManager = layoutManager
-        mActiveDamageClaimList.adapter = mAdapterClient
+        mActiveDamageClaimList.adapter = mAdapter
         mActiveDamageClaimList.addOnScrollListener(mEndlessScrollListener)
         mActiveDamageClaimList.setHasFixedSize(true)
     }
@@ -110,7 +110,7 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
         mCompositeDisposable += mLoadMoreSubject
                 .subscribeOn(Schedulers.io())
                 .subscribe({ page ->
-                    mAdapterClient.addProgressFooter()
+                    mAdapter.addProgressFooter()
                     getDamageClaims(page)
                 }, { error ->
                     Timber.e(error)
@@ -147,19 +147,21 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
     }
 
     private fun onActiveDamageClaimsResponse(activeDamageClaimList: MutableList<DamageClaim>) {
-        mEndlessScrollListener.pageLoaded()
+        mAdapter.runOnAdapterHandler {
+            mEndlessScrollListener.pageLoaded()
 
-        if (activeDamageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
-            mEndlessScrollListener.reachedEnd()
-        }
+            if (activeDamageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
+                mEndlessScrollListener.reachedEnd()
+            }
 
-        mAdapterClient.removeProgressFooter()
+            mAdapter.removeProgressFooter()
 
-        val adapterDamageClaims = activeDamageClaimList.map { AdapterItem(DamageClaimGeneric(it), AdapterItemType.VIEW_ITEM) }
-        mAdapterClient.addAll(adapterDamageClaims as List<AdapterItem<DamageClaimListAdapterGenericParam>>)
+            val adapterDamageClaims = activeDamageClaimList.map { AdapterItem(DamageClaimGeneric(it), AdapterItemType.VIEW_ITEM) }
+            mAdapter.addAll(adapterDamageClaims as List<AdapterItem<DamageClaimListAdapterGenericParam>>)
 
-        if (activeDamageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
-            mAdapterClient.addMessageFooter("Конец списка")
+            if (activeDamageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
+                mAdapter.addMessageFooter("Конец списка")
+            }
         }
     }
 

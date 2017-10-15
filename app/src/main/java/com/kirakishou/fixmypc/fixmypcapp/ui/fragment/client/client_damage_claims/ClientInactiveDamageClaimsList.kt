@@ -55,7 +55,7 @@ class ClientInactiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>
     private val mLoadMoreSubject = BehaviorSubject.create<Long>()
     private val mAdapterItemClickSubject = BehaviorSubject.create<DamageClaim>()
 
-    private lateinit var mAdapterClient: ClientDamageClaimListAdapter
+    private lateinit var mAdapter: ClientDamageClaimListAdapter
     private lateinit var mEndlessScrollListener: EndlessRecyclerOnScrollListener
 
     override fun initViewModel(): ClientMainActivityViewModel? {
@@ -78,7 +78,7 @@ class ClientInactiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>
 
     private fun recyclerStartLoadingItems() {
         //TODO: do not load damage claims if the fragment is not visible to the user
-        mAdapterClient.addProgressFooter()
+        mAdapter.addProgressFooter()
     }
 
     private fun initRecycler() {
@@ -87,7 +87,7 @@ class ClientInactiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>
 
         layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                val type = mAdapterClient.getItemViewType(position)
+                val type = mAdapter.getItemViewType(position)
                 return when (type) {
                     AdapterItemType.VIEW_PROGRESSBAR.ordinal, AdapterItemType.VIEW_MESSAGE.ordinal -> spanCount
                     AdapterItemType.VIEW_ITEM.ordinal -> 1
@@ -96,13 +96,13 @@ class ClientInactiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>
             }
         }
 
-        mAdapterClient = ClientDamageClaimListAdapter(activity, mImageLoader, mAdapterItemClickSubject)
-        mAdapterClient.init()
+        mAdapter = ClientDamageClaimListAdapter(activity, mImageLoader, mAdapterItemClickSubject)
+        mAdapter.init()
 
         mEndlessScrollListener = EndlessRecyclerOnScrollListener(layoutManager, mLoadMoreSubject)
 
         mInactiveDamageClaimList.layoutManager = layoutManager
-        mInactiveDamageClaimList.adapter = mAdapterClient
+        mInactiveDamageClaimList.adapter = mAdapter
         mInactiveDamageClaimList.addOnScrollListener(mEndlessScrollListener)
         mInactiveDamageClaimList.setHasFixedSize(true)
     }
@@ -111,7 +111,7 @@ class ClientInactiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>
         mCompositeDisposable += mLoadMoreSubject
                 .subscribeOn(Schedulers.io())
                 .subscribe({ page ->
-                    mAdapterClient.addProgressFooter()
+                    mAdapter.addProgressFooter()
                     getDamageClaims(page)
                 }, { error ->
                     Timber.e(error)
@@ -148,19 +148,21 @@ class ClientInactiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>
     }
 
     private fun onInactiveDamageClaimsResponse(inactiveDamageClaimList: MutableList<DamageClaim>) {
-        mEndlessScrollListener.pageLoaded()
+        mAdapter.runOnAdapterHandler {
+            mEndlessScrollListener.pageLoaded()
 
-        if (inactiveDamageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
-            mEndlessScrollListener.reachedEnd()
-        }
+            if (inactiveDamageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
+                mEndlessScrollListener.reachedEnd()
+            }
 
-        mAdapterClient.removeProgressFooter()
+            mAdapter.removeProgressFooter()
 
-        val adapterDamageClaims = inactiveDamageClaimList.map { AdapterItem(DamageClaimGeneric(it), AdapterItemType.VIEW_ITEM) }
-        mAdapterClient.addAll(adapterDamageClaims as List<AdapterItem<DamageClaimListAdapterGenericParam>>)
+            val adapterDamageClaims = inactiveDamageClaimList.map { AdapterItem(DamageClaimGeneric(it), AdapterItemType.VIEW_ITEM) }
+            mAdapter.addAll(adapterDamageClaims as List<AdapterItem<DamageClaimListAdapterGenericParam>>)
 
-        if (inactiveDamageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
-            mAdapterClient.addMessageFooter("Конец списка")
+            if (inactiveDamageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
+                mAdapter.addMessageFooter("Конец списка")
+            }
         }
     }
 

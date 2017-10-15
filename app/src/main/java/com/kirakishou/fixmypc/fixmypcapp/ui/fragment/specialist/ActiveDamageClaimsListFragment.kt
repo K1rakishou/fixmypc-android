@@ -66,7 +66,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
 
     private val currentLocationPref by lazy { mAppSharedPreference.prepare<MyCurrentLocationPreference>() }
 
-    private lateinit var mAdapterSpecialist: SpecialistDamageClaimListAdapter
+    private lateinit var mAdapter: SpecialistDamageClaimListAdapter
     private lateinit var mEndlessScrollListener: EndlessRecyclerOnScrollListener
 
     override fun initViewModel(): SpecialistMainActivityViewModel? {
@@ -100,7 +100,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
     }
 
     private fun recyclerStartLoadingItems() {
-        mAdapterSpecialist.addProgressFooter()
+        mAdapter.addProgressFooter()
     }
 
     private fun getCurrentLocationGps() {
@@ -122,7 +122,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
 
         layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                val type = mAdapterSpecialist.getItemViewType(position)
+                val type = mAdapter.getItemViewType(position)
                 return when (type) {
                     AdapterItemType.VIEW_PROGRESSBAR.ordinal, AdapterItemType.VIEW_MESSAGE.ordinal -> spanCount
                     AdapterItemType.VIEW_ITEM.ordinal -> 1
@@ -131,13 +131,13 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
             }
         }
 
-        mAdapterSpecialist = SpecialistDamageClaimListAdapter(activity, mAdapterItemClickSubject, mImageLoader)
-        mAdapterSpecialist.init()
+        mAdapter = SpecialistDamageClaimListAdapter(activity, mAdapterItemClickSubject, mImageLoader)
+        mAdapter.init()
 
         mEndlessScrollListener = EndlessRecyclerOnScrollListener(layoutManager, mLoadMoreSubject)
 
         mDamageClaimList.layoutManager = layoutManager
-        mDamageClaimList.adapter = mAdapterSpecialist
+        mDamageClaimList.adapter = mAdapter
         mDamageClaimList.addOnScrollListener(mEndlessScrollListener)
         mDamageClaimList.setHasFixedSize(true)
     }
@@ -147,7 +147,7 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
                 .subscribeOn(Schedulers.io())
                 .subscribe({ (page, latlon) ->
                     Timber.e("getDamageClaims()")
-                    mAdapterSpecialist.addProgressFooter()
+                    mAdapter.addProgressFooter()
                     getDamageClaims(page, latlon)
                 }, { error ->
                     Timber.e(error)
@@ -185,19 +185,21 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
 
     @Suppress("UNCHECKED_CAST")
     private fun onDamageClaimsPageReceived(damageClaimList: ArrayList<DamageClaimsWithDistance>) {
-        mEndlessScrollListener.pageLoaded()
+        mAdapter.runOnAdapterHandler {
+            mEndlessScrollListener.pageLoaded()
 
-        if (damageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
-            mEndlessScrollListener.reachedEnd()
-        }
+            if (damageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
+                mEndlessScrollListener.reachedEnd()
+            }
 
-        mAdapterSpecialist.removeProgressFooter()
+            mAdapter.removeProgressFooter()
 
-        val adapterDamageClaims = damageClaimList.map { AdapterItem(it, AdapterItemType.VIEW_ITEM) }
-        mAdapterSpecialist.addAll(adapterDamageClaims as List<AdapterItem<DamageClaimListAdapterGenericParam>>)
+            val adapterDamageClaims = damageClaimList.map { AdapterItem(it, AdapterItemType.VIEW_ITEM) }
+            mAdapter.addAll(adapterDamageClaims as List<AdapterItem<DamageClaimListAdapterGenericParam>>)
 
-        if (damageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
-            mAdapterSpecialist.addMessageFooter("Последнее объявление")
+            if (damageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
+                mAdapter.addMessageFooter("Последнее объявление")
+            }
         }
     }
 

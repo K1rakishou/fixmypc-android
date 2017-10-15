@@ -32,48 +32,40 @@ class SpecialistProfileListAdapter(private val mContext: Context,
     fun addProgressFooter() {
         checkInited()
 
-        mHandler.post {
-            if (mItems.isEmpty() || mItems.last().getType() != AdapterItemType.VIEW_PROGRESSBAR.ordinal) {
-                mItems.add(AdapterItem(AdapterItemType.VIEW_PROGRESSBAR))
-                notifyItemInserted(mItems.lastIndex)
-            }
+        if (mItems.isEmpty() || mItems.last().getType() != AdapterItemType.VIEW_PROGRESSBAR.ordinal) {
+            mItems.add(AdapterItem(AdapterItemType.VIEW_PROGRESSBAR))
+            notifyItemInserted(mItems.lastIndex)
         }
     }
 
     fun removeProgressFooter() {
         checkInited()
 
-        mHandler.post {
-            if (mItems.isNotEmpty() || mItems.last().getType() == AdapterItemType.VIEW_PROGRESSBAR.ordinal) {
-                val index = mItems.lastIndex
+        if (mItems.isNotEmpty() || mItems.last().getType() == AdapterItemType.VIEW_PROGRESSBAR.ordinal) {
+            val index = mItems.lastIndex
 
-                mItems.removeAt(index)
-                notifyItemRemoved(index)
-            }
+            mItems.removeAt(index)
+            notifyItemRemoved(index)
         }
     }
 
     fun addMessageFooter(message: String) {
         checkInited()
 
-        mHandler.post {
-            if (mItems.isEmpty() || mItems.last().getType() != AdapterItemType.VIEW_MESSAGE.ordinal) {
-                mItems.add(AdapterItem(SpecialistProfileAdapterMessage(message), AdapterItemType.VIEW_MESSAGE))
-                notifyItemInserted(mItems.lastIndex)
-            }
+        if (mItems.isEmpty() || mItems.last().getType() != AdapterItemType.VIEW_MESSAGE.ordinal) {
+            mItems.add(AdapterItem(SpecialistProfileAdapterMessage(message), AdapterItemType.VIEW_MESSAGE))
+            notifyItemInserted(mItems.lastIndex)
         }
     }
 
     fun removeMessageFooter() {
         checkInited()
 
-        mHandler.post {
-            if (mItems.isNotEmpty() || mItems.last().getType() == AdapterItemType.VIEW_MESSAGE.ordinal) {
-                val index = mItems.lastIndex
+        if (mItems.isNotEmpty() || mItems.last().getType() == AdapterItemType.VIEW_MESSAGE.ordinal) {
+            val index = mItems.lastIndex
 
-                mItems.removeAt(index)
-                notifyItemRemoved(index)
-            }
+            mItems.removeAt(index)
+            notifyItemRemoved(index)
         }
     }
 

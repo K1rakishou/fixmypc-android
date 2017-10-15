@@ -141,22 +141,24 @@ class RespondedSpecialistsListFragment : BaseFragment<RespondedSpecialistsViewMo
     }
 
     private fun onSpecialistsResponse(specialistsList: List<SpecialistProfile>) {
-        mEndlessScrollListener.pageLoaded()
+        mSpecialistProfileAdapter.runOnAdapterHandler {
+            mEndlessScrollListener.pageLoaded()
 
-        if (specialistsList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
-            mEndlessScrollListener.reachedEnd()
-        }
+            if (specialistsList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
+                mEndlessScrollListener.reachedEnd()
+            }
 
-        mSpecialistProfileAdapter.removeProgressFooter()
+            mSpecialistProfileAdapter.removeProgressFooter()
 
-        val adapterSpecialistProfiles = specialistsList.map { AdapterItem(SpecialistsProfilesGeneric(it), AdapterItemType.VIEW_ITEM) }
-        mSpecialistProfileAdapter.addAll(adapterSpecialistProfiles as List<AdapterItem<SpecialistProfileGenericParam>>)
+            val adapterSpecialistProfiles = specialistsList.map { AdapterItem(SpecialistsProfilesGeneric(it), AdapterItemType.VIEW_ITEM) }
+            mSpecialistProfileAdapter.addAll(adapterSpecialistProfiles as List<AdapterItem<SpecialistProfileGenericParam>>)
 
-        if (mSpecialistProfileAdapter.itemCount == 0 && specialistsList.isEmpty()) {
-            mSpecialistProfileAdapter.addMessageFooter("Пока ещё никто не откликнулся")
-        } else if (mSpecialistProfileAdapter.itemCount > 0
-                && specialistsList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
-            mSpecialistProfileAdapter.addMessageFooter("Конец списка")
+            if (mSpecialistProfileAdapter.itemCount == 0 && specialistsList.isEmpty()) {
+                mSpecialistProfileAdapter.addMessageFooter("Пока ещё никто не откликнулся")
+            } else if (mSpecialistProfileAdapter.itemCount > 0
+                    && specialistsList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
+                mSpecialistProfileAdapter.addMessageFooter("Конец списка")
+            }
         }
     }
 

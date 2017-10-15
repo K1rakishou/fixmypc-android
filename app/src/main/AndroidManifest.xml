@@ -30,11 +30,13 @@
         <activity android:name=".ui.activity.SpecialistMainActivity" />
         <activity android:name=".ui.activity.RespondedSpecialistsActivity" />
         <activity android:name=".ui.activity.LoginActivity" />
-        <activity android:name=".ui.activity.UpdateSpecialistProfileActivity"/>
+        <activity android:name=".ui.activity.UpdateSpecialistProfileActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyB3rwPBjBAw6GLkC8rnCTIpb1BAkoBKnZw" />
+
+        <activity android:name=".ui.activity.DamageClaimFullInfoActivity"></activity>
     </application>
 
 </manifest>

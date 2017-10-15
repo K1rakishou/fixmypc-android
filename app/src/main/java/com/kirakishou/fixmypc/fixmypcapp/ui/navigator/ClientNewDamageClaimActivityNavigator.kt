@@ -9,61 +9,32 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.new_damage_claim.*
 /**
  * Created by kirakishou on 9/10/2017.
  */
-class ClientNewDamageClaimActivityNavigator(activity: AppCompatActivity) : BaseNavigator(activity) {
+class ClientNewDamageClaimActivityNavigator(activity: AppCompatActivity)
+    : BaseNavigator(activity) {
 
     fun navigateToDamageClaimCategoryFragment() {
-        val fragment = createNewFragmentIfNotInStack<DamageClaimCategoryFragment>(fragmentManager,
+        navigateToFragment(DamageClaimCategoryFragment::class,
                 Constant.FragmentTags.DAMAGE_CATEGORY)
-
-        fragmentManager
-                .beginTransaction()
-                .replace(R.id.fragment_frame, fragment, Constant.FragmentTags.DAMAGE_CATEGORY)
-                .addToBackStack(Constant.FragmentTags.DAMAGE_CATEGORY)
-                .commit()
     }
 
     fun navigateToDamageClaimDescriptionFragment() {
-        val fragment = createNewFragmentIfNotInStack<DamageClaimDescriptionFragment>(fragmentManager,
+        navigateToFragment(DamageClaimDescriptionFragment::class,
                 Constant.FragmentTags.DAMAGE_DESCRIPTION)
-
-        fragmentManager
-                .beginTransaction()
-                .replace(R.id.fragment_frame, fragment, Constant.FragmentTags.DAMAGE_DESCRIPTION)
-                .addToBackStack(Constant.FragmentTags.DAMAGE_DESCRIPTION)
-                .commit()
     }
 
     fun navigateToDamageClaimPhotosFragment() {
-        val fragment = createNewFragmentIfNotInStack<DamageClaimPhotosFragment>(fragmentManager,
+        navigateToFragment(DamageClaimPhotosFragment::class,
                 Constant.FragmentTags.DAMAGE_PHOTOS)
-
-        fragmentManager
-                .beginTransaction()
-                .replace(R.id.fragment_frame, fragment, Constant.FragmentTags.DAMAGE_PHOTOS)
-                .addToBackStack(Constant.FragmentTags.DAMAGE_PHOTOS)
-                .commit()
     }
 
     fun navigateToDamageClaimLocationFragment() {
-        val fragment = createNewFragmentIfNotInStack<DamageClaimLocationFragment>(fragmentManager,
+        navigateToFragment(DamageClaimLocationFragment::class,
                 Constant.FragmentTags.DAMAGE_LOCATION)
-
-        fragmentManager
-                .beginTransaction()
-                .replace(R.id.fragment_frame, fragment, Constant.FragmentTags.DAMAGE_LOCATION)
-                .addToBackStack(Constant.FragmentTags.DAMAGE_LOCATION)
-                .commit()
     }
 
     fun navigateToDamageClaimSendRequestFragment() {
-        val fragment = createNewFragmentIfNotInStack<DamageClaimSendRequestFragment>(fragmentManager,
+        navigateToFragment(DamageClaimSendRequestFragment::class,
                 Constant.FragmentTags.DAMAGE_SEND_REQUEST)
-
-        fragmentManager
-                .beginTransaction()
-                .replace(R.id.fragment_frame, fragment, Constant.FragmentTags.DAMAGE_SEND_REQUEST)
-                .addToBackStack(Constant.FragmentTags.DAMAGE_SEND_REQUEST)
-                .commit()
     }
 }
 

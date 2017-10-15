@@ -59,18 +59,19 @@ class ClientNewDamageClaimActivity : BaseActivity<ClientNewDamageClaimActivityVi
 
     override fun onActivityDestroy() {
         progressDialog.dismiss()
-        mRefWatcher.watch(this)
         supportFragmentManager.removeOnBackStackChangedListener(this)
+
+        mRefWatcher.watch(this)
     }
 
     override fun requestPermission(permission: String, requestCode: Int) {
         mPermissionManager.askForPermission(this, permission, requestCode) { granted ->
             if (granted) {
-                val currentFragmentTag = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 1).name
-                val currentFragment = supportFragmentManager.findFragmentByTag(currentFragmentTag)
+                val visibleFragment = mNavigator.getVisibleFragment()
+                checkNotNull(visibleFragment)
 
-                if (currentFragment is PermissionGrantedCallback) {
-                    currentFragment.onPermissionGranted()
+                if (visibleFragment is PermissionGrantedCallback) {
+                    visibleFragment.onPermissionGranted()
                 }
 
             } else {

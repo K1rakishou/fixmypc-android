@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist
+package com.kirakishou.fixmypc.fixmypcapp.ui.fragment
 
 
 import android.animation.AnimatorSet
@@ -17,16 +17,21 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
+import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerDamageClaimFullInfoActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerSpecialistMainActivityComponent
+import com.kirakishou.fixmypc.fixmypcapp.di.module.DamageClaimFullInfoActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.DamageClaimFullInfoActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainActivityViewModelFactory
+import com.kirakishou.fixmypc.fixmypcapp.ui.activity.DamageClaimFullInfoActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
+import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.DamageClaimFullInfoActivityNavigator
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavigator
 import com.squareup.leakcanary.RefWatcher
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -35,7 +40,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 
-class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel>(), OnMapReadyCallback {
+class DamageClaimFullInfoFragment : BaseFragment<DamageClaimFullInfoActivityViewModel>(), OnMapReadyCallback {
 
     @BindView(R.id.respond_button)
     lateinit var respondButton: AppCompatButton
@@ -44,15 +49,15 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
     lateinit var mViewModelFactory: SpecialistMainActivityViewModelFactory
 
     @Inject
-    lateinit var mNavigator: SpecialistMainActivityNavigator
+    lateinit var mNavigator: DamageClaimFullInfoActivityNavigator
 
     @Inject
     lateinit var mRefWatcher: RefWatcher
 
     private var damageClaimFickle = Fickle.empty<DamageClaim>()
 
-    override fun initViewModel(): SpecialistMainActivityViewModel? {
-        return ViewModelProviders.of(activity, mViewModelFactory).get(SpecialistMainActivityViewModel::class.java)
+    override fun initViewModel(): DamageClaimFullInfoActivityViewModel? {
+        return ViewModelProviders.of(activity, mViewModelFactory).get(DamageClaimFullInfoActivityViewModel::class.java)
     }
 
     override fun getContentView() = R.layout.fragment_damage_claim_full_info
@@ -87,7 +92,7 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
         val damageClaim = damageClaimFickle.get()
 
         Timber.e("damage_claim_id: ${damageClaim.id}, user_id: ${damageClaim.ownerId}")
-        getViewModel().checkHasAlreadyRespondedToDamageClaim(damageClaim.id)
+        getViewModel().mInputs.checkHasAlreadyRespondedToDamageClaim(damageClaim.id)
     }
 
     override fun onFragmentViewDestroy() {
@@ -122,7 +127,7 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
     private fun onRespondButtonClick() {
         damageClaimFickle.ifPresent {
             mNavigator.showLoadingIndicatorFragment()
-            getViewModel().respondToDamageClaim(it.id)
+            getViewModel().mInputs.respondToDamageClaim(it.id)
         }
     }
 
@@ -170,9 +175,9 @@ class DamageClaimFullInfoFragment : BaseFragment<SpecialistMainActivityViewModel
     }
 
     override fun resolveDaggerDependency() {
-        DaggerSpecialistMainActivityComponent.builder()
+        DaggerDamageClaimFullInfoActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
-                .specialistMainActivityModule(SpecialistMainActivityModule(activity as SpecialistMainActivity))
+                .damageClaimFullInfoActivityModule(DamageClaimFullInfoActivityModule(activity as DamageClaimFullInfoActivity))
                 .build()
                 .inject(this)
     }

@@ -7,6 +7,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.DamageClaimFullInfoActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.DamageClaimFullInfoActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.DamageClaimFullInfoActivity
+import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.DamageClaimFullInfoActivityNavigator
 import dagger.Module
 import dagger.Provides
 
@@ -16,6 +17,12 @@ import dagger.Provides
 
 @Module
 class DamageClaimFullInfoActivityModule(val activity: DamageClaimFullInfoActivity) {
+
+    @PerActivity
+    @Provides
+    fun provideNavigator(): DamageClaimFullInfoActivityNavigator {
+        return DamageClaimFullInfoActivityNavigator(activity)
+    }
 
     @PerActivity
     @Provides

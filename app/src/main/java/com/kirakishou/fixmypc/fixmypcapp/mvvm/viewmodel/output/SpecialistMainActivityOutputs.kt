@@ -9,7 +9,5 @@ import io.reactivex.Observable
  */
 interface SpecialistMainActivityOutputs {
     fun onDamageClaimsPageReceived(): Observable<ArrayList<DamageClaimsWithDistance>>
-    fun onRespondToDamageClaimSuccessSubject(): Observable<Unit>
-    fun onHasAlreadyRespondedResponse(): Observable<Boolean>
     fun onSpecialistProfileResponseSubject(): Observable<SpecialistProfile>
 }

@@ -24,6 +24,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.Dam
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainActivityViewModelFactory
+import com.kirakishou.fixmypc.fixmypcapp.ui.activity.DamageClaimFullInfoActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.SpecialistDamageClaimListAdapter
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavigator
@@ -172,7 +173,19 @@ class ActiveDamageClaimsListFragment : BaseFragment<SpecialistMainActivityViewMo
 
     private fun onAdapterItemClick(damageClaim: DamageClaim) {
         Timber.e("onAdapterItemClick id: ${damageClaim.id}")
-        mNavigator.navigateToDamageClaimFullInfoFragment(damageClaim)
+
+        val args = Bundle()
+        args.putLong("damage_claim_id", damageClaim.id)
+        args.putLong("damage_claim_owner_id", damageClaim.ownerId)
+        args.putBoolean("damage_claim_is_active", damageClaim.isActive)
+        args.putInt("damage_claim_category", damageClaim.category)
+        args.putString("damage_claim_description", damageClaim.description)
+        args.putDouble("damage_claim_lat", damageClaim.lat)
+        args.putDouble("damage_claim_lon", damageClaim.lon)
+        args.putLong("damage_claim_created_on", damageClaim.createdOn)
+        args.putStringArrayList("damage_claim_photo_names", ArrayList(damageClaim.photoNames))
+
+        runActivityWithArgs(DamageClaimFullInfoActivity::class.java, args)
     }
 
     private fun saveCurrentLocation(location: LatLng) {

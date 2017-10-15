@@ -47,10 +47,6 @@ class SpecialistMainActivityViewModel
 
     lateinit var mOnSpecialistProfileResponseSubject: BehaviorSubject<SpecialistProfile>
     lateinit var mOnBadResponseSubject: BehaviorSubject<ErrorCode.Remote>
-    lateinit var mOnHasAlreadyRespondedResponse: BehaviorSubject<Boolean>
-    lateinit var mCheckHasAlreadyRespondedSubject: BehaviorSubject<Long>
-    lateinit var mOnRespondToDamageClaimSuccessSubject: BehaviorSubject<Unit>
-    lateinit var mRespondToDamageClaimSubject: BehaviorSubject<Long>
     lateinit var mGetDamageClaimsWithinRadiusSubject: BehaviorSubject<GetDamageClaimsRequestParams>
     lateinit var mOnDamageClaimsPageReceivedSubject: BehaviorSubject<ArrayList<DamageClaimsWithDistance>>
     lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
@@ -62,10 +58,6 @@ class SpecialistMainActivityViewModel
 
         mOnSpecialistProfileResponseSubject = BehaviorSubject.create()
         mOnBadResponseSubject = BehaviorSubject.create()
-        mOnHasAlreadyRespondedResponse = BehaviorSubject.create()
-        mCheckHasAlreadyRespondedSubject = BehaviorSubject.create()
-        mOnRespondToDamageClaimSuccessSubject = BehaviorSubject.create()
-        mRespondToDamageClaimSubject = BehaviorSubject.create()
         mGetDamageClaimsWithinRadiusSubject = BehaviorSubject.create()
         mOnDamageClaimsPageReceivedSubject = BehaviorSubject.create()
         mOnUnknownErrorSubject = BehaviorSubject.create()
@@ -83,22 +75,6 @@ class SpecialistMainActivityViewModel
 
         mCompositeDisposable += mEitherFromRepoOrServerSubject
                 .map { (latlon, response) -> calcDistances(latlon.latitude, latlon.longitude, response) }
-                .subscribe({
-                    handleResponse(it)
-                }, {
-                    handleError(it)
-                })
-
-        mCompositeDisposable += mRespondToDamageClaimSubject
-                .flatMap { mApiClient.respondToDamageClaim(RespondToDamageClaimPacket(it)).toObservable() }
-                .subscribe({
-                    handleResponse(it)
-                }, {
-                    handleError(it)
-                })
-
-        mCompositeDisposable += mCheckHasAlreadyRespondedSubject
-                .flatMap { mApiClient.checkAlreadyRespondedToDamageClaim(it).toObservable() }
                 .subscribe({
                     handleResponse(it)
                 }, {
@@ -154,29 +130,13 @@ class SpecialistMainActivityViewModel
         mGetDamageClaimsWithinRadiusSubject.onNext(GetDamageClaimsRequestParams(latLng, radius, page * itemsPerPage))
     }
 
-    override fun respondToDamageClaim(damageClaimId: Long) {
-        mRespondToDamageClaimSubject.onNext(damageClaimId)
-    }
-
-    override fun checkHasAlreadyRespondedToDamageClaim(damageClaimId: Long) {
-        mCheckHasAlreadyRespondedSubject.onNext(damageClaimId)
-    }
-
     private fun handleResponse(response: StatusResponse) {
         val errorCode = response.errorCode
 
         if (errorCode == ErrorCode.Remote.REC_OK) {
             when (response) {
-                is RespondToDamageClaimResponse -> {
-                    mOnRespondToDamageClaimSuccessSubject.onNext(Unit)
-                }
-
                 is DistanceWithDamageClaimResponse -> {
                     mOnDamageClaimsPageReceivedSubject.onNext(response.damageClaims)
-                }
-
-                is HasAlreadyRespondedResponse -> {
-                    mOnHasAlreadyRespondedResponse.onNext(response.hasAlreadyResponded)
                 }
 
                 is SpecialistProfileResponse -> {
@@ -265,8 +225,6 @@ class SpecialistMainActivityViewModel
     override fun onBadResponse(): Observable<ErrorCode.Remote> = mOnBadResponseSubject
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
     override fun onDamageClaimsPageReceived(): Observable<ArrayList<DamageClaimsWithDistance>> = mOnDamageClaimsPageReceivedSubject
-    override fun onRespondToDamageClaimSuccessSubject(): Observable<Unit> = mOnRespondToDamageClaimSuccessSubject
-    override fun onHasAlreadyRespondedResponse(): Observable<Boolean> = mOnHasAlreadyRespondedResponse
 
     data class IsRepoEmptyDTO(val latlon: LatLng,
                               val radius: Double,

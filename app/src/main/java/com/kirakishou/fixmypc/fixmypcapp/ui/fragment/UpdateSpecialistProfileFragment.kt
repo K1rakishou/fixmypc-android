@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.update_specialist_profile
+package com.kirakishou.fixmypc.fixmypcapp.ui.fragment
 
 
 import android.Manifest

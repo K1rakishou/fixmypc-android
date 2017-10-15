@@ -7,7 +7,5 @@ import com.google.android.gms.maps.model.LatLng
  */
 interface SpecialistMainActivityInputs {
     fun getDamageClaimsWithinRadius(latLng: LatLng, radius: Double, page: Long)
-    fun checkHasAlreadyRespondedToDamageClaim(damageClaimId: Long)
-    fun respondToDamageClaim(damageClaimId: Long)
     fun getSpecialistProfile()
 }

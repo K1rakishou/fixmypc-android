@@ -115,7 +115,7 @@ class RespondedSpecialistsListFragment : BaseFragment<RespondedSpecialistsViewMo
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onSpecialistProfileClick(it) })
 
-        mCompositeDisposable += getViewModel().mOutputs.mOnSpecialistsListResponse()
+        mCompositeDisposable += getViewModel().mOutputs.onSpecialistsListResponse()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onSpecialistsResponse(it) })
 
@@ -129,13 +129,13 @@ class RespondedSpecialistsListFragment : BaseFragment<RespondedSpecialistsViewMo
     }
 
     private fun onSpecialistProfileClick(profile: SpecialistProfile) {
-        mNavigator.navigateToSpecialistFullProfileFragment(profile)
+        check(mDamageClaimId != -1L)
+
+        mNavigator.navigateToSpecialistFullProfileFragment(mDamageClaimId, profile)
     }
 
     private fun getRespondedSpecialists(page: Long) {
-        if (mDamageClaimId == -1L) {
-            throw IllegalArgumentException("mDamageClaimId == -1L")
-        }
+        check(mDamageClaimId != -1L)
 
         getViewModel().mInputs.getRespondedSpecialistsSubject(mDamageClaimId, page, Constant.MAX_SPECIALISTS_PROFILES_PER_PAGE)
     }

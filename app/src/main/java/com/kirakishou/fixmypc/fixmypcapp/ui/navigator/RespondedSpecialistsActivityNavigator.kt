@@ -21,7 +21,7 @@ class RespondedSpecialistsActivityNavigator(activity: AppCompatActivity) : BaseN
                 Constant.FragmentTags.RESPONDED_SPECIALISTS_LIST, bundle)
     }
 
-    fun navigateToSpecialistFullProfileFragment(profile: SpecialistProfile) {
+    fun navigateToSpecialistFullProfileFragment(mDamageClaimId: Long, profile: SpecialistProfile) {
         val args = Bundle()
         args.putLong("user_id", profile.userId)
         args.putString("name", profile.name)
@@ -31,6 +31,7 @@ class RespondedSpecialistsActivityNavigator(activity: AppCompatActivity) : BaseN
         args.putLong("registered_on", profile.registeredOn)
         args.putInt("success_repairs", profile.successRepairs)
         args.putInt("fail_repairs", profile.failRepairs)
+        args.putLong("damage_claim_id", mDamageClaimId)
 
         navigateToFragment(RespondedSpecialistFullProfileFragment::class,
                 Constant.FragmentTags.SPECIALIST_FULL_PROFILE, args)

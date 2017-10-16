@@ -9,6 +9,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.AssignSpecialistPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.LoginPacket
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.AssignSpecialistResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.BadServerResponseException
@@ -26,9 +27,9 @@ class AssignSpecialistRequest(protected val packet: AssignSpecialistPacket,
                               protected val mApiService: ApiService,
                               protected val mAppSettings: AppSettings,
                               protected val mGson: Gson,
-                              protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<StatusResponse>> {
+                              protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<AssignSpecialistResponse>> {
 
-    override fun execute(): Single<StatusResponse> {
+    override fun execute(): Single<AssignSpecialistResponse> {
         if (!mAppSettings.isUserInfoExists()) {
             throw UserInfoIsEmptyException()
         }
@@ -46,7 +47,7 @@ class AssignSpecialistRequest(protected val packet: AssignSpecialistPacket,
                 .onErrorResumeNext { error -> exceptionToErrorCode(error) }
     }
 
-    private fun reLoginAndResendRequest(): Single<StatusResponse> {
+    private fun reLoginAndResendRequest(): Single<AssignSpecialistResponse> {
         if (!mAppSettings.isUserInfoExists()) {
             throw UserInfoIsEmptyException()
         }
@@ -67,23 +68,23 @@ class AssignSpecialistRequest(protected val packet: AssignSpecialistPacket,
                     return@flatMap mApiService.assignSpecialist(mAppSettings.loadUserInfo().sessionId, packet)
                             .toObservable()
                 }
-                .lift<StatusResponse>(OnApiErrorObservable(mGson))
+                .lift<AssignSpecialistResponse>(OnApiErrorObservable(mGson))
 
         val failObservable = loginResponseObservable
                 .filter { it.errorCode != ErrorCode.Remote.REC_OK }
                 .doOnNext { throw CouldNotUpdateSessionId() }
-                .map { StatusResponse(it.errorCode) }
+                .map { AssignSpecialistResponse(it.errorCode) }
 
         return Observable.merge(successObservable, failObservable)
-                .single(StatusResponse(ErrorCode.Remote.REC_EMPTY_OBSERVABLE_ERROR))
+                .single(AssignSpecialistResponse(ErrorCode.Remote.REC_EMPTY_OBSERVABLE_ERROR))
     }
 
-    private fun exceptionToErrorCode(error: Throwable): Single<StatusResponse> {
+    private fun exceptionToErrorCode(error: Throwable): Single<AssignSpecialistResponse> {
         val response = when (error) {
-            is ApiException -> StatusResponse(error.errorCode)
-            is TimeoutException -> StatusResponse(ErrorCode.Remote.REC_TIMEOUT)
-            is UnknownHostException -> StatusResponse(ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
-            is BadServerResponseException -> StatusResponse(ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
+            is ApiException -> AssignSpecialistResponse(error.errorCode)
+            is TimeoutException -> AssignSpecialistResponse(ErrorCode.Remote.REC_TIMEOUT)
+            is UnknownHostException -> AssignSpecialistResponse(ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
+            is BadServerResponseException -> AssignSpecialistResponse(ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
 
             else -> throw RuntimeException("Unknown exception")
         }

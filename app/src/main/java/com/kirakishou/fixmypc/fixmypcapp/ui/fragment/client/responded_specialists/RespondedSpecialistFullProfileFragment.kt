@@ -23,9 +23,11 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.AssignSpecialistResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.RespondedSpecialistsViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.RespondedSpecialistsActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.RespondedSpecialistsActivity
+import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.RespondedSpecialistsActivityNavigator
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
@@ -66,7 +68,11 @@ class RespondedSpecialistFullProfileFragment : BaseFragment<RespondedSpecialists
     @Inject
     lateinit var mImageLoader: ImageLoader
 
-    private var specialistProfileFickle = Fickle.empty<SpecialistProfile>()
+    @Inject
+    lateinit var mNavigator: RespondedSpecialistsActivityNavigator
+
+    private var mSpecialistProfileFickle = Fickle.empty<SpecialistProfile>()
+    private var mDamageClaimId = -1L
 
     override fun initViewModel(): RespondedSpecialistsViewModel? {
         return ViewModelProviders.of(activity, mViewModelFactory).get(RespondedSpecialistsViewModel::class.java)
@@ -92,10 +98,31 @@ class RespondedSpecialistFullProfileFragment : BaseFragment<RespondedSpecialists
         mCompositeDisposable += RxView.clicks(profileAssignSpecialistButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onAssignSpecialistButtonClick() })
+
+        mCompositeDisposable += getViewModel().mOutputs.onAssignSpecialistResponse()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onAssignSpecialistResponse(it) })
+
+        mCompositeDisposable += getViewModel().mErrors.onBadResponse()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onBadResponse(it) })
+
+        mCompositeDisposable += getViewModel().mErrors.onUnknownError()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onUnknownError(it) })
+    }
+
+    private fun onAssignSpecialistResponse(response: AssignSpecialistResponse) {
+        mNavigator.hideLoadingIndicatorFragment()
+        Timber.e("response errorCode: ${response.errorCode}")
     }
 
     private fun onAssignSpecialistButtonClick() {
-        Timber.e("Assign specialist")
+        check(mDamageClaimId != -1L)
+
+        mNavigator.showLoadingIndicatorFragment()
+        val profile = mSpecialistProfileFickle.get()
+        getViewModel().mInputs.assignSpecialist(profile.userId, mDamageClaimId)
     }
 
     private fun onShowRepairHistoryButtonClick() {
@@ -108,7 +135,7 @@ class RespondedSpecialistFullProfileFragment : BaseFragment<RespondedSpecialists
             throw IllegalArgumentException("no fragment arguments")
         }
 
-        specialistProfileFickle = Fickle.of(SpecialistProfile(
+        mSpecialistProfileFickle = Fickle.of(SpecialistProfile(
                 bundle.getLong("user_id"),
                 bundle.getString("name"),
                 bundle.getFloat("rating"),
@@ -118,8 +145,10 @@ class RespondedSpecialistFullProfileFragment : BaseFragment<RespondedSpecialists
                 bundle.getInt("success_repairs"),
                 bundle.getInt("fail_repairs")))
 
-        if (specialistProfileFickle.isPresent()) {
-            val profile = specialistProfileFickle.get()
+        mDamageClaimId = bundle.getLong("damage_claim_id", -1L)
+
+        if (mSpecialistProfileFickle.isPresent()) {
+            val profile = mSpecialistProfileFickle.get()
 
             profileName.text = profile.name
             profileRating.rating = profile.rating
@@ -138,11 +167,15 @@ class RespondedSpecialistFullProfileFragment : BaseFragment<RespondedSpecialists
     }
 
     override fun onBadResponse(errorCode: ErrorCode.Remote) {
+        mNavigator.hideLoadingIndicatorFragment()
+
         val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
         showToast(message, Toast.LENGTH_LONG)
     }
 
     override fun onUnknownError(error: Throwable) {
+        mNavigator.hideLoadingIndicatorFragment()
+
         unknownError(error)
     }
 

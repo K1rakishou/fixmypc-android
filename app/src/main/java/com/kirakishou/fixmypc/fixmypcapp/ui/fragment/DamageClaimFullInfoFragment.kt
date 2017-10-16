@@ -4,6 +4,7 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.fragment
 import android.animation.AnimatorSet
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.support.v4.view.ViewPager
 import android.support.v7.widget.AppCompatButton
 import android.widget.Toast
 import butterknife.BindView
@@ -18,29 +19,28 @@ import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerDamageClaimFullInfoActivityComponent
-import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerSpecialistMainActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.DamageClaimFullInfoActivityModule
-import com.kirakishou.fixmypc.fixmypcapp.di.module.SpecialistMainActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.DamageClaimFullInfoActivityViewModel
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.SpecialistMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.SpecialistMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.DamageClaimFullInfoActivity
-import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
+import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.PhotoViewPagerAdapter
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.DamageClaimFullInfoActivityNavigator
-import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.SpecialistMainActivityNavigator
 import com.squareup.leakcanary.RefWatcher
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
-import timber.log.Timber
 import javax.inject.Inject
 
 
 class DamageClaimFullInfoFragment : BaseFragment<DamageClaimFullInfoActivityViewModel>(), OnMapReadyCallback {
+
+    @BindView(R.id.view_pager)
+    lateinit var viewPager: ViewPager
 
     @BindView(R.id.respond_button)
     lateinit var respondButton: AppCompatButton
@@ -54,7 +54,11 @@ class DamageClaimFullInfoFragment : BaseFragment<DamageClaimFullInfoActivityView
     @Inject
     lateinit var mRefWatcher: RefWatcher
 
+    @Inject
+    lateinit var mImageLoader: ImageLoader
+
     private var damageClaimFickle = Fickle.empty<DamageClaim>()
+    private lateinit var photoViewPagerAdapter: PhotoViewPagerAdapter
 
     override fun initViewModel(): DamageClaimFullInfoActivityViewModel? {
         return ViewModelProviders.of(activity, mViewModelFactory).get(DamageClaimFullInfoActivityViewModel::class.java)
@@ -83,20 +87,31 @@ class DamageClaimFullInfoFragment : BaseFragment<DamageClaimFullInfoActivityView
         val mapFrag = childFragmentManager.findFragmentById(R.id.damage_claim_client_location_map) as SupportMapFragment
         mapFrag.getMapAsync(this)
 
-        initRx()
-
         damageClaimFickle = Fickle.of(getDamageClaimFromBundle(arguments))
         check(damageClaimFickle.isPresent())
 
-        mNavigator.showLoadingIndicatorFragment()
-        val damageClaim = damageClaimFickle.get()
-
-        Timber.e("damage_claim_id: ${damageClaim.id}, user_id: ${damageClaim.ownerId}")
-        getViewModel().mInputs.checkHasAlreadyRespondedToDamageClaim(damageClaim.id)
+        initRx()
+        initPhotosViewPager()
+        checkIfAlreadyResponded()
     }
 
     override fun onFragmentViewDestroy() {
         mRefWatcher.watch(this)
+    }
+
+    private fun initPhotosViewPager() {
+        val damageClaim = damageClaimFickle.get()
+
+        photoViewPagerAdapter = PhotoViewPagerAdapter(activity, damageClaim.ownerId, damageClaim.photoNames, mImageLoader)
+        viewPager.adapter = photoViewPagerAdapter
+        viewPager.offscreenPageLimit = 1
+    }
+
+    private fun checkIfAlreadyResponded() {
+        mNavigator.showLoadingIndicatorFragment()
+
+        val damageClaim = damageClaimFickle.get()
+        getViewModel().mInputs.checkHasAlreadyRespondedToDamageClaim(damageClaim.id)
     }
 
     private fun initRx() {
@@ -110,10 +125,7 @@ class DamageClaimFullInfoFragment : BaseFragment<DamageClaimFullInfoActivityView
 
         mCompositeDisposable += getViewModel().mOutputs.onHasAlreadyRespondedResponse()
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    onHasAlreadyRespondedResponse(it)
-                    mNavigator.hideLoadingIndicatorFragment()
-                })
+                .subscribe({ onHasAlreadyRespondedResponse(it) })
 
         mCompositeDisposable += getViewModel().mErrors.onBadResponse()
                 .subscribeOn(AndroidSchedulers.mainThread())
@@ -143,6 +155,8 @@ class DamageClaimFullInfoFragment : BaseFragment<DamageClaimFullInfoActivityView
 
     private fun onHasAlreadyRespondedResponse(responded: Boolean) {
         activity.runOnUiThread {
+            mNavigator.hideLoadingIndicatorFragment()
+
             if (responded) {
                 respondButton.isEnabled = false
                 respondButton.text = "Заявка отправлена"
@@ -154,23 +168,24 @@ class DamageClaimFullInfoFragment : BaseFragment<DamageClaimFullInfoActivityView
     }
 
     private fun onRespondToDamageClaimSuccessSubject() {
-        Timber.e("currentThreadName: ${Thread.currentThread().name}")
-
         activity.runOnUiThread {
-            Timber.e("currentThreadName: ${Thread.currentThread().name}")
-
             mNavigator.hideLoadingIndicatorFragment()
+
             respondButton.isEnabled = false
             respondButton.text = "Заявка отправлена"
         }
     }
 
     override fun onBadResponse(errorCode: ErrorCode.Remote) {
+        mNavigator.hideLoadingIndicatorFragment()
+
         val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
         showToast(message, Toast.LENGTH_LONG)
     }
 
     override fun onUnknownError(error: Throwable) {
+        mNavigator.hideLoadingIndicatorFragment()
+
         unknownError(error)
     }
 

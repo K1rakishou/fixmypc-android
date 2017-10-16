@@ -5,4 +5,5 @@ package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input
  */
 interface RespondedSpecialistsActivityInputs {
     fun getRespondedSpecialistsSubject(damageClaimId: Long, skip: Long, count: Long)
+    fun assignSpecialist(userId: Long, damageClaimId: Long)
 }

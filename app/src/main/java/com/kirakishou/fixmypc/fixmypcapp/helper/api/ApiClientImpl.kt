@@ -70,7 +70,7 @@ class ApiClientImpl
                 .delay(1, TimeUnit.SECONDS)
     }
 
-    override fun assignSpecialist(packet: AssignSpecialistPacket): Single<StatusResponse> {
+    override fun assignSpecialist(packet: AssignSpecialistPacket): Single<AssignSpecialistResponse> {
         return AssignSpecialistRequest(packet, mApiService, mAppSettings, mGson, mSchedulers)
                 .execute()
     }

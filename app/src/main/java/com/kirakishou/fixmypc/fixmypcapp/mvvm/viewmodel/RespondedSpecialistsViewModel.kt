@@ -5,6 +5,8 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.AssignSpecialistPacket
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.AssignSpecialistResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.SpecialistsListResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UnknownErrorCodeException
@@ -34,6 +36,8 @@ class RespondedSpecialistsViewModel
 
     private val mCompositeDisposable = CompositeDisposable()
 
+    lateinit var mOnAssignSpecialistResponseSubject: BehaviorSubject<AssignSpecialistResponse>
+    lateinit var mAssignSpecialistSubject: BehaviorSubject<AssignSpecialistPacket>
     lateinit var mGetRespondedSpecialistsSubject: BehaviorSubject<GetRespondedSpecialistsDTO>
     lateinit var mOnSpecialistsListResponseSubject: BehaviorSubject<List<SpecialistProfile>>
     lateinit var mOnBadResponseSubject: BehaviorSubject<ErrorCode.Remote>
@@ -42,6 +46,8 @@ class RespondedSpecialistsViewModel
     fun init() {
         mCompositeDisposable.clear()
 
+        mOnAssignSpecialistResponseSubject = BehaviorSubject.create()
+        mAssignSpecialistSubject = BehaviorSubject.create()
         mGetRespondedSpecialistsSubject = BehaviorSubject.create()
         mOnSpecialistsListResponseSubject = BehaviorSubject.create()
         mOnBadResponseSubject = BehaviorSubject.create()
@@ -49,9 +55,20 @@ class RespondedSpecialistsViewModel
 
         mCompositeDisposable += mGetRespondedSpecialistsSubject
                 .subscribeOn(mSchedulers.provideIo())
-                .observeOn(mSchedulers.provideIo())
                 .flatMap { (damageClaimId, skip, count) ->
                     return@flatMap mApiClient.getRespondedSpecialistsPaged(damageClaimId, skip, count)
+                            .toObservable()
+                }
+                .subscribe({
+                    handleResponse(it)
+                }, { error ->
+                    handleError(error)
+                })
+
+        mCompositeDisposable += mAssignSpecialistSubject
+                .subscribeOn(mSchedulers.provideIo())
+                .flatMap { packet ->
+                    return@flatMap mApiClient.assignSpecialist(packet)
                             .toObservable()
                 }
                 .subscribe({
@@ -72,6 +89,10 @@ class RespondedSpecialistsViewModel
         mGetRespondedSpecialistsSubject.onNext(GetRespondedSpecialistsDTO(damageClaimId, skip, count))
     }
 
+    override fun assignSpecialist(userId: Long, damageClaimId: Long) {
+        mAssignSpecialistSubject.onNext(AssignSpecialistPacket(userId, damageClaimId))
+    }
+
     private fun handleResponse(response: StatusResponse) {
         val errorCode = response.errorCode
 
@@ -79,6 +100,10 @@ class RespondedSpecialistsViewModel
             when (response) {
                 is SpecialistsListResponse -> {
                     mOnSpecialistsListResponseSubject.onNext(response.specialists)
+                }
+
+                is AssignSpecialistResponse -> {
+                    mOnAssignSpecialistResponseSubject.onNext(response)
                 }
             }
         } else {
@@ -107,7 +132,8 @@ class RespondedSpecialistsViewModel
                                           val skip: Long,
                                           val count: Long)
 
-    override fun mOnSpecialistsListResponse(): Observable<List<SpecialistProfile>> = mOnSpecialistsListResponseSubject
+    override fun onAssignSpecialistResponse(): Observable<AssignSpecialistResponse> = mOnAssignSpecialistResponseSubject
+    override fun onSpecialistsListResponse(): Observable<List<SpecialistProfile>> = mOnSpecialistsListResponseSubject
     override fun onBadResponse(): Observable<ErrorCode.Remote> = mOnBadResponseSubject
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
 }

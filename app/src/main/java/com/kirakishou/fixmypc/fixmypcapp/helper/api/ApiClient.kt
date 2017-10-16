@@ -31,7 +31,7 @@ interface ApiClient {
 
     fun getRespondedSpecialistsPaged(damageClaimId: Long, skip: Long, count: Long): Single<SpecialistsListResponse>
 
-    fun assignSpecialist(packet: AssignSpecialistPacket): Single<StatusResponse>
+    fun assignSpecialist(packet: AssignSpecialistPacket): Single<AssignSpecialistResponse>
 
     fun getSpecialistProfile(): Single<SpecialistProfileResponse>
 

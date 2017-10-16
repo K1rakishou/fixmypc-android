@@ -84,16 +84,16 @@ class SpecialistProfileListAdapter(private val mContext: Context,
             is SpecialistProfileItemHolder -> {
                 if (mItems[position].value.isPresent()) {
                     val item = mItems[position].value.get()
-                    val profileAdapterItem = (item as SpecialistsProfilesGeneric).specialistProfile
+                    val specialistProfile = (item as SpecialistsProfilesGeneric).specialistProfile
 
                     holder.clickView.setOnClickListener {
-                        mAdapterItemClickSubject.onNext(profileAdapterItem)
+                        mAdapterItemClickSubject.onNext(specialistProfile)
                     }
 
-                    holder.profileName.text = profileAdapterItem.name
-                    holder.profileRating.rating = profileAdapterItem.rating
+                    holder.profileName.text = specialistProfile.name
+                    holder.profileRating.rating = specialistProfile.rating
 
-                    val registeredOnDateStr = TimeUtils.format(profileAdapterItem.registeredOn)
+                    val registeredOnDateStr = TimeUtils.format(specialistProfile.registeredOn)
                     if (registeredOnDateStr.isNotEmpty()) {
                         holder.profileRegisteredOn.text = "Зарегистрирован с $registeredOnDateStr"
                     } else {
@@ -101,7 +101,7 @@ class SpecialistProfileListAdapter(private val mContext: Context,
                     }
 
                     //TODO
-                    //mImageLoader.loadDamageClaimImageFromNetInto(profileAdapterItem.photoName, holder.profilePhoto)
+                    mImageLoader.loadProfileImageFromNetInto(specialistProfile.userId, specialistProfile.photoName, holder.profilePhoto)
                 }
             }
 

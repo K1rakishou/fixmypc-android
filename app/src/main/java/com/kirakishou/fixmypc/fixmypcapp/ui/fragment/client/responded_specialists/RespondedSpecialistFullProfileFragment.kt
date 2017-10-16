@@ -17,6 +17,7 @@ import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerRespondedSpecialistsActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.RespondedSpecialistsActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.TimeUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
@@ -62,6 +63,9 @@ class RespondedSpecialistFullProfileFragment : BaseFragment<RespondedSpecialists
     @Inject
     lateinit var mViewModelFactory: RespondedSpecialistsActivityViewModelFactory
 
+    @Inject
+    lateinit var mImageLoader: ImageLoader
+
     private var specialistProfileFickle = Fickle.empty<SpecialistProfile>()
 
     override fun initViewModel(): RespondedSpecialistsViewModel? {
@@ -73,7 +77,7 @@ class RespondedSpecialistFullProfileFragment : BaseFragment<RespondedSpecialists
     override fun loadExitAnimations() = AnimatorSet()
 
     override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
-        initSpecialistProfile()
+        updateSpecialistProfileUi()
         initRx()
     }
 
@@ -98,7 +102,7 @@ class RespondedSpecialistFullProfileFragment : BaseFragment<RespondedSpecialists
         Timber.e("Show repair history")
     }
 
-    private fun initSpecialistProfile() {
+    private fun updateSpecialistProfileUi() {
         val bundle = arguments
         if (bundle == null) {
             throw IllegalArgumentException("no fragment arguments")
@@ -128,6 +132,8 @@ class RespondedSpecialistFullProfileFragment : BaseFragment<RespondedSpecialists
 
             profileSuccessRepairs.text = "Успешных ремонтов: ${profile.successRepairs}"
             profileFailRepairs.text = "Неудачных ремонтов: ${profile.failRepairs}"
+
+            mImageLoader.loadProfileImageFromNetInto(profile.userId, profile.photoName, profilePhoto)
         }
     }
 

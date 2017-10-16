@@ -49,7 +49,7 @@ class RespondedSpecialistsListFragment : BaseFragment<RespondedSpecialistsViewMo
     private val mAdapterItemClickSubject = BehaviorSubject.create<SpecialistProfile>()
     private var mDamageClaimId = -1L
 
-    private lateinit var mSpecialistProfileAdapter: SpecialistProfileListAdapter
+    private lateinit var mAdapter: SpecialistProfileListAdapter
     private lateinit var mEndlessScrollListener: EndlessRecyclerOnScrollListener
 
     override fun initViewModel(): RespondedSpecialistsViewModel? {
@@ -72,7 +72,7 @@ class RespondedSpecialistsListFragment : BaseFragment<RespondedSpecialistsViewMo
     }
 
     private fun recyclerStartLoadingItems() {
-        mSpecialistProfileAdapter.addProgressFooter()
+        mAdapter.addProgressFooter()
     }
 
     private fun initRecycler() {
@@ -81,7 +81,7 @@ class RespondedSpecialistsListFragment : BaseFragment<RespondedSpecialistsViewMo
 
         layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                val type = mSpecialistProfileAdapter.getItemViewType(position)
+                val type = mAdapter.getItemViewType(position)
                 return when (type) {
                     AdapterItemType.VIEW_PROGRESSBAR.ordinal, AdapterItemType.VIEW_MESSAGE.ordinal -> spanCount
                     AdapterItemType.VIEW_ITEM.ordinal -> 1
@@ -90,13 +90,13 @@ class RespondedSpecialistsListFragment : BaseFragment<RespondedSpecialistsViewMo
             }
         }
 
-        mSpecialistProfileAdapter = SpecialistProfileListAdapter(activity, mImageLoader, mAdapterItemClickSubject)
-        mSpecialistProfileAdapter.init()
+        mAdapter = SpecialistProfileListAdapter(activity, mImageLoader, mAdapterItemClickSubject)
+        mAdapter.init()
 
         mEndlessScrollListener = EndlessRecyclerOnScrollListener(layoutManager, mLoadMoreSubject)
 
         respondedSpecialistsList.layoutManager = layoutManager
-        respondedSpecialistsList.adapter = mSpecialistProfileAdapter
+        respondedSpecialistsList.adapter = mAdapter
         respondedSpecialistsList.addOnScrollListener(mEndlessScrollListener)
         respondedSpecialistsList.setHasFixedSize(true)
     }
@@ -105,7 +105,7 @@ class RespondedSpecialistsListFragment : BaseFragment<RespondedSpecialistsViewMo
         mCompositeDisposable += mLoadMoreSubject
                 .subscribeOn(Schedulers.io())
                 .subscribe({ page ->
-                    mSpecialistProfileAdapter.addProgressFooter()
+                    mAdapter.addProgressFooter()
                     getRespondedSpecialists(page)
                 }, { error ->
                     Timber.e(error)
@@ -141,23 +141,23 @@ class RespondedSpecialistsListFragment : BaseFragment<RespondedSpecialistsViewMo
     }
 
     private fun onSpecialistsResponse(specialistsList: List<SpecialistProfile>) {
-        mSpecialistProfileAdapter.runOnAdapterHandler {
+        mAdapter.runOnAdapterHandler {
             mEndlessScrollListener.pageLoaded()
 
             if (specialistsList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
                 mEndlessScrollListener.reachedEnd()
             }
 
-            mSpecialistProfileAdapter.removeProgressFooter()
+            mAdapter.removeProgressFooter()
 
             val adapterSpecialistProfiles = specialistsList.map { AdapterItem(SpecialistsProfilesGeneric(it), AdapterItemType.VIEW_ITEM) }
-            mSpecialistProfileAdapter.addAll(adapterSpecialistProfiles as List<AdapterItem<SpecialistProfileGenericParam>>)
+            mAdapter.addAll(adapterSpecialistProfiles as List<AdapterItem<SpecialistProfileGenericParam>>)
 
-            if (mSpecialistProfileAdapter.itemCount == 0 && specialistsList.isEmpty()) {
-                mSpecialistProfileAdapter.addMessageFooter("Пока ещё никто не откликнулся")
-            } else if (mSpecialistProfileAdapter.itemCount > 0
+            if (mAdapter.itemCount == 0 && specialistsList.isEmpty()) {
+                mAdapter.addMessageFooter("Пока ещё никто не откликнулся")
+            } else if (mAdapter.itemCount > 0
                     && specialistsList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
-                mSpecialistProfileAdapter.addMessageFooter("Конец списка")
+                mAdapter.addMessageFooter("Конец списка")
             }
         }
     }

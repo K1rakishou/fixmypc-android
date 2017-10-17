@@ -36,8 +36,4 @@ data class SpecialistProfile(@Expose
 
                              @Expose
                              @SerializedName("fail_repairs")
-                             var failRepairs: Int = 0,
-
-                             @Expose
-                             @SerializedName("is_filled_in")
-                             var isFilledIn: Boolean = false)
+                             var failRepairs: Int = 0)

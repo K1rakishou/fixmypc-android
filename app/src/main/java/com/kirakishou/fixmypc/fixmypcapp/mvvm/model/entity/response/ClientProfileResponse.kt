@@ -12,4 +12,8 @@ class ClientProfileResponse(@Expose
                             @SerializedName("client_profile")
                             val clientProfile: ClientProfile,
 
+                            @Expose
+                            @SerializedName("is_profile_filled")
+                            val isProfileFilledIn: Boolean,
+
                             errorCode: ErrorCode.Remote) : StatusResponse(errorCode)

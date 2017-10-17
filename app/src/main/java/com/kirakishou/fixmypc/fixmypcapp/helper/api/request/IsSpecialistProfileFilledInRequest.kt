@@ -7,9 +7,10 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.rx.operator.OnApiErrorSingle
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.ClientProfile
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.LoginPacket
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.ClientProfileResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.IsProfileFilledInResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.SpecialistProfileResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.BadServerResponseException
@@ -21,20 +22,19 @@ import java.net.UnknownHostException
 import java.util.concurrent.TimeoutException
 
 /**
- * Created by kirakishou on 9/20/2017.
+ * Created by kirakishou on 10/17/2017.
  */
-class GetClientProfileRequest(protected val mUserId: Long,
-                              protected val mApiService: ApiService,
-                              protected val mAppSettings: AppSettings,
-                              protected val mGson: Gson,
-                              protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<ClientProfileResponse>> {
+class IsSpecialistProfileFilledInRequest(protected val mApiService: ApiService,
+                                         protected val mAppSettings: AppSettings,
+                                         protected val mGson: Gson,
+                                         protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<IsProfileFilledInResponse>> {
 
-    override fun execute(): Single<ClientProfileResponse> {
+    override fun execute(): Single<IsProfileFilledInResponse> {
         if (!mAppSettings.isUserInfoExists()) {
             throw UserInfoIsEmptyException()
         }
 
-        return mApiService.getClientProfile(mAppSettings.loadUserInfo().sessionId, mUserId)
+        return mApiService.isSpecialistProfileFilledIn(mAppSettings.loadUserInfo().sessionId)
                 .subscribeOn(mSchedulers.provideIo())
                 .lift(OnApiErrorSingle(mGson))
                 .flatMap { response ->
@@ -47,7 +47,7 @@ class GetClientProfileRequest(protected val mUserId: Long,
                 .onErrorResumeNext { error -> exceptionToErrorCode(error) }
     }
 
-    private fun reLoginAndResendRequest(): Single<ClientProfileResponse> {
+    private fun reLoginAndResendRequest(): Single<IsProfileFilledInResponse> {
         if (!mAppSettings.isUserInfoExists()) {
             throw UserInfoIsEmptyException()
         }
@@ -65,25 +65,26 @@ class GetClientProfileRequest(protected val mUserId: Long,
                 .filter { it.errorCode == ErrorCode.Remote.REC_OK }
                 .doOnNext { mAppSettings.updateSessionId(it.sessionId) }
                 .flatMap {
-                    return@flatMap mApiService.getClientProfile(mAppSettings.loadUserInfo().sessionId, mUserId).toObservable()
+                    return@flatMap mApiService.isSpecialistProfileFilledIn(mAppSettings.loadUserInfo().sessionId)
+                            .toObservable()
                 }
-                .lift<ClientProfileResponse>(OnApiErrorObservable(mGson))
+                .lift<IsProfileFilledInResponse>(OnApiErrorObservable(mGson))
 
         val failObservable = loginResponseObservable
                 .filter { it.errorCode != ErrorCode.Remote.REC_OK }
                 .doOnNext { throw CouldNotUpdateSessionId() }
-                .map { ClientProfileResponse(ClientProfile(), false, it.errorCode) }
+                .map { IsProfileFilledInResponse(false, it.errorCode) }
 
         return Observable.merge(successObservable, failObservable)
-                .single(StatusResponse(ErrorCode.Remote.REC_EMPTY_OBSERVABLE_ERROR) as ClientProfileResponse)
+                .single(StatusResponse(ErrorCode.Remote.REC_EMPTY_OBSERVABLE_ERROR) as IsProfileFilledInResponse)
     }
 
-    private fun exceptionToErrorCode(error: Throwable): Single<ClientProfileResponse> {
+    private fun exceptionToErrorCode(error: Throwable): Single<IsProfileFilledInResponse> {
         val response = when (error) {
-            is ApiException -> ClientProfileResponse(ClientProfile(), false, error.errorCode)
-            is TimeoutException -> ClientProfileResponse(ClientProfile(), false, ErrorCode.Remote.REC_TIMEOUT)
-            is UnknownHostException -> ClientProfileResponse(ClientProfile(), false, ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
-            is BadServerResponseException -> ClientProfileResponse(ClientProfile(), false, ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
+            is ApiException -> IsProfileFilledInResponse(false, error.errorCode)
+            is TimeoutException -> IsProfileFilledInResponse( false, ErrorCode.Remote.REC_TIMEOUT)
+            is UnknownHostException -> IsProfileFilledInResponse( false, ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
+            is BadServerResponseException -> IsProfileFilledInResponse( false, ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
 
             else -> throw RuntimeException("Unknown exception")
         }

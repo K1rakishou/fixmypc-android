@@ -142,7 +142,6 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
             args.putLong("registered_on", profile.registeredOn)
             args.putInt("success_repairs", profile.successRepairs)
             args.putInt("fail_repairs", profile.failRepairs)
-            args.putBoolean("is_filled_in", profile.isFilledIn)
 
             runActivityWithArgs(UpdateSpecialistProfileActivity::class.java, args)
         }

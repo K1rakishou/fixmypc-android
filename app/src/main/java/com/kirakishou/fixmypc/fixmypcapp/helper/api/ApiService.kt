@@ -68,6 +68,9 @@ interface ApiService {
     @POST("/v1/api/specialist/profile/photo")
     fun updateSpecialistProfilePhoto(@Header("session_id") sessionId: String,
                                      @Part photo: MultipartBody.Part): Single<Response<UpdateSpecialistProfilePhotoResponse>>
+
+    @GET("/v1/api/specialist/profile/is_filled_in")
+    fun isSpecialistProfileFilledIn(@Header("session_id") sessionId: String): Single<Response<IsProfileFilledInResponse>>
 }
 
 

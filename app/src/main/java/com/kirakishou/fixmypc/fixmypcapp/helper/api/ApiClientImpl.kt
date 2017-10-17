@@ -91,6 +91,11 @@ class ApiClientImpl
         return UpdateSpecialistProfileInfoRequest(packet, mApiService, mAppSettings, mGson, mSchedulers)
                 .execute()
     }
+
+    override fun isSpecialistProfileFilledIn(): Single<IsProfileFilledInResponse> {
+        return IsSpecialistProfileFilledInRequest(mApiService, mAppSettings, mGson, mSchedulers)
+                .execute()
+    }
 }
 
 

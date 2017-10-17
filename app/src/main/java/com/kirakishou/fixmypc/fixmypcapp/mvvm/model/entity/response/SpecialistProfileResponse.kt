@@ -12,4 +12,8 @@ class SpecialistProfileResponse(@Expose
                                 @SerializedName("specialist_profile")
                                 val profile: SpecialistProfile,
 
+                                @Expose
+                                @SerializedName("is_profile_filled")
+                                var isProfileFilledIn: Boolean = false,
+
                                 errorCode: ErrorCode.Remote) : StatusResponse(errorCode)

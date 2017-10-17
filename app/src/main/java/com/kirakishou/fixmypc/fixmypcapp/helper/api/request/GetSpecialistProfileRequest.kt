@@ -71,7 +71,7 @@ class GetSpecialistProfileRequest(protected val mApiService: ApiService,
         val failObservable = loginResponseObservable
                 .filter { it.errorCode != ErrorCode.Remote.REC_OK }
                 .doOnNext { throw CouldNotUpdateSessionId() }
-                .map { SpecialistProfileResponse(SpecialistProfile(), it.errorCode) }
+                .map { SpecialistProfileResponse(SpecialistProfile(), false, it.errorCode) }
 
         return Observable.merge(successObservable, failObservable)
                 .single(StatusResponse(ErrorCode.Remote.REC_EMPTY_OBSERVABLE_ERROR) as SpecialistProfileResponse)
@@ -79,10 +79,10 @@ class GetSpecialistProfileRequest(protected val mApiService: ApiService,
 
     private fun exceptionToErrorCode(error: Throwable): Single<SpecialistProfileResponse> {
         val response = when (error) {
-            is ApiException -> SpecialistProfileResponse(SpecialistProfile(), error.errorCode)
-            is TimeoutException -> SpecialistProfileResponse(SpecialistProfile(), ErrorCode.Remote.REC_TIMEOUT)
-            is UnknownHostException -> SpecialistProfileResponse(SpecialistProfile(), ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
-            is BadServerResponseException -> SpecialistProfileResponse(SpecialistProfile(), ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
+            is ApiException -> SpecialistProfileResponse(SpecialistProfile(), false, error.errorCode)
+            is TimeoutException -> SpecialistProfileResponse(SpecialistProfile(), false, ErrorCode.Remote.REC_TIMEOUT)
+            is UnknownHostException -> SpecialistProfileResponse(SpecialistProfile(), false, ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
+            is BadServerResponseException -> SpecialistProfileResponse(SpecialistProfile(), false, ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
 
             else -> throw RuntimeException("Unknown exception")
         }

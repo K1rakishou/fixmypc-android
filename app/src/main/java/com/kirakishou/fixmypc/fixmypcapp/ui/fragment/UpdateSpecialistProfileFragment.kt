@@ -86,7 +86,6 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
             profile.registeredOn = arguments.getLong("registered_on")
             profile.successRepairs = arguments.getInt("success_repairs")
             profile.failRepairs = arguments.getInt("fail_repairs")
-            profile.isFilledIn = arguments.getBoolean("is_filled_in")
 
             profileName.setText(profile.name)
             profilePhone.setText(profile.phone)

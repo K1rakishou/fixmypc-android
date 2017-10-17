@@ -36,6 +36,7 @@ class ClientMainActivityViewModel
     val mOutputs: ClientMainActivityOutputs = this
     val mErrors: ClientMainActivityErrors = this
 
+    var currentFragmentTag = Constant.FragmentTags.CLIENT_MY_DAMAGE_CLAIMS
     private val itemsPerPage = Constant.MAX_DAMAGE_CLAIMS_PER_PAGE
     private val mCompositeDisposable = CompositeDisposable()
 

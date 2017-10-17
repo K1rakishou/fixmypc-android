@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Поломки" android:id="@+id/damage_claim_list"
+        android:enabled="true"
+        android:icon="@drawable/ic_damage_claims_selected"/>
+
+    <item android:title="Профиль" android:id="@+id/profile"
+        android:icon="@drawable/ic_profile_selected"/>
+
+    <item android:title="Настройки" android:id="@+id/options"
+        android:icon="@drawable/ic_options_unselected"/>
+
+</menu>

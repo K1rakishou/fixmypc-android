@@ -10,7 +10,7 @@
         android:id="@+id/fragment_frame"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_panel"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_nav_menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,57 +22,20 @@
         android:layout_marginBottom="24dp"
         android:layout_marginEnd="24dp"
         android:src="@drawable/ic_create"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_panel"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_nav_menu"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/bottom_panel"
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bottom_nav_menu"
         android:layout_width="match_parent"
-        android:layout_height="52dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:itemBackground="@color/colorPrimaryDark"
+        app:itemIconTint="@color/white"
+        app:itemTextColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <ImageView
-            android:id="@+id/damage_claim_list"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_marginBottom="0dp"
-            android:layout_marginStart="8dp"
-            android:padding="4dp"
-            android:src="@drawable/ic_damage_claims_selected"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/profile"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <ImageView
-            android:id="@+id/profile"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_marginBottom="0dp"
-            android:layout_marginStart="8dp"
-            android:padding="4dp"
-            android:src="@drawable/ic_profile_unselected"
-            app:layout_constraintBottom_toBottomOf="@+id/damage_claim_list"
-            app:layout_constraintEnd_toStartOf="@+id/options"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/damage_claim_list" />
-
-        <ImageView
-            android:id="@+id/options"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_marginBottom="0dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:padding="4dp"
-            android:src="@drawable/ic_options_unselected"
-            app:layout_constraintBottom_toBottomOf="@+id/profile"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/profile" />
-
-    </android.support.constraint.ConstraintLayout>
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/client_bottom_nav_menu" />
 
 </android.support.constraint.ConstraintLayout>

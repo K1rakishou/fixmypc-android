@@ -4,6 +4,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.ClientMyDamageClaimsFragment
+import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.ClientOptionsFragment
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.ClientProfileFragment
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.client_damage_claims.ClientActiveDamageClaimsList
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.client_damage_claims.ClientInactiveDamageClaimsList
@@ -21,4 +22,5 @@ interface ClientMainActivityComponent {
     fun inject(fragment: ClientMyDamageClaimsFragment)
     fun inject(fragment: ClientActiveDamageClaimsList)
     fun inject(fragment: ClientInactiveDamageClaimsList)
+    fun inject(fragment: ClientOptionsFragment)
 }

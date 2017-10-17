@@ -25,8 +25,8 @@ import javax.inject.Inject
 class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), BaseActivityFragmentCallback,
         FragmentManager.OnBackStackChangedListener, BottomNavigationView.OnNavigationItemSelectedListener {
 
-    @BindView(R.id.bottom_navigation)
-    lateinit var bottomNavigationView: BottomNavigationView
+    @BindView(R.id.bottom_nav_menu)
+    lateinit var bottomNavigationMenu: BottomNavigationView
 
     @Inject
     lateinit var mRefWatcher: RefWatcher
@@ -49,11 +49,8 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), 
         supportFragmentManager.addOnBackStackChangedListener(this)
         getViewModel().init()
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(this)
-
-        if (savedInstanceState == null) {
-            mNavigator.navigateToActiveDamageClaimsListFragment()
-        }
+        bottomNavigationMenu.setOnNavigationItemSelectedListener(this)
+        mNavigator.navigateToActiveDamageClaimsListFragment()
     }
 
     override fun onActivityDestroy() {

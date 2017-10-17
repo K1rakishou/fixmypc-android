@@ -11,7 +11,6 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimsWithDistance
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.RespondToDamageClaimPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UnknownErrorCodeException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.SpecialistMainActivityErrors
@@ -193,7 +192,7 @@ class SpecialistMainActivityViewModel
                         ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER,
                         ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION,
                         ErrorCode.Remote.REC_BAD_ACCOUNT_TYPE,
-                        ErrorCode.Remote.REC_COULD_NOT_FIND_PROFILE_WITH_USER_ID -> {
+                        ErrorCode.Remote.REC_COULD_NOT_FIND_PROFILE -> {
                             mOnBadResponseSubject.onNext(errorCode)
                         }
 

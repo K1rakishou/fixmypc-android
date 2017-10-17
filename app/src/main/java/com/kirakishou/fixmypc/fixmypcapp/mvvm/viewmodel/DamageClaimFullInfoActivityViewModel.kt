@@ -111,7 +111,9 @@ class DamageClaimFullInfoActivityViewModel
                         ErrorCode.Remote.REC_COULD_NOT_RESPOND_TO_DAMAGE_CLAIM,
                         ErrorCode.Remote.REC_DAMAGE_CLAIM_DOES_NOT_EXIST,
                         ErrorCode.Remote.REC_DAMAGE_CLAIM_IS_NOT_ACTIVE,
-                        ErrorCode.Remote.REC_BAD_ACCOUNT_TYPE -> {
+                        ErrorCode.Remote.REC_BAD_ACCOUNT_TYPE,
+                        ErrorCode.Remote.REC_COULD_NOT_FIND_PROFILE,
+                        ErrorCode.Remote.REC_PROFILE_IS_NOT_FILLED_IN -> {
                             mOnBadResponseSubject.onNext(errorCode)
                         }
 

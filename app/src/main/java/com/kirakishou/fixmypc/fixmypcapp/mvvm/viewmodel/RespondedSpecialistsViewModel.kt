@@ -113,7 +113,9 @@ class RespondedSpecialistsViewModel
                         ErrorCode.Remote.REC_TIMEOUT,
                         ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER,
                         ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION,
-                        ErrorCode.Remote.REC_BAD_ACCOUNT_TYPE -> {
+                        ErrorCode.Remote.REC_BAD_ACCOUNT_TYPE,
+                        ErrorCode.Remote.REC_COULD_NOT_FIND_PROFILE,
+                        ErrorCode.Remote.REC_PROFILE_IS_NOT_FILLED_IN -> {
                             mOnBadResponseSubject.onNext(errorCode)
                         }
 

@@ -132,7 +132,9 @@ class ClientNewDamageClaimActivityViewModel
             ErrorCode.Remote.REC_RESPONSE_BODY_IS_EMPTY,
             ErrorCode.Remote.REC_DUPLICATE_ENTRY_EXCEPTION,
             ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION,
-            ErrorCode.Remote.REC_BAD_ORIGINAL_FILE_NAME -> {
+            ErrorCode.Remote.REC_BAD_ORIGINAL_FILE_NAME,
+            ErrorCode.Remote.REC_COULD_NOT_FIND_PROFILE,
+            ErrorCode.Remote.REC_PROFILE_IS_NOT_FILLED_IN -> {
                 mOnBadResponseSubject.onNext(errorCode)
             }
 

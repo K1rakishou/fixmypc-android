@@ -48,8 +48,13 @@ object ErrorMessage {
             ErrorCode.Remote.REC_BAD_ACCOUNT_TYPE -> return "Невозможно выполнить операцию из данного аккаунта"
             ErrorCode.Remote.REC_COULD_NOT_REMOVE_RESPONDED_SPECIALISTS -> return "Ошибка на сервере"
             ErrorCode.Remote.REC_DAMAGE_CLAIM_DOES_NOT_BELONG_TO_USER -> return "Попытка доступа к данным, которые не принадлежат пользователю"
-            ErrorCode.Remote.REC_COULD_NOT_FIND_PROFILE_WITH_USER_ID -> return "Не удалось найти профиль по данному айди"
+            ErrorCode.Remote.REC_COULD_NOT_FIND_PROFILE -> return "Не удалось найти профиль"
             ErrorCode.Remote.REC_EMPTY_OBSERVABLE_ERROR -> return "EMPTY_OBSERVABLE_ERROR"
+            ErrorCode.Remote.REC_COULD_NOT_UPLOAD_IMAGE -> return "Не удалось загрузить фото"
+            ErrorCode.Remote.REC_REPOSITORY_ERROR -> return "Неизвестная ошибка репозитория на сервере"
+            ErrorCode.Remote.REC_COULD_NOT_DELETE_OLD_IMAGE -> return "Не удалось удалить предыдущее фото"
+            ErrorCode.Remote.REC_STORE_ERROR -> return "Неизвестная ошибка репозитория на сервере"
+            ErrorCode.Remote.REC_PROFILE_IS_NOT_FILLED_IN -> return "Профиль не заполнен"
 
             else -> throw IllegalArgumentException("Unknown statusCode: $errorCode")
         }

@@ -5,6 +5,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.ActiveDamageClaimsListFragment
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.DamageClaimFullInfoFragment
+import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.SpecialistOptionsFragment
 import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.specialist.SpecialistProfileFragment
 import dagger.Component
 
@@ -18,4 +19,5 @@ interface SpecialistMainActivityComponent {
     fun inject(activity: SpecialistMainActivity)
     fun inject(fragment: ActiveDamageClaimsListFragment)
     fun inject(fragment: SpecialistProfileFragment)
+    fun inject(fragment: SpecialistOptionsFragment)
 }

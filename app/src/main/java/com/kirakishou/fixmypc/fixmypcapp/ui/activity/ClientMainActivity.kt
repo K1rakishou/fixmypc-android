@@ -87,16 +87,15 @@ class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>(), Fragment
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.damage_claim_list -> {
-                getViewModel().currentFragmentTag = Constant.FragmentTags.CLIENT_MY_DAMAGE_CLAIMS
                 mNavigator.navigateToClientMyDamageClaimsFragment()
             }
 
             R.id.profile -> {
-                Timber.e("Navigate to client profile fragment")
+                mNavigator.navigateToClientProfileFragment()
             }
 
             R.id.options -> {
-                Timber.e("Navigate to options fragment")
+                mNavigator.navigateToClientOptionsFragment()
             }
         }
         return true

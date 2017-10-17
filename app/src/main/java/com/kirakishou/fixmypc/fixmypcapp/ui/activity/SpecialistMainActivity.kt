@@ -69,17 +69,15 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.damage_claim_list -> {
-                getViewModel().currentFragmentTag = Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST
                 mNavigator.navigateToActiveDamageClaimsListFragment()
             }
 
             R.id.profile -> {
-                getViewModel().currentFragmentTag = Constant.FragmentTags.SPECIALIST_PROFILE
                 mNavigator.navigateToSpecialistProfileFragment()
             }
 
             R.id.options -> {
-                Timber.e("Navigate to options fragment")
+                mNavigator.navigateToSpecialistOptions()
             }
         }
         return true

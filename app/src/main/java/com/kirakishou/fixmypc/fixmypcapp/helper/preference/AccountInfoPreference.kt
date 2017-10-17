@@ -19,14 +19,13 @@ class AccountInfoPreference(private val mSharedPreferences: SharedPreferences) :
     private val mPasswordSharedPrefKey = "${Constant.SHARED_PREFS_PREFIX}_${mThisPrefPrefix}_password"
 
     override fun save() {
-        if (!login.isPresent() || !password.isPresent()) {
-            Timber.w("Attempt to save not existing preference")
-            return
-        }
-
         mSharedPreferences.edit {
-            it.putString(mLoginSharedPrefKey, login.get())
-            it.putString(mPasswordSharedPrefKey, password.get())
+            if (login.isPresent() && password.isPresent()) {
+                it.putString(mLoginSharedPrefKey, login.get())
+                it.putString(mPasswordSharedPrefKey, password.get())
+            }
+
+            it.commit()
         }
     }
 
@@ -39,6 +38,9 @@ class AccountInfoPreference(private val mSharedPreferences: SharedPreferences) :
         mSharedPreferences.edit {
             it.remove(mLoginSharedPrefKey)
             it.remove(mPasswordSharedPrefKey)
+
+            login = Fickle.empty()
+            password = Fickle.empty()
         }
     }
 

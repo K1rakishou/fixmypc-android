@@ -20,15 +20,15 @@ class MyCurrentLocationPreference(private val mSharedPreferences: SharedPreferen
     private val mLongitudeSharedPrefKey = "${Constant.SHARED_PREFS_PREFIX}_${mThisPrefPrefix}_longitude"
 
     override fun save() {
-        if (!mLocation.isPresent()) {
-            Timber.w("Attempt to save not existing preference")
-            return
-        }
-
         mSharedPreferences.edit {
             //sharedprefs can't save a double (why???) so we have to convert them and save them as strings
-            it.putString(mLatitudeSharedPrefKey, mLocation.get().latitude.toString())
-            it.putString(mLongitudeSharedPrefKey, mLocation.get().longitude.toString())
+
+            if (mLocation.isPresent()) {
+                it.putString(mLatitudeSharedPrefKey, mLocation.get().latitude.toString())
+                it.putString(mLongitudeSharedPrefKey, mLocation.get().longitude.toString())
+            }
+
+            it.commit()
         }
     }
 
@@ -50,6 +50,8 @@ class MyCurrentLocationPreference(private val mSharedPreferences: SharedPreferen
         mSharedPreferences.edit {
             it.remove(mLatitudeSharedPrefKey)
             it.remove(mLongitudeSharedPrefKey)
+
+            mLocation = Fickle.empty()
         }
     }
 

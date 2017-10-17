@@ -50,14 +50,15 @@ open class BaseNavigator(activity: AppCompatActivity) {
         return null
     }
 
-    fun showLoadingIndicatorFragment() {
-        val visibleFragment = getVisibleFragment() ?: return
-        if (visibleFragment is LoadingIndicatorFragment) {
+    fun showLoadingIndicatorFragment(previousFragmentTag: String) {
+        val visibleFragment = getVisibleFragment()
+        if (visibleFragment != null && visibleFragment is LoadingIndicatorFragment) {
             return
         }
 
+        val previousFragment = getFragmentByTag(previousFragmentTag)
         val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.hide(visibleFragment)
+                .hide(previousFragment)
 
         val newFragment = LoadingIndicatorFragment()
         fragmentTransaction
@@ -67,14 +68,14 @@ open class BaseNavigator(activity: AppCompatActivity) {
         fragmentTransaction.commit()
     }
 
-    fun hideLoadingIndicatorFragment() {
-        val visibleFragment = getVisibleFragment()
+    fun hideLoadingIndicatorFragment(previousFragmentTag: String) {
+        val loadingIndicatorFragment = getFragmentByTag(Constant.FragmentTags.LOADING_INDICATOR) ?: return
+        val previousFragment = getFragmentByTag(previousFragmentTag)
 
-        if (visibleFragment != null) {
-            if (visibleFragment is LoadingIndicatorFragment) {
-                fragmentManager.popBackStack()
-            }
-        }
+        fragmentManager.beginTransaction()
+                .remove(loadingIndicatorFragment)
+                .show(previousFragment)
+                .commit()
     }
 
     fun navigateToFragment(fragmentClass: KClass<*>, fragmentTag: String, bundle: Bundle? = null, fragmentFrameId: Int = R.id.fragment_frame) {

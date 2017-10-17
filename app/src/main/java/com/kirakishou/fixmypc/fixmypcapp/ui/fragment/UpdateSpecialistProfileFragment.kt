@@ -200,7 +200,7 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
 
         val imageFile = profilePhoto.imageFile!!
 
-        mNavigator.showLoadingIndicatorFragment()
+        mNavigator.showLoadingIndicatorFragment(Constant.FragmentTags.UPDATE_SPECIALIST_PROFILE)
         getViewModel().mInputs.updateSpecialistProfilePhoto(imageFile.absolutePath)
 
         hideKeyboard()
@@ -222,14 +222,14 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
         val name = profileName.text.toString()
         val phone = profilePhone.text.toString()
 
-        mNavigator.showLoadingIndicatorFragment()
+        mNavigator.showLoadingIndicatorFragment(Constant.FragmentTags.UPDATE_SPECIALIST_PROFILE)
         getViewModel().mInputs.updateSpecialistProfileInfo(name, phone)
 
         hideKeyboard()
     }
 
     private fun onUpdateSpecialistProfileResponse() {
-        mNavigator.hideLoadingIndicatorFragment()
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.UPDATE_SPECIALIST_PROFILE)
     }
 
     override fun addPhoto() {
@@ -276,14 +276,14 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
     }
 
     override fun onBadResponse(errorCode: ErrorCode.Remote) {
-        mNavigator.hideLoadingIndicatorFragment()
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.UPDATE_SPECIALIST_PROFILE)
 
         val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
         showToast(message, Toast.LENGTH_LONG)
     }
 
     override fun onUnknownError(error: Throwable) {
-        mNavigator.hideLoadingIndicatorFragment()
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.UPDATE_SPECIALIST_PROFILE)
         unknownError(error)
     }
 

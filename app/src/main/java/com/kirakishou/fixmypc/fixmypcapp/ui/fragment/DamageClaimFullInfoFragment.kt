@@ -107,13 +107,6 @@ class DamageClaimFullInfoFragment : BaseFragment<DamageClaimFullInfoActivityView
         viewPager.offscreenPageLimit = 1
     }
 
-    private fun checkIfAlreadyResponded() {
-        mNavigator.showLoadingIndicatorFragment()
-
-        val damageClaim = damageClaimFickle.get()
-        getViewModel().mInputs.checkHasAlreadyRespondedToDamageClaim(damageClaim.id)
-    }
-
     private fun initRx() {
         mCompositeDisposable += RxView.clicks(respondButton)
                 .subscribeOn(AndroidSchedulers.mainThread())
@@ -136,11 +129,18 @@ class DamageClaimFullInfoFragment : BaseFragment<DamageClaimFullInfoActivityView
                 .subscribe({ onUnknownError(it) })
     }
 
+    private fun checkIfAlreadyResponded() {
+        mNavigator.showLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO)
+
+        val damageClaim = damageClaimFickle.get()
+        getViewModel().mInputs.checkHasAlreadyRespondedToDamageClaim(damageClaim.id)
+    }
+
     private fun onRespondButtonClick() {
-        damageClaimFickle.ifPresent {
-            mNavigator.showLoadingIndicatorFragment()
-            getViewModel().mInputs.respondToDamageClaim(it.id)
-        }
+        val damageClaim = damageClaimFickle.get()
+
+        mNavigator.showLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO)
+        getViewModel().mInputs.respondToDamageClaim(damageClaim.id)
     }
 
     override fun onMapReady(map: GoogleMap) {
@@ -155,7 +155,7 @@ class DamageClaimFullInfoFragment : BaseFragment<DamageClaimFullInfoActivityView
 
     private fun onHasAlreadyRespondedResponse(responded: Boolean) {
         activity.runOnUiThread {
-            mNavigator.hideLoadingIndicatorFragment()
+            mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO)
 
             if (responded) {
                 respondButton.isEnabled = false
@@ -169,7 +169,7 @@ class DamageClaimFullInfoFragment : BaseFragment<DamageClaimFullInfoActivityView
 
     private fun onRespondToDamageClaimSuccessSubject() {
         activity.runOnUiThread {
-            mNavigator.hideLoadingIndicatorFragment()
+            mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO)
 
             respondButton.isEnabled = false
             respondButton.text = "Заявка отправлена"
@@ -177,14 +177,14 @@ class DamageClaimFullInfoFragment : BaseFragment<DamageClaimFullInfoActivityView
     }
 
     override fun onBadResponse(errorCode: ErrorCode.Remote) {
-        mNavigator.hideLoadingIndicatorFragment()
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO)
 
         val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
         showToast(message, Toast.LENGTH_LONG)
     }
 
     override fun onUnknownError(error: Throwable) {
-        mNavigator.hideLoadingIndicatorFragment()
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO)
 
         unknownError(error)
     }

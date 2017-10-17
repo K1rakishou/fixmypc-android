@@ -19,10 +19,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerRespondedSpecialists
 import com.kirakishou.fixmypc.fixmypcapp.di.module.RespondedSpecialistsActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.TimeUtils
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.AssignSpecialistResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.RespondedSpecialistsViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.RespondedSpecialistsActivityViewModelFactory
@@ -90,45 +87,6 @@ class RespondedSpecialistFullProfileFragment : BaseFragment<RespondedSpecialists
     override fun onFragmentViewDestroy() {
     }
 
-    private fun initRx() {
-        mCompositeDisposable += RxView.clicks(profileRepairHistoryButton)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onShowRepairHistoryButtonClick() })
-
-        mCompositeDisposable += RxView.clicks(profileAssignSpecialistButton)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onAssignSpecialistButtonClick() })
-
-        mCompositeDisposable += getViewModel().mOutputs.onAssignSpecialistResponse()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onAssignSpecialistResponse(it) })
-
-        mCompositeDisposable += getViewModel().mErrors.onBadResponse()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onBadResponse(it) })
-
-        mCompositeDisposable += getViewModel().mErrors.onUnknownError()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onUnknownError(it) })
-    }
-
-    private fun onAssignSpecialistResponse(response: AssignSpecialistResponse) {
-        mNavigator.hideLoadingIndicatorFragment()
-        Timber.e("response errorCode: ${response.errorCode}")
-    }
-
-    private fun onAssignSpecialistButtonClick() {
-        check(mDamageClaimId != -1L)
-
-        mNavigator.showLoadingIndicatorFragment()
-        val profile = mSpecialistProfileFickle.get()
-        getViewModel().mInputs.assignSpecialist(profile.userId, mDamageClaimId)
-    }
-
-    private fun onShowRepairHistoryButtonClick() {
-        Timber.e("Show repair history")
-    }
-
     private fun updateSpecialistProfileUi() {
         val bundle = arguments
         if (bundle == null) {
@@ -166,15 +124,54 @@ class RespondedSpecialistFullProfileFragment : BaseFragment<RespondedSpecialists
         }
     }
 
+    private fun initRx() {
+        mCompositeDisposable += RxView.clicks(profileRepairHistoryButton)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onShowRepairHistoryButtonClick() })
+
+        mCompositeDisposable += RxView.clicks(profileAssignSpecialistButton)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onAssignSpecialistButtonClick() })
+
+        mCompositeDisposable += getViewModel().mOutputs.onAssignSpecialistResponse()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onAssignSpecialistResponse(it) })
+
+        mCompositeDisposable += getViewModel().mErrors.onBadResponse()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onBadResponse(it) })
+
+        mCompositeDisposable += getViewModel().mErrors.onUnknownError()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onUnknownError(it) })
+    }
+
+    private fun onAssignSpecialistButtonClick() {
+        check(mDamageClaimId != -1L)
+
+        mNavigator.showLoadingIndicatorFragment(Constant.FragmentTags.RESPONDED_SPECIALIST_FULL_PROFILE)
+        val profile = mSpecialistProfileFickle.get()
+        getViewModel().mInputs.assignSpecialist(profile.userId, mDamageClaimId)
+    }
+
+    private fun onShowRepairHistoryButtonClick() {
+        Timber.e("Show repair history")
+    }
+
+    private fun onAssignSpecialistResponse(response: AssignSpecialistResponse) {
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.RESPONDED_SPECIALIST_FULL_PROFILE)
+        Timber.e("response errorCode: ${response.errorCode}")
+    }
+
     override fun onBadResponse(errorCode: ErrorCode.Remote) {
-        mNavigator.hideLoadingIndicatorFragment()
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.RESPONDED_SPECIALIST_FULL_PROFILE)
 
         val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
         showToast(message, Toast.LENGTH_LONG)
     }
 
     override fun onUnknownError(error: Throwable) {
-        mNavigator.hideLoadingIndicatorFragment()
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.RESPONDED_SPECIALIST_FULL_PROFILE)
 
         unknownError(error)
     }

@@ -51,11 +51,13 @@ class ApiClientImpl
     override fun respondToDamageClaim(packet: RespondToDamageClaimPacket): Single<RespondToDamageClaimResponse> {
         return RespondToDamageClaimRequest(packet, mApiService, mAppSettings, mGson, mSchedulers)
                 .execute()
+                .delay(1, TimeUnit.SECONDS)
     }
 
     override fun checkAlreadyRespondedToDamageClaim(damageClaimId: Long): Single<HasAlreadyRespondedResponse> {
         return CheckAlreadyRespondedToDamageClaimRequest(damageClaimId, mApiService, mAppSettings, mGson, mSchedulers)
                 .execute()
+                .delay(1, TimeUnit.SECONDS)
     }
 
     override fun getClientDamageClaimsPaged(isActive: Boolean, skip: Long, count: Long): Single<DamageClaimsResponse> {

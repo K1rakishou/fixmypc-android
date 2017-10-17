@@ -94,7 +94,7 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
         initRx()
 
         if (savedInstanceState == null) {
-            mNavigator.showLoadingIndicatorFragment()
+            mNavigator.showLoadingIndicatorFragment(Constant.FragmentTags.SPECIALIST_PROFILE)
             getViewModel().mInputs.getSpecialistProfile()
         }
 
@@ -149,7 +149,7 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
     }
 
     private fun onSpecialistProfileResponseSubject(profile: SpecialistProfile) {
-        mNavigator.hideLoadingIndicatorFragment()
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.SPECIALIST_PROFILE)
 
         updateUi(profile)
     }
@@ -194,14 +194,14 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
     }
 
     override fun onBadResponse(errorCode: ErrorCode.Remote) {
-        mNavigator.hideLoadingIndicatorFragment()
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.SPECIALIST_PROFILE)
 
         val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
         showToast(message, Toast.LENGTH_LONG)
     }
 
     override fun onUnknownError(error: Throwable) {
-        mNavigator.hideLoadingIndicatorFragment()
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.SPECIALIST_PROFILE)
         unknownError(error)
     }
 

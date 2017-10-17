@@ -103,7 +103,7 @@ class SpecialistProfileListAdapter(private val mContext: Context,
                     if (specialistProfile.photoName.isNotEmpty()) {
                         mImageLoader.loadProfileImageFromNetInto(specialistProfile.userId, specialistProfile.photoName, holder.profilePhoto)
                     } else {
-                        TODO()
+                        //TODO
                     }
                 }
             }

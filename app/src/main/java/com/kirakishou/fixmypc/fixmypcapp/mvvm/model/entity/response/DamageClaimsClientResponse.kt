@@ -12,5 +12,4 @@ class DamageClaimsClientResponse(@Expose
                                  @SerializedName("damage_claim_list")
                                  val damageClaims: MutableList<DamageClaim>,
 
-                                 var isActive: Boolean = false,
                                  errorCode: ErrorCode.Remote) : StatusResponse(errorCode)

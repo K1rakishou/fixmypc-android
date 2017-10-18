@@ -9,6 +9,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsClientResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsWithCountResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UnknownErrorCodeException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.ClientMainActivityErrors
@@ -42,7 +43,7 @@ class ClientMainActivityViewModel
 
     lateinit var mGetActiveClientDamageClaimSubject: BehaviorSubject<GetClientDamageClaimsDTO>
     lateinit var mGetInactiveClientDamageClaimSubject: BehaviorSubject<GetClientDamageClaimsDTO>
-    lateinit var mOnActiveDamageClaimsResponseSubject: BehaviorSubject<MutableList<DamageClaim>>
+    lateinit var mOnActiveDamageClaimsResponseSubject: BehaviorSubject<DamageClaimsWithCountResponse>
     lateinit var mOnInactiveDamageClaimsResponseSubject: BehaviorSubject<MutableList<DamageClaim>>
     lateinit var mOnBadResponseSubject: BehaviorSubject<ErrorCode.Remote>
     lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
@@ -65,7 +66,7 @@ class ClientMainActivityViewModel
                             .toObservable()
                 }
                 .subscribe({
-                    handleResponse(DamageClaimsClientResponse(it.damageClaims, true, it.errorCode))
+                    handleResponse(it)
                 }, { error ->
                     handleError(error)
                 })
@@ -78,7 +79,7 @@ class ClientMainActivityViewModel
                             .toObservable()
                 }
                 .subscribe({
-                    handleResponse(DamageClaimsClientResponse(it.damageClaims, false, it.errorCode))
+                    handleResponse(DamageClaimsClientResponse(it.damageClaims, it.errorCode))
                 }, { error ->
                     handleError(error)
                 })
@@ -104,12 +105,12 @@ class ClientMainActivityViewModel
 
         if (errorCode == ErrorCode.Remote.REC_OK) {
             when (response) {
+                is DamageClaimsWithCountResponse -> {
+                    mOnActiveDamageClaimsResponseSubject.onNext(response)
+                }
+
                 is DamageClaimsClientResponse -> {
-                    if (response.isActive) {
-                        mOnActiveDamageClaimsResponseSubject.onNext(response.damageClaims)
-                    } else {
-                        mOnInactiveDamageClaimsResponseSubject.onNext(response.damageClaims)
-                    }
+                    mOnInactiveDamageClaimsResponseSubject.onNext(response.damageClaims)
                 }
             }
         } else {
@@ -134,7 +135,7 @@ class ClientMainActivityViewModel
         mOnUnknownErrorSubject.onNext(error)
     }
 
-    override fun onActiveDamageClaimsResponse(): Observable<MutableList<DamageClaim>> = mOnActiveDamageClaimsResponseSubject
+    override fun onActiveDamageClaimsResponse(): Observable<DamageClaimsWithCountResponse> = mOnActiveDamageClaimsResponseSubject
     override fun onInactiveDamageClaimsResponse(): Observable<MutableList<DamageClaim>> = mOnInactiveDamageClaimsResponseSubject
     override fun onBadResponse(): Observable<ErrorCode.Remote> = mOnBadResponseSubject
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject

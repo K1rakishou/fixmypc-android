@@ -157,7 +157,7 @@ class ClientInactiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>
 
             mAdapter.removeProgressFooter()
 
-            val adapterDamageClaims = inactiveDamageClaimList.map { AdapterItem(DamageClaimGeneric(it), AdapterItemType.VIEW_ITEM) }
+            val adapterDamageClaims = inactiveDamageClaimList.map { AdapterItem(DamageClaimGeneric(it, null), AdapterItemType.VIEW_ITEM) }
             mAdapter.addAll(adapterDamageClaims as List<AdapterItem<DamageClaimListAdapterGenericParam>>)
 
             if (inactiveDamageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {

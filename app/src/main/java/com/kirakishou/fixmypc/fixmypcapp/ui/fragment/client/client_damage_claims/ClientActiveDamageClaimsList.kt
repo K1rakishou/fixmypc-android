@@ -20,6 +20,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimGeneric
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimListAdapterGenericParam
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsWithCountResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
@@ -146,20 +147,33 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
         activity.startActivity(intent)
     }
 
-    private fun onActiveDamageClaimsResponse(activeDamageClaimList: MutableList<DamageClaim>) {
+    private fun onActiveDamageClaimsResponse(response: DamageClaimsWithCountResponse) {
         mAdapter.runOnAdapterHandler {
             mEndlessScrollListener.pageLoaded()
 
-            if (activeDamageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
+            val damageClaimList = response.damageClaims
+            val responsesCountList = response.responsesCountList
+
+            if (damageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
                 mEndlessScrollListener.reachedEnd()
             }
 
             mAdapter.removeProgressFooter()
 
-            val adapterDamageClaims = activeDamageClaimList.map { AdapterItem(DamageClaimGeneric(it), AdapterItemType.VIEW_ITEM) }
+            val adapterDamageClaims = mutableListOf<AdapterItem<DamageClaimListAdapterGenericParam>>()
+
+            for (damageClaim in damageClaimList) {
+                val responsesCount = responsesCountList.firstOrNull { it.damageClaimId  == damageClaim.id }
+                if (responsesCount == null) {
+                    continue
+                }
+
+                adapterDamageClaims.add(AdapterItem(DamageClaimGeneric(damageClaim, responsesCount), AdapterItemType.VIEW_ITEM))
+            }
+
             mAdapter.addAll(adapterDamageClaims as List<AdapterItem<DamageClaimListAdapterGenericParam>>)
 
-            if (activeDamageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
+            if (damageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
                 mAdapter.addMessageFooter("Конец списка")
             }
         }

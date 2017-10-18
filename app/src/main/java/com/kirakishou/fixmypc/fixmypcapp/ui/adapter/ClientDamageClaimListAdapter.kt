@@ -1,6 +1,7 @@
 package com.kirakishou.fixmypc.fixmypcapp.ui.adapter
 
 import android.content.Context
+import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -107,6 +108,12 @@ class ClientDamageClaimListAdapter(private val mContext: Context,
                 if (mItems[position].value.isPresent()) {
                     val item = mItems[position].value.get()
                     val damageClaim = (item as DamageClaimGeneric).damageClaim
+                    val responsesCount = (item as DamageClaimGeneric).responsesCount
+
+                    if (responsesCount != null) {
+                        holder.counterHolder.visibility = View.VISIBLE
+                        holder.responsesCount.text = responsesCount.responseCount.toString()
+                    }
 
                     holder.clickView.setOnClickListener {
                         mAdapterItemClickSubject.onNext(damageClaim)
@@ -147,6 +154,12 @@ class ClientDamageClaimListAdapter(private val mContext: Context,
 
         @BindView(R.id.damage_type)
         lateinit var damageTypeIcon: ImageView
+
+        @BindView(R.id.counter_holder)
+        lateinit var counterHolder: ConstraintLayout
+
+        @BindView(R.id.responses_count)
+        lateinit var responsesCount: TextView
 
         init {
             ButterKnife.bind(this, itemView)

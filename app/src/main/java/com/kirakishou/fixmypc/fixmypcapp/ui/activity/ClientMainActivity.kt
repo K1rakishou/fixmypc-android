@@ -33,9 +33,6 @@ class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>(), Fragment
     @BindView(R.id.bottom_nav_menu)
     lateinit var bottomNavigationMenu: BottomNavigationView
 
-    @BindView(R.id.new_damage_claim_button)
-    lateinit var newDamageClaimButton: FloatingActionButton
-
     @Inject
     lateinit var mRefWatcher: RefWatcher
 
@@ -62,10 +59,7 @@ class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>(), Fragment
     }
 
     private fun initRx() {
-        mCompositeDisposable += RxView.clicks(newDamageClaimButton)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onNewDamageClaimButtonClick() })
+
     }
 
     override fun onActivityDestroy() {
@@ -77,10 +71,6 @@ class ClientMainActivity : BaseActivity<ClientMainActivityViewModel>(), Fragment
     }
 
     override fun onActivityStop() {
-    }
-
-    private fun onNewDamageClaimButtonClick() {
-        runActivity(ClientNewDamageClaimActivity::class.java)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

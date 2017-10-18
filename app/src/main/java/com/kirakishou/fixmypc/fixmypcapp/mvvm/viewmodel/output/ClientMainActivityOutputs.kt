@@ -11,5 +11,4 @@ import io.reactivex.Observable
 interface ClientMainActivityOutputs {
     fun onActiveDamageClaimsResponse(): Observable<DamageClaimsWithCountResponse>
     fun onInactiveDamageClaimsResponse(): Observable<MutableList<DamageClaim>>
-
 }

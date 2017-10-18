@@ -3,6 +3,9 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.new_damage_claim
 
 import android.animation.AnimatorSet
 import android.arch.lifecycle.ViewModelProviders
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.AppCompatButton
 import android.support.v7.widget.GridLayoutManager
@@ -144,25 +147,28 @@ class DamageClaimSendRequestFragment : BaseFragment<ClientNewDamageClaimActivity
     private fun sendDamageClaim() {
         val checkWifiStatus = true //TODO get this from shared prefs
 
-        mNavigator.showLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_CLAIM_SEND_REQUEST)
+        mNavigator.showLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_SEND_REQUEST)
         getViewModel().mInputs.sendMalfunctionRequestToServer(checkWifiStatus)
     }
 
     private fun onMalfunctionRequestSuccessfullyCreated() {
-        showToast("Заявка успешно создана", Toast.LENGTH_LONG)
-        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_CLAIM_SEND_REQUEST)
-        //runActivity(ClientMainActivity::class.java, true)
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_SEND_REQUEST)
+
+        val intent = Intent()
+        intent.action = Constant.ReceiverActions.REFRESH_CLIENT_DAMAGE_CLAIMS_NOTIFICATION
+
+        sendBroadcast(intent)
     }
 
     override fun onBadResponse(errorCode: ErrorCode.Remote) {
-        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_CLAIM_SEND_REQUEST)
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_SEND_REQUEST)
 
         val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
         showToast(message, Toast.LENGTH_LONG)
     }
 
     override fun onUnknownError(error: Throwable) {
-        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_CLAIM_SEND_REQUEST)
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_SEND_REQUEST)
 
         unknownError(error)
     }

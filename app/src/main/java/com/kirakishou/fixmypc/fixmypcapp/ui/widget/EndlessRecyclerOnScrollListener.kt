@@ -43,4 +43,12 @@ class EndlessRecyclerOnScrollListener(
     fun reachedEnd() {
         isEndReached = true
     }
+
+    fun reset() {
+        loading = false
+        lastVisibleItem = 0
+        totalItemCount = 0
+        currentPage = 0
+        isEndReached = false
+    }
 }

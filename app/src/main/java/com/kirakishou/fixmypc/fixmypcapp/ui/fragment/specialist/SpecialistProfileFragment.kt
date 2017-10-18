@@ -78,7 +78,7 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
     @Inject
     lateinit var mRefWatcher: RefWatcher
 
-    private val receiver = UpdateWaitingReceiver()
+    private val receiver = UiUpdateCommandReceiver()
     private val fragmentTag = Constant.FragmentTags.SPECIALIST_PROFILE
     private var savedProfile: SpecialistProfile? = null
 
@@ -98,7 +98,7 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
             getViewModel().mInputs.getSpecialistProfile()
         }
 
-        activity.registerReceiver(receiver, IntentFilter(Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_NOTIFICATION))
+        activity.registerReceiver(receiver, IntentFilter(Constant.ReceiverActions.UPDATE_SPECIALIST_PROFILE_UI_NOTIFICATION))
     }
 
     override fun onFragmentViewDestroy() {
@@ -212,33 +212,33 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
                 .inject(this)
     }
 
-    inner class UpdateWaitingReceiver : BroadcastReceiver() {
+    inner class UiUpdateCommandReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_NOTIFICATION) {
-               activity.runOnUiThread {
-                   val args = intent.extras
+            if (intent.action == Constant.ReceiverActions.UPDATE_SPECIALIST_PROFILE_UI_NOTIFICATION) {
+                Timber.d("broadcast with action UPDATE_SPECIALIST_PROFILE_UI_NOTIFICATION received")
 
-                   val updateType = args.getString("update_type")
-                   when (updateType) {
-                       "photo" -> {
-                           val newPhotoName = args.getString("new_photo_name")
+                val args = intent.extras
+                val updateType = args.getString("update_type")
 
-                           loadPhoto(newPhotoName, savedProfile!!.userId)
-                           savedProfile!!.photoName = newPhotoName
-                       }
-                       "info" -> {
-                           val newName = args.getString("new_name")
-                           val newPhone = "Телефон: ${args.getString("new_phone")}"
+                when (updateType) {
+                    "photo" -> {
+                        val newPhotoName = args.getString("new_photo_name")
 
-                           profileName.text = newName
-                           profilePhone.text = newPhone
+                        loadPhoto(newPhotoName, savedProfile!!.userId)
+                        savedProfile!!.photoName = newPhotoName
+                    }
+                    "info" -> {
+                        val newName = args.getString("new_name")
+                        val newPhone = "Телефон: ${args.getString("new_phone")}"
 
-                           savedProfile!!.name = newName
-                           savedProfile!!.photoName = newPhone
-                       }
-                       else -> throw IllegalStateException("Unknown updateType: $updateType")
-                   }
-               }
+                        profileName.text = newName
+                        profilePhone.text = newPhone
+
+                        savedProfile!!.name = newName
+                        savedProfile!!.photoName = newPhone
+                    }
+                    else -> throw IllegalStateException("Unknown updateType: $updateType")
+                }
             }
         }
     }

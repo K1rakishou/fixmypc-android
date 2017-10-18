@@ -157,7 +157,7 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
     private fun onUpdateSpecialistProfilePhotoFragment(newPhotoName: String) {
         activity.runOnUiThread {
             val intent = Intent()
-            intent.action = Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_NOTIFICATION
+            intent.action = Constant.ReceiverActions.UPDATE_SPECIALIST_PROFILE_UI_NOTIFICATION
 
             val args = Bundle()
             args.putString("update_type", "photo")
@@ -171,7 +171,7 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
     private fun onUpdateSpecialistProfileInfoFragment(newProfileInfo: NewProfileInfo) {
         activity.runOnUiThread {
             val intent = Intent()
-            intent.action = Constant.ReceiverActions.WAIT_FOR_SPECIALIST_PROFILE_UPDATE_NOTIFICATION
+            intent.action = Constant.ReceiverActions.UPDATE_SPECIALIST_PROFILE_UI_NOTIFICATION
 
             val args = Bundle()
             args.putString("update_type", "info")

@@ -57,6 +57,8 @@ open class BaseNavigator(activity: AppCompatActivity) {
         }
 
         val previousFragment = getFragmentByTag(previousFragmentTag)
+        checkNotNull(previousFragment)
+
         val fragmentTransaction = fragmentManager.beginTransaction()
                 .hide(previousFragment)
 
@@ -71,6 +73,7 @@ open class BaseNavigator(activity: AppCompatActivity) {
     fun hideLoadingIndicatorFragment(previousFragmentTag: String) {
         val loadingIndicatorFragment = getFragmentByTag(Constant.FragmentTags.LOADING_INDICATOR) ?: return
         val previousFragment = getFragmentByTag(previousFragmentTag)
+        checkNotNull(previousFragment)
 
         fragmentManager.beginTransaction()
                 .remove(loadingIndicatorFragment)

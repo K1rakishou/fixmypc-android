@@ -3,12 +3,18 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.client_damage_claim
 
 import android.animation.AnimatorSet
 import android.arch.lifecycle.ViewModelProviders
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
+import android.support.v4.view.ViewCompat
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.animation.LinearInterpolator
 import android.widget.Toast
 import butterknife.BindView
+import com.jakewharton.rxbinding2.view.RxView
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
@@ -24,6 +30,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaims
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
+import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientNewDamageClaimActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.RespondedSpecialistsActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.adapter.ClientDamageClaimListAdapter
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientMainActivityNavigator
@@ -37,6 +44,9 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>() {
+
+    @BindView(R.id.new_damage_claim_button)
+    lateinit var newDamageClaimButton: FloatingActionButton
 
     @BindView(R.id.active_damage_claim_list)
     lateinit var mActiveDamageClaimList: RecyclerView
@@ -117,6 +127,10 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
                     Timber.e(error)
                 })
 
+        mCompositeDisposable += RxView.clicks(newDamageClaimButton)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onNewDamageClaimButtonClick() })
+
         mCompositeDisposable += mAdapterItemClickSubject
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onClientDamageClaimClick(it) })
@@ -134,8 +148,12 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
                 .subscribe({ onUnknownError(it) })
     }
 
+    private fun onNewDamageClaimButtonClick() {
+        runActivity(ClientNewDamageClaimActivity::class.java)
+    }
+
     private fun getDamageClaims(page: Long) {
-        getViewModel().mInputs.getActiveClientDamageClaimSubject(page,  5)
+        getViewModel().mInputs.getActiveClientDamageClaimSubject(page, 5)
     }
 
     private fun onClientDamageClaimClick(damageClaim: DamageClaim) {
@@ -163,7 +181,7 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
             val adapterDamageClaims = mutableListOf<AdapterItem<DamageClaimListAdapterGenericParam>>()
 
             for (damageClaim in damageClaimList) {
-                val responsesCount = responsesCountList.firstOrNull { it.damageClaimId  == damageClaim.id }
+                val responsesCount = responsesCountList.firstOrNull { it.damageClaimId == damageClaim.id }
                 if (responsesCount == null) {
                     continue
                 }
@@ -194,6 +212,18 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
                 .clientMainActivityModule(ClientMainActivityModule(activity as ClientMainActivity))
                 .build()
                 .inject(this)
+    }
+
+    inner class DamageClaimRefreshCommandReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == Constant.ReceiverActions.REFRESH_CLIENT_DAMAGE_CLAIMS_NOTIFICATION) {
+                Timber.d("broadcast with action REFRESH_CLIENT_DAMAGE_CLAIMS_NOTIFICATION received")
+
+                mAdapter.clear()
+                mEndlessScrollListener.reset()
+                recyclerStartLoadingItems()
+            }
+        }
     }
 }
 

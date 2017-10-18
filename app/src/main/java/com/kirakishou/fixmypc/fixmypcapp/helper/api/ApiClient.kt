@@ -18,8 +18,7 @@ import retrofit2.http.Header
 interface ApiClient {
     fun loginRequest(packet: LoginPacket): Single<LoginResponse>
 
-    fun createMalfunctionRequest(damageClaimInfo: DamageClaimInfo,
-                                 uploadProgressUpdateSubject: ReplaySubject<ProgressUpdate>): Single<StatusResponse>
+    fun createMalfunctionRequest(damageClaimInfo: DamageClaimInfo): Single<StatusResponse>
 
     fun getDamageClaims(lat: Double, lon: Double, radius: Double, skip: Long, count: Long): Single<DamageClaimsResponse>
 

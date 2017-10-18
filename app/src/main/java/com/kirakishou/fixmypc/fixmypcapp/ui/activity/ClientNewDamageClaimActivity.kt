@@ -15,7 +15,6 @@ import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientNewDamageClaimActivityM
 import com.kirakishou.fixmypc.fixmypcapp.helper.permission.PermissionManager
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientNewDamageClaimActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientNewMalfunctionActivityViewModelFactory
-import com.kirakishou.fixmypc.fixmypcapp.ui.dialog.ProgressDialog
 import com.kirakishou.fixmypc.fixmypcapp.ui.interfaces.PermissionGrantedCallback
 import com.kirakishou.fixmypc.fixmypcapp.ui.interfaces.RequestPermissionCallback
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.ClientNewDamageClaimActivityNavigator
@@ -37,8 +36,6 @@ class ClientNewDamageClaimActivity : BaseActivity<ClientNewDamageClaimActivityVi
     @Inject
     lateinit var mNavigator: ClientNewDamageClaimActivityNavigator
 
-    private lateinit var progressDialog: ProgressDialog
-
     override fun initViewModel(): ClientNewDamageClaimActivityViewModel? {
         return ViewModelProviders.of(this, mViewModelFactory).get(ClientNewDamageClaimActivityViewModel::class.java)
     }
@@ -50,14 +47,9 @@ class ClientNewDamageClaimActivity : BaseActivity<ClientNewDamageClaimActivityVi
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
         supportFragmentManager.addOnBackStackChangedListener(this)
         mNavigator.navigateToDamageClaimCategoryFragment()
-        progressDialog = ProgressDialog(this)
-
-        getViewModel().mOutputs.uploadProgressUpdateSubject()
-                .subscribe(progressDialog.progressUpdateSubject)
     }
 
     override fun onActivityDestroy() {
-        progressDialog.dismiss()
         supportFragmentManager.removeOnBackStackChangedListener(this)
 
         mRefWatcher.watch(this)

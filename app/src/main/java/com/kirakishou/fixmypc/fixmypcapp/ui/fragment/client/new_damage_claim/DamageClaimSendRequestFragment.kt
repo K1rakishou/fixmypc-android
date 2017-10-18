@@ -143,20 +143,27 @@ class DamageClaimSendRequestFragment : BaseFragment<ClientNewDamageClaimActivity
 
     private fun sendDamageClaim() {
         val checkWifiStatus = true //TODO get this from shared prefs
+
+        mNavigator.showLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_CLAIM_SEND_REQUEST)
         getViewModel().mInputs.sendMalfunctionRequestToServer(checkWifiStatus)
     }
 
     private fun onMalfunctionRequestSuccessfullyCreated() {
         showToast("Заявка успешно создана", Toast.LENGTH_LONG)
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_CLAIM_SEND_REQUEST)
         //runActivity(ClientMainActivity::class.java, true)
     }
 
     override fun onBadResponse(errorCode: ErrorCode.Remote) {
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_CLAIM_SEND_REQUEST)
+
         val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
         showToast(message, Toast.LENGTH_LONG)
     }
 
     override fun onUnknownError(error: Throwable) {
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_CLAIM_SEND_REQUEST)
+
         unknownError(error)
     }
 

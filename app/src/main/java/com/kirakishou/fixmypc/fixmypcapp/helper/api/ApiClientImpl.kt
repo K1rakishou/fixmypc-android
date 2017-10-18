@@ -31,9 +31,8 @@ class ApiClientImpl
                 .execute()
     }
 
-    override fun createMalfunctionRequest(damageClaimInfo: DamageClaimInfo,
-                                          uploadProgressUpdateSubject: ReplaySubject<ProgressUpdate>): Single<StatusResponse> {
-        return CreateDamageClaimRequest(damageClaimInfo, uploadProgressUpdateSubject, mApiService, mAppSettings, mGson, mSchedulers)
+    override fun createMalfunctionRequest(damageClaimInfo: DamageClaimInfo): Single<StatusResponse> {
+        return CreateDamageClaimRequest(damageClaimInfo, mApiService, mAppSettings, mGson, mSchedulers)
                 .execute()
     }
 

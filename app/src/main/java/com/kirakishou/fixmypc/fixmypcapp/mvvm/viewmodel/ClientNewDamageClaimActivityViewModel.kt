@@ -42,7 +42,6 @@ class ClientNewDamageClaimActivityViewModel
     private val damageClaimRequestInfo = DamageClaimInfo()
 
     private val mOnBadResponseSubject = PublishSubject.create<ErrorCode.Remote>()
-    private val mUploadProgressUpdateSubject = ReplaySubject.create<ProgressUpdate>()
     private val mSendMalfunctionRequestToServerSubject = PublishSubject.create<DamageClaimInfo>()
     private val mOnMalfunctionRequestSuccessfullyCreatedSubject = PublishSubject.create<Unit>()
     private val mOnUnknownErrorSubject = PublishSubject.create<Throwable>()
@@ -52,11 +51,9 @@ class ClientNewDamageClaimActivityViewModel
         mCompositeDisposable += mSendMalfunctionRequestToServerSubject
                 .filter { _ -> mWifiUtils.isWifiConnected() }
                 .observeOn(mSchedulers.provideMain())
-                .doOnNext { mUploadProgressUpdateSubject.onNext(ProgressUpdate.ProgressUpdateStart(it.damageClaimPhotos.size)) }
                 .observeOn(mSchedulers.provideIo())
-                .flatMap { mApiClient.createMalfunctionRequest(it, mUploadProgressUpdateSubject).toObservable() }
+                .flatMap { mApiClient.createMalfunctionRequest(it).toObservable() }
                 .observeOn(mSchedulers.provideMain())
-                .doOnNext { mUploadProgressUpdateSubject.onNext(ProgressUpdate.ProgressUpdateDone()) }
                 .subscribe({
                     handleResponse(it)
                 }, {
@@ -147,7 +144,6 @@ class ClientNewDamageClaimActivityViewModel
     }
 
     override fun onBadResponse(): Observable<ErrorCode.Remote> = mOnBadResponseSubject
-    override fun uploadProgressUpdateSubject(): Observable<ProgressUpdate> = mUploadProgressUpdateSubject
     override fun onMalfunctionRequestSuccessfullyCreated(): Observable<Unit> = mOnMalfunctionRequestSuccessfullyCreatedSubject
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
 }

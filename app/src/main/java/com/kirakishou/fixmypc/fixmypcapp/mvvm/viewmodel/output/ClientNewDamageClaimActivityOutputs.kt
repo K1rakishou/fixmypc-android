@@ -8,5 +8,4 @@ import io.reactivex.Observable
  */
 interface ClientNewDamageClaimActivityOutputs {
     fun onMalfunctionRequestSuccessfullyCreated(): Observable<Unit>
-    fun uploadProgressUpdateSubject(): Observable<ProgressUpdate>
 }

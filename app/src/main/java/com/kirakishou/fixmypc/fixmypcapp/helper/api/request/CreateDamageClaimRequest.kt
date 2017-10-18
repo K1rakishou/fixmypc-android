@@ -6,7 +6,6 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiService
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.operator.OnApiErrorSingle
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.Utils
-import com.kirakishou.fixmypc.fixmypcapp.helper.util.retrofit.ProgressRequestBody
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
@@ -24,7 +23,9 @@ import io.reactivex.Single
 import io.reactivex.functions.Function
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.subjects.ReplaySubject
+import okhttp3.MediaType
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import java.io.File
 import java.net.UnknownHostException
 import java.util.concurrent.TimeoutException
@@ -33,7 +34,6 @@ import java.util.concurrent.TimeoutException
  * Created by kirakishou on 9/12/2017.
  */
 class CreateDamageClaimRequest(protected val mDamageClaimInfo: DamageClaimInfo,
-                               protected val mUploadProgressUpdateSubject: ReplaySubject<ProgressUpdate>,
                                protected val mApiService: ApiService,
                                protected val mAppSettings: AppSettings,
                                protected val mGson: Gson,
@@ -43,7 +43,7 @@ class CreateDamageClaimRequest(protected val mDamageClaimInfo: DamageClaimInfo,
         //create MultipartFile bodies, check if user has selected the same file twice
         val progressBodyListObservable = Observable.fromIterable(mDamageClaimInfo.damageClaimPhotos)
                 .subscribeOn(mSchedulers.provideIo())
-                .map { prepareRequest(it, mUploadProgressUpdateSubject) }
+                .map { prepareRequest(it) }
                 //it.second is md5 string of the selected file
                 //FIXME: Fix ErrorOnDuplicate operator
                 //.lift(ErrorOnDuplicate<Pair<MultipartBody.Part, String>, String> { it.second })
@@ -86,7 +86,6 @@ class CreateDamageClaimRequest(protected val mDamageClaimInfo: DamageClaimInfo,
 
         //re send the request
         val secondAttemptObservable = Observables.zip(sessionIdObservable, progressBodyListObservable, requestObservable, { a, b, c -> Triple(a, b, c) })
-                .doOnNext { _ -> mUploadProgressUpdateSubject.onNext(ProgressUpdate.ProgressUpdateReset()) }
                 .flatMap { resendRequest(it) }
 
         //now we have three different outcomes:
@@ -159,7 +158,7 @@ class CreateDamageClaimRequest(protected val mDamageClaimInfo: DamageClaimInfo,
                 .toObservable()
     }
 
-    private fun prepareRequest(photoPath: String, uploadProgressUpdateSubject: ReplaySubject<ProgressUpdate>): Pair<MultipartBody.Part, String> {
+    private fun prepareRequest(photoPath: String): Pair<MultipartBody.Part, String> {
         val photoFile = File(photoPath)
         if (photoFile.length() > Constant.MAX_FILE_SIZE) {
             throw FileSizeExceededException()
@@ -170,7 +169,7 @@ class CreateDamageClaimRequest(protected val mDamageClaimInfo: DamageClaimInfo,
         }
 
         val fileMd5 = Utils.getFileMd5(photoFile)
-        val progressBody = ProgressRequestBody(photoFile, uploadProgressUpdateSubject)
+        val progressBody = RequestBody.create(MediaType.parse("multipart/form-data"), photoFile)
         val multipartBody = MultipartBody.Part.createFormData("photos", photoFile.name, progressBody)
 
         return Pair(multipartBody, fileMd5)

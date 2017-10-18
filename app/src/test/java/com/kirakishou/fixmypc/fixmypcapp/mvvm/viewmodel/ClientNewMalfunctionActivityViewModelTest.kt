@@ -41,7 +41,6 @@ class ClientNewMalfunctionActivityViewModelTest {
         MockitoAnnotations.initMocks(this)
 
         mViewModel = ClientNewDamageClaimActivityViewModel(apiClient, wifiUtils, TestSchedulers())
-        mViewModel.init()
     }
 
     private fun initDamageClaimObject() {

@@ -18,6 +18,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.ReplaySubject
 import timber.log.Timber
 import javax.inject.Inject
@@ -40,15 +41,13 @@ class ClientNewDamageClaimActivityViewModel
     private val mCompositeDisposable = CompositeDisposable()
     private val damageClaimRequestInfo = DamageClaimInfo()
 
-    private val mOnBadResponseSubject = BehaviorSubject.create<ErrorCode.Remote>()
+    private val mOnBadResponseSubject = PublishSubject.create<ErrorCode.Remote>()
     private val mUploadProgressUpdateSubject = ReplaySubject.create<ProgressUpdate>()
-    private val mSendMalfunctionRequestToServerSubject = BehaviorSubject.create<DamageClaimInfo>()
-    private val mOnMalfunctionRequestSuccessfullyCreatedSubject = BehaviorSubject.create<Unit>()
-    private val mOnUnknownErrorSubject = BehaviorSubject.create<Throwable>()
+    private val mSendMalfunctionRequestToServerSubject = PublishSubject.create<DamageClaimInfo>()
+    private val mOnMalfunctionRequestSuccessfullyCreatedSubject = PublishSubject.create<Unit>()
+    private val mOnUnknownErrorSubject = PublishSubject.create<Throwable>()
 
-    fun init() {
-        mCompositeDisposable.clear()
-
+    init {
         //if wifi connected - send request to server
         mCompositeDisposable += mSendMalfunctionRequestToServerSubject
                 .filter { _ -> mWifiUtils.isWifiConnected() }

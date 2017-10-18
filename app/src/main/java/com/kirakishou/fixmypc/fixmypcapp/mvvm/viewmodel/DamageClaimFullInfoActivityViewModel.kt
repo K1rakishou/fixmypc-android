@@ -21,6 +21,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -41,21 +42,14 @@ class DamageClaimFullInfoActivityViewModel
 
     private val mCompositeDisposable = CompositeDisposable()
 
-    lateinit var mCheckHasAlreadyRespondedSubject: BehaviorSubject<Long>
-    lateinit var mRespondToDamageClaimSubject: BehaviorSubject<Long>
-    lateinit var mOnHasAlreadyRespondedResponse: BehaviorSubject<Boolean>
-    lateinit var mOnRespondToDamageClaimSuccessSubject: BehaviorSubject<Unit>
-    lateinit var mOnBadResponseSubject: BehaviorSubject<ErrorCode.Remote>
-    lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
+    private val mCheckHasAlreadyRespondedSubject = PublishSubject.create<Long>()
+    private val mRespondToDamageClaimSubject = PublishSubject.create<Long>()
+    private val mOnHasAlreadyRespondedResponse = PublishSubject.create<Boolean>()
+    private val mOnRespondToDamageClaimSuccessSubject = PublishSubject.create<Unit>()
+    private val mOnBadResponseSubject = PublishSubject.create<ErrorCode.Remote>()
+    private val mOnUnknownErrorSubject = PublishSubject.create<Throwable>()
 
-    fun init() {
-        mCheckHasAlreadyRespondedSubject = BehaviorSubject.create()
-        mRespondToDamageClaimSubject = BehaviorSubject.create()
-        mOnHasAlreadyRespondedResponse = BehaviorSubject.create()
-        mOnRespondToDamageClaimSuccessSubject = BehaviorSubject.create()
-        mOnBadResponseSubject = BehaviorSubject.create()
-        mOnUnknownErrorSubject = BehaviorSubject.create()
-
+    init {
         mCompositeDisposable += mCheckHasAlreadyRespondedSubject
                 .flatMap { mApiClient.checkAlreadyRespondedToDamageClaim(it).toObservable() }
                 .subscribe({

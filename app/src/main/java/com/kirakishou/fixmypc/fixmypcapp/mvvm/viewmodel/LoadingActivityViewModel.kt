@@ -18,6 +18,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -39,21 +40,13 @@ class LoadingActivityViewModel
 
     private val mCompositeDisposable = CompositeDisposable()
 
-    lateinit var mLogInSubject: BehaviorSubject<LoginPasswordDTO>
-    lateinit var mRunClientActivitySubject: BehaviorSubject<LoginResponseDataDTO>
-    lateinit var mRunSpecialistMainActivitySubject: BehaviorSubject<LoginResponseDataDTO>
-    lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
-    lateinit var mOnBadResponseSubject: BehaviorSubject<ErrorCode.Remote>
+    private val mLogInSubject = PublishSubject.create<LoginPasswordDTO>()
+    private val mRunClientActivitySubject = PublishSubject.create<LoginResponseDataDTO>()
+    private val mRunSpecialistMainActivitySubject = PublishSubject.create<LoginResponseDataDTO>()
+    private val mOnUnknownErrorSubject = PublishSubject.create<Throwable>()
+    private val mOnBadResponseSubject = PublishSubject.create<ErrorCode.Remote>()
 
-    fun init() {
-        mCompositeDisposable.clear()
-
-        mLogInSubject = BehaviorSubject.create<LoginPasswordDTO>()
-        mRunClientActivitySubject = BehaviorSubject.create<LoginResponseDataDTO>()
-        mRunSpecialistMainActivitySubject = BehaviorSubject.create<LoginResponseDataDTO>()
-        mOnUnknownErrorSubject = BehaviorSubject.create<Throwable>()
-        mOnBadResponseSubject = BehaviorSubject.create<ErrorCode.Remote>()
-
+    init {
         mCompositeDisposable += mLogInSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .map { LoginPacket(it.login, it.password) }

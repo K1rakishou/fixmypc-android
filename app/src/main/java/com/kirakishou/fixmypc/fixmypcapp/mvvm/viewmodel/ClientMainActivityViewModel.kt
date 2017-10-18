@@ -19,6 +19,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -37,27 +38,17 @@ class ClientMainActivityViewModel
     val mOutputs: ClientMainActivityOutputs = this
     val mErrors: ClientMainActivityErrors = this
 
-    var currentFragmentTag = Constant.FragmentTags.CLIENT_MY_DAMAGE_CLAIMS
     private val itemsPerPage = Constant.MAX_DAMAGE_CLAIMS_PER_PAGE
     private val mCompositeDisposable = CompositeDisposable()
 
-    lateinit var mGetActiveClientDamageClaimSubject: BehaviorSubject<GetClientDamageClaimsDTO>
-    lateinit var mGetInactiveClientDamageClaimSubject: BehaviorSubject<GetClientDamageClaimsDTO>
-    lateinit var mOnActiveDamageClaimsResponseSubject: BehaviorSubject<DamageClaimsWithCountResponse>
-    lateinit var mOnInactiveDamageClaimsResponseSubject: BehaviorSubject<MutableList<DamageClaim>>
-    lateinit var mOnBadResponseSubject: BehaviorSubject<ErrorCode.Remote>
-    lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
+    private val mGetActiveClientDamageClaimSubject = PublishSubject.create<GetClientDamageClaimsDTO>()
+    private val mGetInactiveClientDamageClaimSubject = PublishSubject.create<GetClientDamageClaimsDTO>()
+    private val mOnActiveDamageClaimsResponseSubject = PublishSubject.create<DamageClaimsWithCountResponse>()
+    private val mOnInactiveDamageClaimsResponseSubject = PublishSubject.create<MutableList<DamageClaim>>()
+    private val mOnBadResponseSubject = PublishSubject.create<ErrorCode.Remote>()
+    private val mOnUnknownErrorSubject = PublishSubject.create<Throwable>()
 
-    fun init() {
-        mCompositeDisposable.clear()
-
-        mGetActiveClientDamageClaimSubject = BehaviorSubject.create()
-        mGetInactiveClientDamageClaimSubject = BehaviorSubject.create()
-        mOnActiveDamageClaimsResponseSubject = BehaviorSubject.create()
-        mOnInactiveDamageClaimsResponseSubject = BehaviorSubject.create()
-        mOnBadResponseSubject = BehaviorSubject.create()
-        mOnUnknownErrorSubject = BehaviorSubject.create()
-
+    init {
         mCompositeDisposable += mGetActiveClientDamageClaimSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .observeOn(mSchedulers.provideIo())

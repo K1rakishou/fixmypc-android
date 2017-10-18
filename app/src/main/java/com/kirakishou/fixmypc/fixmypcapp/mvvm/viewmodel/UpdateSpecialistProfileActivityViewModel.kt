@@ -18,6 +18,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -37,25 +38,15 @@ class UpdateSpecialistProfileActivityViewModel
 
     private val mCompositeDisposable = CompositeDisposable()
 
-    lateinit var mUpdateSpecialistProfileFragmentUiInfoSubject: BehaviorSubject<NewProfileInfo>
-    lateinit var mUpdateSpecialistProfileFragmentUiPhotoSubject: BehaviorSubject<String>
-    lateinit var mUpdateProfilePhotoSubject: BehaviorSubject<String>
-    lateinit var mUpdateProfileInfoSubject: BehaviorSubject<NewProfileInfo>
-    lateinit var mOnUpdateSpecialistProfileResponseSubject: BehaviorSubject<Unit>
-    lateinit var mOnBadResponseSubject: BehaviorSubject<ErrorCode.Remote>
-    lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
+    private val mUpdateSpecialistProfileFragmentUiInfoSubject = PublishSubject.create<NewProfileInfo>()
+    private val mUpdateSpecialistProfileFragmentUiPhotoSubject = PublishSubject.create<String>()
+    private val mUpdateProfilePhotoSubject = PublishSubject.create<String>()
+    private val mUpdateProfileInfoSubject = PublishSubject.create<NewProfileInfo>()
+    private val mOnUpdateSpecialistProfileResponseSubject = PublishSubject.create<Unit>()
+    private val mOnBadResponseSubject = PublishSubject.create<ErrorCode.Remote>()
+    private val mOnUnknownErrorSubject = PublishSubject.create<Throwable>()
 
     fun init() {
-        mCompositeDisposable.clear()
-
-        mUpdateSpecialistProfileFragmentUiInfoSubject = BehaviorSubject.create()
-        mUpdateSpecialistProfileFragmentUiPhotoSubject = BehaviorSubject.create()
-        mUpdateProfileInfoSubject = BehaviorSubject.create()
-        mUpdateProfilePhotoSubject = BehaviorSubject.create()
-        mOnUpdateSpecialistProfileResponseSubject = BehaviorSubject.create()
-        mOnBadResponseSubject = BehaviorSubject.create()
-        mOnUnknownErrorSubject = BehaviorSubject.create()
-
         mCompositeDisposable += mUpdateProfileInfoSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .flatMap {

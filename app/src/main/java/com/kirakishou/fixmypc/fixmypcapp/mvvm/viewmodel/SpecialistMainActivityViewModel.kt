@@ -21,6 +21,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -40,29 +41,18 @@ class SpecialistMainActivityViewModel
     val mOutputs: SpecialistMainActivityOutputs = this
     val mErrors: SpecialistMainActivityErrors = this
 
-    var currentFragmentTag = Constant.FragmentTags.ACTIVE_DAMAGE_CLAIMS_LIST
     private val itemsPerPage = Constant.MAX_DAMAGE_CLAIMS_PER_PAGE
     private val mCompositeDisposable = CompositeDisposable()
 
-    lateinit var mOnSpecialistProfileResponseSubject: BehaviorSubject<SpecialistProfile>
-    lateinit var mOnBadResponseSubject: BehaviorSubject<ErrorCode.Remote>
-    lateinit var mGetDamageClaimsWithinRadiusSubject: BehaviorSubject<GetDamageClaimsRequestParams>
-    lateinit var mOnDamageClaimsPageReceivedSubject: BehaviorSubject<ArrayList<DamageClaimsWithDistance>>
-    lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
-    lateinit var mEitherFromRepoOrServerSubject: BehaviorSubject<Pair<LatLng, DamageClaimsResponse>>
-    lateinit var mGetSpecialistProfileSubject: BehaviorSubject<Unit>
+    private val mOnSpecialistProfileResponseSubject = PublishSubject.create<SpecialistProfile>()
+    private val mOnBadResponseSubject = PublishSubject.create<ErrorCode.Remote>()
+    private val mGetDamageClaimsWithinRadiusSubject = PublishSubject.create<GetDamageClaimsRequestParams>()
+    private val mOnDamageClaimsPageReceivedSubject = PublishSubject.create<ArrayList<DamageClaimsWithDistance>>()
+    private val mOnUnknownErrorSubject = PublishSubject.create<Throwable>()
+    private val mEitherFromRepoOrServerSubject = PublishSubject.create<Pair<LatLng, DamageClaimsResponse>>()
+    private val mGetSpecialistProfileSubject = PublishSubject.create<Unit>()
 
     fun init() {
-        mCompositeDisposable.clear()
-
-        mOnSpecialistProfileResponseSubject = BehaviorSubject.create()
-        mOnBadResponseSubject = BehaviorSubject.create()
-        mGetDamageClaimsWithinRadiusSubject = BehaviorSubject.create()
-        mOnDamageClaimsPageReceivedSubject = BehaviorSubject.create()
-        mOnUnknownErrorSubject = BehaviorSubject.create()
-        mEitherFromRepoOrServerSubject = BehaviorSubject.create()
-        mGetSpecialistProfileSubject = BehaviorSubject.create()
-
         mCompositeDisposable += mGetSpecialistProfileSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .flatMap { mApiClient.getSpecialistProfile().toObservable() }

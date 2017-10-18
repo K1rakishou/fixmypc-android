@@ -52,7 +52,6 @@ class ClientNewDamageClaimActivity : BaseActivity<ClientNewDamageClaimActivityVi
         mNavigator.navigateToDamageClaimCategoryFragment()
         progressDialog = ProgressDialog(this)
 
-        getViewModel().init()
         getViewModel().mOutputs.uploadProgressUpdateSubject()
                 .subscribe(progressDialog.progressUpdateSubject)
     }

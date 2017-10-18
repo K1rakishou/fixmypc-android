@@ -17,6 +17,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -36,23 +37,14 @@ class RespondedSpecialistsViewModel
 
     private val mCompositeDisposable = CompositeDisposable()
 
-    lateinit var mOnAssignSpecialistResponseSubject: BehaviorSubject<AssignSpecialistResponse>
-    lateinit var mAssignSpecialistSubject: BehaviorSubject<AssignSpecialistPacket>
-    lateinit var mGetRespondedSpecialistsSubject: BehaviorSubject<GetRespondedSpecialistsDTO>
-    lateinit var mOnSpecialistsListResponseSubject: BehaviorSubject<List<SpecialistProfile>>
-    lateinit var mOnBadResponseSubject: BehaviorSubject<ErrorCode.Remote>
-    lateinit var mOnUnknownErrorSubject: BehaviorSubject<Throwable>
+    private val mOnAssignSpecialistResponseSubject = PublishSubject.create<AssignSpecialistResponse>()
+    private val mAssignSpecialistSubject = PublishSubject.create<AssignSpecialistPacket>()
+    private val mGetRespondedSpecialistsSubject = PublishSubject.create<GetRespondedSpecialistsDTO>()
+    private val mOnSpecialistsListResponseSubject = PublishSubject.create<List<SpecialistProfile>>()
+    private val mOnBadResponseSubject = PublishSubject.create<ErrorCode.Remote>()
+    private val mOnUnknownErrorSubject = PublishSubject.create<Throwable>()
 
     fun init() {
-        mCompositeDisposable.clear()
-
-        mOnAssignSpecialistResponseSubject = BehaviorSubject.create()
-        mAssignSpecialistSubject = BehaviorSubject.create()
-        mGetRespondedSpecialistsSubject = BehaviorSubject.create()
-        mOnSpecialistsListResponseSubject = BehaviorSubject.create()
-        mOnBadResponseSubject = BehaviorSubject.create()
-        mOnUnknownErrorSubject = BehaviorSubject.create()
-
         mCompositeDisposable += mGetRespondedSpecialistsSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .flatMap { (damageClaimId, skip, count) ->

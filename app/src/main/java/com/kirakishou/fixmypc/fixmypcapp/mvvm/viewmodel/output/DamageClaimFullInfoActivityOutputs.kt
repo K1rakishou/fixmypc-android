@@ -8,4 +8,5 @@ import io.reactivex.Observable
 interface DamageClaimFullInfoActivityOutputs {
     fun onRespondToDamageClaimSuccessSubject(): Observable<Unit>
     fun onHasAlreadyRespondedResponse(): Observable<Boolean>
+    fun onNotifyProfileIsNotFilledIn(): Observable<Unit>
 }

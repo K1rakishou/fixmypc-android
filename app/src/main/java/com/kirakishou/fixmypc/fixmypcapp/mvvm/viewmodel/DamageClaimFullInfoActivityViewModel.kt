@@ -19,6 +19,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.DamageClaimFullIn
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.SpecialistMainActivityOutputs
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
@@ -42,6 +43,7 @@ class DamageClaimFullInfoActivityViewModel
 
     private val mCompositeDisposable = CompositeDisposable()
 
+    private val mNotifyProfileIsNotFilledInSubject = PublishSubject.create<Unit>()
     private val mCheckHasAlreadyRespondedSubject = PublishSubject.create<Long>()
     private val mRespondToDamageClaimSubject = PublishSubject.create<Long>()
     private val mOnHasAlreadyRespondedResponse = PublishSubject.create<Boolean>()
@@ -58,8 +60,34 @@ class DamageClaimFullInfoActivityViewModel
                     handleError(it)
                 })
 
-        mCompositeDisposable += mRespondToDamageClaimSubject
-                .flatMap { mApiClient.respondToDamageClaim(RespondToDamageClaimPacket(it)).toObservable() }
+        val respondToDamageClaimResponseObservable = mRespondToDamageClaimSubject
+                .flatMap { damageClaimId ->
+                    val response = mApiClient.isSpecialistProfileFilledIn()
+                            .toObservable()
+
+                    return@flatMap Observables.zip(response, Observable.just(damageClaimId))
+                }
+                .publish()
+                .autoConnect(3)
+
+        respondToDamageClaimResponseObservable
+                .filter { it.first.errorCode != ErrorCode.Remote.REC_OK }
+                .map { it.first.errorCode }
+                .subscribe(mOnBadResponseSubject)
+
+        respondToDamageClaimResponseObservable
+                .filter { !it.first.isProfileFilledIn }
+                .map { Unit }
+                .doOnError { handleError(it) }
+                .subscribe(mNotifyProfileIsNotFilledInSubject)
+
+        respondToDamageClaimResponseObservable
+                .filter { it.first.isProfileFilledIn }
+                .map { it.second }
+                .flatMap { damageClaimId ->
+                    mApiClient.respondToDamageClaim(RespondToDamageClaimPacket(damageClaimId))
+                            .toObservable()
+                }
                 .subscribe({
                     handleResponse(it)
                 }, {
@@ -135,6 +163,7 @@ class DamageClaimFullInfoActivityViewModel
         mOnUnknownErrorSubject.onNext(error)
     }
 
+    override fun onNotifyProfileIsNotFilledIn(): Observable<Unit> = mNotifyProfileIsNotFilledInSubject
     override fun onRespondToDamageClaimSuccessSubject(): Observable<Unit> = mOnRespondToDamageClaimSuccessSubject
     override fun onHasAlreadyRespondedResponse(): Observable<Boolean> = mOnHasAlreadyRespondedResponse
     override fun onBadResponse(): Observable<ErrorCode.Remote> = mOnBadResponseSubject

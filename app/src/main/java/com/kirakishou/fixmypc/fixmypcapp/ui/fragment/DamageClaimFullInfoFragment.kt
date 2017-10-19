@@ -120,6 +120,10 @@ class DamageClaimFullInfoFragment : BaseFragment<DamageClaimFullInfoActivityView
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onHasAlreadyRespondedResponse(it) })
 
+        mCompositeDisposable += getViewModel().mOutputs.onNotifyProfileIsNotFilledIn()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onNotifyProfileIsNotFilledIn() })
+
         mCompositeDisposable += getViewModel().mErrors.onBadResponse()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onBadResponse(it) })
@@ -127,6 +131,10 @@ class DamageClaimFullInfoFragment : BaseFragment<DamageClaimFullInfoActivityView
         mCompositeDisposable += getViewModel().mErrors.onUnknownError()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUnknownError(it) })
+    }
+
+    private fun onNotifyProfileIsNotFilledIn() {
+        showToast("Профиль не заполнен", Toast.LENGTH_LONG)
     }
 
     private fun checkIfAlreadyResponded() {

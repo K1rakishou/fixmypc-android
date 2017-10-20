@@ -16,7 +16,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/FixmypcTheme">
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyB3rwPBjBAw6GLkC8rnCTIpb1BAkoBKnZw" />
@@ -34,11 +33,12 @@
         <activity android:name=".ui.activity.ClientMainActivity" />
         <activity android:name=".ui.activity.SpecialistMainActivity" />
         <activity android:name=".ui.activity.RespondedSpecialistsActivity" />
-        <activity android:name=".ui.activity.LoginActivity"
-            android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:name=".ui.activity.LoginActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ui.activity.UpdateSpecialistProfileActivity" />
-        <activity android:name=".ui.activity.DamageClaimFullInfoActivity"/>
-
+        <activity android:name=".ui.activity.DamageClaimFullInfoActivity" />
+        <activity android:name=".ui.activity.UpdateClientProfileActivity"></activity>
     </application>
 
 </manifest>

@@ -2,7 +2,6 @@ package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel
 
 import com.google.android.gms.maps.model.LatLng
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseViewModel
-import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.helper.wifi.WifiUtils
@@ -11,15 +10,13 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UnknownErrorCodeException
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.ClientNewDamageClaimActivityErrors
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.ClientNewDamageClaimActivityInputs
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.ClientNewDamageClaimActivityOutputs
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.error.ClientNewDamageClaimActivityErrors
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.input.ClientNewDamageClaimActivityInputs
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.output.ClientNewDamageClaimActivityOutputs
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
-import io.reactivex.subjects.ReplaySubject
 import timber.log.Timber
 import javax.inject.Inject
 

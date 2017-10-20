@@ -10,13 +10,12 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.AssignSpecia
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.SpecialistsListResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UnknownErrorCodeException
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.RespondedSpecialistsActivityErrors
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.RespondedSpecialistsActivityInputs
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.RespondedSpecialistsActivityOutputs
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.error.RespondedSpecialistsActivityErrors
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.input.RespondedSpecialistsActivityInputs
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.output.RespondedSpecialistsActivityOutputs
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import javax.inject.Inject

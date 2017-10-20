@@ -114,12 +114,14 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
 
     private fun initRx() {
         mCompositeDisposable += RxTextView.textChanges(profileName)
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .skip(2)
                 .map { it.isNotEmpty() }
                 .distinctUntilChanged()
                 .subscribe({ updateProfileInfoButton.isEnabled = it })
 
         mCompositeDisposable += RxTextView.textChanges(profilePhone)
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .skip(2)
                 .map { it.isNotEmpty() }
                 .distinctUntilChanged()
@@ -135,9 +137,9 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
 
         mCompositeDisposable += getViewModel().mOutputs.onUpdateSpecialistProfileResponseSubject()
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onUpdateSpecialistProfileResponse() })
+                .subscribe({ onUpdateSpecialistProfileResponse(it) })
 
-        mCompositeDisposable += getViewModel().mOutputs.onUpdateSpecialistProfileFragmentInfo()
+        mCompositeDisposable += getViewModel().mOutputs.onUpdateSpecialistProfileFragmentUiInfo()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUpdateSpecialistProfileInfoFragment(it) })
 
@@ -227,7 +229,17 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
         hideKeyboard()
     }
 
-    private fun onUpdateSpecialistProfileResponse() {
+    private fun onUpdateSpecialistProfileResponse(profileUpdate: UpdateSpecialistProfileActivityViewModel.ProfileUpdate) {
+        when (profileUpdate) {
+            UpdateSpecialistProfileActivityViewModel.ProfileUpdate.ProfileInfo -> {
+                showToast("Профиль обновлён", Toast.LENGTH_LONG)
+            }
+
+            UpdateSpecialistProfileActivityViewModel.ProfileUpdate.ProfilePhoto -> {
+                showToast("Фото профиля обновлено", Toast.LENGTH_LONG)
+            }
+        }
+
         mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.UPDATE_SPECIALIST_PROFILE)
     }
 

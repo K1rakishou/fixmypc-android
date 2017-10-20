@@ -13,14 +13,13 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimsWithDistance
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UnknownErrorCodeException
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.SpecialistMainActivityErrors
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.SpecialistMainActivityInputs
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.SpecialistMainActivityOutputs
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.error.SpecialistMainActivityErrors
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.input.SpecialistMainActivityInputs
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.output.SpecialistMainActivityOutputs
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import javax.inject.Inject

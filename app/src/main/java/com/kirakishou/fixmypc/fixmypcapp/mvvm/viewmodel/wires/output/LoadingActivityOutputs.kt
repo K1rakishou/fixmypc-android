@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output
+package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.output
 
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.LoginResponseDataDTO
 import io.reactivex.Observable

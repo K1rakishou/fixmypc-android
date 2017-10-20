@@ -1,6 +1,5 @@
-package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output
+package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.output
 
-import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
 import io.reactivex.Observable
 
 /**

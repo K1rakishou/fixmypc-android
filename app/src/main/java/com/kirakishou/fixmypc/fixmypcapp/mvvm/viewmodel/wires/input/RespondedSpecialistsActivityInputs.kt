@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input
+package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.input
 
 /**
  * Created by kirakishou on 10/2/2017.

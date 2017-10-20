@@ -10,14 +10,13 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusRespon
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.UpdateSpecialistProfileInfoResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.UpdateSpecialistProfilePhotoResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UnknownErrorCodeException
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.UpdateSpecialistProfileActivityErrors
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.UpdateSpecialistProfileActivityInputs
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.UpdateSpecialistProfileActivityOutputs
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.error.UpdateSpecialistProfileActivityErrors
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.input.UpdateSpecialistProfileActivityInputs
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.output.UpdateSpecialistProfileActivityOutputs
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import javax.inject.Inject
@@ -42,7 +41,7 @@ class UpdateSpecialistProfileActivityViewModel
     private val mUpdateSpecialistProfileFragmentUiPhotoSubject = PublishSubject.create<String>()
     private val mUpdateProfilePhotoSubject = PublishSubject.create<String>()
     private val mUpdateProfileInfoSubject = PublishSubject.create<NewProfileInfo>()
-    private val mOnUpdateSpecialistProfileResponseSubject = PublishSubject.create<Unit>()
+    private val mOnUpdateSpecialistProfileResponseSubject = PublishSubject.create<ProfileUpdate>()
     private val mOnBadResponseSubject = PublishSubject.create<ErrorCode.Remote>()
     private val mOnUnknownErrorSubject = PublishSubject.create<Throwable>()
 
@@ -103,11 +102,11 @@ class UpdateSpecialistProfileActivityViewModel
         if (errorCode == ErrorCode.Remote.REC_OK) {
             when (response) {
                 is UpdateSpecialistProfilePhotoResponse -> {
-                    mOnUpdateSpecialistProfileResponseSubject.onNext(Unit)
+                    mOnUpdateSpecialistProfileResponseSubject.onNext(ProfileUpdate.ProfilePhoto)
                 }
 
                 is UpdateSpecialistProfileInfoResponse -> {
-                    mOnUpdateSpecialistProfileResponseSubject.onNext(Unit)
+                    mOnUpdateSpecialistProfileResponseSubject.onNext(ProfileUpdate.ProfileInfo)
                 }
             }
         } else {
@@ -150,8 +149,13 @@ class UpdateSpecialistProfileActivityViewModel
     }
 
     override fun onUpdateSpecialistProfileFragmentPhoto(): Observable<String> = mUpdateSpecialistProfileFragmentUiPhotoSubject
-    override fun onUpdateSpecialistProfileFragmentInfo(): Observable<NewProfileInfo> = mUpdateSpecialistProfileFragmentUiInfoSubject
-    override fun onUpdateSpecialistProfileResponseSubject(): Observable<Unit> = mOnUpdateSpecialistProfileResponseSubject
+    override fun onUpdateSpecialistProfileFragmentUiInfo(): Observable<NewProfileInfo> = mUpdateSpecialistProfileFragmentUiInfoSubject
+    override fun onUpdateSpecialistProfileResponseSubject(): Observable<ProfileUpdate> = mOnUpdateSpecialistProfileResponseSubject
     override fun onBadResponse(): Observable<ErrorCode.Remote> = mOnBadResponseSubject
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject
+
+    enum class ProfileUpdate {
+        ProfileInfo,
+        ProfilePhoto
+    }
 }

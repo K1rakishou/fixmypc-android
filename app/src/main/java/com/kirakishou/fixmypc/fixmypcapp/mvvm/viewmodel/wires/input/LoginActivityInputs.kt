@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input
+package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.input
 
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.LoginPasswordDTO
 

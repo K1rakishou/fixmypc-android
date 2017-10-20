@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input
+package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.input
 
 import com.google.android.gms.maps.model.LatLng
 

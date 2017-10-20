@@ -1,4 +1,4 @@
-package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error
+package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.error
 
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import io.reactivex.Observable

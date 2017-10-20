@@ -11,13 +11,12 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.LoginResponseDataDTO
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.LoginPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.LoginResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UnknownErrorCodeException
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.LoginActivityErrors
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.LoginActivityInputs
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output.LoginActivityOutputs
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.error.LoginActivityErrors
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.input.LoginActivityInputs
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.output.LoginActivityOutputs
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import javax.inject.Inject

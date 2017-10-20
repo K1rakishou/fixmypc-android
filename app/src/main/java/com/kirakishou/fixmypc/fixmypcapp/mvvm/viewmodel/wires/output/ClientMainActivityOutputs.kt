@@ -1,9 +1,7 @@
-package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output
+package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.output
 
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.ClientProfile
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.ClientProfileResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsWithCountResponse
 import io.reactivex.Observable
 

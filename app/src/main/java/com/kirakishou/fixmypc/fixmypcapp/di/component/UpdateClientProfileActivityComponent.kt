@@ -4,6 +4,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.module.UpdateClientProfileActivityMo
 import com.kirakishou.fixmypc.fixmypcapp.di.module.UpdateSpecialistProfileActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.di.scope.PerActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.UpdateClientProfileActivity
+import com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client.UpdateClientProfileFragment
 import dagger.Component
 
 /**
@@ -14,4 +15,5 @@ import dagger.Component
 @Component(modules = arrayOf(UpdateClientProfileActivityModule::class), dependencies = arrayOf(ApplicationComponent::class))
 interface UpdateClientProfileActivityComponent {
     fun inject(activity: UpdateClientProfileActivity)
+    fun inject(fragment: UpdateClientProfileFragment)
 }

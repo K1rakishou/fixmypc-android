@@ -5,6 +5,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiClient
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.UpdateClientProfileActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.UpdateClientProfileActivity
+import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.UpdateClientProfileActivityNavigator
 import dagger.Module
 import dagger.Provides
 
@@ -14,6 +15,12 @@ import dagger.Provides
 
 @Module
 class UpdateClientProfileActivityModule(val activity: UpdateClientProfileActivity) {
+
+    @PerActivity
+    @Provides
+    fun provideNavigator(): UpdateClientProfileActivityNavigator {
+        return UpdateClientProfileActivityNavigator(activity)
+    }
 
     @PerActivity
     @Provides

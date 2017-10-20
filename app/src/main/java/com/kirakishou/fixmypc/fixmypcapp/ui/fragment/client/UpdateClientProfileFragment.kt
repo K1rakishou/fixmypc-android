@@ -1,24 +1,30 @@
-package com.kirakishou.fixmypc.fixmypcapp.ui.activity
+package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client
+
 
 import android.animation.AnimatorSet
 import android.arch.lifecycle.ViewModelProviders
-import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
+
 import com.kirakishou.fixmypc.fixmypcapp.R
-import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
+import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerUpdateClientProfileActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.UpdateClientProfileActivityModule
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.UpdateClientProfileActivityViewModel
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.UpdateSpecialistProfileActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.UpdateClientProfileActivityViewModelFactory
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.UpdateSpecialistProfileActivityViewModelFactory
+import com.kirakishou.fixmypc.fixmypcapp.ui.activity.UpdateClientProfileActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.UpdateClientProfileActivityNavigator
 import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
-class UpdateClientProfileActivity : BaseActivity<UpdateClientProfileActivityViewModel>() {
+class UpdateClientProfileFragment : BaseFragment<UpdateClientProfileActivityViewModel>() {
 
     @Inject
     lateinit var mRefWatcher: RefWatcher
@@ -33,29 +39,57 @@ class UpdateClientProfileActivity : BaseActivity<UpdateClientProfileActivityView
         return ViewModelProviders.of(this, mViewModelFactory).get(UpdateClientProfileActivityViewModel::class.java)
     }
 
-    override fun getContentView(): Int = R.layout.activity_update_client_profile
+    override fun getContentView(): Int = R.layout.fragment_update_client_profile
     override fun loadStartAnimations(): AnimatorSet = AnimatorSet()
     override fun loadExitAnimations(): AnimatorSet = AnimatorSet()
 
-    override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
+    override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
     }
 
-    override fun onActivityDestroy() {
+    override fun onFragmentViewDestroy() {
         mRefWatcher.watch(this)
     }
 
-    override fun onActivityStart() {
+    override fun onBadResponse(errorCode: ErrorCode.Remote) {
+        val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
+        showToast(message, Toast.LENGTH_LONG)
     }
 
-    override fun onActivityStop() {
+    override fun onUnknownError(error: Throwable) {
+        unknownError(error)
     }
 
     override fun resolveDaggerDependency() {
         DaggerUpdateClientProfileActivityComponent.builder()
                 .applicationComponent(FixmypcApplication.applicationComponent)
-                .updateClientProfileActivityModule(UpdateClientProfileActivityModule(this))
+                .updateClientProfileActivityModule(UpdateClientProfileActivityModule(activity as UpdateClientProfileActivity))
                 .build()
                 .inject(this)
     }
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

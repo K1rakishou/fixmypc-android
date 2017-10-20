@@ -49,8 +49,7 @@ class UpdateSpecialistProfileActivity : BaseActivity<UpdateSpecialistProfileActi
         supportFragmentManager.addOnBackStackChangedListener(this)
         getViewModel().init()
 
-        val args = intent.extras
-        mNavigator.navigateToUpdateSpecialistProfileFragment(args)
+        mNavigator.navigateToUpdateSpecialistProfileFragment(intent.extras)
     }
 
     override fun onActivityDestroy() {

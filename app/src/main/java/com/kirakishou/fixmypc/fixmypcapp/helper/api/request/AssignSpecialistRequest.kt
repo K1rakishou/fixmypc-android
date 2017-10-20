@@ -29,7 +29,7 @@ class AssignSpecialistRequest(protected val packet: AssignSpecialistPacket,
                               protected val mGson: Gson,
                               protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<AssignSpecialistResponse>> {
 
-    override fun execute(): Single<AssignSpecialistResponse> {
+    override fun build(): Single<AssignSpecialistResponse> {
         if (!mAppSettings.isUserInfoExists()) {
             throw UserInfoIsEmptyException()
         }

@@ -70,6 +70,10 @@ interface ApiService {
 
     @GET("/v1/api/specialist/profile/is_filled_in")
     fun isSpecialistProfileFilledIn(@Header("session_id") sessionId: String): Single<Response<IsProfileFilledInResponse>>
+
+    @POST("/v1/api/client/profile")
+    fun updateClientProfile(@Header("session_id") sessionId: String,
+                            @Body packet: ClientProfilePacket): Single<Response<UpdateClientProfileResponse>>
 }
 
 

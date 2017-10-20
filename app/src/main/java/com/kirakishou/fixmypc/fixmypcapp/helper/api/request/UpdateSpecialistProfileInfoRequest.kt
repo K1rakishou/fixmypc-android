@@ -30,7 +30,7 @@ class UpdateSpecialistProfileInfoRequest(protected val packet: SpecialistProfile
                                          protected val mGson: Gson,
                                          protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<UpdateSpecialistProfileInfoResponse>> {
 
-    override fun execute(): Single<UpdateSpecialistProfileInfoResponse> {
+    override fun build(): Single<UpdateSpecialistProfileInfoResponse> {
         return Single.just(packet)
                 .flatMap {
                     if (!mAppSettings.isUserInfoExists()) {
@@ -89,9 +89,6 @@ class UpdateSpecialistProfileInfoRequest(protected val packet: SpecialistProfile
             is TimeoutException -> UpdateSpecialistProfileInfoResponse(ErrorCode.Remote.REC_TIMEOUT)
             is UnknownHostException -> UpdateSpecialistProfileInfoResponse(ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
             is BadServerResponseException -> UpdateSpecialistProfileInfoResponse(ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
-            is FileSizeExceededException -> UpdateSpecialistProfileInfoResponse(ErrorCode.Remote.REC_FILE_SIZE_EXCEEDED)
-            is SelectedPhotoDoesNotExistsException -> UpdateSpecialistProfileInfoResponse(ErrorCode.Remote.REC_SELECTED_PHOTO_DOES_NOT_EXISTS)
-            is UserInfoIsEmptyException -> UpdateSpecialistProfileInfoResponse(ErrorCode.Remote.REC_USER_INFO_IS_EMPTY)
 
             else -> throw RuntimeException("Unknown exception")
         }

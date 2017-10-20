@@ -29,7 +29,7 @@ class RespondToDamageClaimRequest(protected val packet: RespondToDamageClaimPack
                                   protected val mGson: Gson,
                                   protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<RespondToDamageClaimResponse>> {
 
-    override fun execute(): Single<RespondToDamageClaimResponse> {
+    override fun build(): Single<RespondToDamageClaimResponse> {
         if (!mAppSettings.isUserInfoExists()) {
             throw UserInfoIsEmptyException()
         }

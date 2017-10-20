@@ -29,7 +29,7 @@ class CheckAlreadyRespondedToDamageClaimRequest(protected val damageClaimId: Lon
                                                 protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<HasAlreadyRespondedResponse>> {
 
 
-    override fun execute(): Single<HasAlreadyRespondedResponse> {
+    override fun build(): Single<HasAlreadyRespondedResponse> {
         if (!mAppSettings.isUserInfoExists()) {
             throw UserInfoIsEmptyException()
         }

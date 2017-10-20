@@ -28,7 +28,7 @@ class GetClientProfileRequest(protected val mApiService: ApiService,
                               protected val mGson: Gson,
                               protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<ClientProfileResponse>> {
 
-    override fun execute(): Single<ClientProfileResponse> {
+    override fun build(): Single<ClientProfileResponse> {
         if (!mAppSettings.isUserInfoExists()) {
             throw UserInfoIsEmptyException()
         }

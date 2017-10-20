@@ -34,7 +34,7 @@ class UpdateSpecialistProfilePhotoRequest(protected val photoPath: String,
                                           protected val mGson: Gson,
                                           protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<UpdateSpecialistProfilePhotoResponse>> {
 
-    override fun execute(): Single<UpdateSpecialistProfilePhotoResponse> {
+    override fun build(): Single<UpdateSpecialistProfilePhotoResponse> {
         return Single.just(photoPath)
                 .map {
                     return@map prepareRequest(it)

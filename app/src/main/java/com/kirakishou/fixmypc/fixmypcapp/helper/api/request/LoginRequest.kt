@@ -22,7 +22,7 @@ class LoginRequest(protected val mLoginPacket: LoginPacket,
                    protected val mGson: Gson,
                    protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<LoginResponse>> {
 
-    override fun execute(): Single<LoginResponse> {
+    override fun build(): Single<LoginResponse> {
         return mApiService.doLogin(mLoginPacket)
                 .subscribeOn(mSchedulers.provideIo())
                 .lift(OnApiErrorSingle(mGson))

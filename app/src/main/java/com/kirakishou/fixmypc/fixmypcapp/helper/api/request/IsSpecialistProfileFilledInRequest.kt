@@ -29,7 +29,7 @@ class IsSpecialistProfileFilledInRequest(protected val mApiService: ApiService,
                                          protected val mGson: Gson,
                                          protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<IsProfileFilledInResponse>> {
 
-    override fun execute(): Single<IsProfileFilledInResponse> {
+    override fun build(): Single<IsProfileFilledInResponse> {
         if (!mAppSettings.isUserInfoExists()) {
             throw UserInfoIsEmptyException()
         }

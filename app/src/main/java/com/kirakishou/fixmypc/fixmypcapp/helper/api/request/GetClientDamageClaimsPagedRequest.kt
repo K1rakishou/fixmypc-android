@@ -31,7 +31,7 @@ class GetClientDamageClaimsPagedRequest(protected val isActive: Boolean,
                                         protected val mGson: Gson,
                                         protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<DamageClaimsWithCountResponse>> {
 
-    override fun execute(): Single<DamageClaimsWithCountResponse> {
+    override fun build(): Single<DamageClaimsWithCountResponse> {
         if (!mAppSettings.isUserInfoExists()) {
             throw UserInfoIsEmptyException()
         }

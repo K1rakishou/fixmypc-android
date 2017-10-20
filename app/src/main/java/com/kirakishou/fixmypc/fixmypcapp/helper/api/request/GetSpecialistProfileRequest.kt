@@ -28,7 +28,7 @@ class GetSpecialistProfileRequest(protected val mApiService: ApiService,
                                   protected val mGson: Gson,
                                   protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<SpecialistProfileResponse>> {
 
-    override fun execute(): Single<SpecialistProfileResponse> {
+    override fun build(): Single<SpecialistProfileResponse> {
         if (!mAppSettings.isUserInfoExists()) {
             throw UserInfoIsEmptyException()
         }

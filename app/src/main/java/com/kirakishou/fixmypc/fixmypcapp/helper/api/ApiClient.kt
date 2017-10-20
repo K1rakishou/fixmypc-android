@@ -2,10 +2,7 @@ package com.kirakishou.fixmypc.fixmypcapp.helper.api
 
 import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimInfo
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.AssignSpecialistPacket
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.LoginPacket
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.RespondToDamageClaimPacket
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.SpecialistProfilePacket
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.*
 import io.reactivex.Single
 import io.reactivex.subjects.ReplaySubject
@@ -41,4 +38,6 @@ interface ApiClient {
     fun updateSpecialistProfileInfo(packet: SpecialistProfilePacket): Single<UpdateSpecialistProfileInfoResponse>
 
     fun isSpecialistProfileFilledIn(): Single<IsProfileFilledInResponse>
+
+    fun updateClientProfile(packet: ClientProfilePacket): Single<UpdateClientProfileResponse>
 }

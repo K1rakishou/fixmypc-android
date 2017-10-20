@@ -39,7 +39,7 @@ class CreateDamageClaimRequest(protected val mDamageClaimInfo: DamageClaimInfo,
                                protected val mGson: Gson,
                                protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<StatusResponse>> {
 
-    override fun execute(): Single<StatusResponse> {
+    override fun build(): Single<StatusResponse> {
         //create MultipartFile bodies, check if user has selected the same file twice
         val progressBodyListObservable = Observable.fromIterable(mDamageClaimInfo.damageClaimPhotos)
                 .subscribeOn(mSchedulers.provideIo())

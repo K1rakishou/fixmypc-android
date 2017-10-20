@@ -17,6 +17,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.module.LoginActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.extension.removeSpaces
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AccountInfoPreference
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AppSharedPreference
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Fickle
@@ -27,6 +28,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.LoginActivityVie
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.LoginActivity
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.SpecialistMainActivity
+import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.LoginActivityNavigator
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
@@ -49,6 +51,8 @@ class LoginFragment : BaseFragment<LoginActivityViewModel>() {
     @Inject
     lateinit var mAppSharedPreference: AppSharedPreference
 
+    @Inject
+    lateinit var mNavigator: LoginActivityNavigator
 
     private val accountInfoPrefs by lazy { mAppSharedPreference.prepare<AccountInfoPreference>() }
 
@@ -102,18 +106,19 @@ class LoginFragment : BaseFragment<LoginActivityViewModel>() {
     }
 
     private fun onLoginButtonClick(loginPassword: LoginPasswordDTO) {
+        mNavigator.showLoadingIndicatorFragment(Constant.FragmentTags.LOGIN_FRAGMENT)
         getViewModel().mInputs.startLoggingIn(loginPassword)
     }
 
     private fun runClientMainActivity(loginResponseData: LoginResponseDataDTO) {
-        Timber.e("Running client MainActivity")
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.LOGIN_FRAGMENT)
 
         updateAccountInfoPres(loginResponseData.login, loginResponseData.password)
         runActivity(ClientMainActivity::class.java, true)
     }
 
     private fun runSpecialistMainActivity(loginResponseData: LoginResponseDataDTO) {
-        Timber.e("Running specialist MainActivity")
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.LOGIN_FRAGMENT)
 
         updateAccountInfoPres(loginResponseData.login, loginResponseData.password)
         runActivity(SpecialistMainActivity::class.java, true)
@@ -125,11 +130,15 @@ class LoginFragment : BaseFragment<LoginActivityViewModel>() {
     }
 
     override fun onBadResponse(errorCode: ErrorCode.Remote) {
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.LOGIN_FRAGMENT)
+
         val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
         showToast(message, Toast.LENGTH_LONG)
     }
 
     override fun onUnknownError(error: Throwable) {
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.LOGIN_FRAGMENT)
+
         unknownError(error)
     }
 

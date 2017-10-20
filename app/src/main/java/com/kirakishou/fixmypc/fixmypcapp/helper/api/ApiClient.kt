@@ -40,4 +40,6 @@ interface ApiClient {
     fun isSpecialistProfileFilledIn(): Single<IsProfileFilledInResponse>
 
     fun updateClientProfile(packet: ClientProfilePacket): Single<UpdateClientProfileResponse>
+
+    fun isClientProfileFilledIn(): Single<IsProfileFilledInResponse>
 }

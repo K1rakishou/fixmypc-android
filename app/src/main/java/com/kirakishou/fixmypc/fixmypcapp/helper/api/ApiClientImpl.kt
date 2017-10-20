@@ -95,6 +95,11 @@ class ApiClientImpl
         return UpdateClientProfileRequest(packet, mApiService, mAppSettings, mGson, mSchedulers)
                 .build()
     }
+
+    override fun isClientProfileFilledIn(): Single<IsProfileFilledInResponse> {
+        return IsClientProfileFilledIn(mApiService, mAppSettings, mGson, mSchedulers)
+                .build()
+    }
 }
 
 

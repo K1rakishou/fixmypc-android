@@ -46,7 +46,7 @@ class UpdateSpecialistProfileActivityViewModel
     private val mOnBadResponseSubject = PublishSubject.create<ErrorCode.Remote>()
     private val mOnUnknownErrorSubject = PublishSubject.create<Throwable>()
 
-    fun init() {
+    init {
         mCompositeDisposable += mUpdateProfileInfoSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .flatMap {

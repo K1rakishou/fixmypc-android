@@ -45,7 +45,7 @@ class LoginActivityViewModel
     private val mOnBadResponseSubject = PublishSubject.create<ErrorCode.Remote>()
     private val mOnUnknownErrorSubject = PublishSubject.create<Throwable>()
 
-    fun init() {
+    init {
         mCompositeDisposable += mDoLoginSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .map { LoginPacket(it.login, it.password) }

@@ -51,7 +51,6 @@ class ClientNewDamageClaimActivity : BaseActivity<ClientNewDamageClaimActivityVi
 
     override fun onActivityDestroy() {
         supportFragmentManager.removeOnBackStackChangedListener(this)
-
         mRefWatcher.watch(this)
     }
 

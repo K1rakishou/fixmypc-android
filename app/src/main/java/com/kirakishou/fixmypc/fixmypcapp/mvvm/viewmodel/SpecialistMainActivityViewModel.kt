@@ -52,7 +52,7 @@ class SpecialistMainActivityViewModel
     private val mEitherFromRepoOrServerSubject = PublishSubject.create<Pair<LatLng, DamageClaimsResponse>>()
     private val mGetSpecialistProfileSubject = PublishSubject.create<Unit>()
 
-    fun init() {
+    init {
         mCompositeDisposable += mGetSpecialistProfileSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .flatMap { mApiClient.getSpecialistProfile().toObservable() }

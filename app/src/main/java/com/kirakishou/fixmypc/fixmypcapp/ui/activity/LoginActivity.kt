@@ -14,6 +14,7 @@ import com.kirakishou.fixmypc.fixmypcapp.di.module.LoginActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.LoginActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.LoginActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.LoginActivityNavigator
+import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
 class LoginActivity : BaseActivity<LoginActivityViewModel>(),
@@ -25,6 +26,9 @@ class LoginActivity : BaseActivity<LoginActivityViewModel>(),
     @Inject
     lateinit var mNavigator: LoginActivityNavigator
 
+    @Inject
+    lateinit var mRefWatcher: RefWatcher
+
     override fun initViewModel(): LoginActivityViewModel? {
         return ViewModelProviders.of(this, mViewModelFactory).get(LoginActivityViewModel::class.java)
     }
@@ -35,12 +39,12 @@ class LoginActivity : BaseActivity<LoginActivityViewModel>(),
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
         supportFragmentManager.addOnBackStackChangedListener(this)
-        getViewModel().init()
         mNavigator.navigateToLoginFragment()
     }
 
     override fun onActivityDestroy() {
         supportFragmentManager.removeOnBackStackChangedListener(this)
+        mRefWatcher.watch(this)
     }
 
     override fun onActivityStart() {

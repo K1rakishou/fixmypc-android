@@ -47,8 +47,6 @@ class UpdateSpecialistProfileActivity : BaseActivity<UpdateSpecialistProfileActi
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
         supportFragmentManager.addOnBackStackChangedListener(this)
-        getViewModel().init()
-
         mNavigator.navigateToUpdateSpecialistProfileFragment(intent.extras)
     }
 

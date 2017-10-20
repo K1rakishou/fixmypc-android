@@ -54,17 +54,9 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
         accountInfoPrefs.load()
+
         initRx()
-
-        if (accountInfoPrefs.exists()) {
-            val login = accountInfoPrefs.login.get()
-            val password = accountInfoPrefs.password.get()
-
-            getViewModel().mInputs.startLoggingIn(LoginPasswordDTO(login, password))
-        } else {
-            accountInfoPrefs.clear()
-            runLoginActivity()
-        }
+        prepareLogin()
     }
 
     override fun onActivityDestroy() {
@@ -95,6 +87,18 @@ class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
 
     override fun onActivityStop() {
 
+    }
+
+    private fun prepareLogin() {
+        if (accountInfoPrefs.exists()) {
+            val login = accountInfoPrefs.login.get()
+            val password = accountInfoPrefs.password.get()
+
+            getViewModel().mInputs.startLoggingIn(LoginPasswordDTO(login, password))
+        } else {
+            accountInfoPrefs.clear()
+            runLoginActivity()
+        }
     }
 
     private fun runLoginActivity() {

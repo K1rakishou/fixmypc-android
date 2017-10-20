@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.app.FragmentManager
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
@@ -18,7 +19,8 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.UpdateClientProfileActivit
 import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
-class UpdateClientProfileActivity : BaseActivity<UpdateClientProfileActivityViewModel>() {
+class UpdateClientProfileActivity : BaseActivity<UpdateClientProfileActivityViewModel>(),
+        FragmentManager.OnBackStackChangedListener {
 
     @Inject
     lateinit var mRefWatcher: RefWatcher
@@ -38,9 +40,12 @@ class UpdateClientProfileActivity : BaseActivity<UpdateClientProfileActivityView
     override fun loadExitAnimations(): AnimatorSet = AnimatorSet()
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
+        supportFragmentManager.addOnBackStackChangedListener(this)
+        mNavigator.navigateToUpdateClientProfileFragment()
     }
 
     override fun onActivityDestroy() {
+        supportFragmentManager.removeOnBackStackChangedListener(this)
         mRefWatcher.watch(this)
     }
 
@@ -48,6 +53,12 @@ class UpdateClientProfileActivity : BaseActivity<UpdateClientProfileActivityView
     }
 
     override fun onActivityStop() {
+    }
+
+    override fun onBackStackChanged() {
+        if (supportFragmentManager.backStackEntryCount == 0) {
+            finish()
+        }
     }
 
     override fun resolveDaggerDependency() {
@@ -58,4 +69,7 @@ class UpdateClientProfileActivity : BaseActivity<UpdateClientProfileActivityView
                 .inject(this)
     }
 
+    override fun onBackPressed() {
+        mNavigator.popFragment()
+    }
 }

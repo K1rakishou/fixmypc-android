@@ -42,23 +42,19 @@ class RespondedSpecialistsActivity : BaseActivity<RespondedSpecialistsViewModel>
         supportFragmentManager.addOnBackStackChangedListener(this)
 
         getDamageClaimId(intent)
-        getViewModel().init()
-
-        if (mDamageClaimId == -1L) {
-            throw IllegalArgumentException("mDamageClaimId == -1L")
-        }
+        check(mDamageClaimId != -1L)
 
         mNavigator.navigateToRespondedSpecialistsList(mDamageClaimId)
-    }
-
-    private fun getDamageClaimId(intent: Intent) {
-        val params = intent.extras
-        mDamageClaimId = params.getLong("damage_claim_id")
     }
 
     override fun onActivityDestroy() {
         supportFragmentManager.removeOnBackStackChangedListener(this)
         mRefWatcher.watch(this)
+    }
+
+    private fun getDamageClaimId(intent: Intent) {
+        val params = intent.extras
+        mDamageClaimId = params.getLong("damage_claim_id")
     }
 
     override fun onActivityStart() {

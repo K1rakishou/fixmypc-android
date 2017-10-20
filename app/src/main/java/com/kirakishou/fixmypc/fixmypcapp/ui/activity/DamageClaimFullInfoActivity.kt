@@ -38,7 +38,6 @@ class DamageClaimFullInfoActivity : BaseActivity<DamageClaimFullInfoActivityView
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
         supportFragmentManager.addOnBackStackChangedListener(this)
-
         mNavigator.navigateToDamageClaimFullInfoFragment(intent.extras)
     }
 

@@ -44,7 +44,7 @@ class RespondedSpecialistsViewModel
     private val mOnBadResponseSubject = PublishSubject.create<ErrorCode.Remote>()
     private val mOnUnknownErrorSubject = PublishSubject.create<Throwable>()
 
-    fun init() {
+    init {
         mCompositeDisposable += mGetRespondedSpecialistsSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .flatMap { (damageClaimId, skip, count) ->

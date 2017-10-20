@@ -47,7 +47,6 @@ class SpecialistMainActivity : BaseActivity<SpecialistMainActivityViewModel>(), 
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
         supportFragmentManager.addOnBackStackChangedListener(this)
-        getViewModel().init()
 
         bottomNavigationMenu.setOnNavigationItemSelectedListener(this)
         mNavigator.navigateToActiveDamageClaimsListFragment()

@@ -6,11 +6,9 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.ClientProfile
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsClientResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsWithCountResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UnknownErrorCodeException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.error.ClientMainActivityErrors
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.input.ClientMainActivityInputs
@@ -42,6 +40,8 @@ class ClientMainActivityViewModel
     private val itemsPerPage = Constant.MAX_DAMAGE_CLAIMS_PER_PAGE
     private val mCompositeDisposable = CompositeDisposable()
 
+    private val mOnGetClientProfileResponseSubject = PublishSubject.create<ClientProfile>()
+    private val mGetClientProfileSubject = PublishSubject.create<Unit>()
     private val mGetActiveClientDamageClaimSubject = PublishSubject.create<GetClientDamageClaimsDTO>()
     private val mGetInactiveClientDamageClaimSubject = PublishSubject.create<GetClientDamageClaimsDTO>()
     private val mOnActiveDamageClaimsResponseSubject = PublishSubject.create<DamageClaimsWithCountResponse>()
@@ -53,8 +53,7 @@ class ClientMainActivityViewModel
         mCompositeDisposable += mGetActiveClientDamageClaimSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .observeOn(mSchedulers.provideIo())
-                .flatMap { (isActive, skip, count) ->
-                    return@flatMap mApiClient.getClientDamageClaimsPaged(isActive, skip, count)
+                .flatMap { (isActive, skip, count) -> mApiClient.getClientDamageClaimsPaged(isActive, skip, count)
                             .toObservable()
                 }
                 .subscribe({
@@ -66,12 +65,21 @@ class ClientMainActivityViewModel
         mCompositeDisposable += mGetInactiveClientDamageClaimSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .observeOn(mSchedulers.provideIo())
-                .flatMap { (isActive, skip, count) ->
-                    return@flatMap mApiClient.getClientDamageClaimsPaged(isActive, skip, count)
+                .flatMap { (isActive, skip, count) -> mApiClient.getClientDamageClaimsPaged(isActive, skip, count)
                             .toObservable()
                 }
                 .subscribe({
                     handleResponse(DamageClaimsClientResponse(it.damageClaims, it.errorCode))
+                }, { error ->
+                    handleError(error)
+                })
+
+        mCompositeDisposable += mGetClientProfileSubject
+                .subscribeOn(mSchedulers.provideIo())
+                .observeOn(mSchedulers.provideIo())
+                .flatMap { mApiClient.getClientProfile().toObservable() }
+                .subscribe({
+                    handleResponse(it)
                 }, { error ->
                     handleError(error)
                 })
@@ -92,6 +100,10 @@ class ClientMainActivityViewModel
         mGetInactiveClientDamageClaimSubject.onNext(GetClientDamageClaimsDTO(false, skip * itemsPerPage, count))
     }
 
+    override fun getClientProfile() {
+        mGetClientProfileSubject.onNext(Unit)
+    }
+
     private fun handleResponse(response: StatusResponse) {
         val errorCode = response.errorCode
 
@@ -103,6 +115,10 @@ class ClientMainActivityViewModel
 
                 is DamageClaimsClientResponse -> {
                     mOnInactiveDamageClaimsResponseSubject.onNext(response.damageClaims)
+                }
+
+                is ClientProfileResponse -> {
+                    mOnGetClientProfileResponseSubject.onNext(response.clientProfile)
                 }
             }
         } else {
@@ -119,6 +135,10 @@ class ClientMainActivityViewModel
                         else -> mOnUnknownErrorSubject.onNext(UnknownErrorCodeException("Unknown errorCode: $errorCode"))
                     }
                 }
+
+                is ClientProfileResponse -> {
+                    TODO()
+                }
             }
         }
     }
@@ -127,6 +147,7 @@ class ClientMainActivityViewModel
         mOnUnknownErrorSubject.onNext(error)
     }
 
+    override fun onGetClientProfileResponse(): Observable<ClientProfile> = mOnGetClientProfileResponseSubject
     override fun onActiveDamageClaimsResponse(): Observable<DamageClaimsWithCountResponse> = mOnActiveDamageClaimsResponseSubject
     override fun onInactiveDamageClaimsResponse(): Observable<MutableList<DamageClaim>> = mOnInactiveDamageClaimsResponseSubject
     override fun onBadResponse(): Observable<ErrorCode.Remote> = mOnBadResponseSubject

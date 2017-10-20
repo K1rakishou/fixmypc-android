@@ -1,7 +1,9 @@
 package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.output
 
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.ClientProfile
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.ClientProfileResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsWithCountResponse
 import io.reactivex.Observable
 
@@ -11,4 +13,5 @@ import io.reactivex.Observable
 interface ClientMainActivityOutputs {
     fun onActiveDamageClaimsResponse(): Observable<DamageClaimsWithCountResponse>
     fun onInactiveDamageClaimsResponse(): Observable<MutableList<DamageClaim>>
+    fun onGetClientProfileResponse(): Observable<ClientProfile>
 }

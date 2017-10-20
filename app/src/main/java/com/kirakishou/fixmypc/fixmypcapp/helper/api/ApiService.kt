@@ -29,9 +29,8 @@ interface ApiService {
                         @Path("skip") skip: Long,
                         @Path("count") count: Long): Single<Response<DamageClaimsResponse>>
 
-    @GET("/v1/api/client/profile/{user_id}")
-    fun getClientProfile(@Header("session_id") sessionId: String,
-                         @Path("user_id") userId: Long): Single<Response<ClientProfileResponse>>
+    @GET("/v1/api/client/profile")
+    fun getClientProfile(@Header("session_id") sessionId: String): Single<Response<ClientProfileResponse>>
 
     @POST("/v1/api/damage_claim/respond")
     fun respondToDamageClaim(@Header("session_id") sessionId: String,

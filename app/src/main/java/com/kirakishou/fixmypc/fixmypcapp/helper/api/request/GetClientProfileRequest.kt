@@ -23,8 +23,7 @@ import java.util.concurrent.TimeoutException
 /**
  * Created by kirakishou on 9/20/2017.
  */
-class GetClientProfileRequest(protected val mUserId: Long,
-                              protected val mApiService: ApiService,
+class GetClientProfileRequest(protected val mApiService: ApiService,
                               protected val mAppSettings: AppSettings,
                               protected val mGson: Gson,
                               protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<ClientProfileResponse>> {
@@ -34,7 +33,7 @@ class GetClientProfileRequest(protected val mUserId: Long,
             throw UserInfoIsEmptyException()
         }
 
-        return mApiService.getClientProfile(mAppSettings.loadUserInfo().sessionId, mUserId)
+        return mApiService.getClientProfile(mAppSettings.loadUserInfo().sessionId)
                 .subscribeOn(mSchedulers.provideIo())
                 .lift(OnApiErrorSingle(mGson))
                 .flatMap { response ->
@@ -65,7 +64,7 @@ class GetClientProfileRequest(protected val mUserId: Long,
                 .filter { it.errorCode == ErrorCode.Remote.REC_OK }
                 .doOnNext { mAppSettings.updateSessionId(it.sessionId) }
                 .flatMap {
-                    return@flatMap mApiService.getClientProfile(mAppSettings.loadUserInfo().sessionId, mUserId).toObservable()
+                    return@flatMap mApiService.getClientProfile(mAppSettings.loadUserInfo().sessionId).toObservable()
                 }
                 .lift<ClientProfileResponse>(OnApiErrorObservable(mGson))
 

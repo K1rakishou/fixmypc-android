@@ -64,7 +64,7 @@ class ClientNewMalfunctionActivityViewModelTest {
     fun testViewModel_whenServerReturnedFileSizeExceededErrorCode() {
         initDamageClaimObject()
         `when`(wifiUtils.isWifiConnected()).thenReturn(true)
-        `when`(apiClient.createMalfunctionRequest(anyObject(), anyObject()))
+        `when`(apiClient.createMalfunctionRequest(anyObject()))
                 .thenReturn(Single.just(StatusResponse(ErrorCode.Remote.REC_FILE_SIZE_EXCEEDED)))
 
         mViewModel.sendMalfunctionRequestToServer(false)
@@ -76,7 +76,7 @@ class ClientNewMalfunctionActivityViewModelTest {
     fun testViewModel_whenServerReturnedRequestSizeExceededErrorCode() {
         initDamageClaimObject()
         `when`(wifiUtils.isWifiConnected()).thenReturn(true)
-        `when`(apiClient.createMalfunctionRequest(anyObject(), anyObject()))
+        `when`(apiClient.createMalfunctionRequest(anyObject()))
                 .thenReturn(Single.just(StatusResponse(ErrorCode.Remote.REC_REQUEST_SIZE_EXCEEDED)))
 
         mViewModel.sendMalfunctionRequestToServer(false)
@@ -88,7 +88,7 @@ class ClientNewMalfunctionActivityViewModelTest {
     fun testViewModel_whenServerReturnedAllFileServersAreNotWorkingErrorCode() {
         initDamageClaimObject()
         `when`(wifiUtils.isWifiConnected()).thenReturn(true)
-        `when`(apiClient.createMalfunctionRequest(anyObject(), anyObject()))
+        `when`(apiClient.createMalfunctionRequest(anyObject()))
                 .thenReturn(Single.just(StatusResponse(ErrorCode.Remote.REC_ALL_FILE_SERVERS_ARE_NOT_WORKING)))
 
         mViewModel.sendMalfunctionRequestToServer(false)
@@ -100,7 +100,7 @@ class ClientNewMalfunctionActivityViewModelTest {
     fun testViewModel_whenServerReturnedDatabaseErrorErrorCode() {
         initDamageClaimObject()
         `when`(wifiUtils.isWifiConnected()).thenReturn(true)
-        `when`(apiClient.createMalfunctionRequest(anyObject(), anyObject()))
+        `when`(apiClient.createMalfunctionRequest(anyObject()))
                 .thenReturn(Single.just(StatusResponse(ErrorCode.Remote.REC_DATABASE_ERROR)))
 
         mViewModel.sendMalfunctionRequestToServer(false)
@@ -112,7 +112,7 @@ class ClientNewMalfunctionActivityViewModelTest {
     fun testViewModel_whenTimeout() {
         initDamageClaimObject()
         `when`(wifiUtils.isWifiConnected()).thenReturn(true)
-        `when`(apiClient.createMalfunctionRequest(anyObject(), anyObject()))
+        `when`(apiClient.createMalfunctionRequest(anyObject()))
                 .thenReturn(Single.just(StatusResponse(ErrorCode.Remote.REC_TIMEOUT)))
 
         mViewModel.sendMalfunctionRequestToServer(false)
@@ -124,7 +124,7 @@ class ClientNewMalfunctionActivityViewModelTest {
     fun testViewModel_whenCouldNotConnectToServer() {
         initDamageClaimObject()
         `when`(wifiUtils.isWifiConnected()).thenReturn(true)
-        `when`(apiClient.createMalfunctionRequest(anyObject(), anyObject()))
+        `when`(apiClient.createMalfunctionRequest(anyObject()))
                 .thenReturn(Single.just(StatusResponse(ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)))
 
         mViewModel.sendMalfunctionRequestToServer(false)
@@ -136,7 +136,7 @@ class ClientNewMalfunctionActivityViewModelTest {
     fun testViewModel_whenSelectedPhotoDoesNotExists() {
         initDamageClaimObject()
         `when`(wifiUtils.isWifiConnected()).thenReturn(true)
-        `when`(apiClient.createMalfunctionRequest(anyObject(), anyObject()))
+        `when`(apiClient.createMalfunctionRequest(anyObject()))
                 .thenReturn(Single.just(StatusResponse(ErrorCode.Remote.REC_SELECTED_PHOTO_DOES_NOT_EXISTS)))
 
         mViewModel.sendMalfunctionRequestToServer(false)
@@ -148,7 +148,7 @@ class ClientNewMalfunctionActivityViewModelTest {
     fun testViewModel_whenResponseBodyIsEmpty() {
         initDamageClaimObject()
         `when`(wifiUtils.isWifiConnected()).thenReturn(true)
-        `when`(apiClient.createMalfunctionRequest(anyObject(), anyObject()))
+        `when`(apiClient.createMalfunctionRequest(anyObject()))
                 .thenReturn(Single.just(StatusResponse(ErrorCode.Remote.REC_RESPONSE_BODY_IS_EMPTY)))
 
         mViewModel.sendMalfunctionRequestToServer(false)
@@ -160,7 +160,7 @@ class ClientNewMalfunctionActivityViewModelTest {
     fun testViewModel_whenFileSelectedTwice() {
         initDamageClaimObject()
         `when`(wifiUtils.isWifiConnected()).thenReturn(true)
-        `when`(apiClient.createMalfunctionRequest(anyObject(), anyObject()))
+        `when`(apiClient.createMalfunctionRequest(anyObject()))
                 .thenReturn(Single.just(StatusResponse(ErrorCode.Remote.REC_DUPLICATE_ENTRY_EXCEPTION)))
 
         mViewModel.sendMalfunctionRequestToServer(false)
@@ -172,7 +172,7 @@ class ClientNewMalfunctionActivityViewModelTest {
     fun testViewModel_whenServerReturnedBadResponse() {
         initDamageClaimObject()
         `when`(wifiUtils.isWifiConnected()).thenReturn(true)
-        `when`(apiClient.createMalfunctionRequest(anyObject(), anyObject()))
+        `when`(apiClient.createMalfunctionRequest(anyObject()))
                 .thenReturn(Single.just(StatusResponse(ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)))
 
         mViewModel.sendMalfunctionRequestToServer(false)
@@ -184,7 +184,7 @@ class ClientNewMalfunctionActivityViewModelTest {
     fun testViewModel_whenServerReturnedBadFileExtension() {
         initDamageClaimObject()
         `when`(wifiUtils.isWifiConnected()).thenReturn(true)
-        `when`(apiClient.createMalfunctionRequest(anyObject(), anyObject()))
+        `when`(apiClient.createMalfunctionRequest(anyObject()))
                 .thenReturn(Single.just(StatusResponse(ErrorCode.Remote.REC_BAD_ORIGINAL_FILE_NAME)))
 
         mViewModel.sendMalfunctionRequestToServer(false)

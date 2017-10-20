@@ -42,8 +42,8 @@ class ApiClientImpl
                 .delay(1, TimeUnit.SECONDS)
     }
 
-    override fun getClientProfile(userId: Long): Single<ClientProfileResponse> {
-        return GetClientProfileRequest(userId, mApiService, mAppSettings, mGson, mSchedulers)
+    override fun getClientProfile(): Single<ClientProfileResponse> {
+        return GetClientProfileRequest(mApiService, mAppSettings, mGson, mSchedulers)
                 .execute()
     }
 

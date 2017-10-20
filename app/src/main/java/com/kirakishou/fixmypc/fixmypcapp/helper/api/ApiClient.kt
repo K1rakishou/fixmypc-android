@@ -22,7 +22,7 @@ interface ApiClient {
 
     fun getDamageClaims(lat: Double, lon: Double, radius: Double, skip: Long, count: Long): Single<DamageClaimsResponse>
 
-    fun getClientProfile(userId: Long): Single<ClientProfileResponse>
+    fun getClientProfile(): Single<ClientProfileResponse>
 
     fun respondToDamageClaim(packet: RespondToDamageClaimPacket): Single<RespondToDamageClaimResponse>
 

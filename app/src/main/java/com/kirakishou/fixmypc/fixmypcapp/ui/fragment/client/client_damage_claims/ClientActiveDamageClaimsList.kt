@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.view.ViewCompat
@@ -26,6 +27,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimGeneric
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimListAdapterGenericParam
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimResponseCount
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsWithCountResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientMainActivityViewModelFactory
@@ -68,6 +70,7 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
 
     private lateinit var mAdapter: ClientDamageClaimListAdapter
     private lateinit var mEndlessScrollListener: EndlessRecyclerOnScrollListener
+    private val receiver = DamageClaimRefreshCommandReceiver()
 
     override fun initViewModel(): ClientMainActivityViewModel? {
         return ViewModelProviders.of(activity, mViewModelFactory).get(ClientMainActivityViewModel::class.java)
@@ -81,9 +84,13 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
         initRx()
         initRecycler()
         recyclerStartLoadingItems()
+
+        activity.registerReceiver(receiver,
+                IntentFilter(Constant.ReceiverActions.REFRESH_CLIENT_DAMAGE_CLAIMS_NOTIFICATION))
     }
 
     override fun onFragmentViewDestroy() {
+        activity.unregisterReceiver(receiver)
         mRefWatcher.watch(this)
     }
 
@@ -181,9 +188,9 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
             val adapterDamageClaims = mutableListOf<AdapterItem<DamageClaimListAdapterGenericParam>>()
 
             for (damageClaim in damageClaimList) {
-                val responsesCount = responsesCountList.firstOrNull { it.damageClaimId == damageClaim.id }
+                var responsesCount = responsesCountList.firstOrNull { it.damageClaimId == damageClaim.id }
                 if (responsesCount == null) {
-                    continue
+                    responsesCount = DamageClaimResponseCount(-1, 0)
                 }
 
                 adapterDamageClaims.add(AdapterItem(DamageClaimGeneric(damageClaim, responsesCount), AdapterItemType.VIEW_ITEM))

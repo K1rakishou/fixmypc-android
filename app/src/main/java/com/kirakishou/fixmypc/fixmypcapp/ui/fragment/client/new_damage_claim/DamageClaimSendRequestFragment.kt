@@ -156,8 +156,9 @@ class DamageClaimSendRequestFragment : BaseFragment<ClientNewDamageClaimActivity
 
         val intent = Intent()
         intent.action = Constant.ReceiverActions.REFRESH_CLIENT_DAMAGE_CLAIMS_NOTIFICATION
-
         sendBroadcast(intent)
+
+        finishActivity()
     }
 
     override fun onBadResponse(errorCode: ErrorCode.Remote) {

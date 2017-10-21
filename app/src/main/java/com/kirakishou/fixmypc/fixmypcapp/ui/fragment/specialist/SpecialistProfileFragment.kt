@@ -93,8 +93,7 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
         initRx()
 
         if (savedInstanceState == null) {
-            mNavigator.showLoadingIndicatorFragment(Constant.FragmentTags.SPECIALIST_PROFILE)
-            getViewModel().mInputs.getSpecialistProfile()
+            getSpecialistProfile()
         }
 
         activity.registerReceiver(receiver,
@@ -103,7 +102,6 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
 
     override fun onFragmentViewDestroy() {
         activity.unregisterReceiver(receiver)
-
         mRefWatcher.watch(this)
     }
 
@@ -124,6 +122,11 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
         mCompositeDisposable += getViewModel().mErrors.onBadResponse()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onBadResponse(it) })
+    }
+
+    private fun getSpecialistProfile() {
+        mNavigator.showLoadingIndicatorFragment(Constant.FragmentTags.SPECIALIST_PROFILE)
+        getViewModel().mInputs.getSpecialistProfile()
     }
 
     private fun onUpdateProfileButtonClick() {

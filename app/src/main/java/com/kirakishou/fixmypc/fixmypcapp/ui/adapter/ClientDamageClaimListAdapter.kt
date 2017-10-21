@@ -110,7 +110,7 @@ class ClientDamageClaimListAdapter(private val mContext: Context,
                     val damageClaim = (item as DamageClaimGeneric).damageClaim
                     val responsesCount = (item as DamageClaimGeneric).responsesCount
 
-                    if (responsesCount != null) {
+                    if (responsesCount.responseCount > 0) {
                         holder.counterHolder.visibility = View.VISIBLE
                         holder.responsesCount.text = responsesCount.responseCount.toString()
                     }

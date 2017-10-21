@@ -67,7 +67,10 @@ class ClientProfileFragment : BaseFragment<ClientMainActivityViewModel>() {
 
     override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
         initRx()
-        getClientProfile()
+
+        if (savedInstanceState == null) {
+            getClientProfile()
+        }
 
         activity.registerReceiver(receiver,
                 IntentFilter(Constant.ReceiverActions.UPDATE_CLIENT_PROFILE_UI_NOTIFICATION))

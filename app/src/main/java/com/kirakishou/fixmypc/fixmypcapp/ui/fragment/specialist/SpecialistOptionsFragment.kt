@@ -75,7 +75,7 @@ class SpecialistOptionsFragment : BaseFragment<SpecialistMainActivityViewModel>(
 
     private fun initRx() {
         mCompositeDisposable += RxView.clicks(logoutButton)
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onLogoutButtonClick() })
     }
 

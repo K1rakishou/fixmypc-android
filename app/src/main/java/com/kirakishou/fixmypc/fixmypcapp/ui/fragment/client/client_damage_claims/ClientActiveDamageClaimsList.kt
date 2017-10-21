@@ -22,6 +22,7 @@ import com.kirakishou.fixmypc.fixmypcapp.base.BaseFragment
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerClientMainActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.ClientMainActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
+import com.kirakishou.fixmypc.fixmypcapp.helper.extension.firstOrDefault
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.AndroidUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimGeneric
@@ -135,23 +136,23 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
                 })
 
         mCompositeDisposable += RxView.clicks(newDamageClaimButton)
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onNewDamageClaimButtonClick() })
 
         mCompositeDisposable += mAdapterItemClickSubject
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onClientDamageClaimClick(it) })
 
         mCompositeDisposable += getViewModel().mOutputs.onActiveDamageClaimsResponse()
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onActiveDamageClaimsResponse(it) })
 
         mCompositeDisposable += getViewModel().mErrors.onBadResponse()
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onBadResponse(it) })
 
         mCompositeDisposable += getViewModel().mErrors.onUnknownError()
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUnknownError(it) })
     }
 
@@ -188,9 +189,9 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
             val adapterDamageClaims = mutableListOf<AdapterItem<DamageClaimListAdapterGenericParam>>()
 
             for (damageClaim in damageClaimList) {
-                var responsesCount = responsesCountList.firstOrNull { it.damageClaimId == damageClaim.id }
-                if (responsesCount == null) {
-                    responsesCount = DamageClaimResponseCount(-1, 0)
+                val default = DamageClaimResponseCount(-1, 0)
+                val responsesCount = responsesCountList.firstOrDefault(default) {
+                    it.damageClaimId == damageClaim.id
                 }
 
                 adapterDamageClaims.add(AdapterItem(DamageClaimGeneric(damageClaim, responsesCount), AdapterItemType.VIEW_ITEM))

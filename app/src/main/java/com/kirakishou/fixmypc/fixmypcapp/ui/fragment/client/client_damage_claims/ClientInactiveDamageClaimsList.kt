@@ -20,6 +20,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimGeneric
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimListAdapterGenericParam
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimResponseCount
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
@@ -157,7 +158,10 @@ class ClientInactiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>
 
             mAdapter.removeProgressFooter()
 
-            val adapterDamageClaims = inactiveDamageClaimList.map { AdapterItem(DamageClaimGeneric(it, null), AdapterItemType.VIEW_ITEM) }
+            val adapterDamageClaims = inactiveDamageClaimList.map {
+                AdapterItem(DamageClaimGeneric(it, DamageClaimResponseCount(-1, 0)), AdapterItemType.VIEW_ITEM)
+            }
+
             mAdapter.addAll(adapterDamageClaims as List<AdapterItem<DamageClaimListAdapterGenericParam>>)
 
             if (inactiveDamageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {

@@ -7,6 +7,7 @@ import android.os.Bundle
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
+import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivityFragmentCallback
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerLoadingActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.LoadingActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.helper.preference.AccountInfoPreference
@@ -23,7 +24,7 @@ import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
 import javax.inject.Inject
 
-class LoadingActivity : BaseActivity<LoadingActivityViewModel>() {
+class LoadingActivity : BaseActivity<LoadingActivityViewModel>(), BaseActivityFragmentCallback {
 
     @Inject
     lateinit var mViewModelFactory: LoadingActivityViewModelFactory

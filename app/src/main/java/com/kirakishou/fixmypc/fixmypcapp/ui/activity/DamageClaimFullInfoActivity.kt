@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
+import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivityFragmentCallback
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerDamageClaimFullInfoActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.DamageClaimFullInfoActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.DamageClaimFullInfoActivityViewModel
@@ -17,7 +18,7 @@ import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
 class DamageClaimFullInfoActivity : BaseActivity<DamageClaimFullInfoActivityViewModel>(),
-        FragmentManager.OnBackStackChangedListener {
+        FragmentManager.OnBackStackChangedListener, BaseActivityFragmentCallback {
 
     @Inject
     lateinit var mRefWatcher: RefWatcher

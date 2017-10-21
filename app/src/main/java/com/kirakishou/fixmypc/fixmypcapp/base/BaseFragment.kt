@@ -80,7 +80,7 @@ abstract class BaseFragment<T : ViewModel> : Fragment() {
 
     protected fun runActivityWithArgs(clazz: Class<*>, args: Bundle, finishCurrentActivity: Boolean = false) {
         if (activity !is BaseActivityFragmentCallback) {
-            throw IllegalStateException("Activity should implement BaseActivityFragmentCallback!")
+            throw IllegalStateException("Activity ${activity::class.simpleName} should implement BaseActivityFragmentCallback!")
         }
 
         (activity as BaseActivityFragmentCallback).runActivityWithArgs(clazz, args, finishCurrentActivity)
@@ -88,7 +88,7 @@ abstract class BaseFragment<T : ViewModel> : Fragment() {
 
     protected fun runActivity(clazz: Class<*>, finishCurrentActivity: Boolean = false) {
         if (activity !is BaseActivityFragmentCallback) {
-            throw IllegalStateException("Activity should implement BaseActivityFragmentCallback!")
+            throw IllegalStateException("Activity ${activity::class.simpleName} should implement BaseActivityFragmentCallback!")
         }
 
         (activity as BaseActivityFragmentCallback).runActivity(clazz, finishCurrentActivity)
@@ -96,7 +96,7 @@ abstract class BaseFragment<T : ViewModel> : Fragment() {
 
     protected fun finishActivity() {
         if (activity !is BaseActivityFragmentCallback) {
-            throw IllegalStateException("Activity should implement BaseActivityFragmentCallback!")
+            throw IllegalStateException("Activity ${activity::class.simpleName} should implement BaseActivityFragmentCallback!")
         }
 
         (activity as BaseActivityFragmentCallback).finishActivity()
@@ -104,7 +104,7 @@ abstract class BaseFragment<T : ViewModel> : Fragment() {
 
     protected fun sendBroadcast(intent: Intent) {
         if (activity !is BaseActivityFragmentCallback) {
-            throw IllegalStateException("Activity should implement BaseActivityFragmentCallback!")
+            throw IllegalStateException("Activity ${activity::class.simpleName} should implement BaseActivityFragmentCallback!")
         }
 
         (activity as BaseActivityFragmentCallback).sendBroadcast(intent)
@@ -112,7 +112,7 @@ abstract class BaseFragment<T : ViewModel> : Fragment() {
 
     protected fun showToast(message: String, duration: Int) {
         if (activity !is BaseActivityFragmentCallback) {
-            throw IllegalStateException("Activity should implement BaseActivityFragmentCallback!")
+            throw IllegalStateException("Activity ${activity::class.simpleName} should implement BaseActivityFragmentCallback!")
         }
 
         (activity as BaseActivityFragmentCallback).onShowToast(message, duration)
@@ -122,7 +122,7 @@ abstract class BaseFragment<T : ViewModel> : Fragment() {
         Timber.e(throwable)
 
         if (activity !is BaseActivityFragmentCallback) {
-            throw IllegalStateException("Activity should implement BaseActivityFragmentCallback!")
+            throw IllegalStateException("Activity ${activity::class.simpleName} should implement BaseActivityFragmentCallback!")
         }
 
         (activity as BaseActivityFragmentCallback).onUnknownError(throwable)

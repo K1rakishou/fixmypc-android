@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
+import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivityFragmentCallback
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerRespondedSpecialistsActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.RespondedSpecialistsActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.RespondedSpecialistsViewModel
@@ -17,7 +18,7 @@ import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
 class RespondedSpecialistsActivity : BaseActivity<RespondedSpecialistsViewModel>(),
-        FragmentManager.OnBackStackChangedListener {
+        FragmentManager.OnBackStackChangedListener, BaseActivityFragmentCallback {
 
     @Inject
     lateinit var mViewModelFactory: RespondedSpecialistsActivityViewModelFactory

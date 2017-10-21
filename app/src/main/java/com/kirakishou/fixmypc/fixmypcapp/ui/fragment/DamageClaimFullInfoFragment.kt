@@ -109,31 +109,32 @@ class DamageClaimFullInfoFragment : BaseFragment<DamageClaimFullInfoActivityView
 
     private fun initRx() {
         mCompositeDisposable += RxView.clicks(respondButton)
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onRespondButtonClick() })
 
         mCompositeDisposable += getViewModel().mOutputs.onRespondToDamageClaimSuccessSubject()
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onRespondToDamageClaimSuccessSubject() })
 
         mCompositeDisposable += getViewModel().mOutputs.onHasAlreadyRespondedResponse()
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onHasAlreadyRespondedResponse(it) })
 
         mCompositeDisposable += getViewModel().mOutputs.onNotifyProfileIsNotFilledIn()
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onNotifyProfileIsNotFilledIn() })
 
         mCompositeDisposable += getViewModel().mErrors.onBadResponse()
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onBadResponse(it) })
 
         mCompositeDisposable += getViewModel().mErrors.onUnknownError()
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUnknownError(it) })
     }
 
     private fun onNotifyProfileIsNotFilledIn() {
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO)
         showToast("Профиль не заполнен", Toast.LENGTH_LONG)
     }
 
@@ -162,26 +163,22 @@ class DamageClaimFullInfoFragment : BaseFragment<DamageClaimFullInfoActivityView
     }
 
     private fun onHasAlreadyRespondedResponse(responded: Boolean) {
-        activity.runOnUiThread {
-            mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO)
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO)
 
-            if (responded) {
-                respondButton.isEnabled = false
-                respondButton.text = "Заявка отправлена"
-            } else {
-                respondButton.isEnabled = true
-                respondButton.text = "Отправить заявку"
-            }
+        if (responded) {
+            respondButton.isEnabled = false
+            respondButton.text = "Заявка отправлена"
+        } else {
+            respondButton.isEnabled = true
+            respondButton.text = "Отправить заявку"
         }
     }
 
     private fun onRespondToDamageClaimSuccessSubject() {
-        activity.runOnUiThread {
-            mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO)
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.DAMAGE_CLAIM_FULL_INFO)
 
-            respondButton.isEnabled = false
-            respondButton.text = "Заявка отправлена"
-        }
+        respondButton.isEnabled = false
+        respondButton.text = "Заявка отправлена"
     }
 
     override fun onBadResponse(errorCode: ErrorCode.Remote) {

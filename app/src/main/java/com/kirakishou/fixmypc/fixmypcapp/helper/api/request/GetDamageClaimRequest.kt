@@ -30,7 +30,7 @@ class GetDamageClaimRequest(protected val mLat: Double,
                             protected val mApiService: ApiService,
                             protected val mAppSettings: AppSettings,
                             protected val mGson: Gson,
-                            protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<DamageClaimsResponse>> {
+                            protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<DamageClaimsResponse>>() {
 
     override fun build(): Single<DamageClaimsResponse> {
         if (!mAppSettings.isUserInfoExists()) {
@@ -83,6 +83,8 @@ class GetDamageClaimRequest(protected val mLat: Double,
     }
 
     private fun exceptionToErrorCode(error: Throwable): Single<DamageClaimsResponse> {
+        logError(error)
+
         val response = when (error) {
             is ApiException -> DamageClaimsResponse(mutableListOf(), error.errorCode)
             is TimeoutException -> DamageClaimsResponse(mutableListOf(), ErrorCode.Remote.REC_TIMEOUT)

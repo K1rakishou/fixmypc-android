@@ -29,7 +29,7 @@ class GetClientDamageClaimsPagedRequest(protected val isActive: Boolean,
                                         protected val mApiService: ApiService,
                                         protected val mAppSettings: AppSettings,
                                         protected val mGson: Gson,
-                                        protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<DamageClaimsWithCountResponse>> {
+                                        protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<DamageClaimsWithCountResponse>>() {
 
     override fun build(): Single<DamageClaimsWithCountResponse> {
         if (!mAppSettings.isUserInfoExists()) {
@@ -82,6 +82,8 @@ class GetClientDamageClaimsPagedRequest(protected val isActive: Boolean,
     }
 
     private fun exceptionToErrorCode(error: Throwable): Single<DamageClaimsWithCountResponse> {
+        logError(error)
+
         val response = when (error) {
             is ApiException -> DamageClaimsWithCountResponse(mutableListOf(), mutableListOf(), error.errorCode)
             is TimeoutException -> DamageClaimsWithCountResponse(mutableListOf(), mutableListOf(), ErrorCode.Remote.REC_TIMEOUT)

@@ -27,7 +27,7 @@ class AssignSpecialistRequest(protected val packet: AssignSpecialistPacket,
                               protected val mApiService: ApiService,
                               protected val mAppSettings: AppSettings,
                               protected val mGson: Gson,
-                              protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<AssignSpecialistResponse>> {
+                              protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<AssignSpecialistResponse>>() {
 
     override fun build(): Single<AssignSpecialistResponse> {
         if (!mAppSettings.isUserInfoExists()) {
@@ -80,6 +80,8 @@ class AssignSpecialistRequest(protected val packet: AssignSpecialistPacket,
     }
 
     private fun exceptionToErrorCode(error: Throwable): Single<AssignSpecialistResponse> {
+        logError(error)
+
         val response = when (error) {
             is ApiException -> AssignSpecialistResponse(error.errorCode)
             is TimeoutException -> AssignSpecialistResponse(ErrorCode.Remote.REC_TIMEOUT)

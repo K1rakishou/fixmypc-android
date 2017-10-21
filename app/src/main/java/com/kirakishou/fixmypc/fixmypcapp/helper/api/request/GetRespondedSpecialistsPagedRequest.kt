@@ -28,7 +28,7 @@ class GetRespondedSpecialistsPagedRequest(protected val damageClaimId: Long,
                                           protected val mApiService: ApiService,
                                           protected val mAppSettings: AppSettings,
                                           protected val mGson: Gson,
-                                          protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<SpecialistsListResponse>> {
+                                          protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<SpecialistsListResponse>>() {
 
     override fun build(): Single<SpecialistsListResponse> {
         if (!mAppSettings.isUserInfoExists()) {
@@ -81,6 +81,8 @@ class GetRespondedSpecialistsPagedRequest(protected val damageClaimId: Long,
     }
 
     private fun exceptionToErrorCode(error: Throwable): Single<SpecialistsListResponse> {
+        logError(error)
+
         val response = when (error) {
             is ApiException -> SpecialistsListResponse(emptyList(), error.errorCode)
             is TimeoutException -> SpecialistsListResponse(emptyList(), ErrorCode.Remote.REC_TIMEOUT)

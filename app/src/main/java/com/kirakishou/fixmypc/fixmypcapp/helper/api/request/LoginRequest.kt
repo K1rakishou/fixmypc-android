@@ -20,7 +20,7 @@ import java.util.concurrent.TimeoutException
 class LoginRequest(protected val mLoginPacket: LoginPacket,
                    protected val mApiService: ApiService,
                    protected val mGson: Gson,
-                   protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<LoginResponse>> {
+                   protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<LoginResponse>>() {
 
     override fun build(): Single<LoginResponse> {
         return mApiService.doLogin(mLoginPacket)
@@ -30,6 +30,8 @@ class LoginRequest(protected val mLoginPacket: LoginPacket,
     }
 
     private fun exceptionToErrorCode(error: Throwable): Single<LoginResponse> {
+        logError(error)
+
         val response = when (error) {
             is ApiException -> LoginResponse("", AccountType.Guest, error.errorCode)
             is TimeoutException -> LoginResponse("", AccountType.Guest, ErrorCode.Remote.REC_TIMEOUT)

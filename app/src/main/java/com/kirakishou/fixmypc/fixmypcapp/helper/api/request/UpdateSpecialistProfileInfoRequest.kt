@@ -28,7 +28,7 @@ class UpdateSpecialistProfileInfoRequest(protected val packet: SpecialistProfile
                                          protected val mApiService: ApiService,
                                          protected val mAppSettings: AppSettings,
                                          protected val mGson: Gson,
-                                         protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<UpdateSpecialistProfileInfoResponse>> {
+                                         protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<UpdateSpecialistProfileInfoResponse>>() {
 
     override fun build(): Single<UpdateSpecialistProfileInfoResponse> {
         return Single.just(packet)
@@ -84,6 +84,8 @@ class UpdateSpecialistProfileInfoRequest(protected val packet: SpecialistProfile
     }
 
     private fun exceptionToErrorCode(error: Throwable): Single<UpdateSpecialistProfileInfoResponse> {
+        logError(error)
+
         val response = when (error) {
             is ApiException -> UpdateSpecialistProfileInfoResponse(error.errorCode)
             is TimeoutException -> UpdateSpecialistProfileInfoResponse(ErrorCode.Remote.REC_TIMEOUT)

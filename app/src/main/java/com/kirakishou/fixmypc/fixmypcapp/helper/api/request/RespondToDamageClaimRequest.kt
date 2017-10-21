@@ -27,7 +27,7 @@ class RespondToDamageClaimRequest(protected val packet: RespondToDamageClaimPack
                                   protected val mApiService: ApiService,
                                   protected val mAppSettings: AppSettings,
                                   protected val mGson: Gson,
-                                  protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<RespondToDamageClaimResponse>> {
+                                  protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<RespondToDamageClaimResponse>>() {
 
     override fun build(): Single<RespondToDamageClaimResponse> {
         if (!mAppSettings.isUserInfoExists()) {
@@ -79,6 +79,8 @@ class RespondToDamageClaimRequest(protected val packet: RespondToDamageClaimPack
     }
 
     private fun exceptionToErrorCode(error: Throwable): Single<RespondToDamageClaimResponse> {
+        logError(error)
+
         val response = when (error) {
             is ApiException -> RespondToDamageClaimResponse(error.errorCode)
             is TimeoutException -> RespondToDamageClaimResponse(ErrorCode.Remote.REC_TIMEOUT)

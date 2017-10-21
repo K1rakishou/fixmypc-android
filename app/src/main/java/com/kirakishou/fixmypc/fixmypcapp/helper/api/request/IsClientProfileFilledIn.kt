@@ -25,7 +25,7 @@ import java.util.concurrent.TimeoutException
 class IsClientProfileFilledIn(protected val mApiService: ApiService,
                               protected val mAppSettings: AppSettings,
                               protected val mGson: Gson,
-                              protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<IsProfileFilledInResponse>> {
+                              protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<IsProfileFilledInResponse>>() {
 
     override fun build(): Single<IsProfileFilledInResponse> {
         return Single.just(Unit)
@@ -81,6 +81,8 @@ class IsClientProfileFilledIn(protected val mApiService: ApiService,
     }
 
     private fun exceptionToErrorCode(error: Throwable): Single<IsProfileFilledInResponse> {
+        logError(error)
+
         val response = when (error) {
             is ApiException -> IsProfileFilledInResponse(false, error.errorCode)
             is TimeoutException -> IsProfileFilledInResponse( false, ErrorCode.Remote.REC_TIMEOUT)

@@ -32,7 +32,7 @@ class UpdateSpecialistProfilePhotoRequest(protected val photoPath: String,
                                           protected val mApiService: ApiService,
                                           protected val mAppSettings: AppSettings,
                                           protected val mGson: Gson,
-                                          protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<UpdateSpecialistProfilePhotoResponse>> {
+                                          protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<UpdateSpecialistProfilePhotoResponse>>() {
 
     override fun build(): Single<UpdateSpecialistProfilePhotoResponse> {
         return Single.just(photoPath)
@@ -93,6 +93,8 @@ class UpdateSpecialistProfilePhotoRequest(protected val photoPath: String,
     }
 
     private fun exceptionToErrorCode(error: Throwable): Single<UpdateSpecialistProfilePhotoResponse> {
+        logError(error)
+
         val response = when (error) {
             is ApiException -> UpdateSpecialistProfilePhotoResponse(error.errorCode)
             is TimeoutException -> UpdateSpecialistProfilePhotoResponse(ErrorCode.Remote.REC_TIMEOUT)

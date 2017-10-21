@@ -26,7 +26,7 @@ class CheckAlreadyRespondedToDamageClaimRequest(protected val damageClaimId: Lon
                                                 protected val mApiService: ApiService,
                                                 protected val mAppSettings: AppSettings,
                                                 protected val mGson: Gson,
-                                                protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<HasAlreadyRespondedResponse>> {
+                                                protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<HasAlreadyRespondedResponse>>() {
 
 
     override fun build(): Single<HasAlreadyRespondedResponse> {
@@ -79,6 +79,8 @@ class CheckAlreadyRespondedToDamageClaimRequest(protected val damageClaimId: Lon
     }
 
     private fun exceptionToErrorCode(error: Throwable): Single<HasAlreadyRespondedResponse> {
+        logError(error)
+
         val response = when (error) {
             is ApiException -> HasAlreadyRespondedResponse(false, error.errorCode)
             is TimeoutException -> HasAlreadyRespondedResponse(false, ErrorCode.Remote.REC_TIMEOUT)

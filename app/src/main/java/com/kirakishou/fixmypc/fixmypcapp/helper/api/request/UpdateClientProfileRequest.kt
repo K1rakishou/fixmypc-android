@@ -30,7 +30,7 @@ class UpdateClientProfileRequest(protected val packet: ClientProfilePacket,
                                  protected val mApiService: ApiService,
                                  protected val mAppSettings: AppSettings,
                                  protected val mGson: Gson,
-                                 protected val mSchedulers: SchedulerProvider): AbstractRequest<Single<UpdateClientProfileResponse>> {
+                                 protected val mSchedulers: SchedulerProvider): AbstractRequest<Single<UpdateClientProfileResponse>>() {
 
     override fun build(): Single<UpdateClientProfileResponse> {
         return Single.just(packet)
@@ -86,6 +86,8 @@ class UpdateClientProfileRequest(protected val packet: ClientProfilePacket,
     }
 
     private fun exceptionToErrorCode(error: Throwable): Single<UpdateClientProfileResponse> {
+        logError(error)
+
         val response = when (error) {
             is ApiException -> UpdateClientProfileResponse(error.errorCode)
             is TimeoutException -> UpdateClientProfileResponse(ErrorCode.Remote.REC_TIMEOUT)

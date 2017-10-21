@@ -37,7 +37,7 @@ class CreateDamageClaimRequest(protected val mDamageClaimInfo: DamageClaimInfo,
                                protected val mApiService: ApiService,
                                protected val mAppSettings: AppSettings,
                                protected val mGson: Gson,
-                               protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<StatusResponse>> {
+                               protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<StatusResponse>>() {
 
     override fun build(): Single<StatusResponse> {
         //create MultipartFile bodies, check if user has selected the same file twice
@@ -100,6 +100,8 @@ class CreateDamageClaimRequest(protected val mDamageClaimInfo: DamageClaimInfo,
     }
 
     private fun exceptionToErrorCode(error: Throwable): Single<StatusResponse> {
+        logError(error)
+
         val response = when (error) {
             is ApiException -> StatusResponse(error.errorCode)
             is TimeoutException -> StatusResponse(ErrorCode.Remote.REC_TIMEOUT)

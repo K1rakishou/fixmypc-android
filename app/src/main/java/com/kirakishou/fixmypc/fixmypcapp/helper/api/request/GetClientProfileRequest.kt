@@ -26,7 +26,7 @@ import java.util.concurrent.TimeoutException
 class GetClientProfileRequest(protected val mApiService: ApiService,
                               protected val mAppSettings: AppSettings,
                               protected val mGson: Gson,
-                              protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<ClientProfileResponse>> {
+                              protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<ClientProfileResponse>>() {
 
     override fun build(): Single<ClientProfileResponse> {
         if (!mAppSettings.isUserInfoExists()) {
@@ -78,6 +78,8 @@ class GetClientProfileRequest(protected val mApiService: ApiService,
     }
 
     private fun exceptionToErrorCode(error: Throwable): Single<ClientProfileResponse> {
+        logError(error)
+
         val response = when (error) {
             is ApiException -> ClientProfileResponse(ClientProfile(), false, error.errorCode)
             is TimeoutException -> ClientProfileResponse(ClientProfile(), false, ErrorCode.Remote.REC_TIMEOUT)

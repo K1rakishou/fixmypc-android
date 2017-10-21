@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager
 import com.kirakishou.fixmypc.fixmypcapp.FixmypcApplication
 import com.kirakishou.fixmypc.fixmypcapp.R
 import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivity
+import com.kirakishou.fixmypc.fixmypcapp.base.BaseActivityFragmentCallback
 import com.kirakishou.fixmypc.fixmypcapp.di.component.DaggerUpdateClientProfileActivityComponent
 import com.kirakishou.fixmypc.fixmypcapp.di.module.UpdateClientProfileActivityModule
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.UpdateClientProfileActivityViewModel
@@ -20,7 +21,7 @@ import com.squareup.leakcanary.RefWatcher
 import javax.inject.Inject
 
 class UpdateClientProfileActivity : BaseActivity<UpdateClientProfileActivityViewModel>(),
-        FragmentManager.OnBackStackChangedListener {
+        FragmentManager.OnBackStackChangedListener, BaseActivityFragmentCallback {
 
     @Inject
     lateinit var mRefWatcher: RefWatcher
@@ -41,7 +42,7 @@ class UpdateClientProfileActivity : BaseActivity<UpdateClientProfileActivityView
 
     override fun onActivityCreate(savedInstanceState: Bundle?, intent: Intent) {
         supportFragmentManager.addOnBackStackChangedListener(this)
-        mNavigator.navigateToUpdateClientProfileFragment()
+        mNavigator.navigateToUpdateClientProfileFragment(intent.extras)
     }
 
     override fun onActivityDestroy() {

@@ -8,12 +8,12 @@ import com.google.gson.annotations.SerializedName
  */
 data class ClientProfile(@Expose
                          @SerializedName("user_id")
-                         val userId: Long = 0L,
+                         var userId: Long = 0L,
 
                          @Expose
                          @SerializedName("name")
-                         val name: String = "",
+                         var name: String = "",
 
                          @Expose
                          @SerializedName("phone")
-                         val phone: String = "")
+                         var phone: String = "")

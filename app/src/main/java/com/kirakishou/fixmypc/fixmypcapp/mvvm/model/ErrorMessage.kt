@@ -51,7 +51,6 @@ object ErrorMessage {
             ErrorCode.Remote.REC_COULD_NOT_FIND_PROFILE -> return "Не удалось найти профиль"
             ErrorCode.Remote.REC_EMPTY_OBSERVABLE_ERROR -> return "EMPTY_OBSERVABLE_ERROR"
             ErrorCode.Remote.REC_COULD_NOT_UPLOAD_IMAGE -> return "Не удалось загрузить фото"
-            ErrorCode.Remote.REC_REPOSITORY_ERROR -> return "Неизвестная ошибка репозитория на сервере"
             ErrorCode.Remote.REC_COULD_NOT_DELETE_OLD_IMAGE -> return "Не удалось удалить предыдущее фото"
             ErrorCode.Remote.REC_STORE_ERROR -> return "Неизвестная ошибка репозитория на сервере"
             ErrorCode.Remote.REC_PROFILE_IS_NOT_FILLED_IN -> return "Профиль не заполнен"

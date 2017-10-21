@@ -114,75 +114,71 @@ class UpdateSpecialistProfileFragment : BaseFragment<UpdateSpecialistProfileActi
 
     private fun initRx() {
         mCompositeDisposable += RxTextView.textChanges(profileName)
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .skip(2)
                 .map { it.isNotEmpty() }
                 .distinctUntilChanged()
                 .subscribe({ updateProfileInfoButton.isEnabled = it })
 
         mCompositeDisposable += RxTextView.textChanges(profilePhone)
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .skip(2)
                 .map { it.isNotEmpty() }
                 .distinctUntilChanged()
                 .subscribe({ updateProfileInfoButton.isEnabled = it })
 
         mCompositeDisposable += RxView.clicks(updateProfileInfoButton)
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUpdateProfileButtonInfoClick() })
 
         mCompositeDisposable += RxView.clicks(updateProfilePhotoButton)
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUpdateProfilePhotoButtonClick() })
 
         mCompositeDisposable += getViewModel().mOutputs.onUpdateSpecialistProfileResponseSubject()
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUpdateSpecialistProfileResponse(it) })
 
         mCompositeDisposable += getViewModel().mOutputs.onUpdateSpecialistProfileFragmentUiInfo()
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUpdateSpecialistProfileInfoFragment(it) })
 
         mCompositeDisposable += getViewModel().mOutputs.onUpdateSpecialistProfileFragmentPhoto()
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUpdateSpecialistProfilePhotoFragment(it) })
 
         mCompositeDisposable += getViewModel().mErrors.onUnknownError()
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUnknownError(it) })
 
         mCompositeDisposable += getViewModel().mErrors.onBadResponse()
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onBadResponse(it) })
     }
 
     private fun onUpdateSpecialistProfilePhotoFragment(newPhotoName: String) {
-        activity.runOnUiThread {
-            val intent = Intent()
-            intent.action = Constant.ReceiverActions.UPDATE_SPECIALIST_PROFILE_UI_NOTIFICATION
+        val intent = Intent()
+        intent.action = Constant.ReceiverActions.UPDATE_SPECIALIST_PROFILE_UI_NOTIFICATION
 
-            val args = Bundle()
-            args.putString("update_type", "photo")
-            args.putString("new_photo_name", newPhotoName)
-            intent.putExtras(args)
+        val args = Bundle()
+        args.putString("update_type", "photo")
+        args.putString("new_photo_name", newPhotoName)
+        intent.putExtras(args)
 
-            sendBroadcast(intent)
-        }
+        sendBroadcast(intent)
     }
 
     private fun onUpdateSpecialistProfileInfoFragment(newProfileInfo: NewProfileInfo) {
-        activity.runOnUiThread {
-            val intent = Intent()
-            intent.action = Constant.ReceiverActions.UPDATE_SPECIALIST_PROFILE_UI_NOTIFICATION
+        val intent = Intent()
+        intent.action = Constant.ReceiverActions.UPDATE_SPECIALIST_PROFILE_UI_NOTIFICATION
 
-            val args = Bundle()
-            args.putString("update_type", "info")
-            args.putString("new_name", newProfileInfo.name)
-            args.putString("new_phone", newProfileInfo.phone)
-            intent.putExtras(args)
+        val args = Bundle()
+        args.putString("update_type", "info")
+        args.putString("new_name", newProfileInfo.name)
+        args.putString("new_phone", newProfileInfo.phone)
+        intent.putExtras(args)
 
-            sendBroadcast(intent)
-        }
+        sendBroadcast(intent)
     }
 
     private fun loadPhoto(photoName: String, userId: Long) {

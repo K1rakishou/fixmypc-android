@@ -3,6 +3,7 @@ package com.kirakishou.fixmypc.fixmypcapp.ui.fragment.client
 
 import android.animation.AnimatorSet
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.AppCompatButton
 import android.support.v7.widget.AppCompatEditText
@@ -18,6 +19,8 @@ import com.kirakishou.fixmypc.fixmypcapp.di.module.UpdateClientProfileActivityMo
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.Constant
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorMessage
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.ClientProfile
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.ClientProfilePacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.UpdateClientProfileActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.UpdateClientProfileActivityViewModelFactory
@@ -26,6 +29,7 @@ import com.kirakishou.fixmypc.fixmypcapp.ui.navigator.UpdateClientProfileActivit
 import com.squareup.leakcanary.RefWatcher
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
+import timber.log.Timber
 import javax.inject.Inject
 
 class UpdateClientProfileFragment : BaseFragment<UpdateClientProfileActivityViewModel>() {
@@ -48,6 +52,8 @@ class UpdateClientProfileFragment : BaseFragment<UpdateClientProfileActivityView
     @Inject
     lateinit var mNavigator: UpdateClientProfileActivityNavigator
 
+    private var savedProfile: ClientProfile? = null
+
     override fun initViewModel(): UpdateClientProfileActivityViewModel? {
         return ViewModelProviders.of(this, mViewModelFactory).get(UpdateClientProfileActivityViewModel::class.java)
     }
@@ -56,8 +62,26 @@ class UpdateClientProfileFragment : BaseFragment<UpdateClientProfileActivityView
     override fun loadStartAnimations(): AnimatorSet = AnimatorSet()
     override fun loadExitAnimations(): AnimatorSet = AnimatorSet()
 
+    private fun getProfileFromBundle(arguments: Bundle?) {
+        if (arguments != null) {
+            val profile = ClientProfile()
+            profile.userId = arguments.getLong("user_id")
+            profile.name = arguments.getString("name")
+            profile.phone = arguments.getString("phone")
+
+            profileName.setText(profile.name)
+            profilePhone.setText(profile.phone)
+
+            savedProfile = profile
+        } else {
+            Timber.e("fragment must have arguments")
+        }
+    }
+
     override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
         initRx()
+
+        getProfileFromBundle(arguments)
     }
 
     override fun onFragmentViewDestroy() {
@@ -66,21 +90,21 @@ class UpdateClientProfileFragment : BaseFragment<UpdateClientProfileActivityView
 
     private fun initRx() {
         mCompositeDisposable += RxTextView.textChanges(profileName)
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .skip(2)
                 .map { it.isNotEmpty() }
                 .distinctUntilChanged()
                 .subscribe({ updateProfileInfoButton.isEnabled = it })
 
         mCompositeDisposable += RxTextView.textChanges(profilePhone)
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .skip(2)
                 .map { it.isNotEmpty() }
                 .distinctUntilChanged()
                 .subscribe({ updateProfileInfoButton.isEnabled = it })
 
         mCompositeDisposable += RxView.clicks(updateProfileInfoButton)
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUpdateProfileInfoButtonClick() })
 
         mCompositeDisposable += getViewModel().mOutputs.onUpdateClientProfileFragmentUiInfo()
@@ -92,38 +116,49 @@ class UpdateClientProfileFragment : BaseFragment<UpdateClientProfileActivityView
                 .subscribe({ onUpdateProfileInfoResponse() })
 
         mCompositeDisposable += getViewModel().mErrors.onUnknownError()
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUnknownError(it) })
 
         mCompositeDisposable += getViewModel().mErrors.onBadResponse()
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onBadResponse(it) })
     }
 
+    private fun onUpdateProfileInfoButtonClick() {
+        mNavigator.showLoadingIndicatorFragment(Constant.FragmentTags.UPDATE_CLIENT_PROFILE)
+
+        val newName = profileName.text.toString()
+        val newPhone = profilePhone.text.toString()
+
+        getViewModel().mInputs.updateProfileInfoSubject(newName, newPhone)
+    }
+
     private fun onUpdateProfileInfoResponse() {
-        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.UPDATE_SPECIALIST_PROFILE)
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.UPDATE_CLIENT_PROFILE)
+        finishActivity()
     }
 
     private fun onUpdateClientProfileFragmentUiInfo(newProfile: ClientProfilePacket) {
-        TODO("send broadcast to update client profile UI")
-    }
+        val intent = Intent()
+        intent.action = Constant.ReceiverActions.UPDATE_CLIENT_PROFILE_UI_NOTIFICATION
 
-    private fun onUpdateProfileInfoButtonClick() {
-        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.UPDATE_SPECIALIST_PROFILE)
-        mNavigator.popFragment()
+        val args = Bundle()
+        args.putString("new_name", newProfile.profileName)
+        args.putString("new_phone", newProfile.profilePhone)
+        intent.putExtras(args)
 
-        showToast("Профиль обновлён", Toast.LENGTH_LONG)
+        sendBroadcast(intent)
     }
 
     override fun onBadResponse(errorCode: ErrorCode.Remote) {
-        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.UPDATE_SPECIALIST_PROFILE)
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.UPDATE_CLIENT_PROFILE)
 
         val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
         showToast(message, Toast.LENGTH_LONG)
     }
 
     override fun onUnknownError(error: Throwable) {
-        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.UPDATE_SPECIALIST_PROFILE)
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.UPDATE_CLIENT_PROFILE)
 
         unknownError(error)
     }

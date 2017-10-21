@@ -78,8 +78,7 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
     @Inject
     lateinit var mRefWatcher: RefWatcher
 
-    private val receiver = UiUpdateCommandReceiver()
-    private val fragmentTag = Constant.FragmentTags.SPECIALIST_PROFILE
+    private val receiver = UpdateSpecialistProfileUiCommandReceiver()
     private var savedProfile: SpecialistProfile? = null
 
     override fun initViewModel(): SpecialistMainActivityViewModel? {
@@ -98,7 +97,8 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
             getViewModel().mInputs.getSpecialistProfile()
         }
 
-        activity.registerReceiver(receiver, IntentFilter(Constant.ReceiverActions.UPDATE_SPECIALIST_PROFILE_UI_NOTIFICATION))
+        activity.registerReceiver(receiver,
+                IntentFilter(Constant.ReceiverActions.UPDATE_SPECIALIST_PROFILE_UI_NOTIFICATION))
     }
 
     override fun onFragmentViewDestroy() {
@@ -212,7 +212,7 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
                 .inject(this)
     }
 
-    inner class UiUpdateCommandReceiver : BroadcastReceiver() {
+    inner class UpdateSpecialistProfileUiCommandReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == Constant.ReceiverActions.UPDATE_SPECIALIST_PROFILE_UI_NOTIFICATION) {
                 Timber.d("broadcast with action UPDATE_SPECIALIST_PROFILE_UI_NOTIFICATION received")
@@ -235,7 +235,7 @@ class SpecialistProfileFragment : BaseFragment<SpecialistMainActivityViewModel>(
                         profilePhone.text = newPhone
 
                         savedProfile!!.name = newName
-                        savedProfile!!.photoName = newPhone
+                        savedProfile!!.phone = newPhone
                     }
                     else -> throw IllegalStateException("Unknown updateType: $updateType")
                 }

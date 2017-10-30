@@ -1,7 +1,6 @@
 package com.kirakishou.fixmypc.fixmypcapp.helper.api.request
 
 import com.google.gson.Gson
-import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
 import com.kirakishou.fixmypc.fixmypcapp.helper.api.ApiService
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.operator.OnApiErrorSingle
 import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
@@ -22,7 +21,6 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.functions.Function
 import io.reactivex.rxkotlin.Observables
-import io.reactivex.subjects.ReplaySubject
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody

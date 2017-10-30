@@ -149,7 +149,7 @@ class RespondedSpecialistFullProfileFragment : BaseFragment<RespondedSpecialists
     private fun onAssignSpecialistButtonClick() {
         check(mDamageClaimId != -1L)
 
-        mNavigator.showLoadingIndicatorFragment(Constant.FragmentTags.RESPONDED_SPECIALIST_FULL_PROFILE)
+        mNavigator.showLoadingIndicatorFragment(Constant.FragmentTags.SPECIALIST_FULL_PROFILE)
         val profile = mSpecialistProfileFickle.get()
         getViewModel().mInputs.assignSpecialist(profile.userId, mDamageClaimId)
     }
@@ -159,19 +159,19 @@ class RespondedSpecialistFullProfileFragment : BaseFragment<RespondedSpecialists
     }
 
     private fun onAssignSpecialistResponse(response: AssignSpecialistResponse) {
-        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.RESPONDED_SPECIALIST_FULL_PROFILE)
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.SPECIALIST_FULL_PROFILE)
         Timber.e("response errorCode: ${response.errorCode}")
     }
 
     override fun onBadResponse(errorCode: ErrorCode.Remote) {
-        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.RESPONDED_SPECIALIST_FULL_PROFILE)
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.SPECIALIST_FULL_PROFILE)
 
         val message = ErrorMessage.getRemoteErrorMessage(activity, errorCode)
         showToast(message, Toast.LENGTH_LONG)
     }
 
     override fun onUnknownError(error: Throwable) {
-        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.RESPONDED_SPECIALIST_FULL_PROFILE)
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.SPECIALIST_FULL_PROFILE)
 
         unknownError(error)
     }

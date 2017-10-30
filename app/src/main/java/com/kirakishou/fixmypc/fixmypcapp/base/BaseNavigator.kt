@@ -1,6 +1,9 @@
 package com.kirakishou.fixmypc.fixmypcapp.base
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.support.annotation.MainThread
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AppCompatActivity
@@ -17,11 +20,16 @@ open class BaseNavigator(activity: AppCompatActivity) {
 
     protected val fragmentManager = activity.supportFragmentManager
 
+    //we use handler to ensure the order of execution
+    protected val navigatorHandler = Handler(Looper.getMainLooper())
+
     fun popFragment() {
-        val currentFragment = getVisibleFragment()
-        if (currentFragment != null) {
-            if (currentFragment !is LoadingIndicatorFragment) {
-                fragmentManager.popBackStack()
+        navigatorHandler.post {
+            val currentFragment = getVisibleFragment()
+            if (currentFragment != null) {
+                if (currentFragment !is LoadingIndicatorFragment) {
+                    fragmentManager.popBackStack()
+                }
             }
         }
     }
@@ -51,64 +59,72 @@ open class BaseNavigator(activity: AppCompatActivity) {
     }
 
     fun showLoadingIndicatorFragment(previousFragmentTag: String) {
-        val visibleFragment = getVisibleFragment()
-        if (visibleFragment != null && visibleFragment is LoadingIndicatorFragment) {
-            return
+        navigatorHandler.post {
+            val visibleFragment = getVisibleFragment()
+            if (visibleFragment != null && visibleFragment is LoadingIndicatorFragment) {
+                return@post
+            }
+
+            val previousFragment = getFragmentByTag(previousFragmentTag)
+            checkNotNull(previousFragment)
+
+            val fragmentTransaction = fragmentManager.beginTransaction()
+                    .hide(previousFragment)
+
+            val newFragment = LoadingIndicatorFragment()
+            fragmentTransaction
+                    .add(R.id.fragment_frame, newFragment, Constant.FragmentTags.LOADING_INDICATOR)
+                    .addToBackStack(null)
+
+            fragmentTransaction.commit()
         }
-
-        val previousFragment = getFragmentByTag(previousFragmentTag)
-        checkNotNull(previousFragment)
-
-        val fragmentTransaction = fragmentManager.beginTransaction()
-                .hide(previousFragment)
-
-        val newFragment = LoadingIndicatorFragment()
-        fragmentTransaction
-                .add(R.id.fragment_frame, newFragment, Constant.FragmentTags.LOADING_INDICATOR)
-                .addToBackStack(null)
-
-        fragmentTransaction.commit()
     }
 
     fun hideLoadingIndicatorFragment(previousFragmentTag: String) {
-        val loadingIndicatorFragment = getFragmentByTag(Constant.FragmentTags.LOADING_INDICATOR) ?: return
-        val previousFragment = getFragmentByTag(previousFragmentTag)
-        checkNotNull(previousFragment)
+        navigatorHandler.post {
+            val loadingIndicatorFragment = getFragmentByTag(Constant.FragmentTags.LOADING_INDICATOR)
+                    ?: return@post
 
-        fragmentManager.beginTransaction()
-                .remove(loadingIndicatorFragment)
-                .show(previousFragment)
-                .commit()
+            val previousFragment = getFragmentByTag(previousFragmentTag)
+            checkNotNull(previousFragment)
+
+            fragmentManager.beginTransaction()
+                    .remove(loadingIndicatorFragment)
+                    .show(previousFragment)
+                    .commit()
+        }
     }
 
     fun navigateToFragment(fragmentClass: KClass<*>, fragmentTag: String, bundle: Bundle? = null, fragmentFrameId: Int = R.id.fragment_frame) {
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        val visibleFragment = getVisibleFragment()
+        navigatorHandler.post {
+            val fragmentTransaction = fragmentManager.beginTransaction()
+            val visibleFragment = getVisibleFragment()
 
-        if (visibleFragment != null) {
-            if (visibleFragment::class == fragmentClass) {
-                //do nothing if we are already showing this fragment
-                return
+            if (visibleFragment != null) {
+                if (visibleFragment::class == fragmentClass) {
+                    //do nothing if we are already showing this fragment
+                    return@post
+                }
+
+                fragmentTransaction.hide(visibleFragment)
             }
 
-            fragmentTransaction.hide(visibleFragment)
-        }
+            val fragmentInStack = fragmentManager.findFragmentByTag(fragmentTag)
+            if (fragmentInStack == null) {
+                val newFragment = fragmentClass.newInstance<Fragment>()
+                if (bundle != null) {
+                    newFragment.arguments = bundle
+                }
 
-        val fragmentInStack = fragmentManager.findFragmentByTag(fragmentTag)
-        if (fragmentInStack == null) {
-            val newFragment = fragmentClass.newInstance<Fragment>()
-            if (bundle != null) {
-                newFragment.arguments = bundle
+                fragmentTransaction
+                        .add(fragmentFrameId, newFragment, fragmentTag)
+                        .addToBackStack(null)
+            } else {
+                fragmentTransaction
+                        .show(fragmentInStack)
             }
 
-            fragmentTransaction
-                    .add(fragmentFrameId, newFragment, fragmentTag)
-                    .addToBackStack(null)
-        } else {
-            fragmentTransaction
-                    .show(fragmentInStack)
+            fragmentTransaction.commit()
         }
-
-        fragmentTransaction.commit()
     }
 }

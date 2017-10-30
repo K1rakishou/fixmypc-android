@@ -1,13 +1,9 @@
 package com.kirakishou.fixmypc.fixmypcapp.helper.api
 
-import com.kirakishou.fixmypc.fixmypcapp.helper.ProgressUpdate
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimInfo
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.*
 import io.reactivex.Single
-import io.reactivex.subjects.ReplaySubject
-import retrofit2.Response
-import retrofit2.http.Header
 
 /**
  * Created by kirakishou on 7/23/2017.

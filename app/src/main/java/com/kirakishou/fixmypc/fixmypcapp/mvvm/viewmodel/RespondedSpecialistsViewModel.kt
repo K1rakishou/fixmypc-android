@@ -15,6 +15,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.input.RespondedSpe
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.output.RespondedSpecialistsActivityOutputs
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
@@ -36,6 +37,7 @@ class RespondedSpecialistsViewModel
 
     private val mCompositeDisposable = CompositeDisposable()
 
+    private val mDamageClaimAlreadyHasAssignedSpecialistSubject = PublishSubject.create<Long>()
     private val mOnAssignSpecialistResponseSubject = PublishSubject.create<AssignSpecialistResponse>()
     private val mAssignSpecialistSubject = PublishSubject.create<AssignSpecialistPacket>()
     private val mGetRespondedSpecialistsSubject = PublishSubject.create<GetRespondedSpecialistsDTO>()
@@ -44,17 +46,37 @@ class RespondedSpecialistsViewModel
     private val mOnUnknownErrorSubject = PublishSubject.create<Throwable>()
 
     init {
-        mCompositeDisposable += mGetRespondedSpecialistsSubject
+        val respondedSpecialistObservable = mGetRespondedSpecialistsSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .flatMap { (damageClaimId, skip, count) ->
-                    return@flatMap mApiClient.getRespondedSpecialistsPaged(damageClaimId, skip, count)
+                    val responseObservable = mApiClient.getRespondedSpecialistsPaged(damageClaimId, skip, count)
                             .toObservable()
+
+                    return@flatMap Observables.zip(responseObservable, Observable.just(damageClaimId))
                 }
+                .publish()
+                .autoConnect(2)
+
+        respondedSpecialistObservable
+                .observeOn(mSchedulers.provideIo())
+                .filter { (response, _) -> response.errorCode == ErrorCode.Remote.REC_DAMAGE_CLAIM_ALREADY_HAS_ASSIGNED_SPECIALIST }
+                .map { it.second }
+                .subscribe(mDamageClaimAlreadyHasAssignedSpecialistSubject)
+
+        mCompositeDisposable += respondedSpecialistObservable
+                .observeOn(mSchedulers.provideIo())
+                .filter { (response, _) -> response.errorCode != ErrorCode.Remote.REC_DAMAGE_CLAIM_ALREADY_HAS_ASSIGNED_SPECIALIST }
+                .map { it.first }
                 .subscribe({
                     handleResponse(it)
                 }, { error ->
                     handleError(error)
                 })
+
+        mDamageClaimAlreadyHasAssignedSpecialistSubject
+                .map {
+                    TODO("Get Assigned specialist")
+                }
 
         mCompositeDisposable += mAssignSpecialistSubject
                 .subscribeOn(mSchedulers.provideIo())

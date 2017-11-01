@@ -56,6 +56,10 @@ interface ApiService {
     fun assignSpecialist(@Header("session_id") sessionId: String,
                          @Body packet: AssignSpecialistPacket): Single<Response<AssignSpecialistResponse>>
 
+    @GET("/v1/api/specialist/assigned/{damage_claim_id}")
+    fun getAssignedSpecialist(@Header("session_id") sessionId: String,
+                              @Path("damage_claim_id") damageClaimId: Long): Single<Response<AssignedSpecialistResponse>>
+
     @GET("/v1/api/specialist/profile")
     fun getSpecialistProfile(@Header("session_id") sessionId: String): Single<Response<SpecialistProfileResponse>>
 

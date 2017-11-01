@@ -27,6 +27,8 @@ interface ApiClient {
 
     fun assignSpecialist(packet: AssignSpecialistPacket): Single<AssignSpecialistResponse>
 
+    fun getAssignedSpecialist(damageClaimId: Long): Single<AssignedSpecialistResponse>
+
     fun getSpecialistProfile(): Single<SpecialistProfileResponse>
 
     fun updateSpecialistProfilePhoto(photoPath: String): Single<UpdateSpecialistProfilePhotoResponse>

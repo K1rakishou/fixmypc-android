@@ -7,8 +7,8 @@ import com.google.gson.annotations.SerializedName
  * Created by kirakishou on 10/2/2017.
  */
 class AssignSpecialistPacket(@Expose
-                             @SerializedName("user_id")
-                             val userId: Long,
+                             @SerializedName("specialist_user_id")
+                             val specialistUserId: Long,
 
                              @Expose
                              @SerializedName("damage_claim_id")

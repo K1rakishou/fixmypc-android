@@ -71,6 +71,11 @@ class ApiClientImpl
                 .build()
     }
 
+    override fun getAssignedSpecialist(damageClaimId: Long): Single<AssignedSpecialistResponse> {
+        return GetAssignedSpecialistRequest(damageClaimId, mApiService, mAppSettings, mGson, mSchedulers)
+                .build()
+    }
+
     override fun getSpecialistProfile(): Single<SpecialistProfileResponse> {
         return GetSpecialistProfileRequest(mApiService, mAppSettings, mGson, mSchedulers)
                 .build()

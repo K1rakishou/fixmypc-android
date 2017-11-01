@@ -20,7 +20,6 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimGeneric
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimListAdapterGenericParam
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimResponseCount
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
@@ -136,7 +135,7 @@ class ClientInactiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>
     }
 
     private fun getDamageClaims(page: Long) {
-        getViewModel().mInputs.getInactiveClientDamageClaimSubject(page,  5)
+        getViewModel().mInputs.getInactiveClientDamageClaimSubject(page, 5)
     }
 
     private fun onClientDamageClaimClick(damageClaim: DamageClaim) {
@@ -150,7 +149,7 @@ class ClientInactiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>
 
     private fun onInactiveDamageClaimsResponse(inactiveDamageClaimList: MutableList<DamageClaim>) {
         mAdapter.runOnAdapterHandler {
-            mEndlessScrollListener.pageLoaded()
+            /*mEndlessScrollListener.pageLoaded()
 
             if (inactiveDamageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
                 mEndlessScrollListener.reachedEnd()
@@ -166,7 +165,7 @@ class ClientInactiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>
 
             if (inactiveDamageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
                 mAdapter.addMessageFooter("Конец списка")
-            }
+            }*/
         }
     }
 

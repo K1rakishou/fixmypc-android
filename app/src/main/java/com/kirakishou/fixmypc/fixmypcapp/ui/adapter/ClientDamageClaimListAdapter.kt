@@ -21,6 +21,7 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.Dam
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimListAdapterGenericParam
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimsAdapterMessage
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.RespondedSpecialist
 import io.reactivex.subjects.BehaviorSubject
 
 /**
@@ -29,6 +30,8 @@ import io.reactivex.subjects.BehaviorSubject
 class ClientDamageClaimListAdapter(private val mContext: Context,
                                    private val mImageLoader: ImageLoader,
                                    private val mAdapterItemClickSubject: BehaviorSubject<DamageClaim>) : BaseAdapter<DamageClaimListAdapterGenericParam>(mContext) {
+
+    val respondedSpecialists: MutableMap<Long, MutableSet<RespondedSpecialist>> = hashMapOf()
 
     override fun add(item: AdapterItem<DamageClaimListAdapterGenericParam>) {
         checkInited()
@@ -106,13 +109,14 @@ class ClientDamageClaimListAdapter(private val mContext: Context,
         when (holder) {
             is DamageClaimItemHolder -> {
                 if (mItems[position].value.isPresent()) {
-                    val item = mItems[position].value.get()
-                    val damageClaim = (item as DamageClaimGeneric).damageClaim
-                    val responsesCount = (item as DamageClaimGeneric).responsesCount
+                    val item = mItems[position].value.get() as DamageClaimGeneric
+                    val damageClaim = item.damageClaim
+                    val responsesSet = this.respondedSpecialists[damageClaim.id]!!
+                    val responsesCount = responsesSet.size
 
-                    if (responsesCount.responseCount > 0) {
+                    if (responsesCount > 0) {
                         holder.counterHolder.visibility = View.VISIBLE
-                        holder.responsesCount.text = responsesCount.responseCount.toString()
+                        holder.responsesCount.text = responsesCount.toString()
                     }
 
                     holder.clickView.setOnClickListener {

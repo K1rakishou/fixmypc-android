@@ -44,7 +44,7 @@ interface ApiService {
     fun getClientDamageClaimsPaged(@Header("session_id") sessionId: String,
                                    @Path("is_active") isActive: Boolean,
                                    @Path("skip") skip: Long,
-                                   @Path("count") count: Long): Single<Response<DamageClaimsWithCountResponse>>
+                                   @Path("count") count: Long): Single<Response<DamageClaimsWithRespondedSpecialistsResponse>>
 
     @GET("/v1/api/specialist/profile/{damage_claim_id}/{skip}/{count}")
     fun getRespondedSpecialistsPaged(@Header("session_id") sessionId: String,

@@ -9,10 +9,8 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
-import android.support.v4.view.ViewCompat
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.animation.LinearInterpolator
 import android.widget.Toast
 import butterknife.BindView
 import com.jakewharton.rxbinding2.view.RxView
@@ -28,8 +26,8 @@ import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimGeneric
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.dto.adapter.damage_claim.DamageClaimListAdapterGenericParam
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaim
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.DamageClaimResponseCount
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsWithCountResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.RespondedSpecialist
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsWithRespondedSpecialistsResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.ClientMainActivityViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.ClientMainActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.ClientMainActivity
@@ -173,12 +171,12 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
         activity.startActivity(intent)
     }
 
-    private fun onActiveDamageClaimsResponse(response: DamageClaimsWithCountResponse) {
+    private fun onActiveDamageClaimsResponse(response: DamageClaimsWithRespondedSpecialistsResponse) {
         mAdapter.runOnAdapterHandler {
             mEndlessScrollListener.pageLoaded()
 
             val damageClaimList = response.damageClaims
-            val responsesCountList = response.responsesCountList
+            val respondedSpecialistsList = response.respondedSpecialistsList
 
             if (damageClaimList.size < Constant.MAX_DAMAGE_CLAIMS_PER_PAGE) {
                 mEndlessScrollListener.reachedEnd()
@@ -188,13 +186,17 @@ class ClientActiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>()
 
             val adapterDamageClaims = mutableListOf<AdapterItem<DamageClaimListAdapterGenericParam>>()
 
-            for (damageClaim in damageClaimList) {
-                val default = DamageClaimResponseCount(-1, 0)
-                val responsesCount = responsesCountList.firstOrDefault(default) {
-                    it.damageClaimId == damageClaim.id
+            for (respondedSpecialist in respondedSpecialistsList) {
+                val respondedSpecialistsSet = mAdapter.respondedSpecialists[respondedSpecialist.damageClaimId]
+                if (respondedSpecialistsSet == null) {
+                    mAdapter.respondedSpecialists[respondedSpecialist.damageClaimId] = mutableSetOf()
                 }
 
-                adapterDamageClaims.add(AdapterItem(DamageClaimGeneric(damageClaim, responsesCount), AdapterItemType.VIEW_ITEM))
+                mAdapter.respondedSpecialists[respondedSpecialist.damageClaimId]!!.add(respondedSpecialist)
+            }
+
+            for (damageClaim in damageClaimList) {
+                adapterDamageClaims.add(AdapterItem(DamageClaimGeneric(damageClaim), AdapterItemType.VIEW_ITEM))
             }
 
             mAdapter.addAll(adapterDamageClaims as List<AdapterItem<DamageClaimListAdapterGenericParam>>)

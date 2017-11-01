@@ -8,8 +8,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.AppSettings
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.LoginPacket
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsResponse
-import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsWithCountResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.DamageClaimsWithRespondedSpecialistsResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.ApiException
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.BadServerResponseException
@@ -29,9 +28,9 @@ class GetClientDamageClaimsPagedRequest(protected val isActive: Boolean,
                                         protected val mApiService: ApiService,
                                         protected val mAppSettings: AppSettings,
                                         protected val mGson: Gson,
-                                        protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<DamageClaimsWithCountResponse>>() {
+                                        protected val mSchedulers: SchedulerProvider) : AbstractRequest<Single<DamageClaimsWithRespondedSpecialistsResponse>>() {
 
-    override fun build(): Single<DamageClaimsWithCountResponse> {
+    override fun build(): Single<DamageClaimsWithRespondedSpecialistsResponse> {
         if (!mAppSettings.isUserInfoExists()) {
             throw UserInfoIsEmptyException()
         }
@@ -49,7 +48,7 @@ class GetClientDamageClaimsPagedRequest(protected val isActive: Boolean,
                 .onErrorResumeNext { error -> exceptionToErrorCode(error) }
     }
 
-    private fun reLoginAndResendRequest(): Single<DamageClaimsWithCountResponse> {
+    private fun reLoginAndResendRequest(): Single<DamageClaimsWithRespondedSpecialistsResponse> {
         if (!mAppSettings.isUserInfoExists()) {
             throw UserInfoIsEmptyException()
         }
@@ -70,25 +69,25 @@ class GetClientDamageClaimsPagedRequest(protected val isActive: Boolean,
                     return@flatMap mApiService.getClientDamageClaimsPaged(mAppSettings.loadUserInfo().sessionId, isActive, skip, count)
                             .toObservable()
                 }
-                .lift<DamageClaimsWithCountResponse>(OnApiErrorObservable(mGson))
+                .lift<DamageClaimsWithRespondedSpecialistsResponse>(OnApiErrorObservable(mGson))
 
         val failObservable = loginResponseObservable
                 .filter { it.errorCode != ErrorCode.Remote.REC_OK }
                 .doOnNext { throw CouldNotUpdateSessionId() }
-                .map { DamageClaimsWithCountResponse(mutableListOf(), mutableListOf(), it.errorCode) }
+                .map { DamageClaimsWithRespondedSpecialistsResponse(mutableListOf(), mutableListOf(), it.errorCode) }
 
         return Observable.merge(successObservable, failObservable)
-                .single(StatusResponse(ErrorCode.Remote.REC_EMPTY_OBSERVABLE_ERROR) as DamageClaimsWithCountResponse)
+                .single(StatusResponse(ErrorCode.Remote.REC_EMPTY_OBSERVABLE_ERROR) as DamageClaimsWithRespondedSpecialistsResponse)
     }
 
-    private fun exceptionToErrorCode(error: Throwable): Single<DamageClaimsWithCountResponse> {
+    private fun exceptionToErrorCode(error: Throwable): Single<DamageClaimsWithRespondedSpecialistsResponse> {
         logError(error)
 
         val response = when (error) {
-            is ApiException -> DamageClaimsWithCountResponse(mutableListOf(), mutableListOf(), error.errorCode)
-            is TimeoutException -> DamageClaimsWithCountResponse(mutableListOf(), mutableListOf(), ErrorCode.Remote.REC_TIMEOUT)
-            is UnknownHostException -> DamageClaimsWithCountResponse(mutableListOf(), mutableListOf(), ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
-            is BadServerResponseException -> DamageClaimsWithCountResponse(mutableListOf(), mutableListOf(), ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
+            is ApiException -> DamageClaimsWithRespondedSpecialistsResponse(mutableListOf(), mutableListOf(), error.errorCode)
+            is TimeoutException -> DamageClaimsWithRespondedSpecialistsResponse(mutableListOf(), mutableListOf(), ErrorCode.Remote.REC_TIMEOUT)
+            is UnknownHostException -> DamageClaimsWithRespondedSpecialistsResponse(mutableListOf(), mutableListOf(), ErrorCode.Remote.REC_COULD_NOT_CONNECT_TO_SERVER)
+            is BadServerResponseException -> DamageClaimsWithRespondedSpecialistsResponse(mutableListOf(), mutableListOf(), ErrorCode.Remote.REC_BAD_SERVER_RESPONSE_EXCEPTION)
 
             else -> throw RuntimeException("Unknown exception")
         }

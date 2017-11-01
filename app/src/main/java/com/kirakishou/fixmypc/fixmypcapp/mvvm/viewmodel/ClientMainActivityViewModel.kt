@@ -42,7 +42,7 @@ class ClientMainActivityViewModel
     private val mGetClientProfileSubject = PublishSubject.create<Unit>()
     private val mGetActiveClientDamageClaimSubject = PublishSubject.create<GetClientDamageClaimsDTO>()
     private val mGetInactiveClientDamageClaimSubject = PublishSubject.create<GetClientDamageClaimsDTO>()
-    private val mOnActiveDamageClaimsResponseSubject = PublishSubject.create<DamageClaimsWithCountResponse>()
+    private val mOnActiveDamageClaimsResponseSubject = PublishSubject.create<DamageClaimsWithRespondedSpecialistsResponse>()
     private val mOnInactiveDamageClaimsResponseSubject = PublishSubject.create<MutableList<DamageClaim>>()
     private val mOnBadResponseSubject = PublishSubject.create<ErrorCode.Remote>()
     private val mOnUnknownErrorSubject = PublishSubject.create<Throwable>()
@@ -51,7 +51,8 @@ class ClientMainActivityViewModel
         mCompositeDisposable += mGetActiveClientDamageClaimSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .observeOn(mSchedulers.provideIo())
-                .flatMap { (isActive, skip, count) -> mApiClient.getClientDamageClaimsPaged(isActive, skip, count)
+                .flatMap { (isActive, skip, count) ->
+                    mApiClient.getClientDamageClaimsPaged(isActive, skip, count)
                             .toObservable()
                 }
                 .subscribe({
@@ -60,7 +61,7 @@ class ClientMainActivityViewModel
                     handleError(error)
                 })
 
-        mCompositeDisposable += mGetInactiveClientDamageClaimSubject
+        /*mCompositeDisposable += mGetInactiveClientDamageClaimSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .observeOn(mSchedulers.provideIo())
                 .flatMap { (isActive, skip, count) -> mApiClient.getClientDamageClaimsPaged(isActive, skip, count)
@@ -70,7 +71,7 @@ class ClientMainActivityViewModel
                     handleResponse(DamageClaimsClientResponse(it.damageClaims, it.errorCode))
                 }, { error ->
                     handleError(error)
-                })
+                })*/
 
         mCompositeDisposable += mGetClientProfileSubject
                 .subscribeOn(mSchedulers.provideIo())
@@ -95,7 +96,7 @@ class ClientMainActivityViewModel
     }
 
     override fun getInactiveClientDamageClaimSubject(skip: Long, count: Long) {
-        mGetInactiveClientDamageClaimSubject.onNext(GetClientDamageClaimsDTO(false, skip * itemsPerPage, count))
+        //mGetInactiveClientDamageClaimSubject.onNext(GetClientDamageClaimsDTO(false, skip * itemsPerPage, count))
     }
 
     override fun getClientProfile() {
@@ -107,7 +108,7 @@ class ClientMainActivityViewModel
 
         if (errorCode == ErrorCode.Remote.REC_OK) {
             when (response) {
-                is DamageClaimsWithCountResponse -> {
+                is DamageClaimsWithRespondedSpecialistsResponse -> {
                     mOnActiveDamageClaimsResponseSubject.onNext(response)
                 }
 
@@ -146,7 +147,7 @@ class ClientMainActivityViewModel
     }
 
     override fun onGetClientProfileResponse(): Observable<ClientProfile> = mOnGetClientProfileResponseSubject
-    override fun onActiveDamageClaimsResponse(): Observable<DamageClaimsWithCountResponse> = mOnActiveDamageClaimsResponseSubject
+    override fun onActiveDamageClaimsResponse(): Observable<DamageClaimsWithRespondedSpecialistsResponse> = mOnActiveDamageClaimsResponseSubject
     override fun onInactiveDamageClaimsResponse(): Observable<MutableList<DamageClaim>> = mOnInactiveDamageClaimsResponseSubject
     override fun onBadResponse(): Observable<ErrorCode.Remote> = mOnBadResponseSubject
     override fun onUnknownError(): Observable<Throwable> = mOnUnknownErrorSubject

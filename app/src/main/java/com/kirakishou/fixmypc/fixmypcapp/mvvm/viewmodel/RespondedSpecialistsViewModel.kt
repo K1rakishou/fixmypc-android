@@ -74,9 +74,12 @@ class RespondedSpecialistsViewModel
                 })
 
         mDamageClaimAlreadyHasAssignedSpecialistSubject
-                .map {
-                    TODO("Get Assigned specialist")
-                }
+                .flatMap { mApiClient.getAssignedSpecialist(it).toObservable() }
+                .subscribe({
+                    handleResponse(it)
+                }, { error ->
+                    handleError(error)
+                })
 
         mCompositeDisposable += mAssignSpecialistSubject
                 .subscribeOn(mSchedulers.provideIo())
@@ -134,6 +137,10 @@ class RespondedSpecialistsViewModel
 
                         else -> mOnUnknownErrorSubject.onNext(UnknownErrorCodeException("Unknown errorCode: $errorCode"))
                     }
+                }
+
+                is AssignSpecialistResponse -> {
+                    TODO()
                 }
             }
         }

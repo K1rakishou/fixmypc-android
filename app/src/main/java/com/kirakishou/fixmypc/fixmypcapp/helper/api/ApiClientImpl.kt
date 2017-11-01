@@ -81,6 +81,11 @@ class ApiClientImpl
                 .build()
     }
 
+    override fun getSpecialistProfileById(specialistUserId: Long): Single<SpecialistProfileResponse> {
+        return GetSpecialistProfileByIdRequest(specialistUserId, mApiService, mAppSettings, mGson, mSchedulers)
+                .build()
+    }
+
     override fun updateSpecialistProfilePhoto(photoPath: String): Single<UpdateSpecialistProfilePhotoResponse> {
         return UpdateSpecialistProfilePhotoRequest(photoPath, mApiService, mAppSettings, mGson, mSchedulers)
                 .build()

@@ -31,6 +31,8 @@ interface ApiClient {
 
     fun getSpecialistProfile(): Single<SpecialistProfileResponse>
 
+    fun getSpecialistProfileById(specialistUserId: Long): Single<SpecialistProfileResponse>
+
     fun updateSpecialistProfilePhoto(photoPath: String): Single<UpdateSpecialistProfilePhotoResponse>
 
     fun updateSpecialistProfileInfo(packet: SpecialistProfilePacket): Single<UpdateSpecialistProfileInfoResponse>

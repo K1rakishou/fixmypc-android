@@ -63,6 +63,10 @@ interface ApiService {
     @GET("/v1/api/specialist/profile")
     fun getSpecialistProfile(@Header("session_id") sessionId: String): Single<Response<SpecialistProfileResponse>>
 
+    @GET("/v1/api/specialist/profile/specialist_user_id")
+    fun getSpecialistProfileById(@Header("session_id") sessionId: String,
+                                 @Path("specialist_user_id")  specialistUserId: Long): Single<Response<SpecialistProfileResponse>>
+
     @POST("/v1/api/specialist/profile")
     fun updateSpecialistProfileInfo(@Header("session_id") sessionId: String,
                                     @Body requestBody: SpecialistProfilePacket): Single<Response<UpdateSpecialistProfileInfoResponse>>

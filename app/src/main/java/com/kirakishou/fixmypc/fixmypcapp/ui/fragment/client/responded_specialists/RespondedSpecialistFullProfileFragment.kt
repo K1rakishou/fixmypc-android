@@ -21,6 +21,7 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.ImageLoader
 import com.kirakishou.fixmypc.fixmypcapp.helper.util.TimeUtils
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.*
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.AssignSpecialistResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.MarkResponseViewedResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.RespondedSpecialistsViewModel
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.factory.RespondedSpecialistsActivityViewModelFactory
 import com.kirakishou.fixmypc.fixmypcapp.ui.activity.RespondedSpecialistsActivity
@@ -82,6 +83,8 @@ class RespondedSpecialistFullProfileFragment : BaseFragment<RespondedSpecialists
     override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
         updateSpecialistProfileUi()
         initRx()
+
+        markResponseViewed()
     }
 
     override fun onFragmentViewDestroy() {
@@ -137,6 +140,10 @@ class RespondedSpecialistFullProfileFragment : BaseFragment<RespondedSpecialists
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onAssignSpecialistResponse(it) })
 
+        mCompositeDisposable += getViewModel().mOutputs.onMarkResponseViewedResponse()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe({ onMarkResponseViewedResponse(it) })
+
         mCompositeDisposable += getViewModel().mErrors.onBadResponse()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onBadResponse(it) })
@@ -144,6 +151,16 @@ class RespondedSpecialistFullProfileFragment : BaseFragment<RespondedSpecialists
         mCompositeDisposable += getViewModel().mErrors.onUnknownError()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onUnknownError(it) })
+    }
+
+    private fun markResponseViewed() {
+        check(mDamageClaimId != -1L)
+        check(mSpecialistProfileFickle.isPresent())
+
+        val profile = mSpecialistProfileFickle
+        val damageClaimId = mDamageClaimId
+
+        getViewModel().mInputs.markResponseViewed(damageClaimId, profile.get().userId)
     }
 
     private fun onAssignSpecialistButtonClick() {
@@ -159,6 +176,11 @@ class RespondedSpecialistFullProfileFragment : BaseFragment<RespondedSpecialists
     }
 
     private fun onAssignSpecialistResponse(response: AssignSpecialistResponse) {
+        mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.SPECIALIST_FULL_PROFILE)
+        Timber.e("response errorCode: ${response.errorCode}")
+    }
+
+    private fun onMarkResponseViewedResponse(response: MarkResponseViewedResponse) {
         mNavigator.hideLoadingIndicatorFragment(Constant.FragmentTags.SPECIALIST_FULL_PROFILE)
         Timber.e("response errorCode: ${response.errorCode}")
     }

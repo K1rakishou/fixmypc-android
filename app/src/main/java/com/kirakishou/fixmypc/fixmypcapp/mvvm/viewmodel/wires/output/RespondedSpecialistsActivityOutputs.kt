@@ -2,6 +2,7 @@ package com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.wires.output
 
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.AssignSpecialistResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.MarkResponseViewedResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.viewmodel.RespondedSpecialistsViewModel
 import io.reactivex.Observable
 
@@ -11,4 +12,5 @@ import io.reactivex.Observable
 interface RespondedSpecialistsActivityOutputs {
     fun onSpecialistsListResponse(): Observable<List<SpecialistProfile>>
     fun onAssignSpecialistResponse(): Observable<AssignSpecialistResponse>
+    fun onMarkResponseViewedResponse(): Observable<MarkResponseViewedResponse>
 }

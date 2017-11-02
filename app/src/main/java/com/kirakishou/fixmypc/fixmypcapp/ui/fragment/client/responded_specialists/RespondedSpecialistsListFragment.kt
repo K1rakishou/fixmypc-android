@@ -61,7 +61,7 @@ class RespondedSpecialistsListFragment : BaseFragment<RespondedSpecialistsViewMo
     override fun loadExitAnimations() = AnimatorSet()
 
     override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
-        getDamageClaimId()
+        getDamageClaim()
 
         initRx()
         initRecycler()
@@ -162,7 +162,7 @@ class RespondedSpecialistsListFragment : BaseFragment<RespondedSpecialistsViewMo
         }
     }
 
-    private fun getDamageClaimId() {
+    private fun getDamageClaim() {
         mDamageClaimId = arguments.getLong("damage_claim_id", -1L)
     }
 

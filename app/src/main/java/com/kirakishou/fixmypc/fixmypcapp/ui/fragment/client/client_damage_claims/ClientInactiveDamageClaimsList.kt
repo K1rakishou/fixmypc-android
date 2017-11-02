@@ -67,9 +67,9 @@ class ClientInactiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>
     override fun loadExitAnimations() = AnimatorSet()
 
     override fun onFragmentViewCreated(savedInstanceState: Bundle?) {
-        initRx()
+        /*initRx()
         initRecycler()
-        recyclerStartLoadingItems()
+        recyclerStartLoadingItems()*/
     }
 
     override fun onFragmentViewDestroy() {
@@ -96,8 +96,8 @@ class ClientInactiveDamageClaimsList : BaseFragment<ClientMainActivityViewModel>
             }
         }
 
-        mAdapter = ClientDamageClaimListAdapter(activity, mImageLoader, mAdapterItemClickSubject)
-        mAdapter.init()
+        /*mAdapter = ClientDamageClaimListAdapter(activity, mImageLoader, mAdapterItemClickSubject)
+        mAdapter.init()*/
 
         mEndlessScrollListener = EndlessRecyclerOnScrollListener(layoutManager, mLoadMoreSubject)
 

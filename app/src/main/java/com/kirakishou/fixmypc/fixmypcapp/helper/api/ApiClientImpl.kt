@@ -110,6 +110,11 @@ class ApiClientImpl
         return IsClientProfileFilledIn(mApiService, mAppSettings, mGson, mSchedulers)
                 .build()
     }
+
+    override fun markResponseViewed(packet: MarkResponseViewedPacket): Single<MarkResponseViewedResponse> {
+        return MarkResponseViewedRequest(packet, mApiService, mAppSettings, mGson, mSchedulers)
+                .build()
+    }
 }
 
 

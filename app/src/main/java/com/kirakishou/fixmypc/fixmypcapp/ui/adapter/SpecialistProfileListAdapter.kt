@@ -83,8 +83,8 @@ class SpecialistProfileListAdapter(private val mContext: Context,
         when (holder) {
             is SpecialistProfileItemHolder -> {
                 if (mItems[position].value.isPresent()) {
-                    val item = mItems[position].value.get()
-                    val specialistProfile = (item as SpecialistsProfilesGeneric).specialistProfile
+                    val item = mItems[position].value.get() as SpecialistsProfilesGeneric
+                    val specialistProfile = item.specialistProfile
 
                     holder.clickView.setOnClickListener {
                         mAdapterItemClickSubject.onNext(specialistProfile)

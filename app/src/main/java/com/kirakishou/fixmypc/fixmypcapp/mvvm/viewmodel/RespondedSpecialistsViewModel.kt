@@ -6,7 +6,9 @@ import com.kirakishou.fixmypc.fixmypcapp.helper.rx.scheduler.SchedulerProvider
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.ErrorCode
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.SpecialistProfile
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.AssignSpecialistPacket
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.packet.MarkResponseViewedPacket
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.AssignSpecialistResponse
+import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.MarkResponseViewedResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.SpecialistsListResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.entity.response.StatusResponse
 import com.kirakishou.fixmypc.fixmypcapp.mvvm.model.exceptions.UnknownErrorCodeException
@@ -37,6 +39,8 @@ class RespondedSpecialistsViewModel
 
     private val mCompositeDisposable = CompositeDisposable()
 
+    private val mMarkResponseViewedResponseSubject = PublishSubject.create<MarkResponseViewedResponse>()
+    private val mMarkResponseViewedSubject = PublishSubject.create<MarkResponseViewedPacket>()
     private val mDamageClaimAlreadyHasAssignedSpecialistSubject = PublishSubject.create<Long>()
     private val mOnAssignSpecialistResponseSubject = PublishSubject.create<AssignSpecialistResponse>()
     private val mAssignSpecialistSubject = PublishSubject.create<AssignSpecialistPacket>()
@@ -46,6 +50,18 @@ class RespondedSpecialistsViewModel
     private val mOnUnknownErrorSubject = PublishSubject.create<Throwable>()
 
     init {
+        mCompositeDisposable += mMarkResponseViewedSubject
+                .subscribeOn(mSchedulers.provideIo())
+                .flatMap { packet ->
+                    mApiClient.markResponseViewed(packet)
+                            .toObservable()
+                }
+                .subscribe({
+                    handleResponse(it)
+                }, { error ->
+                    handleError(error)
+                })
+
         val respondedSpecialistObservable = mGetRespondedSpecialistsSubject
                 .subscribeOn(mSchedulers.provideIo())
                 .flatMap { (damageClaimId, skip, count) ->
@@ -101,6 +117,10 @@ class RespondedSpecialistsViewModel
         super.onCleared()
     }
 
+    override fun markResponseViewed(damageClaimId: Long, userId: Long) {
+        mMarkResponseViewedSubject.onNext(MarkResponseViewedPacket(damageClaimId, userId))
+    }
+
     override fun getRespondedSpecialistsSubject(damageClaimId: Long, skip: Long, count: Long) {
         mGetRespondedSpecialistsSubject.onNext(GetRespondedSpecialistsDTO(damageClaimId, skip, count))
     }
@@ -120,6 +140,10 @@ class RespondedSpecialistsViewModel
 
                 is AssignSpecialistResponse -> {
                     mOnAssignSpecialistResponseSubject.onNext(response)
+                }
+
+                is MarkResponseViewedResponse -> {
+                    mMarkResponseViewedResponseSubject.onNext(response)
                 }
             }
         } else {
@@ -142,6 +166,10 @@ class RespondedSpecialistsViewModel
                 is AssignSpecialistResponse -> {
                     TODO()
                 }
+
+                is MarkResponseViewedResponse -> {
+                    TODO()
+                }
             }
         }
     }
@@ -154,6 +182,7 @@ class RespondedSpecialistsViewModel
                                           val skip: Long,
                                           val count: Long)
 
+    override fun onMarkResponseViewedResponse(): Observable<MarkResponseViewedResponse> = mMarkResponseViewedResponseSubject
     override fun onAssignSpecialistResponse(): Observable<AssignSpecialistResponse> = mOnAssignSpecialistResponseSubject
     override fun onSpecialistsListResponse(): Observable<List<SpecialistProfile>> = mOnSpecialistsListResponseSubject
     override fun onBadResponse(): Observable<ErrorCode.Remote> = mOnBadResponseSubject

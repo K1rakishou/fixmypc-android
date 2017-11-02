@@ -27,9 +27,11 @@ import io.reactivex.subjects.BehaviorSubject
 /**
  * Created by kirakishou on 9/29/2017.
  */
-class ClientDamageClaimListAdapter(private val mContext: Context,
-                                   private val mImageLoader: ImageLoader,
-                                   private val mAdapterItemClickSubject: BehaviorSubject<DamageClaim>) : BaseAdapter<DamageClaimListAdapterGenericParam>(mContext) {
+class ClientDamageClaimListAdapter(
+        private val mContext: Context,
+        private val mImageLoader: ImageLoader,
+        private val mAdapterItemClickSubject: BehaviorSubject<DamageClaim>
+) : BaseAdapter<DamageClaimListAdapterGenericParam>(mContext) {
 
     val respondedSpecialists: MutableMap<Long, MutableSet<RespondedSpecialist>> = hashMapOf()
 

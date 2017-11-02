@@ -85,6 +85,10 @@ interface ApiService {
 
     @GET("/v1/api/client/profile/is_filled_in")
     fun isClientProfileFilledIn(@Header("session_id") sessionId: String): Single<Response<IsProfileFilledInResponse>>
+
+    @PUT("/v1/api/specialist/responded")
+    fun markResponseViewed(@Header("session_id") sessionId: String,
+                           packet: MarkResponseViewedPacket): Single<Response<MarkResponseViewedResponse>>
 }
 
 

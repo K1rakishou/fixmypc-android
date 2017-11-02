@@ -42,4 +42,6 @@ interface ApiClient {
     fun updateClientProfile(packet: ClientProfilePacket): Single<UpdateClientProfileResponse>
 
     fun isClientProfileFilledIn(): Single<IsProfileFilledInResponse>
+
+    fun markResponseViewed(packet: MarkResponseViewedPacket): Single<MarkResponseViewedResponse>
 }
